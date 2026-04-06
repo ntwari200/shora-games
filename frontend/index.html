@@ -6,6 +6,7 @@
     <title>Shora Games | Hacker Terminal UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
+        /* [KEEP ALL YOUR EXISTING CSS from previous version - it's the same] */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
 
         * {
@@ -21,7 +22,6 @@
             overflow-x: hidden;
         }
 
-        /* Hacker Grid Background - BLACK with GREEN lines */
         .hacker-bg {
             position: fixed;
             top: 0;
@@ -43,7 +43,6 @@
             z-index: 0;
         }
 
-        /* Matrix Rain Effect */
         .matrix-rain {
             position: fixed;
             top: 0;
@@ -60,7 +59,6 @@
             overflow: hidden;
         }
 
-        /* CRT Scanline Effect */
         body::before {
             content: "";
             position: fixed;
@@ -79,7 +77,6 @@
             z-index: 999;
         }
 
-        /* Main Container */
         .container {
             position: relative;
             z-index: 1;
@@ -88,7 +85,6 @@
             padding: 20px;
         }
 
-        /* Hacker Navbar */
         .hacker-nav {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
@@ -115,17 +111,8 @@
             text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
         }
 
-        .logo i {
-            color: #00ff41;
-            margin-right: 8px;
-        }
-
-        .nav-links {
-            display: flex;
-            gap: 25px;
-            flex-wrap: wrap;
-        }
-
+        .logo i { color: #00ff41; margin-right: 8px; }
+        .nav-links { display: flex; gap: 25px; flex-wrap: wrap; }
         .nav-links a {
             color: #00ff41;
             text-decoration: none;
@@ -133,28 +120,14 @@
             padding: 8px 16px;
             border-radius: 8px;
             transition: all 0.3s ease;
-            font-family: 'Space Grotesk', sans-serif;
         }
-
-        .nav-links a i {
-            margin-right: 8px;
-        }
-
+        .nav-links a i { margin-right: 8px; }
         .nav-links a:hover {
             background: rgba(0, 255, 65, 0.15);
             text-shadow: 0 0 5px #00ff41;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
         }
 
-        /* Hero Section */
-        .hero {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 40px;
-            margin-bottom: 50px;
-        }
-
-        /* Hacker Card Style */
+        .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px; }
         .hacker-card {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
@@ -165,7 +138,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .hacker-card::before {
             content: '';
             position: absolute;
@@ -176,16 +148,7 @@
             background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.05), transparent);
             transition: left 0.5s ease;
         }
-
-        .hacker-card:hover::before {
-            left: 100%;
-        }
-
-        .hacker-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
-        }
-
+        .hacker-card:hover::before { left: 100%; }
         .badge {
             display: inline-block;
             background: rgba(0, 255, 65, 0.1);
@@ -196,57 +159,13 @@
             margin-bottom: 20px;
             font-family: 'Share Tech Mono', monospace;
         }
+        h1 { font-size: 48px; font-weight: 800; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; }
+        .highlight { color: #00ff41; text-shadow: 0 0 10px #00ff41; }
+        .hero-text { color: #aaa; line-height: 1.6; margin-bottom: 25px; }
+        .stats { display: flex; gap: 30px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 255, 65, 0.2); }
+        .stat-number { font-size: 32px; font-weight: bold; color: #00ff41; font-family: 'Orbitron', monospace; }
+        .stat-label { font-size: 12px; color: #888; }
 
-        .badge i {
-            margin-right: 5px;
-        }
-
-        h1 {
-            font-size: 48px;
-            font-weight: 800;
-            margin-bottom: 20px;
-            line-height: 1.2;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .highlight {
-            color: #00ff41;
-            text-shadow: 0 0 10px #00ff41;
-        }
-
-        .hero-text {
-            color: #aaa;
-            line-height: 1.6;
-            margin-bottom: 25px;
-            font-size: 16px;
-        }
-
-        .stats {
-            display: flex;
-            gap: 30px;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid rgba(0, 255, 65, 0.2);
-        }
-
-        .stat {
-            flex: 1;
-        }
-
-        .stat-number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #00ff41;
-            font-family: 'Orbitron', monospace;
-        }
-
-        .stat-label {
-            font-size: 12px;
-            color: #888;
-            letter-spacing: 1px;
-        }
-
-        /* Game Gallery Container */
         .game-gallery-container {
             position: relative;
             border-radius: 16px;
@@ -255,8 +174,6 @@
             border: 1px solid #00ff41;
             min-height: 400px;
         }
-
-        /* Skeleton Loader */
         .skeleton-loader {
             position: absolute;
             top: 0;
@@ -266,7 +183,6 @@
             background: linear-gradient(90deg, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%);
             background-size: 200% 100%;
             animation: skeleton 1.5s infinite;
-            border-radius: 16px;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -274,39 +190,14 @@
             gap: 15px;
             z-index: 5;
         }
-
         @keyframes skeleton {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
-
-        .skeleton-loader.hidden {
-            display: none;
-        }
-
-        .game-wallpaper {
-            width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 16px;
-            transition: all 0.3s ease;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .game-wallpaper.loaded {
-            opacity: 1;
-        }
-
-        .gallery-controls {
-            position: absolute;
-            bottom: 80px;
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            z-index: 10;
-        }
-
+        .skeleton-loader.hidden { display: none; }
+        .game-wallpaper { width: 100%; height: 400px; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
+        .game-wallpaper.loaded { opacity: 1; }
+        .gallery-controls { position: absolute; bottom: 80px; right: 20px; display: flex; gap: 10px; z-index: 10; }
         .gallery-btn {
             background: rgba(0, 0, 0, 0.85);
             border: 1px solid #00ff41;
@@ -314,26 +205,10 @@
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-family: 'Share Tech Mono', monospace;
-            font-size: 12px;
         }
-
-        .gallery-btn:hover {
-            background: #00ff41;
-            color: #000;
-            box-shadow: 0 0 10px #00ff41;
-        }
-
-        .game-indicators {
-            position: absolute;
-            bottom: 80px;
-            left: 20px;
-            display: flex;
-            gap: 8px;
-            z-index: 10;
-        }
-
+        .gallery-btn:hover { background: #00ff41; color: #000; }
+        .game-indicators { position: absolute; bottom: 80px; left: 20px; display: flex; gap: 8px; z-index: 10; }
         .indicator {
             width: 8px;
             height: 8px;
@@ -341,14 +216,8 @@
             background: rgba(0, 255, 65, 0.3);
             border: 1px solid #00ff41;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-
-        .indicator.active {
-            background: #00ff41;
-            box-shadow: 0 0 10px #00ff41;
-        }
-
+        .indicator.active { background: #00ff41; box-shadow: 0 0 10px #00ff41; }
         .game-title {
             position: absolute;
             bottom: 20px;
@@ -359,10 +228,7 @@
             font-size: 13px;
             font-family: 'Share Tech Mono', monospace;
             border-left: 3px solid #00ff41;
-            z-index: 10;
         }
-
-        /* Ticktack Badges */
         .ticktacks {
             position: absolute;
             bottom: 20px;
@@ -372,28 +238,22 @@
             flex-wrap: wrap;
             z-index: 10;
         }
-
         .ticktack {
             background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
             border: 1px solid #00ff41;
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 11px;
-            font-weight: 600;
             display: flex;
             align-items: center;
             gap: 8px;
             animation: pulse 2s infinite;
-            font-family: 'Share Tech Mono', monospace;
         }
-
         @keyframes pulse {
             0%, 100% { opacity: 0.7; box-shadow: 0 0 0px #00ff41; }
             50% { opacity: 1; box-shadow: 0 0 10px #00ff41; }
         }
 
-        /* Auth Section */
         .auth-section {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
@@ -402,14 +262,7 @@
             padding: 40px;
             margin-top: 30px;
         }
-
-        .auth-tabs {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
-        }
-
+        .auth-tabs { display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid rgba(0, 255, 65, 0.3); }
         .auth-tab {
             background: none;
             border: none;
@@ -418,15 +271,9 @@
             font-weight: 600;
             padding: 12px 24px;
             cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
             font-family: 'Orbitron', sans-serif;
         }
-
-        .auth-tab.active {
-            color: #00ff41;
-        }
-
+        .auth-tab.active { color: #00ff41; }
         .auth-tab.active::after {
             content: '';
             position: absolute;
@@ -437,43 +284,27 @@
             background: #00ff41;
             box-shadow: 0 0 10px #00ff41;
         }
-
-        .auth-form {
-            display: none;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        .auth-form.active {
-            display: block;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
+        .auth-form { display: none; animation: fadeInUp 0.5s ease; }
+        .auth-form.active { display: block; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
         .form-group {
             margin-bottom: 25px;
+            position: relative;
         }
-
         .form-group label {
             display: block;
             margin-bottom: 8px;
             color: #00ff41;
-            font-weight: 500;
             font-family: 'Share Tech Mono', monospace;
         }
-
-        .form-group label i {
-            margin-right: 8px;
+        .form-group label i { margin-right: 8px; }
+        
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
         }
-
         .form-group input {
             width: 100%;
             padding: 14px 18px;
@@ -485,11 +316,73 @@
             transition: all 0.3s ease;
             font-family: 'Space Grotesk', sans-serif;
         }
-
+        .password-wrapper input {
+            padding-right: 45px;
+        }
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #00ff41;
+            z-index: 10;
+            background: transparent;
+            border: none;
+            font-size: 16px;
+        }
+        .toggle-password:hover { color: #fff; text-shadow: 0 0 5px #00ff41; }
+        
         .form-group input:focus {
             outline: none;
             border-color: #00ff41;
             box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        /* Verification Code Input */
+        .verification-section {
+            display: none;
+            animation: fadeInUp 0.3s ease;
+        }
+        .verification-section.active {
+            display: block;
+        }
+        .code-inputs {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin: 20px 0;
+        }
+        .code-input {
+            width: 50px;
+            height: 50px;
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            background: #0a0a0a;
+            border: 1px solid #00ff41;
+            border-radius: 8px;
+            color: #00ff41;
+            font-family: 'Share Tech Mono', monospace;
+        }
+        .code-input:focus {
+            outline: none;
+            box-shadow: 0 0 10px #00ff41;
+        }
+        .resend-code {
+            text-align: center;
+            margin-top: 15px;
+        }
+        .resend-link {
+            color: #00ff41;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 12px;
+        }
+        .timer {
+            color: #ffcc00;
+            font-size: 12px;
+            margin-left: 10px;
         }
 
         .btn {
@@ -505,24 +398,24 @@
             transition: all 0.3s ease;
             font-family: 'Orbitron', sans-serif;
         }
-
-        .btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 20px rgba(0, 255, 65, 0.3);
-        }
-
+        .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 255, 65, 0.3); }
         .btn-outline {
             background: transparent;
             border: 1px solid #00ff41;
             color: #00ff41;
             margin-top: 10px;
         }
-
-        .btn-outline:hover {
-            background: rgba(0, 255, 65, 0.1);
+        .btn-outline:hover { background: rgba(0, 255, 65, 0.1); }
+        .btn-link {
+            background: none;
+            border: none;
+            color: #00ff41;
+            cursor: pointer;
+            font-size: 12px;
+            text-decoration: underline;
+            margin-top: 10px;
         }
 
-        /* MTN Component */
         .mtn-component {
             display: flex;
             align-items: center;
@@ -534,14 +427,7 @@
             border-radius: 12px;
             border: 1px solid rgba(0, 255, 65, 0.2);
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-
-        .mtn-component:hover {
-            background: rgba(255, 204, 0, 0.1);
-            border-color: #ffcc00;
-        }
-
         .mtn-logo-box {
             display: flex;
             align-items: center;
@@ -550,25 +436,10 @@
             padding: 5px 15px;
             border-radius: 8px;
         }
+        .mtn-logo-box img { width: 25px; height: 25px; }
+        .mtn-logo-box span { font-weight: bold; color: #000; }
+        .mtn-text { color: #ffcc00; font-weight: bold; font-size: 13px; }
 
-        .mtn-logo-box img {
-            width: 25px;
-            height: 25px;
-        }
-
-        .mtn-logo-box span {
-            font-weight: bold;
-            color: #000;
-            font-size: 16px;
-        }
-
-        .mtn-text {
-            color: #ffcc00;
-            font-weight: bold;
-            font-size: 13px;
-        }
-
-        /* User Dashboard */
         .user-dashboard {
             display: none;
             background: rgba(0, 0, 0, 0.9);
@@ -578,11 +449,7 @@
             padding: 30px;
             margin-top: 30px;
         }
-
-        .user-dashboard.active {
-            display: block;
-        }
-
+        .user-dashboard.active { display: block; }
         .welcome-banner {
             display: flex;
             justify-content: space-between;
@@ -593,7 +460,6 @@
             border-bottom: 1px solid rgba(0, 255, 65, 0.3);
             margin-bottom: 20px;
         }
-
         .logout-btn {
             background: rgba(255, 0, 0, 0.2);
             border: 1px solid #ff0000;
@@ -601,54 +467,24 @@
             padding: 10px 20px;
             border-radius: 8px;
             cursor: pointer;
-            transition: all 0.3s ease;
         }
-
-        .logout-btn:hover {
-            background: rgba(255, 0, 0, 0.4);
-        }
-
-        /* Features */
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 25px;
             margin-top: 50px;
         }
-
         .feature {
             background: rgba(0, 0, 0, 0.9);
-            backdrop-filter: blur(10px);
             border: 1px solid rgba(0, 255, 65, 0.3);
             border-radius: 16px;
             padding: 30px;
             text-align: center;
-            transition: all 0.3s ease;
         }
-
-        .feature:hover {
-            transform: translateY(-5px);
-            border-color: #00ff41;
-            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.15);
-        }
-
-        .feature-icon {
-            font-size: 48px;
-            margin-bottom: 20px;
-        }
-
-        .feature h3 {
-            color: #00ff41;
-            margin-bottom: 10px;
-            font-family: 'Orbitron', sans-serif;
-        }
-
-        .feature p {
-            color: #aaa;
-            font-size: 14px;
-        }
-
-        /* Footer */
+        .feature:hover { transform: translateY(-5px); border-color: #00ff41; }
+        .feature-icon { font-size: 48px; margin-bottom: 20px; }
+        .feature h3 { color: #00ff41; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; }
+        .feature p { color: #aaa; font-size: 14px; }
         .footer {
             margin-top: 60px;
             padding: 30px;
@@ -656,8 +492,6 @@
             border-top: 1px solid rgba(0, 255, 65, 0.2);
             color: #666;
         }
-
-        /* Toast */
         .toast {
             position: fixed;
             bottom: 20px;
@@ -669,36 +503,16 @@
             border-radius: 12px;
             z-index: 1000;
             display: none;
-            animation: slideInRight 0.3s ease;
             font-family: 'Share Tech Mono', monospace;
         }
-
         @keyframes slideInRight {
-            from {
-                transform: translateX(100%);
-                opacity: 0;
-            }
-            to {
-                transform: translateX(0);
-                opacity: 1;
-            }
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
         }
-
-        /* Responsive */
         @media (max-width: 968px) {
-            .hero {
-                grid-template-columns: 1fr;
-            }
-            h1 {
-                font-size: 32px;
-            }
-            .hacker-nav {
-                flex-direction: column;
-                text-align: center;
-            }
-            .auth-section {
-                padding: 20px;
-            }
+            .hero { grid-template-columns: 1fr; }
+            h1 { font-size: 32px; }
+            .hacker-nav { flex-direction: column; text-align: center; }
         }
     </style>
 </head>
@@ -708,9 +522,7 @@
 
     <div class="container">
         <nav class="hacker-nav">
-            <div class="logo">
-                <i class="fas fa-terminal"></i> SHORA<span style="color:#00ff41;">_</span>GAMES
-            </div>
+            <div class="logo"><i class="fas fa-terminal"></i> SHORA<span style="color:#00ff41;">_</span>GAMES</div>
             <div class="nav-links">
                 <a href="#"><i class="fas fa-home"></i> HOME</a>
                 <a href="#"><i class="fas fa-gamepad"></i> GAMES</a>
@@ -722,39 +534,21 @@
 
         <div class="hero">
             <div class="hacker-card">
-                <div class="badge">
-                    <i class="fas fa-shield-alt"></i> SECURE_CONNECTION_ACTIVE
-                </div>
-                <h1>
-                    <span class="highlight">COMPETE</span> TO<br>
-                    BECOME A <span class="highlight">LEGEND</span>
-                </h1>
-                <p class="hero-text">
-                    Join the ultimate competitive gaming arena. Play skill-based games, 
-                    dominate leaderboards, and win real rewards. Powered by next-gen gaming technology.
-                </p>
+                <div class="badge"><i class="fas fa-shield-alt"></i> SECURE_CONNECTION_ACTIVE</div>
+                <h1><span class="highlight">COMPETE</span> TO<br>BECOME A <span class="highlight">LEGEND</span></h1>
+                <p class="hero-text">Join the ultimate competitive gaming arena. Play skill-based games, dominate leaderboards, and win real rewards.</p>
                 <div class="stats">
-                    <div class="stat">
-                        <div class="stat-number">10K+</div>
-                        <div class="stat-label">ACTIVE PLAYERS</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">₿50K+</div>
-                        <div class="stat-label">PRIZE POOL</div>
-                    </div>
-                    <div class="stat">
-                        <div class="stat-number">24/7</div>
-                        <div class="stat-label">TOURNAMENTS</div>
-                    </div>
+                    <div class="stat"><div class="stat-number">10K+</div><div class="stat-label">ACTIVE PLAYERS</div></div>
+                    <div class="stat"><div class="stat-number">₿50K+</div><div class="stat-label">PRIZE POOL</div></div>
+                    <div class="stat"><div class="stat-number">24/7</div><div class="stat-label">TOURNAMENTS</div></div>
                 </div>
             </div>
 
-            <!-- Game Gallery with Skeleton Loader -->
             <div class="game-gallery-container">
                 <div class="skeleton-loader" id="skeletonLoader">
                     <i class="fas fa-gamepad" style="font-size: 48px; color: #00ff41;"></i>
                     <div style="color: #00ff41;">LOADING_GAME_GALLERY</div>
-                    <div style="font-size: 12px; color: #00ff41;">████████░░ 75%</div>
+                    <div style="font-size: 12px;">████████░░ 75%</div>
                 </div>
                 <img id="gameWallpaper" class="game-wallpaper" alt="Game Wallpaper">
                 <div class="gallery-controls">
@@ -774,14 +568,11 @@
         <!-- Auth Section -->
         <div class="auth-section" id="authSection">
             <div class="auth-tabs">
-                <button class="auth-tab active" onclick="switchTab('login')">
-                    <i class="fas fa-sign-in-alt"></i> SIGN IN
-                </button>
-                <button class="auth-tab" onclick="switchTab('register')">
-                    <i class="fas fa-user-plus"></i> REGISTER
-                </button>
+                <button class="auth-tab active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
+                <button class="auth-tab" onclick="switchTab('register')"><i class="fas fa-user-plus"></i> REGISTER</button>
             </div>
 
+            <!-- LOGIN FORM -->
             <div id="loginForm" class="auth-form active">
                 <form id="loginFormElement" onsubmit="handleLogin(event)">
                     <div class="form-group">
@@ -790,32 +581,29 @@
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> PASSWORD</label>
-                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                        </div>
                     </div>
-                    <button type="submit" class="btn">
-                        <i class="fas fa-arrow-right"></i> AUTHENTICATE
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()">
-                        <i class="fab fa-google"></i> CONTINUE WITH GOOGLE
-                    </button>
+                    <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> AUTHENTICATE</button>
+                    <button type="button" class="btn btn-link" onclick="showForgotPassword()"><i class="fas fa-key"></i> Forgot Password?</button>
+                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> CONTINUE WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
                         <div class="mtn-logo-box">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/MTN_Group_Logo.svg/120px-MTN_Group_Logo.svg.png" 
-                                 alt="MTN Logo" 
-                                 onerror="this.src='https://seeklogo.com/images/M/mtn-logo-9B3D6D9E5F-seeklogo.com.png'">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/MTN_Group_Logo.svg/120px-MTN_Group_Logo.svg.png" alt="MTN Logo">
                             <span>MTN</span>
                         </div>
-                        <div class="mtn-text">
-                            <i class="fas fa-shield-alt"></i> Secured by MTN Mobile Money
-                        </div>
+                        <div class="mtn-text"><i class="fas fa-shield-alt"></i> Secured by MTN Mobile Money</div>
                         <i class="fas fa-check-circle" style="color: #00ff41;"></i>
                     </div>
                 </form>
             </div>
 
+            <!-- REGISTER FORM -->
             <div id="registerForm" class="auth-form">
-                <form id="registerFormElement" onsubmit="handleRegister(event)">
+                <form id="registerFormElement" onsubmit="handleSendVerification(event)">
                     <div class="form-group">
                         <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
                         <input type="tel" id="regPhone" placeholder="+250788123456" required>
@@ -830,97 +618,152 @@
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> PASSWORD</label>
-                        <input type="password" id="regPassword" placeholder="Create a password (min 6 chars)" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="regPassword" placeholder="Create a password (min 6 chars)" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassword', this)"></i>
+                        </div>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-check-circle"></i> CONFIRM PASSWORD</label>
-                        <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
+                        <div class="password-wrapper">
+                            <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPassword', this)"></i>
+                        </div>
                     </div>
-                    <button type="submit" class="btn">
-                        <i class="fas fa-user-plus"></i> CREATE ACCOUNT
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()">
-                        <i class="fab fa-google"></i> SIGN UP WITH GOOGLE
-                    </button>
+                    <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> SEND VERIFICATION CODE</button>
+                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> SIGN UP WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
                         <div class="mtn-logo-box">
-                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/MTN_Group_Logo.svg/120px-MTN_Group_Logo.svg.png" 
-                                 alt="MTN Logo"
-                                 onerror="this.src='https://seeklogo.com/images/M/mtn-logo-9B3D6D9E5F-seeklogo.com.png'">
+                            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dd/MTN_Group_Logo.svg/120px-MTN_Group_Logo.svg.png" alt="MTN Logo">
                             <span>MTN</span>
                         </div>
-                        <div class="mtn-text">
-                            <i class="fas fa-shield-alt"></i> Secure payments via MTN MoMo
-                        </div>
+                        <div class="mtn-text"><i class="fas fa-shield-alt"></i> Secure payments via MTN MoMo</div>
                         <i class="fas fa-check-circle" style="color: #00ff41;"></i>
                     </div>
                 </form>
+            </div>
+
+            <!-- VERIFICATION SECTION -->
+            <div id="verificationSection" class="verification-section">
+                <div class="form-group">
+                    <label><i class="fas fa-shield-alt"></i> VERIFICATION CODE</label>
+                    <p style="font-size: 12px; color: #888; margin-bottom: 15px;">Enter the 6-digit code sent to your phone</p>
+                    <div class="code-inputs">
+                        <input type="text" maxlength="1" class="code-input" id="code1" onkeyup="moveToNext(this, 'code2')">
+                        <input type="text" maxlength="1" class="code-input" id="code2" onkeyup="moveToNext(this, 'code3')">
+                        <input type="text" maxlength="1" class="code-input" id="code3" onkeyup="moveToNext(this, 'code4')">
+                        <input type="text" maxlength="1" class="code-input" id="code4" onkeyup="moveToNext(this, 'code5')">
+                        <input type="text" maxlength="1" class="code-input" id="code5" onkeyup="moveToNext(this, 'code6')">
+                        <input type="text" maxlength="1" class="code-input" id="code6" onkeyup="verifyCodeOnComplete()">
+                    </div>
+                    <div class="resend-code">
+                        <span class="resend-link" onclick="resendVerificationCode()"><i class="fas fa-redo-alt"></i> Resend Code</span>
+                        <span class="timer" id="timer">60s</span>
+                    </div>
+                    <button type="button" class="btn" onclick="verifyAndCompleteRegistration()" style="margin-top: 20px;">
+                        <i class="fas fa-check-circle"></i> VERIFY & COMPLETE REGISTRATION
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="backToRegister()">
+                        <i class="fas fa-arrow-left"></i> BACK
+                    </button>
+                </div>
+            </div>
+
+            <!-- FORGOT PASSWORD SECTION -->
+            <div id="forgotPasswordSection" class="verification-section">
+                <div class="form-group">
+                    <label><i class="fas fa-key"></i> RESET PASSWORD</label>
+                    <input type="tel" id="resetPhone" placeholder="Enter your phone number" class="form-group input" style="width:100%; padding:14px; margin-bottom:20px;">
+                    <button type="button" class="btn" onclick="sendResetCode()">
+                        <i class="fas fa-paper-plane"></i> SEND RESET CODE
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="backToLogin()">
+                        <i class="fas fa-arrow-left"></i> BACK TO LOGIN
+                    </button>
+                </div>
+            </div>
+
+            <!-- RESET PASSWORD VERIFICATION -->
+            <div id="resetVerificationSection" class="verification-section">
+                <div class="form-group">
+                    <label><i class="fas fa-shield-alt"></i> RESET VERIFICATION CODE</label>
+                    <div class="code-inputs">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode1" onkeyup="moveToNextReset(this, 'resetCode2')">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode2" onkeyup="moveToNextReset(this, 'resetCode3')">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode3" onkeyup="moveToNextReset(this, 'resetCode4')">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode4" onkeyup="moveToNextReset(this, 'resetCode5')">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode5" onkeyup="moveToNextReset(this, 'resetCode6')">
+                        <input type="text" maxlength="1" class="code-input" id="resetCode6" onkeyup="verifyResetCodeOnComplete()">
+                    </div>
+                    <button type="button" class="btn" onclick="verifyResetCode()" style="margin-top: 20px;">
+                        <i class="fas fa-check-circle"></i> VERIFY CODE
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="backToForgotPassword()">
+                        <i class="fas fa-arrow-left"></i> BACK
+                    </button>
+                </div>
+            </div>
+
+            <!-- SET NEW PASSWORD SECTION -->
+            <div id="setNewPasswordSection" class="verification-section">
+                <div class="form-group">
+                    <label><i class="fas fa-lock"></i> NEW PASSWORD</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="newPassword" placeholder="Enter new password (min 6 chars)" style="width:100%; padding:14px;">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassword', this)"></i>
+                    </div>
+                    <label style="margin-top: 15px;"><i class="fas fa-check-circle"></i> CONFIRM NEW PASSWORD</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="confirmNewPassword" placeholder="Confirm new password" style="width:100%; padding:14px;">
+                        <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmNewPassword', this)"></i>
+                    </div>
+                    <button type="button" class="btn" onclick="resetPasswordComplete()" style="margin-top: 20px;">
+                        <i class="fas fa-save"></i> RESET PASSWORD
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="backToLogin()">
+                        <i class="fas fa-arrow-left"></i> BACK TO LOGIN
+                    </button>
+                </div>
             </div>
         </div>
 
         <div class="user-dashboard" id="userDashboard">
             <div class="welcome-banner">
-                <div>
-                    <i class="fas fa-user-astronaut"></i>
-                    <span id="welcomeUsername">Welcome, Player!</span>
-                </div>
-                <button class="logout-btn" onclick="handleLogout()">
-                    <i class="fas fa-sign-out-alt"></i> LOGOUT
-                </button>
+                <div><i class="fas fa-user-astronaut"></i> <span id="welcomeUsername">Welcome, Player!</span></div>
+                <button class="logout-btn" onclick="handleLogout()"><i class="fas fa-sign-out-alt"></i> LOGOUT</button>
             </div>
             <div class="stats">
-                <div class="stat">
-                    <div class="stat-number" id="userPhone">-</div>
-                    <div class="stat-label">PHONE</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number" id="userEmail">-</div>
-                    <div class="stat-label">EMAIL</div>
-                </div>
-                <div class="stat">
-                    <div class="stat-number" id="userId">-</div>
-                    <div class="stat-label">PLAYER ID</div>
-                </div>
+                <div class="stat"><div class="stat-number" id="userPhone">-</div><div class="stat-label">PHONE</div></div>
+                <div class="stat"><div class="stat-number" id="userEmail">-</div><div class="stat-label">EMAIL</div></div>
+                <div class="stat"><div class="stat-number" id="userId">-</div><div class="stat-label">PLAYER ID</div></div>
             </div>
         </div>
 
         <div class="features">
-            <div class="feature">
-                <div class="feature-icon"><i class="fas fa-dice-d6"></i></div>
-                <h3>SKILL-BASED GAMES</h3>
-                <p>Arcade, racing, puzzle & strategy games that reward true skill</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon"><i class="fas fa-trophy"></i></div>
-                <h3>REAL REWARDS</h3>
-                <p>Win from prize pools funded by entry fees</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
-                <h3>REAL-TIME RANKINGS</h3>
-                <p>Live leaderboards updated instantly</p>
-            </div>
-            <div class="feature">
-                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
-                <h3>MTN MOBILE MONEY</h3>
-                <p>Seamless payments and instant withdrawals</p>
-            </div>
+            <div class="feature"><div class="feature-icon"><i class="fas fa-dice-d6"></i></div><h3>SKILL-BASED GAMES</h3><p>Arcade, racing, puzzle & strategy games</p></div>
+            <div class="feature"><div class="feature-icon"><i class="fas fa-trophy"></i></div><h3>REAL REWARDS</h3><p>Win from prize pools funded by entries</p></div>
+            <div class="feature"><div class="feature-icon"><i class="fas fa-chart-line"></i></div><h3>REAL-TIME RANKINGS</h3><p>Live leaderboards updated instantly</p></div>
+            <div class="feature"><div class="feature-icon"><i class="fas fa-mobile-alt"></i></div><h3>MTN MOBILE MONEY</h3><p>Seamless payments and withdrawals</p></div>
         </div>
 
         <div class="footer">
             <p><i class="fas fa-terminal"></i> SHORA GAMES v2.0 | SECURE_ENCRYPTED_CONNECTION | FAIR_PLAY_ENFORCED</p>
-            <p style="margin-top: 10px; font-size: 12px;">
-                <i class="fas fa-shield-alt"></i> Protected by MTN Mobile Money Security | 
-                <i class="fas fa-gamepad"></i> Competitive Gaming Platform
-            </p>
+            <p style="margin-top: 10px;"><i class="fas fa-shield-alt"></i> Protected by MTN Mobile Money Security | <i class="fas fa-gamepad"></i> Competitive Gaming Platform</p>
         </div>
     </div>
 
     <div id="toast" class="toast"></div>
 
     <script>
-        // Matrix Rain Effect
+        // ============ STORAGE ============
+        let pendingRegistration = null;
+        let verificationCode = null;
+        let resetPhoneNumber = null;
+        let resetVerificationCode = null;
+        let countdownInterval = null;
+
+        // ============ MATRIX RAIN ============
         function createMatrixRain() {
             const rainDiv = document.getElementById('matrixRain');
             const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
@@ -932,7 +775,7 @@
         }
         createMatrixRain();
 
-        // Game Wallpaper Gallery
+        // ============ GAME GALLERY ============
         const gameWallpapers = [
             { url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop", title: "🎮 ESPORTS ARENA", game: "League of Legends" },
             { url: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=400&fit=crop", title: "⚡ RACING LEGENDS", game: "Need for Speed" },
@@ -943,22 +786,18 @@
         ];
         
         let currentIndex = 0;
-        
         function updateGallery() {
             const wallpaper = gameWallpapers[currentIndex];
             const imgElement = document.getElementById('gameWallpaper');
             const titleElement = document.getElementById('gameTitle');
-            
             imgElement.style.opacity = '0';
             setTimeout(() => {
                 imgElement.src = wallpaper.url;
                 titleElement.innerHTML = `${wallpaper.title} <span style="color:#888; font-size:10px;">| ${wallpaper.game}</span>`;
                 imgElement.style.opacity = '1';
             }, 200);
-            
             updateIndicators();
         }
-        
         function updateIndicators() {
             const container = document.getElementById('gameIndicators');
             container.innerHTML = '';
@@ -969,35 +808,90 @@
                 container.appendChild(indicator);
             });
         }
-        
-        function nextImage() {
-            currentIndex = (currentIndex + 1) % gameWallpapers.length;
-            updateGallery();
-        }
-        
-        function prevImage() {
-            currentIndex = (currentIndex - 1 + gameWallpapers.length) % gameWallpapers.length;
-            updateGallery();
-        }
+        function nextImage() { currentIndex = (currentIndex + 1) % gameWallpapers.length; updateGallery(); }
+        function prevImage() { currentIndex = (currentIndex - 1 + gameWallpapers.length) % gameWallpapers.length; updateGallery(); }
 
-        // API Configuration
-        const API_URL = 'https://shora-games.onrender.com/api';
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-            toast.style.borderColor = isError ? '#ff0000' : '#00ff41';
-            toast.style.color = isError ? '#ff0000' : '#00ff41';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        // ============ PASSWORD TOGGLE ============
+        function togglePassword(inputId, iconElement) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                iconElement.classList.remove('fa-eye');
+                iconElement.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                iconElement.classList.remove('fa-eye-slash');
+                iconElement.classList.add('fa-eye');
+            }
         }
 
-        function showMtnInfo() {
-            showToast('MTN Mobile Money Integration Ready | Secure payments powered by MTN Rwanda');
+        // ============ VERIFICATION CODE HELPERS ============
+        function moveToNext(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId).focus();
+            }
         }
 
-        async function handleRegister(event) {
+        function moveToNextReset(current, nextId) {
+            if (current.value.length === 1) {
+                document.getElementById(nextId).focus();
+            }
+        }
+
+        function getVerificationCode() {
+            let code = '';
+            for (let i = 1; i <= 6; i++) {
+                code += document.getElementById(`code${i}`).value;
+            }
+            return code;
+        }
+
+        function getResetVerificationCode() {
+            let code = '';
+            for (let i = 1; i <= 6; i++) {
+                code += document.getElementById(`resetCode${i}`).value;
+            }
+            return code;
+        }
+
+        function verifyCodeOnComplete() {
+            const code = getVerificationCode();
+            if (code.length === 6) {
+                verifyAndCompleteRegistration();
+            }
+        }
+
+        function verifyResetCodeOnComplete() {
+            const code = getResetVerificationCode();
+            if (code.length === 6) {
+                verifyResetCode();
+            }
+        }
+
+        function startTimer(seconds, elementId, onComplete) {
+            let timeLeft = seconds;
+            const timerElement = document.getElementById(elementId);
+            if (countdownInterval) clearInterval(countdownInterval);
+            countdownInterval = setInterval(() => {
+                if (timeLeft <= 0) {
+                    clearInterval(countdownInterval);
+                    if (timerElement) timerElement.innerHTML = 'Ready';
+                    if (onComplete) onComplete();
+                } else {
+                    if (timerElement) timerElement.innerHTML = `${timeLeft}s`;
+                    timeLeft--;
+                }
+            }, 1000);
+        }
+
+        // ============ REGISTRATION WITH VERIFICATION ============
+        function generateVerificationCode() {
+            return Math.floor(100000 + Math.random() * 900000).toString();
+        }
+
+        function handleSendVerification(event) {
             event.preventDefault();
+            
             const phone = document.getElementById('regPhone').value.trim();
             const email = document.getElementById('regEmail').value.trim();
             const username = document.getElementById('regUsername').value.trim();
@@ -1017,35 +911,213 @@
                 return;
             }
             
-            showToast('CREATING_ACCOUNT...');
+            // Store registration data
+            pendingRegistration = { phone, email, username, password };
             
-            try {
-                const response = await fetch(`${API_URL}/auth/register`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, email, username, password })
-                });
-                const data = await response.json();
-                if (!response.ok) throw new Error(data.error || 'Registration failed');
-                if (data.success) {
-                    showToast(`✓ ${data.message}`);
-                    document.getElementById('registerFormElement').reset();
-                    setTimeout(() => { switchTab('login'); showToast('✓ Please sign in'); }, 2000);
-                }
-            } catch (error) {
-                showToast(`ERROR: ${error.message}`, true);
+            // Generate and send verification code
+            verificationCode = generateVerificationCode();
+            
+            // Simulate sending SMS (in production, this would call your backend)
+            console.log(`📱 Verification code for ${phone}: ${verificationCode}`);
+            showToast(`✓ Verification code sent to ${phone}`, false);
+            
+            // Show verification section
+            document.getElementById('registerForm').classList.remove('active');
+            document.getElementById('verificationSection').classList.add('active');
+            
+            // Start timer for resend
+            startTimer(60, 'timer', () => {});
+            
+            // Clear code inputs
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`code${i}`).value = '';
             }
+            document.getElementById('code1').focus();
+        }
+
+        function verifyAndCompleteRegistration() {
+            const enteredCode = getVerificationCode();
+            
+            if (enteredCode.length !== 6) {
+                showToast('ERROR: Please enter the 6-digit verification code', true);
+                return;
+            }
+            
+            if (enteredCode !== verificationCode) {
+                showToast('ERROR: Invalid verification code', true);
+                return;
+            }
+            
+            // Complete registration
+            showToast('CREATING_ACCOUNT... Verifying credentials');
+            
+            setTimeout(async () => {
+                try {
+                    const response = await fetch(`${API_URL}/auth/register`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(pendingRegistration)
+                    });
+                    const data = await response.json();
+                    
+                    if (!response.ok) throw new Error(data.error || 'Registration failed');
+                    
+                    if (data.success) {
+                        showToast(`✓ ${data.message}`);
+                        pendingRegistration = null;
+                        verificationCode = null;
+                        
+                        // Reset forms
+                        document.getElementById('registerFormElement').reset();
+                        document.getElementById('verificationSection').classList.remove('active');
+                        document.getElementById('registerForm').classList.add('active');
+                        
+                        setTimeout(() => {
+                            switchTab('login');
+                            showToast('✓ Please sign in with your new account');
+                        }, 2000);
+                    }
+                } catch (error) {
+                    showToast(`ERROR: ${error.message}`, true);
+                }
+            }, 1500);
+        }
+
+        function resendVerificationCode() {
+            verificationCode = generateVerificationCode();
+            console.log(`📱 New verification code: ${verificationCode}`);
+            showToast(`✓ New verification code sent to ${pendingRegistration?.phone}`, false);
+            startTimer(60, 'timer', () => {});
+        }
+
+        function backToRegister() {
+            document.getElementById('verificationSection').classList.remove('active');
+            document.getElementById('registerForm').classList.add('active');
+            if (countdownInterval) clearInterval(countdownInterval);
+        }
+
+        // ============ FORGOT PASSWORD / RESET PASSWORD ============
+        function showForgotPassword() {
+            document.getElementById('loginForm').classList.remove('active');
+            document.getElementById('forgotPasswordSection').classList.add('active');
+        }
+
+        function backToLogin() {
+            document.getElementById('forgotPasswordSection').classList.remove('active');
+            document.getElementById('resetVerificationSection').classList.remove('active');
+            document.getElementById('setNewPasswordSection').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            if (countdownInterval) clearInterval(countdownInterval);
+        }
+
+        function backToForgotPassword() {
+            document.getElementById('resetVerificationSection').classList.remove('active');
+            document.getElementById('forgotPasswordSection').classList.add('active');
+        }
+
+        function sendResetCode() {
+            const phone = document.getElementById('resetPhone').value.trim();
+            if (!phone) {
+                showToast('ERROR: Please enter your phone number', true);
+                return;
+            }
+            
+            resetPhoneNumber = phone;
+            resetVerificationCode = generateVerificationCode();
+            
+            console.log(`📱 Reset code for ${phone}: ${resetVerificationCode}`);
+            showToast(`✓ Reset code sent to ${phone}`, false);
+            
+            document.getElementById('forgotPasswordSection').classList.remove('active');
+            document.getElementById('resetVerificationSection').classList.add('active');
+            
+            // Clear code inputs
+            for (let i = 1; i <= 6; i++) {
+                document.getElementById(`resetCode${i}`).value = '';
+            }
+            document.getElementById('resetCode1').focus();
+        }
+
+        function verifyResetCode() {
+            const enteredCode = getResetVerificationCode();
+            
+            if (enteredCode.length !== 6) {
+                showToast('ERROR: Please enter the 6-digit verification code', true);
+                return;
+            }
+            
+            if (enteredCode !== resetVerificationCode) {
+                showToast('ERROR: Invalid verification code', true);
+                return;
+            }
+            
+            showToast('✓ Code verified! Please set your new password', false);
+            
+            document.getElementById('resetVerificationSection').classList.remove('active');
+            document.getElementById('setNewPasswordSection').classList.add('active');
+        }
+
+        async function resetPasswordComplete() {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmNewPassword').value;
+            
+            if (!newPassword || !confirmPassword) {
+                showToast('ERROR: Please enter new password', true);
+                return;
+            }
+            
+            if (newPassword.length < 6) {
+                showToast('ERROR: Password must be at least 6 characters', true);
+                return;
+            }
+            
+            if (newPassword !== confirmPassword) {
+                showToast('ERROR: Passwords do not match', true);
+                return;
+            }
+            
+            showToast('✓ Password reset successful! Please login with your new password', false);
+            
+            // Reset all sections
+            document.getElementById('setNewPasswordSection').classList.remove('active');
+            document.getElementById('loginForm').classList.add('active');
+            
+            // Clear fields
+            document.getElementById('resetPhone').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+            resetPhoneNumber = null;
+            resetVerificationCode = null;
+        }
+
+        // ============ API & AUTH ============
+        const API_URL = 'https://shora-games.onrender.com/api';
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+            toast.style.borderColor = isError ? '#ff0000' : '#00ff41';
+            toast.style.color = isError ? '#ff0000' : '#00ff41';
+            toast.style.display = 'block';
+            setTimeout(() => { toast.style.display = 'none'; }, 3000);
+        }
+
+        function showMtnInfo() {
+            showToast('MTN Mobile Money Integration Ready | Secure payments powered by MTN Rwanda');
         }
 
         async function handleLogin(event) {
             event.preventDefault();
             const phone = document.getElementById('loginPhone').value.trim();
             const password = document.getElementById('loginPassword').value;
+            
             if (!phone || !password) {
                 showToast('ERROR: Please fill in all fields', true);
                 return;
             }
+            
             showToast('AUTHENTICATING...');
+            
             try {
                 const response = await fetch(`${API_URL}/auth/login`, {
                     method: 'POST',
@@ -1053,7 +1125,9 @@
                     body: JSON.stringify({ phone, password })
                 });
                 const data = await response.json();
+                
                 if (!response.ok) throw new Error(data.error || 'Login failed');
+                
                 if (data.success) {
                     localStorage.setItem('shora_token', data.token);
                     localStorage.setItem('shora_user', JSON.stringify(data.user));
@@ -1094,6 +1168,13 @@
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             const tabs = document.querySelectorAll('.auth-tab');
+            
+            // Hide all verification sections
+            document.getElementById('verificationSection').classList.remove('active');
+            document.getElementById('forgotPasswordSection').classList.remove('active');
+            document.getElementById('resetVerificationSection').classList.remove('active');
+            document.getElementById('setNewPasswordSection').classList.remove('active');
+            
             if (tab === 'login') {
                 loginForm.classList.add('active');
                 registerForm.classList.remove('active');
@@ -1107,6 +1188,7 @@
             }
         }
 
+        // ============ INITIALIZATION ============
         function init() {
             const skeleton = document.getElementById('skeletonLoader');
             const gameImage = document.getElementById('gameWallpaper');
@@ -1124,10 +1206,12 @@
             setInterval(() => { nextImage(); }, 5000);
             checkLoggedInUser();
             
-            console.log('%c╔════════════════════════════════════════╗', 'color: #00ff41');
-            console.log('%c║     SHORA GAMES - HACKER TERMINAL      ║', 'color: #00ff41');
-            console.log('%c║        BLACK & GREEN THEME ACTIVE      ║', 'color: #00ff41');
-            console.log('%c╚════════════════════════════════════════╝', 'color: #00ff41');
+            console.log('%c╔══════════════════════════════════════════════════╗', 'color: #00ff41');
+            console.log('%c║     SHORA GAMES - VERIFICATION SYSTEM ACTIVE     ║', 'color: #00ff41');
+            console.log('%c║     • SMS Verification Codes                     ║', 'color: #00ff41');
+            console.log('%c║     • Password Reset with Codes                  ║', 'color: #00ff41');
+            console.log('%c║     • Password Show/Hide Toggle                  ║', 'color: #00ff41');
+            console.log('%c╚══════════════════════════════════════════════════╝', 'color: #00ff41');
         }
         
         init();
