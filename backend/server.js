@@ -2,6 +2,10 @@ const express = require('express');
 const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const dotenv = require('dotenv');
+
+// Load environment variables
+dotenv.config();
 
 const app = express();
 
@@ -9,15 +13,34 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-memory database (for demo)
+// In-memory storage (for demo)
 let users = [];
+
+// ============ ROOT ROUTE ============
+app.get('/', (req, res) => {
+    res.json({
+        name: 'Shora Games API',
+        version: '1.0.0',
+        status: 'online',
+        message: 'Welcome to Shora Games Backend API',
+        endpoints: {
+            health: 'GET /api/health',
+            register: 'POST /api/auth/register',
+            login: 'POST /api/auth/login',
+            users: 'GET /api/users'
+        },
+        documentation: 'https://github.com/ntwari200/shora-games',
+        timestamp: new Date().toISOString()
+    });
+});
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
     res.json({ 
         status: 'ok', 
         message: 'Shora Games API is running!',
-        timestamp: new Date().toISOString()
+        timestamp: new Date().toISOString(),
+        environment: process.env.NODE_ENV || 'development'
     });
 });
 
@@ -57,10 +80,10 @@ app.post('/api/auth/register', async (req, res) => {
     
     users.push(newUser);
     
-    // Generate JWT token
+    // Generate JWT token using environment variable
     const token = jwt.sign(
         { id: newUser.id, phone: newUser.phone },
-        'shora_secret_key_2026',
+        process.env.JWT_SECRET || 'shora_secret_key_2026',
         { expiresIn: '7d' }
     );
     
@@ -106,10 +129,10 @@ app.post('/api/auth/login', async (req, res) => {
         });
     }
     
-    // Generate token
+    // Generate token using environment variable
     const token = jwt.sign(
         { id: user.id, phone: user.phone },
-        'shora_secret_key_2026',
+        process.env.JWT_SECRET || 'shora_secret_key_2026',
         { expiresIn: '7d' }
     );
     
@@ -132,11 +155,21 @@ app.get('/api/users', (req, res) => {
     res.json(usersList);
 });
 
+// 404 handler for undefined routes
+app.use((req, res) => {
+    res.status(404).json({ 
+        error: 'Route not found',
+        message: 'Please check the API documentation for available endpoints'
+    });
+});
+
 // Start server
-const PORT = 5000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`✅ Shora Games Backend is running!`);
     console.log(`📍 API URL: http://localhost:${PORT}`);
     console.log(`🧪 Test API: http://localhost:${PORT}/api/health`);
+    console.log(`🏠 Root: http://localhost:${PORT}/`);
+    console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
     console.log(`📋 Users registered: ${users.length}`);
 });
