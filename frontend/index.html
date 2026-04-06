@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Shora Games | Hacker Terminal UI</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap');
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Grotesk', 'Orbitron', sans-serif;
+            background: #0a0a0a;
+            color: #00ff41;
+            overflow-x: hidden;
+        }
+
+        /* Hacker Grid Background */
+        .hacker-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: 
+                repeating-linear-gradient(0deg, 
+                    transparent, 
+                    transparent 2px, 
+                    rgba(0, 255, 65, 0.03) 2px, 
+                    rgba(0, 255, 65, 0.03) 4px),
+                repeating-linear-gradient(90deg, 
+                    transparent, 
+                    transparent 2px, 
+                    rgba(0, 255, 65, 0.03) 2px, 
+                    rgba(0, 255, 65, 0.03) 4px);
+            z-index: 0;
+        }
+
+        /* Floating Binary Effect */
+        .binary-rain {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+            opacity: 0.1;
+        }
+
+        /* Main Container */
+        .container {
+            position: relative;
+            z-index: 1;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* Hacker Navbar */
+        .hacker-nav {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ff41;
+            border-radius: 12px;
+            padding: 15px 30px;
+            margin-bottom: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.1);
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 28px;
+            font-weight: 900;
+            background: linear-gradient(135deg, #00ff41, #00cc33);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
+        }
+
+        .logo i {
+            color: #00ff41;
+            margin-right: 8px;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 25px;
+            flex-wrap: wrap;
+        }
+
+        .nav-links a {
+            color: #00ff41;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 8px 16px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .nav-links a i {
+            margin-right: 8px;
+        }
+
+        .nav-links a:hover {
+            background: rgba(0, 255, 65, 0.1);
+            text-shadow: 0 0 5px #00ff41;
+            box-shadow: 0 0 10px rgba(0, 255, 65, 0.2);
+        }
+
+        /* Hero Section */
+        .hero {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 50px;
+        }
+
+        /* Hacker Card Style */
+        .hacker-card {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ff41;
+            border-radius: 16px;
+            padding: 35px;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hacker-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.05), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .hacker-card:hover::before {
+            left: 100%;
+        }
+
+        .hacker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
+        }
+
+        .badge {
+            display: inline-block;
+            background: rgba(0, 255, 65, 0.1);
+            border: 1px solid #00ff41;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            margin-bottom: 20px;
+            font-family: monospace;
+        }
+
+        .badge i {
+            margin-right: 5px;
+        }
+
+        h1 {
+            font-size: 48px;
+            font-weight: 800;
+            margin-bottom: 20px;
+            line-height: 1.2;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .highlight {
+            color: #00ff41;
+            text-shadow: 0 0 10px #00ff41;
+        }
+
+        .hero-text {
+            color: #aaa;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            font-size: 16px;
+        }
+
+        .stats {
+            display: flex;
+            gap: 30px;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+        }
+
+        .stat {
+            flex: 1;
+        }
+
+        .stat-number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #00ff41;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #888;
+            letter-spacing: 1px;
+        }
+
+        /* PlayStation Image Container */
+        .ps-container {
+            position: relative;
+            border-radius: 16px;
+            overflow: hidden;
+        }
+
+        .ps-image {
+            width: 100%;
+            border-radius: 16px;
+            border: 1px solid #00ff41;
+            transition: all 0.3s ease;
+        }
+
+        .ps-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3);
+        }
+
+        /* Skeleton Loader */
+        .skeleton-loader {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, #0a0a0a 25%, #1a1a1a 50%, #0a0a0a 75%);
+            background-size: 200% 100%;
+            animation: skeleton 1.5s infinite;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        @keyframes skeleton {
+            0% { background-position: 200% 0; }
+            100% { background-position: -200% 0; }
+        }
+
+        .skeleton-loader.hidden {
+            display: none;
+        }
+
+        /* Ticktack Badges */
+        .ticktacks {
+            position: absolute;
+            bottom: 20px;
+            left: 20px;
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .ticktack {
+            background: rgba(0, 0, 0, 0.9);
+            backdrop-filter: blur(5px);
+            border: 1px solid #00ff41;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 12px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.7; box-shadow: 0 0 0px #00ff41; }
+            50% { opacity: 1; box-shadow: 0 0 10px #00ff41; }
+        }
+
+        .ticktack i {
+            font-size: 14px;
+        }
+
+        /* Auth Section */
+        .auth-section {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ff41;
+            border-radius: 16px;
+            padding: 40px;
+            margin-top: 30px;
+        }
+
+        .auth-tabs {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+        }
+
+        .auth-tab {
+            background: none;
+            border: none;
+            color: #aaa;
+            font-size: 18px;
+            font-weight: 600;
+            padding: 12px 24px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .auth-tab.active {
+            color: #00ff41;
+        }
+
+        .auth-tab.active::after {
+            content: '';
+            position: absolute;
+            bottom: -1px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: #00ff41;
+            box-shadow: 0 0 10px #00ff41;
+        }
+
+        .auth-form {
+            display: none;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .auth-form.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #00ff41;
+            font-weight: 500;
+        }
+
+        .form-group label i {
+            margin-right: 8px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 14px 18px;
+            background: #0a0a0a;
+            border: 1px solid #333;
+            border-radius: 12px;
+            color: #00ff41;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Space Grotesk', sans-serif;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #00ff41;
+            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
+        }
+
+        .form-group input::placeholder {
+            color: #444;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 14px;
+            background: linear-gradient(135deg, #00cc33, #00ff41);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(0, 255, 65, 0.3);
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            margin-top: 10px;
+        }
+
+        .btn-outline:hover {
+            background: rgba(0, 255, 65, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* MTN Logo Component */
+        .mtn-component {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(0, 255, 65, 0.2);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .mtn-component:hover {
+            background: rgba(255, 204, 0, 0.1);
+            border-color: #ffcc00;
+        }
+
+        .mtn-logo {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: #ffcc00;
+            padding: 8px 20px;
+            border-radius: 8px;
+        }
+
+        .mtn-logo i {
+            font-size: 24px;
+            color: #ffcc00;
+            -webkit-text-stroke: 1px #000;
+        }
+
+        .mtn-logo span {
+            font-weight: bold;
+            color: #000;
+            font-size: 18px;
+        }
+
+        .mtn-text {
+            color: #ffcc00;
+            font-weight: bold;
+        }
+
+        /* Features Grid */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            margin-top: 50px;
+        }
+
+        .feature {
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 255, 65, 0.3);
+            border-radius: 16px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .feature:hover {
+            transform: translateY(-5px);
+            border-color: #00ff41;
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.15);
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 20px;
+        }
+
+        .feature h3 {
+            color: #00ff41;
+            margin-bottom: 10px;
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        .feature p {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        /* User Dashboard */
+        .user-dashboard {
+            display: none;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(10px);
+            border: 1px solid #00ff41;
+            border-radius: 16px;
+            padding: 30px;
+            margin-top: 30px;
+        }
+
+        .user-dashboard.active {
+            display: block;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .welcome-banner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(0, 255, 65, 0.3);
+            margin-bottom: 20px;
+        }
+
+        .logout-btn {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .logout-btn:hover {
+            background: rgba(255, 0, 0, 0.4);
+        }
+
+        /* Footer */
+        .footer {
+            margin-top: 60px;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid rgba(0, 255, 65, 0.2);
+            color: #666;
+        }
+
+        /* Toast Notification */
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #0a0a0a;
+            border: 1px solid #00ff41;
+            color: #00ff41;
+            padding: 15px 25px;
+            border-radius: 12px;
+            font-weight: 500;
+            z-index: 1000;
+            display: none;
+            animation: slideInRight 0.3s ease;
+            box-shadow: 0 0 20px rgba(0, 255, 65, 0.2);
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 968px) {
+            .hero {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 32px;
+            }
+            
+            .hacker-nav {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .auth-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="hacker-bg"></div>
+    <div class="binary-rain" id="binaryRain"></div>
+
+    <div class="container">
+        <!-- Hacker Navbar -->
+        <nav class="hacker-nav">
+            <div class="logo">
+                <i class="fas fa-terminal"></i> SHORA<span style="color:#00ff41;">_</span>GAMES
+            </div>
+            <div class="nav-links">
+                <a href="#"><i class="fas fa-home"></i> HOME</a>
+                <a href="#"><i class="fas fa-gamepad"></i> GAMES</a>
+                <a href="#"><i class="fas fa-trophy"></i> TOURNAMENTS</a>
+                <a href="#"><i class="fas fa-chart-line"></i> LEADERBOARD</a>
+                <a href="#"><i class="fas fa-code"></i> SHELL</a>
+            </div>
+        </nav>
+
+        <!-- Hero Section -->
+        <div class="hero">
+            <div class="hacker-card">
+                <div class="badge">
+                    <i class="fas fa-shield-alt"></i> SECURE_CONNECTION_ACTIVE
+                </div>
+                <h1>
+                    <span class="highlight">COMPETE</span> TO<br>
+                    BECOME A <span class="highlight">LEGEND</span>
+                </h1>
+                <p class="hero-text">
+                    Join the ultimate competitive gaming arena. Play skill-based games, 
+                    dominate leaderboards, and win real rewards. Powered by next-gen gaming technology.
+                </p>
+                <div class="stats">
+                    <div class="stat">
+                        <div class="stat-number">10K+</div>
+                        <div class="stat-label">ACTIVE PLAYERS</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">₿50K+</div>
+                        <div class="stat-label">PRIZE POOL</div>
+                    </div>
+                    <div class="stat">
+                        <div class="stat-number">24/7</div>
+                        <div class="stat-label">TOURNAMENTS</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ps-container">
+                <div class="skeleton-loader" id="skeletonLoader">
+                    <i class="fas fa-playstation" style="font-size: 48px;"></i>
+                    <div>LOADING_GAMING_EXPERIENCE</div>
+                    <div style="font-size: 12px;">████████░░ 75%</div>
+                </div>
+                <img id="psImage" class="ps-image" 
+                     src="https://images.unsplash.com/photo-1606144042614-b2417e99c4e3?w=600&h=400&fit=crop" 
+                     alt="Gaming Setup" style="display: none;">
+                <div class="ticktacks">
+                    <div class="ticktack"><i class="fas fa-bolt"></i> LIVE_TOURNAMENT</div>
+                    <div class="ticktack"><i class="fas fa-users"></i> 256_PLAYERS</div>
+                    <div class="ticktack"><i class="fas fa-money-bill-wave"></i> 5000_RWF_ENTRY</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Auth Section -->
+        <div class="auth-section" id="authSection">
+            <div class="auth-tabs">
+                <button class="auth-tab active" onclick="switchTab('login')">
+                    <i class="fas fa-sign-in-alt"></i> SIGN IN
+                </button>
+                <button class="auth-tab" onclick="switchTab('register')">
+                    <i class="fas fa-user-plus"></i> REGISTER
+                </button>
+            </div>
+
+            <!-- Login Form -->
+            <div id="loginForm" class="auth-form active">
+                <form id="loginFormElement" onsubmit="handleLogin(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
+                        <input type="tel" id="loginPhone" placeholder="+250788123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> PASSWORD</label>
+                        <input type="password" id="loginPassword" placeholder="Enter your password" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-arrow-right"></i> AUTHENTICATE
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()">
+                        <i class="fab fa-google"></i> CONTINUE WITH GOOGLE
+                    </button>
+                    
+                    <div class="mtn-component" onclick="showMtnInfo()">
+                        <div class="mtn-logo">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>MTN</span>
+                        </div>
+                        <div class="mtn-text">
+                            <i class="fas fa-shield-alt"></i> Secured by MTN Mobile Money
+                        </div>
+                        <i class="fas fa-check-circle" style="color: #00ff41;"></i>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Register Form -->
+            <div id="registerForm" class="auth-form">
+                <form id="registerFormElement" onsubmit="handleRegister(event)">
+                    <div class="form-group">
+                        <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
+                        <input type="tel" id="regPhone" placeholder="+250788123456" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-envelope"></i> EMAIL ADDRESS</label>
+                        <input type="email" id="regEmail" placeholder="player@shora.com" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-user"></i> USERNAME</label>
+                        <input type="text" id="regUsername" placeholder="GamerPro" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-lock"></i> PASSWORD</label>
+                        <input type="password" id="regPassword" placeholder="Create a password (min 6 chars)" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-check-circle"></i> CONFIRM PASSWORD</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Confirm your password" required>
+                    </div>
+                    <button type="submit" class="btn">
+                        <i class="fas fa-user-plus"></i> CREATE ACCOUNT
+                    </button>
+                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()">
+                        <i class="fab fa-google"></i> SIGN UP WITH GOOGLE
+                    </button>
+                    
+                    <div class="mtn-component" onclick="showMtnInfo()">
+                        <div class="mtn-logo">
+                            <i class="fas fa-mobile-alt"></i>
+                            <span>MTN</span>
+                        </div>
+                        <div class="mtn-text">
+                            <i class="fas fa-shield-alt"></i> Secure payments via MTN MoMo
+                        </div>
+                        <i class="fas fa-check-circle" style="color: #00ff41;"></i>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- User Dashboard (shown after login) -->
+        <div class="user-dashboard" id="userDashboard">
+            <div class="welcome-banner">
+                <div>
+                    <i class="fas fa-user-astronaut"></i>
+                    <span id="welcomeUsername">Welcome, Player!</span>
+                </div>
+                <button class="logout-btn" onclick="handleLogout()">
+                    <i class="fas fa-sign-out-alt"></i> LOGOUT
+                </button>
+            </div>
+            <div class="stats">
+                <div class="stat">
+                    <div class="stat-number" id="userPhone">-</div>
+                    <div class="stat-label">PHONE</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="userEmail">-</div>
+                    <div class="stat-label">EMAIL</div>
+                </div>
+                <div class="stat">
+                    <div class="stat-number" id="userId">-</div>
+                    <div class="stat-label">PLAYER ID</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Features -->
+        <div class="features">
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-dice-d6"></i></div>
+                <h3>SKILL-BASED GAMES</h3>
+                <p>Arcade, racing, puzzle & strategy games that reward true skill</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-trophy"></i></div>
+                <h3>REAL REWARDS</h3>
+                <p>Win from prize pools funded by entry fees</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-chart-line"></i></div>
+                <h3>REAL-TIME RANKINGS</h3>
+                <p>Live leaderboards updated instantly</p>
+            </div>
+            <div class="feature">
+                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>MTN MOBILE MONEY</h3>
+                <p>Seamless payments and instant withdrawals</p>
+            </div>
+        </div>
+
+        <div class="footer">
+            <p><i class="fas fa-terminal"></i> SHORA GAMES v2.0 | SECURE_ENCRYPTED_CONNECTION | FAIR_PLAY_ENFORCED</p>
+            <p style="margin-top: 10px; font-size: 12px;">
+                <i class="fas fa-shield-alt"></i> Protected by MTN Mobile Money Security | 
+                <i class="fas fa-gamepad"></i> Competitive Gaming Platform
+            </p>
+        </div>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // ============ API CONFIGURATION ============
+        const API_URL = 'http://localhost:5000/api';
+
+        // ============ UTILITY FUNCTIONS ============
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+            toast.style.borderColor = isError ? '#ff0000' : '#00ff41';
+            toast.style.color = isError ? '#ff0000' : '#00ff41';
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+
+        function showMtnInfo() {
+            showToast('MTN Mobile Money Integration Ready | Secure payments powered by MTN Rwanda');
+        }
+
+        // ============ AUTH FUNCTIONS ============
+        async function handleRegister(event) {
+            event.preventDefault();
+            
+            const phone = document.getElementById('regPhone').value.trim();
+            const email = document.getElementById('regEmail').value.trim();
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
+            
+            // Validation
+            if (!phone || !email || !username || !password || !confirmPassword) {
+                showToast('ERROR: All fields are required', true);
+                return;
+            }
+            
+            if (phone.length < 10) {
+                showToast('ERROR: Please enter a valid phone number', true);
+                return;
+            }
+            
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(email)) {
+                showToast('ERROR: Please enter a valid email address', true);
+                return;
+            }
+            
+            if (username.length < 3) {
+                showToast('ERROR: Username must be at least 3 characters', true);
+                return;
+            }
+            
+            if (password.length < 6) {
+                showToast('ERROR: Password must be at least 6 characters', true);
+                return;
+            }
+            
+            if (password !== confirmPassword) {
+                showToast('ERROR: Passwords do not match', true);
+                return;
+            }
+            
+            showToast('CREATING_ACCOUNT... Connecting to Shora backend');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/register`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, email, username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Registration failed');
+                }
+                
+                if (data.success) {
+                    showToast(`✓ ${data.message}`);
+                    document.getElementById('registerFormElement').reset();
+                    
+                    setTimeout(() => {
+                        switchTab('login');
+                        showToast('✓ Please sign in with your new account');
+                    }, 2000);
+                }
+            } catch (error) {
+                showToast(`ERROR: ${error.message}`, true);
+            }
+        }
+
+        async function handleLogin(event) {
+            event.preventDefault();
+            
+            const phone = document.getElementById('loginPhone').value.trim();
+            const password = document.getElementById('loginPassword').value;
+            
+            if (!phone || !password) {
+                showToast('ERROR: Please fill in all fields', true);
+                return;
+            }
+            
+            showToast('AUTHENTICATING... Connecting to Shora network');
+            
+            try {
+                const response = await fetch(`${API_URL}/auth/login`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ phone, password })
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(data.error || 'Login failed');
+                }
+                
+                if (data.success) {
+                    // Save user data to localStorage
+                    localStorage.setItem('shora_token', data.token);
+                    localStorage.setItem('shora_user', JSON.stringify(data.user));
+                    
+                    showToast(`✓ ${data.message}`);
+                    
+                    setTimeout(() => {
+                        showUserDashboard(data.user);
+                    }, 1000);
+                }
+            } catch (error) {
+                showToast(`ERROR: ${error.message}`, true);
+            }
+        }
+
+        function handleLogout() {
+            localStorage.removeItem('shora_token');
+            localStorage.removeItem('shora_user');
+            
+            document.getElementById('authSection').style.display = 'block';
+            document.getElementById('userDashboard').classList.remove('active');
+            
+            document.getElementById('loginFormElement').reset();
+            document.getElementById('registerFormElement').reset();
+            
+            showToast('✓ Logged out successfully');
+        }
+
+        function showUserDashboard(user) {
+            document.getElementById('authSection').style.display = 'none';
+            document.getElementById('userDashboard').classList.add('active');
+            
+            document.getElementById('welcomeUsername').innerHTML = `<i class="fas fa-user-astronaut"></i> Welcome, ${user.username}!`;
+            document.getElementById('userPhone').innerHTML = user.phone;
+            document.getElementById('userEmail').innerHTML = user.email;
+            document.getElementById('userId').innerHTML = '#' + user.id;
+        }
+
+        function checkLoggedInUser() {
+            const token = localStorage.getItem('shora_token');
+            const user = localStorage.getItem('shora_user');
+            
+            if (token && user) {
+                showUserDashboard(JSON.parse(user));
+            }
+        }
+
+        function handleGoogleSignIn() {
+            showToast('INITIALIZING_GOOGLE_AUTH... Coming soon!');
+        }
+
+        // ============ UI FUNCTIONS ============
+        function switchTab(tab) {
+            const loginForm = document.getElementById('loginForm');
+            const registerForm = document.getElementById('registerForm');
+            const tabs = document.querySelectorAll('.auth-tab');
+            
+            if (tab === 'login') {
+                loginForm.classList.add('active');
+                registerForm.classList.remove('active');
+                tabs[0].classList.add('active');
+                tabs[1].classList.remove('active');
+            } else {
+                loginForm.classList.remove('active');
+                registerForm.classList.add('active');
+                tabs[0].classList.remove('active');
+                tabs[1].classList.add('active');
+            }
+        }
+
+        // ============ INITIALIZATION ============
+        function init() {
+            // Binary rain effect
+            const rainDiv = document.getElementById('binaryRain');
+            const binary = ['0', '1'];
+            let binaryString = '';
+            for (let i = 0; i < 200; i++) {
+                binaryString += binary[Math.floor(Math.random() * 2)] + ' ';
+            }
+            rainDiv.innerHTML = binaryString;
+            rainDiv.style.fontFamily = 'monospace';
+            rainDiv.style.fontSize = '14px';
+            rainDiv.style.lineHeight = '1.5';
+            rainDiv.style.color = '#00ff41';
+            rainDiv.style.whiteSpace = 'pre-wrap';
+            rainDiv.style.wordBreak = 'break-all';
+            
+            // PlayStation Image Loader
+            const skeleton = document.getElementById('skeletonLoader');
+            const psImage = document.getElementById('psImage');
+            
+            setTimeout(() => {
+                if (skeleton) skeleton.classList.add('hidden');
+                if (psImage) psImage.style.display = 'block';
+            }, 2500);
+            
+            // Check if user is already logged in
+            checkLoggedInUser();
+            
+            // Console welcome
+            console.log('%c╔══════════════════════════════════════════════════════╗', 'color: #00ff41');
+            console.log('%c║     🔥 SHORA GAMES - BACKEND CONNECTED 🔥              ║', 'color: #00ff41');
+            console.log('%c║        API: http://localhost:5000/api                 ║', 'color: #00ff41');
+            console.log('%c║        Status: ONLINE ✅                               ║', 'color: #00ff41');
+            console.log('%c╚══════════════════════════════════════════════════════╝', 'color: #00ff41');
+        }
+        
+        // Start the app
+        init();
+    </script>
+</body>
+</html>
