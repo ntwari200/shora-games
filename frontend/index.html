@@ -6,7 +6,6 @@
     <title>Shora Games | Hacker Terminal UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        /* [KEEP ALL YOUR EXISTING CSS from previous version - it's the same] */
         @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
 
         * {
@@ -339,52 +338,6 @@
             box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
         }
 
-        /* Verification Code Input */
-        .verification-section {
-            display: none;
-            animation: fadeInUp 0.3s ease;
-        }
-        .verification-section.active {
-            display: block;
-        }
-        .code-inputs {
-            display: flex;
-            gap: 10px;
-            justify-content: center;
-            margin: 20px 0;
-        }
-        .code-input {
-            width: 50px;
-            height: 50px;
-            text-align: center;
-            font-size: 24px;
-            font-weight: bold;
-            background: #0a0a0a;
-            border: 1px solid #00ff41;
-            border-radius: 8px;
-            color: #00ff41;
-            font-family: 'Share Tech Mono', monospace;
-        }
-        .code-input:focus {
-            outline: none;
-            box-shadow: 0 0 10px #00ff41;
-        }
-        .resend-code {
-            text-align: center;
-            margin-top: 15px;
-        }
-        .resend-link {
-            color: #00ff41;
-            cursor: pointer;
-            text-decoration: underline;
-            font-size: 12px;
-        }
-        .timer {
-            color: #ffcc00;
-            font-size: 12px;
-            margin-left: 10px;
-        }
-
         .btn {
             width: 100%;
             padding: 14px;
@@ -576,8 +529,8 @@
             <div id="loginForm" class="auth-form active">
                 <form id="loginFormElement" onsubmit="handleLogin(event)">
                     <div class="form-group">
-                        <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
-                        <input type="tel" id="loginPhone" placeholder="+250788123456" required>
+                        <label><i class="fas fa-envelope"></i> EMAIL ADDRESS</label>
+                        <input type="email" id="loginEmail" placeholder="player@shora.com" required>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> PASSWORD</label>
@@ -587,7 +540,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> AUTHENTICATE</button>
-                    <button type="button" class="btn btn-link" onclick="showForgotPassword()"><i class="fas fa-key"></i> Forgot Password?</button>
+                    <button type="button" class="btn btn-link" onclick="handleForgotPassword()"><i class="fas fa-key"></i> Forgot Password?</button>
                     <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> CONTINUE WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
@@ -603,11 +556,7 @@
 
             <!-- REGISTER FORM -->
             <div id="registerForm" class="auth-form">
-                <form id="registerFormElement" onsubmit="handleSendVerification(event)">
-                    <div class="form-group">
-                        <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
-                        <input type="tel" id="regPhone" placeholder="+250788123456" required>
-                    </div>
+                <form id="registerFormElement" onsubmit="handleRegister(event)">
                     <div class="form-group">
                         <label><i class="fas fa-envelope"></i> EMAIL ADDRESS</label>
                         <input type="email" id="regEmail" placeholder="player@shora.com" required>
@@ -615,6 +564,10 @@
                     <div class="form-group">
                         <label><i class="fas fa-user"></i> USERNAME</label>
                         <input type="text" id="regUsername" placeholder="GamerPro" required>
+                    </div>
+                    <div class="form-group">
+                        <label><i class="fas fa-phone-alt"></i> PHONE NUMBER</label>
+                        <input type="tel" id="regPhone" placeholder="+250788123456" required>
                     </div>
                     <div class="form-group">
                         <label><i class="fas fa-lock"></i> PASSWORD</label>
@@ -630,7 +583,7 @@
                             <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPassword', this)"></i>
                         </div>
                     </div>
-                    <button type="submit" class="btn"><i class="fas fa-paper-plane"></i> SEND VERIFICATION CODE</button>
+                    <button type="submit" class="btn"><i class="fas fa-user-plus"></i> CREATE ACCOUNT</button>
                     <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> SIGN UP WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
@@ -642,89 +595,6 @@
                         <i class="fas fa-check-circle" style="color: #00ff41;"></i>
                     </div>
                 </form>
-            </div>
-
-            <!-- VERIFICATION SECTION -->
-            <div id="verificationSection" class="verification-section">
-                <div class="form-group">
-                    <label><i class="fas fa-shield-alt"></i> VERIFICATION CODE</label>
-                    <p style="font-size: 12px; color: #888; margin-bottom: 15px;">Enter the 6-digit code sent to your phone</p>
-                    <div class="code-inputs">
-                        <input type="text" maxlength="1" class="code-input" id="code1" onkeyup="moveToNext(this, 'code2')">
-                        <input type="text" maxlength="1" class="code-input" id="code2" onkeyup="moveToNext(this, 'code3')">
-                        <input type="text" maxlength="1" class="code-input" id="code3" onkeyup="moveToNext(this, 'code4')">
-                        <input type="text" maxlength="1" class="code-input" id="code4" onkeyup="moveToNext(this, 'code5')">
-                        <input type="text" maxlength="1" class="code-input" id="code5" onkeyup="moveToNext(this, 'code6')">
-                        <input type="text" maxlength="1" class="code-input" id="code6" onkeyup="verifyCodeOnComplete()">
-                    </div>
-                    <div class="resend-code">
-                        <span class="resend-link" onclick="resendVerificationCode()"><i class="fas fa-redo-alt"></i> Resend Code</span>
-                        <span class="timer" id="timer">60s</span>
-                    </div>
-                    <button type="button" class="btn" onclick="verifyAndCompleteRegistration()" style="margin-top: 20px;">
-                        <i class="fas fa-check-circle"></i> VERIFY & COMPLETE REGISTRATION
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="backToRegister()">
-                        <i class="fas fa-arrow-left"></i> BACK
-                    </button>
-                </div>
-            </div>
-
-            <!-- FORGOT PASSWORD SECTION -->
-            <div id="forgotPasswordSection" class="verification-section">
-                <div class="form-group">
-                    <label><i class="fas fa-key"></i> RESET PASSWORD</label>
-                    <input type="tel" id="resetPhone" placeholder="Enter your phone number" class="form-group input" style="width:100%; padding:14px; margin-bottom:20px;">
-                    <button type="button" class="btn" onclick="sendResetCode()">
-                        <i class="fas fa-paper-plane"></i> SEND RESET CODE
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="backToLogin()">
-                        <i class="fas fa-arrow-left"></i> BACK TO LOGIN
-                    </button>
-                </div>
-            </div>
-
-            <!-- RESET PASSWORD VERIFICATION -->
-            <div id="resetVerificationSection" class="verification-section">
-                <div class="form-group">
-                    <label><i class="fas fa-shield-alt"></i> RESET VERIFICATION CODE</label>
-                    <div class="code-inputs">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode1" onkeyup="moveToNextReset(this, 'resetCode2')">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode2" onkeyup="moveToNextReset(this, 'resetCode3')">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode3" onkeyup="moveToNextReset(this, 'resetCode4')">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode4" onkeyup="moveToNextReset(this, 'resetCode5')">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode5" onkeyup="moveToNextReset(this, 'resetCode6')">
-                        <input type="text" maxlength="1" class="code-input" id="resetCode6" onkeyup="verifyResetCodeOnComplete()">
-                    </div>
-                    <button type="button" class="btn" onclick="verifyResetCode()" style="margin-top: 20px;">
-                        <i class="fas fa-check-circle"></i> VERIFY CODE
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="backToForgotPassword()">
-                        <i class="fas fa-arrow-left"></i> BACK
-                    </button>
-                </div>
-            </div>
-
-            <!-- SET NEW PASSWORD SECTION -->
-            <div id="setNewPasswordSection" class="verification-section">
-                <div class="form-group">
-                    <label><i class="fas fa-lock"></i> NEW PASSWORD</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="newPassword" placeholder="Enter new password (min 6 chars)" style="width:100%; padding:14px;">
-                        <i class="fas fa-eye toggle-password" onclick="togglePassword('newPassword', this)"></i>
-                    </div>
-                    <label style="margin-top: 15px;"><i class="fas fa-check-circle"></i> CONFIRM NEW PASSWORD</label>
-                    <div class="password-wrapper">
-                        <input type="password" id="confirmNewPassword" placeholder="Confirm new password" style="width:100%; padding:14px;">
-                        <i class="fas fa-eye toggle-password" onclick="togglePassword('confirmNewPassword', this)"></i>
-                    </div>
-                    <button type="button" class="btn" onclick="resetPasswordComplete()" style="margin-top: 20px;">
-                        <i class="fas fa-save"></i> RESET PASSWORD
-                    </button>
-                    <button type="button" class="btn btn-outline" onclick="backToLogin()">
-                        <i class="fas fa-arrow-left"></i> BACK TO LOGIN
-                    </button>
-                </div>
             </div>
         </div>
 
@@ -755,25 +625,29 @@
 
     <div id="toast" class="toast"></div>
 
-    <script>
-        // ============ STORAGE ============
-        let pendingRegistration = null;
-        let verificationCode = null;
-        let resetPhoneNumber = null;
-        let resetVerificationCode = null;
-        let countdownInterval = null;
+    <script type="module">
+        // ============ FIREBASE CONFIGURATION (YOUR ACTUAL CONFIG) ============
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-        // ============ MATRIX RAIN ============
-        function createMatrixRain() {
-            const rainDiv = document.getElementById('matrixRain');
-            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
-            let matrixHTML = '';
-            for (let i = 0; i < 500; i++) {
-                matrixHTML += chars[Math.floor(Math.random() * chars.length)] + ' ';
-            }
-            rainDiv.innerHTML = matrixHTML;
-        }
-        createMatrixRain();
+        // Your Firebase config (copied from Firebase Console)
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            storageBucket: "shora-games.firebasestorage.app",
+            messagingSenderId: "1045658148606",
+            appId: "1:1045658148606:web:394ed053ca22778d5d4faf",
+            measurementId: "G-Y8QMXRHRMP"
+        };
+
+        // Initialize Firebase
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getFirestore(app);
+
+        console.log("🔥 Firebase initialized successfully!");
 
         // ============ GAME GALLERY ============
         const gameWallpapers = [
@@ -786,33 +660,52 @@
         ];
         
         let currentIndex = 0;
+        
         function updateGallery() {
             const wallpaper = gameWallpapers[currentIndex];
             const imgElement = document.getElementById('gameWallpaper');
             const titleElement = document.getElementById('gameTitle');
-            imgElement.style.opacity = '0';
-            setTimeout(() => {
-                imgElement.src = wallpaper.url;
-                titleElement.innerHTML = `${wallpaper.title} <span style="color:#888; font-size:10px;">| ${wallpaper.game}</span>`;
-                imgElement.style.opacity = '1';
-            }, 200);
-            updateIndicators();
+            if (imgElement && titleElement) {
+                imgElement.style.opacity = '0';
+                setTimeout(() => {
+                    imgElement.src = wallpaper.url;
+                    titleElement.innerHTML = `${wallpaper.title} <span style="color:#888; font-size:10px;">| ${wallpaper.game}</span>`;
+                    imgElement.style.opacity = '1';
+                }, 200);
+                updateIndicators();
+            }
         }
+        
         function updateIndicators() {
             const container = document.getElementById('gameIndicators');
-            container.innerHTML = '';
-            gameWallpapers.forEach((_, index) => {
-                const indicator = document.createElement('div');
-                indicator.className = `indicator ${index === currentIndex ? 'active' : ''}`;
-                indicator.onclick = () => { currentIndex = index; updateGallery(); };
-                container.appendChild(indicator);
-            });
+            if (container) {
+                container.innerHTML = '';
+                gameWallpapers.forEach((_, index) => {
+                    const indicator = document.createElement('div');
+                    indicator.className = `indicator ${index === currentIndex ? 'active' : ''}`;
+                    indicator.onclick = () => { currentIndex = index; updateGallery(); };
+                    container.appendChild(indicator);
+                });
+            }
         }
+        
         function nextImage() { currentIndex = (currentIndex + 1) % gameWallpapers.length; updateGallery(); }
         function prevImage() { currentIndex = (currentIndex - 1 + gameWallpapers.length) % gameWallpapers.length; updateGallery(); }
 
+        // ============ TOAST NOTIFICATION ============
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            if (toast) {
+                toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
+                toast.style.borderColor = isError ? '#ff0000' : '#00ff41';
+                toast.style.color = isError ? '#ff0000' : '#00ff41';
+                toast.style.display = 'block';
+                setTimeout(() => { toast.style.display = 'none'; }, 3000);
+            }
+        }
+
         // ============ PASSWORD TOGGLE ============
-        function togglePassword(inputId, iconElement) {
+        window.togglePassword = function(inputId, iconElement) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
                 input.type = 'text';
@@ -823,357 +716,181 @@
                 iconElement.classList.remove('fa-eye-slash');
                 iconElement.classList.add('fa-eye');
             }
-        }
+        };
 
-        // ============ VERIFICATION CODE HELPERS ============
-        function moveToNext(current, nextId) {
-            if (current.value.length === 1) {
-                document.getElementById(nextId).focus();
-            }
-        }
-
-        function moveToNextReset(current, nextId) {
-            if (current.value.length === 1) {
-                document.getElementById(nextId).focus();
-            }
-        }
-
-        function getVerificationCode() {
-            let code = '';
-            for (let i = 1; i <= 6; i++) {
-                code += document.getElementById(`code${i}`).value;
-            }
-            return code;
-        }
-
-        function getResetVerificationCode() {
-            let code = '';
-            for (let i = 1; i <= 6; i++) {
-                code += document.getElementById(`resetCode${i}`).value;
-            }
-            return code;
-        }
-
-        function verifyCodeOnComplete() {
-            const code = getVerificationCode();
-            if (code.length === 6) {
-                verifyAndCompleteRegistration();
-            }
-        }
-
-        function verifyResetCodeOnComplete() {
-            const code = getResetVerificationCode();
-            if (code.length === 6) {
-                verifyResetCode();
-            }
-        }
-
-        function startTimer(seconds, elementId, onComplete) {
-            let timeLeft = seconds;
-            const timerElement = document.getElementById(elementId);
-            if (countdownInterval) clearInterval(countdownInterval);
-            countdownInterval = setInterval(() => {
-                if (timeLeft <= 0) {
-                    clearInterval(countdownInterval);
-                    if (timerElement) timerElement.innerHTML = 'Ready';
-                    if (onComplete) onComplete();
-                } else {
-                    if (timerElement) timerElement.innerHTML = `${timeLeft}s`;
-                    timeLeft--;
-                }
-            }, 1000);
-        }
-
-        // ============ REGISTRATION WITH VERIFICATION ============
-        function generateVerificationCode() {
-            return Math.floor(100000 + Math.random() * 900000).toString();
-        }
-
-        function handleSendVerification(event) {
+        // ============ REGISTRATION ============
+        window.handleRegister = async function(event) {
             event.preventDefault();
             
-            const phone = document.getElementById('regPhone').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const username = document.getElementById('regUsername').value.trim();
+            const email = document.getElementById('regEmail').value;
             const password = document.getElementById('regPassword').value;
+            const username = document.getElementById('regUsername').value;
+            const phone = document.getElementById('regPhone').value;
             const confirmPassword = document.getElementById('regConfirmPassword').value;
             
-            if (!phone || !email || !username || !password || !confirmPassword) {
+            if (!email || !password || !username || !phone || !confirmPassword) {
                 showToast('ERROR: All fields are required', true);
                 return;
             }
+            
             if (password !== confirmPassword) {
                 showToast('ERROR: Passwords do not match', true);
                 return;
             }
+            
             if (password.length < 6) {
                 showToast('ERROR: Password must be at least 6 characters', true);
                 return;
             }
             
-            // Store registration data
-            pendingRegistration = { phone, email, username, password };
+            showToast('CREATING ACCOUNT...');
             
-            // Generate and send verification code
-            verificationCode = generateVerificationCode();
-            
-            // Simulate sending SMS (in production, this would call your backend)
-            console.log(`📱 Verification code for ${phone}: ${verificationCode}`);
-            showToast(`✓ Verification code sent to ${phone}`, false);
-            
-            // Show verification section
-            document.getElementById('registerForm').classList.remove('active');
-            document.getElementById('verificationSection').classList.add('active');
-            
-            // Start timer for resend
-            startTimer(60, 'timer', () => {});
-            
-            // Clear code inputs
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`code${i}`).value = '';
-            }
-            document.getElementById('code1').focus();
-        }
-
-        function verifyAndCompleteRegistration() {
-            const enteredCode = getVerificationCode();
-            
-            if (enteredCode.length !== 6) {
-                showToast('ERROR: Please enter the 6-digit verification code', true);
-                return;
-            }
-            
-            if (enteredCode !== verificationCode) {
-                showToast('ERROR: Invalid verification code', true);
-                return;
-            }
-            
-            // Complete registration
-            showToast('CREATING_ACCOUNT... Verifying credentials');
-            
-            setTimeout(async () => {
-                try {
-                    const response = await fetch(`${API_URL}/auth/register`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(pendingRegistration)
-                    });
-                    const data = await response.json();
-                    
-                    if (!response.ok) throw new Error(data.error || 'Registration failed');
-                    
-                    if (data.success) {
-                        showToast(`✓ ${data.message}`);
-                        pendingRegistration = null;
-                        verificationCode = null;
-                        
-                        // Reset forms
-                        document.getElementById('registerFormElement').reset();
-                        document.getElementById('verificationSection').classList.remove('active');
-                        document.getElementById('registerForm').classList.add('active');
-                        
-                        setTimeout(() => {
-                            switchTab('login');
-                            showToast('✓ Please sign in with your new account');
-                        }, 2000);
-                    }
-                } catch (error) {
-                    showToast(`ERROR: ${error.message}`, true);
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                await setDoc(doc(db, "users", user.uid), {
+                    username: username,
+                    phone: phone,
+                    email: email,
+                    createdAt: new Date().toISOString(),
+                    totalWinnings: 0,
+                    gamesPlayed: 0
+                });
+                
+                await sendEmailVerification(user);
+                await signOut(auth);
+                
+                showToast('✓ Account created! Please verify your email before logging in.');
+                document.getElementById('registerFormElement').reset();
+                
+                setTimeout(() => {
+                    window.switchTab('login');
+                }, 2000);
+                
+            } catch (error) {
+                console.error(error);
+                let errorMessage = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    errorMessage = 'Email already registered. Please login instead.';
                 }
-            }, 1500);
-        }
-
-        function resendVerificationCode() {
-            verificationCode = generateVerificationCode();
-            console.log(`📱 New verification code: ${verificationCode}`);
-            showToast(`✓ New verification code sent to ${pendingRegistration?.phone}`, false);
-            startTimer(60, 'timer', () => {});
-        }
-
-        function backToRegister() {
-            document.getElementById('verificationSection').classList.remove('active');
-            document.getElementById('registerForm').classList.add('active');
-            if (countdownInterval) clearInterval(countdownInterval);
-        }
-
-        // ============ FORGOT PASSWORD / RESET PASSWORD ============
-        function showForgotPassword() {
-            document.getElementById('loginForm').classList.remove('active');
-            document.getElementById('forgotPasswordSection').classList.add('active');
-        }
-
-        function backToLogin() {
-            document.getElementById('forgotPasswordSection').classList.remove('active');
-            document.getElementById('resetVerificationSection').classList.remove('active');
-            document.getElementById('setNewPasswordSection').classList.remove('active');
-            document.getElementById('loginForm').classList.add('active');
-            if (countdownInterval) clearInterval(countdownInterval);
-        }
-
-        function backToForgotPassword() {
-            document.getElementById('resetVerificationSection').classList.remove('active');
-            document.getElementById('forgotPasswordSection').classList.add('active');
-        }
-
-        function sendResetCode() {
-            const phone = document.getElementById('resetPhone').value.trim();
-            if (!phone) {
-                showToast('ERROR: Please enter your phone number', true);
-                return;
+                showToast(`ERROR: ${errorMessage}`, true);
             }
-            
-            resetPhoneNumber = phone;
-            resetVerificationCode = generateVerificationCode();
-            
-            console.log(`📱 Reset code for ${phone}: ${resetVerificationCode}`);
-            showToast(`✓ Reset code sent to ${phone}`, false);
-            
-            document.getElementById('forgotPasswordSection').classList.remove('active');
-            document.getElementById('resetVerificationSection').classList.add('active');
-            
-            // Clear code inputs
-            for (let i = 1; i <= 6; i++) {
-                document.getElementById(`resetCode${i}`).value = '';
-            }
-            document.getElementById('resetCode1').focus();
-        }
+        };
 
-        function verifyResetCode() {
-            const enteredCode = getResetVerificationCode();
-            
-            if (enteredCode.length !== 6) {
-                showToast('ERROR: Please enter the 6-digit verification code', true);
-                return;
-            }
-            
-            if (enteredCode !== resetVerificationCode) {
-                showToast('ERROR: Invalid verification code', true);
-                return;
-            }
-            
-            showToast('✓ Code verified! Please set your new password', false);
-            
-            document.getElementById('resetVerificationSection').classList.remove('active');
-            document.getElementById('setNewPasswordSection').classList.add('active');
-        }
-
-        async function resetPasswordComplete() {
-            const newPassword = document.getElementById('newPassword').value;
-            const confirmPassword = document.getElementById('confirmNewPassword').value;
-            
-            if (!newPassword || !confirmPassword) {
-                showToast('ERROR: Please enter new password', true);
-                return;
-            }
-            
-            if (newPassword.length < 6) {
-                showToast('ERROR: Password must be at least 6 characters', true);
-                return;
-            }
-            
-            if (newPassword !== confirmPassword) {
-                showToast('ERROR: Passwords do not match', true);
-                return;
-            }
-            
-            showToast('✓ Password reset successful! Please login with your new password', false);
-            
-            // Reset all sections
-            document.getElementById('setNewPasswordSection').classList.remove('active');
-            document.getElementById('loginForm').classList.add('active');
-            
-            // Clear fields
-            document.getElementById('resetPhone').value = '';
-            document.getElementById('newPassword').value = '';
-            document.getElementById('confirmNewPassword').value = '';
-            resetPhoneNumber = null;
-            resetVerificationCode = null;
-        }
-
-        // ============ API & AUTH ============
-        const API_URL = 'https://shora-games.onrender.com/api';
-
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.innerHTML = `<i class="fas ${isError ? 'fa-exclamation-triangle' : 'fa-check-circle'}"></i> ${message}`;
-            toast.style.borderColor = isError ? '#ff0000' : '#00ff41';
-            toast.style.color = isError ? '#ff0000' : '#00ff41';
-            toast.style.display = 'block';
-            setTimeout(() => { toast.style.display = 'none'; }, 3000);
-        }
-
-        function showMtnInfo() {
-            showToast('MTN Mobile Money Integration Ready | Secure payments powered by MTN Rwanda');
-        }
-
-        async function handleLogin(event) {
+        // ============ LOGIN ============
+        window.handleLogin = async function(event) {
             event.preventDefault();
-            const phone = document.getElementById('loginPhone').value.trim();
+            
+            const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             
-            if (!phone || !password) {
-                showToast('ERROR: Please fill in all fields', true);
+            if (!email || !password) {
+                showToast('ERROR: Please enter email and password', true);
                 return;
             }
             
             showToast('AUTHENTICATING...');
             
             try {
-                const response = await fetch(`${API_URL}/auth/login`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ phone, password })
-                });
-                const data = await response.json();
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
                 
-                if (!response.ok) throw new Error(data.error || 'Login failed');
-                
-                if (data.success) {
-                    localStorage.setItem('shora_token', data.token);
-                    localStorage.setItem('shora_user', JSON.stringify(data.user));
-                    showToast(`✓ ${data.message}`);
-                    setTimeout(() => { showUserDashboard(data.user); }, 1000);
+                if (!user.emailVerified) {
+                    showToast('⚠️ Please verify your email first. Check your inbox!', true);
+                    await signOut(auth);
+                    return;
                 }
+                
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                
+                if (userDoc.exists()) {
+                    const userData = userDoc.data();
+                    localStorage.setItem('shora_user', JSON.stringify(userData));
+                    showToast(`✓ Welcome back, ${userData.username}!`);
+                    showUserDashboard(userData);
+                } else {
+                    showToast('✓ Login successful!', false);
+                    showUserDashboard({ username: email.split('@')[0], email: email, phone: 'Not provided' });
+                }
+                
+                document.getElementById('loginFormElement').reset();
+                
+            } catch (error) {
+                console.error(error);
+                let errorMessage = error.message;
+                if (error.code === 'auth/user-not-found') {
+                    errorMessage = 'No account found with this email. Please register first.';
+                } else if (error.code === 'auth/wrong-password') {
+                    errorMessage = 'Incorrect password. Please try again.';
+                }
+                showToast(`ERROR: ${errorMessage}`, true);
+            }
+        };
+
+        // ============ FORGOT PASSWORD ============
+        window.handleForgotPassword = async function() {
+            const email = prompt('Enter your email address to reset your password:');
+            if (!email) return;
+            
+            showToast('Sending reset email...');
+            
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('✓ Password reset email sent! Check your inbox.');
             } catch (error) {
                 showToast(`ERROR: ${error.message}`, true);
             }
-        }
+        };
 
-        function handleLogout() {
-            localStorage.removeItem('shora_token');
-            localStorage.removeItem('shora_user');
-            document.getElementById('authSection').style.display = 'block';
-            document.getElementById('userDashboard').classList.remove('active');
-            showToast('✓ Logged out successfully');
-        }
+        // ============ LOGOUT ============
+        window.handleLogout = async function() {
+            try {
+                await signOut(auth);
+                localStorage.removeItem('shora_user');
+                document.getElementById('authSection').style.display = 'block';
+                document.getElementById('userDashboard').classList.remove('active');
+                showToast('✓ Logged out successfully');
+            } catch (error) {
+                showToast(`ERROR: ${error.message}`, true);
+            }
+        };
 
+        // ============ USER DASHBOARD ============
         function showUserDashboard(user) {
             document.getElementById('authSection').style.display = 'none';
             document.getElementById('userDashboard').classList.add('active');
             document.getElementById('welcomeUsername').innerHTML = `<i class="fas fa-user-astronaut"></i> Welcome, ${user.username}!`;
-            document.getElementById('userPhone').innerHTML = user.phone;
+            document.getElementById('userPhone').innerHTML = user.phone || 'Not set';
             document.getElementById('userEmail').innerHTML = user.email;
-            document.getElementById('userId').innerHTML = '#' + user.id;
+            document.getElementById('userId').innerHTML = '✓';
         }
 
-        function checkLoggedInUser() {
-            const token = localStorage.getItem('shora_token');
-            const user = localStorage.getItem('shora_user');
-            if (token && user) showUserDashboard(JSON.parse(user));
-        }
+        // ============ CHECK LOGGED IN USER ============
+        onAuthStateChanged(auth, async (user) => {
+            if (user && user.emailVerified) {
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                if (userDoc.exists()) {
+                    showUserDashboard(userDoc.data());
+                }
+            }
+        });
 
-        function handleGoogleSignIn() { showToast('INITIALIZING_GOOGLE_AUTH... Coming soon!'); }
+        // ============ GOOGLE SIGN IN (Coming Soon) ============
+        window.handleGoogleSignIn = function() {
+            showToast('Google Sign-In coming soon with Firebase!');
+        };
 
-        function switchTab(tab) {
+        // ============ MTN INFO ============
+        window.showMtnInfo = function() {
+            showToast('MTN Mobile Money Integration | Coming soon!');
+        };
+
+        // ============ TAB SWITCHING ============
+        window.switchTab = function(tab) {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             const tabs = document.querySelectorAll('.auth-tab');
-            
-            // Hide all verification sections
-            document.getElementById('verificationSection').classList.remove('active');
-            document.getElementById('forgotPasswordSection').classList.remove('active');
-            document.getElementById('resetVerificationSection').classList.remove('active');
-            document.getElementById('setNewPasswordSection').classList.remove('active');
             
             if (tab === 'login') {
                 loginForm.classList.add('active');
@@ -1186,35 +903,55 @@
                 tabs[0].classList.remove('active');
                 tabs[1].classList.add('active');
             }
-        }
+        };
 
         // ============ INITIALIZATION ============
         function init() {
+            // Matrix rain effect
+            const rainDiv = document.getElementById('matrixRain');
+            if (rainDiv) {
+                const chars = '01アイウエオカキクケコ';
+                let matrixHTML = '';
+                for (let i = 0; i < 300; i++) {
+                    matrixHTML += chars[Math.floor(Math.random() * chars.length)] + ' ';
+                }
+                rainDiv.innerHTML = matrixHTML;
+            }
+            
+            // Game gallery
             const skeleton = document.getElementById('skeletonLoader');
             const gameImage = document.getElementById('gameWallpaper');
             
-            setTimeout(() => {
-                if (skeleton) skeleton.classList.add('hidden');
-                if (gameImage) {
+            if (skeleton && gameImage) {
+                setTimeout(() => {
+                    skeleton.classList.add('hidden');
                     gameImage.classList.add('loaded');
                     updateGallery();
-                }
-            }, 2000);
+                }, 2000);
+            }
             
-            document.getElementById('prevBtn').addEventListener('click', prevImage);
-            document.getElementById('nextBtn').addEventListener('click', nextImage);
+            // Gallery controls
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            if (prevBtn) prevBtn.addEventListener('click', prevImage);
+            if (nextBtn) nextBtn.addEventListener('click', nextImage);
+            
+            // Auto-rotate gallery
             setInterval(() => { nextImage(); }, 5000);
-            checkLoggedInUser();
             
-            console.log('%c╔══════════════════════════════════════════════════╗', 'color: #00ff41');
-            console.log('%c║     SHORA GAMES - VERIFICATION SYSTEM ACTIVE     ║', 'color: #00ff41');
-            console.log('%c║     • SMS Verification Codes                     ║', 'color: #00ff41');
-            console.log('%c║     • Password Reset with Codes                  ║', 'color: #00ff41');
-            console.log('%c║     • Password Show/Hide Toggle                  ║', 'color: #00ff41');
-            console.log('%c╚══════════════════════════════════════════════════╝', 'color: #00ff41');
+            console.log('%c╔════════════════════════════════════════╗', 'color: #00ff41');
+            console.log('%c║   🔥 SHORA GAMES WITH FIREBASE 🔥     ║', 'color: #00ff41');
+            console.log('%c║   Authentication: ACTIVE ✅            ║', 'color: #00ff41');
+            console.log('%c║   Database: Firestore Connected       ║', 'color: #00ff41');
+            console.log('%c╚════════════════════════════════════════╝', 'color: #00ff41');
         }
         
-        init();
+        // Start the app
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', init);
+        } else {
+            init();
+        }
     </script>
 </body>
 </html>
