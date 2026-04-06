@@ -541,7 +541,7 @@
                     </div>
                     <button type="submit" class="btn"><i class="fas fa-arrow-right"></i> AUTHENTICATE</button>
                     <button type="button" class="btn btn-link" onclick="handleForgotPassword()"><i class="fas fa-key"></i> Forgot Password?</button>
-                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> CONTINUE WITH GOOGLE</button>
+                    <button type="button" class="btn btn-outline" id="googleSignInBtn"><i class="fab fa-google"></i> CONTINUE WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
                         <div class="mtn-logo-box">
@@ -584,7 +584,7 @@
                         </div>
                     </div>
                     <button type="submit" class="btn"><i class="fas fa-user-plus"></i> CREATE ACCOUNT</button>
-                    <button type="button" class="btn btn-outline" onclick="handleGoogleSignIn()"><i class="fab fa-google"></i> SIGN UP WITH GOOGLE</button>
+                    <button type="button" class="btn btn-outline" id="googleSignUpBtn"><i class="fab fa-google"></i> SIGN UP WITH GOOGLE</button>
                     
                     <div class="mtn-component" onclick="showMtnInfo()">
                         <div class="mtn-logo-box">
@@ -626,12 +626,12 @@
     <div id="toast" class="toast"></div>
 
     <script type="module">
-        // ============ FIREBASE CONFIGURATION (YOUR ACTUAL CONFIG) ============
+        // ============ FIREBASE CONFIGURATION ============
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, sendPasswordResetEmail, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, sendPasswordResetEmail, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
 
-        // Your Firebase config (copied from Firebase Console)
+        // Your Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -646,8 +646,9 @@
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
+        const googleProvider = new GoogleAuthProvider();
 
-        console.log("🔥 Firebase initialized successfully!");
+        console.log("🔥 Firebase initialized with Google Sign-In!");
 
         // ============ GAME GALLERY ============
         const gameWallpapers = [
@@ -718,6 +719,63 @@
             }
         };
 
+        // ============ GOOGLE SIGN IN ============
+        async function handleGoogleSignIn() {
+            showToast('Connecting to Google...');
+            
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                // Check if user exists in Firestore
+                const userDoc = await getDoc(doc(db, "users", user.uid));
+                
+                if (!userDoc.exists()) {
+                    // New user - save their info
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    const phoneNumber = user.phoneNumber || 'Not provided';
+                    
+                    await setDoc(doc(db, "users", user.uid), {
+                        username: displayName,
+                        email: user.email,
+                        phone: phoneNumber,
+                        photoURL: user.photoURL || '',
+                        createdAt: new Date().toISOString(),
+                        totalWinnings: 0,
+                        gamesPlayed: 0,
+                        authMethod: 'google'
+                    });
+                    
+                    showToast(`✓ Welcome ${displayName}! Account created with Google.`);
+                } else {
+                    const userData = userDoc.data();
+                    showToast(`✓ Welcome back, ${userData.username}!`);
+                }
+                
+                // Get user data and show dashboard
+                const finalUserDoc = await getDoc(doc(db, "users", user.uid));
+                if (finalUserDoc.exists()) {
+                    showUserDashboard(finalUserDoc.data());
+                } else {
+                    showUserDashboard({
+                        username: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        phone: 'Google User'
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Google Sign-In Error:', error);
+                if (error.code === 'auth/popup-blocked') {
+                    showToast('ERROR: Popup blocked. Please allow popups for this site.', true);
+                } else if (error.code === 'auth/cancelled-popup-request') {
+                    showToast('Sign-in cancelled.', true);
+                } else {
+                    showToast(`ERROR: ${error.message}`, true);
+                }
+            }
+        }
+
         // ============ REGISTRATION ============
         window.handleRegister = async function(event) {
             event.preventDefault();
@@ -755,7 +813,8 @@
                     email: email,
                     createdAt: new Date().toISOString(),
                     totalWinnings: 0,
-                    gamesPlayed: 0
+                    gamesPlayed: 0,
+                    authMethod: 'email'
                 });
                 
                 await sendEmailVerification(user);
@@ -772,7 +831,7 @@
                 console.error(error);
                 let errorMessage = error.message;
                 if (error.code === 'auth/email-already-in-use') {
-                    errorMessage = 'Email already registered. Please login instead.';
+                    errorMessage = 'Email already registered. Try logging in or use Google Sign-In.';
                 }
                 showToast(`ERROR: ${errorMessage}`, true);
             }
@@ -820,7 +879,7 @@
                 console.error(error);
                 let errorMessage = error.message;
                 if (error.code === 'auth/user-not-found') {
-                    errorMessage = 'No account found with this email. Please register first.';
+                    errorMessage = 'No account found. Please register or use Google Sign-In.';
                 } else if (error.code === 'auth/wrong-password') {
                     errorMessage = 'Incorrect password. Please try again.';
                 }
@@ -872,14 +931,17 @@
                 const userDoc = await getDoc(doc(db, "users", user.uid));
                 if (userDoc.exists()) {
                     showUserDashboard(userDoc.data());
+                } else if (user) {
+                    // User exists in Auth but not in Firestore (could be Google user)
+                    const userData = {
+                        username: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        phone: user.phoneNumber || 'Google User'
+                    };
+                    showUserDashboard(userData);
                 }
             }
         });
-
-        // ============ GOOGLE SIGN IN (Coming Soon) ============
-        window.handleGoogleSignIn = function() {
-            showToast('Google Sign-In coming soon with Firebase!');
-        };
 
         // ============ MTN INFO ============
         window.showMtnInfo = function() {
@@ -939,10 +1001,22 @@
             // Auto-rotate gallery
             setInterval(() => { nextImage(); }, 5000);
             
+            // Google Sign-In buttons
+            const googleSignInBtn = document.getElementById('googleSignInBtn');
+            const googleSignUpBtn = document.getElementById('googleSignUpBtn');
+            
+            if (googleSignInBtn) {
+                googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+            }
+            if (googleSignUpBtn) {
+                googleSignUpBtn.addEventListener('click', handleGoogleSignIn);
+            }
+            
             console.log('%c╔════════════════════════════════════════╗', 'color: #00ff41');
             console.log('%c║   🔥 SHORA GAMES WITH FIREBASE 🔥     ║', 'color: #00ff41');
-            console.log('%c║   Authentication: ACTIVE ✅            ║', 'color: #00ff41');
-            console.log('%c║   Database: Firestore Connected       ║', 'color: #00ff41');
+            console.log('%c║   ✅ Email/Password Authentication    ║', 'color: #00ff41');
+            console.log('%c║   ✅ Google Sign-In ACTIVE            ║', 'color: #00ff41');
+            console.log('%c║   ✅ Firestore Database Connected     ║', 'color: #00ff41');
             console.log('%c╚════════════════════════════════════════╝', 'color: #00ff41');
         }
         
