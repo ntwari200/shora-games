@@ -1,0 +1,652 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
+    <title>Shora Games · Sign In</title>
+    
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Custom Tailwind Configuration -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#3b82f6',
+                        secondary: '#0b0f17',
+                        dark: '#0a1424',
+                    },
+                    fontFamily: {
+                        'sans': ['Inter', 'sans-serif'],
+                        'space': ['Space Grotesk', 'sans-serif'],
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                    },
+                },
+            },
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    
+    <style>
+        body {
+            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
+        }
+        
+        .glass {
+            background: rgba(5, 12, 24, 0.75);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .glass-card {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .glass-card:hover {
+            border-color: #3b82f6;
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(59, 130, 246, 0.15);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #2a7fff;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(145deg, #003366, #001f4d);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn-google {
+            background: rgba(5, 12, 24, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            transition: all 0.3s ease;
+        }
+        
+        .btn-google:hover {
+            background: rgba(59, 130, 246, 0.15);
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease;
+        }
+        
+        .scroll-reveal.revealed {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: #0a1424;
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: #3b82f6;
+            border-radius: 4px;
+        }
+        
+        .particle-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 50%;
+            animation: float 8s infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) translateX(0px); }
+            50% { transform: translateY(-20px) translateX(10px); }
+        }
+        
+        .input-field {
+            background: rgba(10, 25, 45, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
+        }
+        
+        .input-field:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 15px rgba(59, 130, 246, 0.2);
+        }
+        
+        .password-wrapper {
+            position: relative;
+        }
+        
+        .toggle-password {
+            position: absolute;
+            right: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #6b7280;
+            transition: color 0.3s ease;
+        }
+        
+        .toggle-password:hover {
+            color: #3b82f6;
+        }
+        
+        .toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 12px 20px;
+            color: white;
+            z-index: 1000;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+            animation: slideIn 0.3s ease;
+        }
+        
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        .active-tab {
+            background: rgba(59, 130, 246, 0.15);
+            border-bottom: 3px solid #3b82f6;
+        }
+        
+        .loading-spinner {
+            display: inline-block;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.8s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Particle Background -->
+    <div class="particle-bg">
+        <div class="particle w-64 h-64 top-10 left-10" style="animation-delay: 0s;"></div>
+        <div class="particle w-96 h-96 bottom-20 right-10" style="animation-delay: 2s;"></div>
+        <div class="particle w-48 h-48 top-1/2 left-1/3" style="animation-delay: 4s;"></div>
+        <div class="particle w-80 h-80 bottom-40 left-20" style="animation-delay: 1s;"></div>
+    </div>
+
+    <!-- Main Container -->
+    <div class="min-h-screen flex flex-col lg:flex-row">
+        
+        <!-- LEFT SIDEBAR -->
+        <div class="w-full lg:w-96 glass border-r border-primary/20 p-6 lg:p-8">
+            <div class="mb-8 text-center lg:text-left">
+                <div class="flex items-center justify-center lg:justify-start gap-3 mb-3">
+                    <i class="fas fa-gamepad text-4xl text-primary"></i>
+                    <span class="font-space text-3xl font-bold gradient-text">Shora Games</span>
+                </div>
+                <div class="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-full border border-primary/30">
+                    <i class="fas fa-trophy text-xs text-primary"></i>
+                    <span class="text-xs text-primary/80">competitive browser-based gaming</span>
+                </div>
+            </div>
+            
+            <!-- Navigation Tabs -->
+            <div class="space-y-2 mb-8">
+                <div id="loginNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group active-tab">
+                    <i class="fas fa-sign-in-alt w-6 text-primary"></i>
+                    <span class="font-medium text-white">Sign In</span>
+                </div>
+                <div id="registerNav" class="flex items-center gap-4 px-4 py-3 rounded-xl cursor-pointer transition-all hover:bg-primary/10 group">
+                    <i class="fas fa-user-plus w-6 text-primary"></i>
+                    <span class="font-medium text-white">Create Account</span>
+                </div>
+            </div>
+            
+            <!-- Info Box -->
+            <div class="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-4 mb-6">
+                <div class="flex items-center gap-3 text-yellow-500 text-sm">
+                    <i class="fas fa-trophy"></i>
+                    <span>Compete in tournaments, win real rewards!</span>
+                </div>
+            </div>
+            
+            <!-- MTN Badge -->
+            <div class="pt-6 border-t border-primary/20 flex items-center justify-center lg:justify-start gap-3">
+                <div class="flex items-center gap-2 bg-yellow-500/10 px-3 py-2 rounded-lg">
+                    <i class="fas fa-mobile-alt text-yellow-500"></i>
+                    <span class="text-yellow-500 text-xs font-semibold">MTN Mobile Money</span>
+                </div>
+                <span class="text-gray-400 text-xs">secure payments</span>
+            </div>
+        </div>
+        
+        <!-- RIGHT CONTENT - Login/Register Forms -->
+        <div class="flex-1 overflow-y-auto p-6 lg:p-10 flex items-center justify-center">
+            
+            <!-- LOGIN FORM -->
+            <div id="loginForm" class="w-full max-w-2xl glass-card rounded-3xl p-6 lg:p-10 scroll-reveal">
+                <div class="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full border border-primary/40 mb-5">
+                    <i class="fas fa-gamepad text-primary text-sm"></i>
+                    <span class="text-primary text-xs font-semibold tracking-wider">WELCOME BACK</span>
+                </div>
+                <h1 class="font-space text-3xl lg:text-4xl font-bold mb-2 text-white">
+                    Sign In
+                    <span class="block text-lg text-primary/80 mt-1">to your Shora Games account</span>
+                </h1>
+                <p class="text-gray-300 mb-6">Enter your credentials to access tournaments and leaderboards.</p>
+                
+                <form id="loginFormElement">
+                    <div class="mb-5">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-envelope mr-2 text-primary"></i>Email Address
+                        </label>
+                        <input type="email" id="loginEmail" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                               placeholder="player@shora.com" required>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-lock mr-2 text-primary"></i>Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="loginPassword" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                                   placeholder="Enter your password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword', this)"></i>
+                        </div>
+                    </div>
+                    <button type="submit" id="loginSubmitBtn" class="btn-primary w-full py-4 rounded-xl font-space font-bold text-white uppercase tracking-wide flex items-center justify-center gap-3 transition-all">
+                        <i class="fas fa-arrow-right"></i>
+                        <span>Sign In</span>
+                    </button>
+                </form>
+                
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-primary/20"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-3 bg-dark/50 text-gray-400">or continue with</span>
+                    </div>
+                </div>
+                
+                <button id="googleLoginBtn" class="btn-google w-full py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition-all text-white">
+                    <i class="fab fa-google text-lg"></i>
+                    <span>Continue with Google</span>
+                </button>
+                
+                <div class="text-center mt-6">
+                    <button type="button" onclick="handleForgotPassword()" class="text-primary/80 hover:text-primary text-sm transition-colors">
+                        <i class="fas fa-key mr-1"></i> Forgot Password?
+                    </button>
+                </div>
+            </div>
+            
+            <!-- REGISTER FORM -->
+            <div id="registerForm" class="w-full max-w-2xl glass-card rounded-3xl p-6 lg:p-10 scroll-reveal" style="display: none;">
+                <div class="inline-flex items-center gap-2 bg-primary/20 px-4 py-2 rounded-full border border-primary/40 mb-5">
+                    <i class="fas fa-user-plus text-primary text-sm"></i>
+                    <span class="text-primary text-xs font-semibold tracking-wider">JOIN THE COMMUNITY</span>
+                </div>
+                <h1 class="font-space text-3xl lg:text-4xl font-bold mb-2 text-white">
+                    Create Account
+                    <span class="block text-lg text-primary/80 mt-1">start competing and winning</span>
+                </h1>
+                <p class="text-gray-300 mb-6">Join thousands of players in competitive tournaments.</p>
+                
+                <form id="registerFormElement">
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-envelope mr-2 text-primary"></i>Email Address
+                        </label>
+                        <input type="email" id="regEmail" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                               placeholder="player@shora.com" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-user mr-2 text-primary"></i>Username
+                        </label>
+                        <input type="text" id="regUsername" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                               placeholder="GamerPro" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-phone-alt mr-2 text-primary"></i>Phone Number
+                        </label>
+                        <input type="tel" id="regPhone" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                               placeholder="+250788123456" required>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-lock mr-2 text-primary"></i>Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="regPassword" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                                   placeholder="Min 6 characters" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassword', this)"></i>
+                        </div>
+                    </div>
+                    <div class="mb-5">
+                        <label class="block text-gray-300 text-sm font-medium mb-2">
+                            <i class="fas fa-check-circle mr-2 text-primary"></i>Confirm Password
+                        </label>
+                        <div class="password-wrapper">
+                            <input type="password" id="regConfirmPassword" class="input-field w-full px-5 py-3 rounded-xl text-white placeholder-gray-400" 
+                                   placeholder="Confirm your password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPassword', this)"></i>
+                        </div>
+                    </div>
+                    <button type="submit" id="registerSubmitBtn" class="btn-primary w-full py-4 rounded-xl font-space font-bold text-white uppercase tracking-wide flex items-center justify-center gap-3 transition-all">
+                        <i class="fas fa-user-plus"></i>
+                        <span>Create Account</span>
+                    </button>
+                </form>
+                
+                <div class="relative my-6">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-primary/20"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-3 bg-dark/50 text-gray-400">or sign up with</span>
+                    </div>
+                </div>
+                
+                <button id="googleRegisterBtn" class="btn-google w-full py-3 rounded-xl font-medium flex items-center justify-center gap-3 transition-all text-white">
+                    <i class="fab fa-google text-lg"></i>
+                    <span>Sign up with Google</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast">
+        <i class="fas fa-check-circle text-primary"></i>
+        <span id="toastMessage">Message</span>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            storageBucket: "shora-games.firebasestorage.app",
+            messagingSenderId: "1045658148606",
+            appId: "1:1045658148606:web:394ed053ca22778d5d4faf",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const auth = getAuth(app);
+        const db = getDatabase(app);
+        const googleProvider = new GoogleAuthProvider();
+
+        // DOM Elements
+        const loginForm = document.getElementById('loginForm');
+        const registerForm = document.getElementById('registerForm');
+        const loginNav = document.getElementById('loginNav');
+        const registerNav = document.getElementById('registerNav');
+
+        function showToast(message, isError = false) {
+            const toast = document.getElementById('toast');
+            const toastMessage = document.getElementById('toastMessage');
+            const icon = toast.querySelector('i');
+            
+            toastMessage.textContent = message;
+            icon.className = isError ? 'fas fa-exclamation-triangle text-red-500' : 'fas fa-check-circle text-primary';
+            toast.style.display = 'flex';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+
+        window.togglePassword = function(inputId, icon) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        };
+
+        function switchToLogin() {
+            loginForm.style.display = 'block';
+            registerForm.style.display = 'none';
+            loginNav.classList.add('active-tab');
+            registerNav.classList.remove('active-tab');
+        }
+        
+        function switchToRegister() {
+            loginForm.style.display = 'none';
+            registerForm.style.display = 'block';
+            registerNav.classList.add('active-tab');
+            loginNav.classList.remove('active-tab');
+        }
+        
+        loginNav.addEventListener('click', switchToLogin);
+        registerNav.addEventListener('click', switchToRegister);
+
+        // REGISTRATION
+        document.getElementById('registerFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+            const username = document.getElementById('regUsername').value;
+            const phone = document.getElementById('regPhone').value;
+            const confirm = document.getElementById('regConfirmPassword').value;
+            
+            if (password !== confirm) {
+                showToast('Passwords do not match', true);
+                return;
+            }
+            if (password.length < 6) {
+                showToast('Password must be at least 6 characters', true);
+                return;
+            }
+            
+            const submitBtn = document.getElementById('registerSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+            submitBtn.disabled = true;
+            
+            try {
+                const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                await set(ref(db, 'users/' + user.uid), {
+                    username: username,
+                    phone: phone,
+                    email: email,
+                    createdAt: new Date().toISOString(),
+                    totalWinnings: 0,
+                    gamesPlayed: 0
+                });
+                
+                await sendEmailVerification(user);
+                await auth.signOut();
+                
+                showToast('✓ Account created! Please verify your email before logging in.');
+                document.getElementById('registerFormElement').reset();
+                setTimeout(() => switchToLogin(), 2000);
+                
+            } catch (error) {
+                let message = error.message;
+                if (error.code === 'auth/email-already-in-use') {
+                    message = 'Email already registered. Please sign in instead.';
+                }
+                showToast(message, true);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // LOGIN
+        document.getElementById('loginFormElement').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            
+            const submitBtn = document.getElementById('loginSubmitBtn');
+            const originalText = submitBtn.innerHTML;
+            submitBtn.innerHTML = '<span class="loading-spinner"></span> Signing in...';
+            submitBtn.disabled = true;
+            
+            try {
+                const userCredential = await signInWithEmailAndPassword(auth, email, password);
+                const user = userCredential.user;
+                
+                if (!user.emailVerified) {
+                    showToast('⚠️ Please verify your email first. Check your inbox!', true);
+                    await auth.signOut();
+                    return;
+                }
+                
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                
+                if (snapshot.exists()) {
+                    localStorage.setItem('shora_user', JSON.stringify(snapshot.val()));
+                    showToast(`✓ Welcome back! Redirecting...`);
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 1000);
+                }
+                
+            } catch (error) {
+                let message = error.message;
+                if (error.code === 'auth/user-not-found') message = 'No account found. Please create an account first.';
+                if (error.code === 'auth/wrong-password') message = 'Incorrect password. Please try again.';
+                showToast(message, true);
+            } finally {
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // GOOGLE SIGN IN
+        async function handleGoogleSignIn() {
+            showToast('Connecting to Google...');
+            
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                
+                if (!snapshot.exists()) {
+                    const username = user.displayName || user.email.split('@')[0];
+                    await set(ref(db, 'users/' + user.uid), {
+                        username: username,
+                        email: user.email,
+                        phone: user.phoneNumber || 'Not provided',
+                        createdAt: new Date().toISOString(),
+                        totalWinnings: 0,
+                        gamesPlayed: 0
+                    });
+                }
+                
+                showToast(`✓ Welcome! Redirecting...`);
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1000);
+                
+            } catch (error) {
+                showToast(error.message, true);
+            }
+        }
+
+        // FORGOT PASSWORD
+        window.handleForgotPassword = async function() {
+            const email = prompt('Enter your email address:');
+            if (!email) return;
+            showToast('Sending reset email...');
+            try {
+                await sendPasswordResetEmail(auth, email);
+                showToast('✓ Password reset email sent! Check your inbox.');
+            } catch (error) {
+                showToast(error.message, true);
+            }
+        };
+
+        document.getElementById('googleLoginBtn').addEventListener('click', handleGoogleSignIn);
+        document.getElementById('googleRegisterBtn').addEventListener('click', handleGoogleSignIn);
+
+        // Scroll reveal
+        const revealElements = document.querySelectorAll('.scroll-reveal');
+        const revealOnScroll = () => {
+            const windowHeight = window.innerHeight;
+            revealElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                if (elementTop < windowHeight - 150) {
+                    element.classList.add('revealed');
+                }
+            });
+        };
+        window.addEventListener('load', revealOnScroll);
+        window.addEventListener('scroll', revealOnScroll);
+        
+        console.log('✅ Shora Games Login Page Ready');
+    </script>
+</body>
+</html>
