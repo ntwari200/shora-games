@@ -2,12 +2,10 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Shora Games | Hacker Terminal UI</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@300;400;500;600;700&family=Share+Tech+Mono&display=swap');
-
         * {
             margin: 0;
             padding: 0;
@@ -15,8 +13,8 @@
         }
 
         body {
-            font-family: 'Space Grotesk', 'Orbitron', 'Share Tech Mono', sans-serif;
-            background: #0a0a0a;
+            font-family: 'Share Tech Mono', 'Orbitron', monospace;
+            background: #000000;
             color: #00ff41;
             overflow-x: hidden;
         }
@@ -29,16 +27,8 @@
             height: 100%;
             background: #000000;
             background-image: 
-                repeating-linear-gradient(0deg, 
-                    transparent, 
-                    transparent 2px, 
-                    rgba(0, 255, 65, 0.08) 2px, 
-                    rgba(0, 255, 65, 0.08) 4px),
-                repeating-linear-gradient(90deg, 
-                    transparent, 
-                    transparent 2px, 
-                    rgba(0, 255, 65, 0.08) 2px, 
-                    rgba(0, 255, 65, 0.08) 4px);
+                repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0, 255, 65, 0.08) 2px, rgba(0, 255, 65, 0.08) 4px),
+                repeating-linear-gradient(90deg, transparent, transparent 2px, rgba(0, 255, 65, 0.08) 2px, rgba(0, 255, 65, 0.08) 4px);
             z-index: 0;
         }
 
@@ -51,29 +41,11 @@
             pointer-events: none;
             z-index: 0;
             opacity: 0.08;
-            font-family: 'Share Tech Mono', monospace;
+            font-family: monospace;
             font-size: 14px;
             color: #00ff41;
             white-space: pre;
             overflow: hidden;
-        }
-
-        body::before {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: repeating-linear-gradient(
-                0deg,
-                rgba(0, 255, 65, 0.03) 0px,
-                rgba(0, 255, 65, 0.03) 2px,
-                transparent 2px,
-                transparent 6px
-            );
-            pointer-events: none;
-            z-index: 999;
         }
 
         .container {
@@ -96,7 +68,6 @@
             align-items: center;
             flex-wrap: wrap;
             gap: 20px;
-            box-shadow: 0 0 20px rgba(0, 255, 65, 0.15);
         }
 
         .logo {
@@ -107,26 +78,25 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            text-shadow: 0 0 15px rgba(0, 255, 65, 0.5);
         }
 
         .logo i { color: #00ff41; margin-right: 8px; }
+
         .nav-links { display: flex; gap: 25px; flex-wrap: wrap; }
         .nav-links a {
             color: #00ff41;
             text-decoration: none;
-            font-weight: 500;
             padding: 8px 16px;
             border-radius: 8px;
             transition: all 0.3s ease;
         }
-        .nav-links a i { margin-right: 8px; }
         .nav-links a:hover {
             background: rgba(0, 255, 65, 0.15);
             text-shadow: 0 0 5px #00ff41;
         }
 
         .hero { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 50px; }
+
         .hacker-card {
             background: rgba(0, 0, 0, 0.9);
             backdrop-filter: blur(10px);
@@ -134,20 +104,13 @@
             border-radius: 16px;
             padding: 35px;
             transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
         }
-        .hacker-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.05), transparent);
-            transition: left 0.5s ease;
+
+        .hacker-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 65, 0.2);
         }
-        .hacker-card:hover::before { left: 100%; }
+
         .badge {
             display: inline-block;
             background: rgba(0, 255, 65, 0.1);
@@ -156,11 +119,12 @@
             border-radius: 20px;
             font-size: 12px;
             margin-bottom: 20px;
-            font-family: 'Share Tech Mono', monospace;
         }
+
         h1 { font-size: 48px; font-weight: 800; margin-bottom: 20px; font-family: 'Orbitron', sans-serif; }
         .highlight { color: #00ff41; text-shadow: 0 0 10px #00ff41; }
         .hero-text { color: #aaa; line-height: 1.6; margin-bottom: 25px; }
+
         .stats { display: flex; gap: 30px; margin-top: 30px; padding-top: 20px; border-top: 1px solid rgba(0, 255, 65, 0.2); }
         .stat-number { font-size: 32px; font-weight: bold; color: #00ff41; font-family: 'Orbitron', monospace; }
         .stat-label { font-size: 12px; color: #888; }
@@ -173,6 +137,7 @@
             border: 1px solid #00ff41;
             min-height: 400px;
         }
+
         .skeleton-loader {
             position: absolute;
             top: 0;
@@ -189,13 +154,16 @@
             gap: 15px;
             z-index: 5;
         }
+
         @keyframes skeleton {
             0% { background-position: 200% 0; }
             100% { background-position: -200% 0; }
         }
+
         .skeleton-loader.hidden { display: none; }
         .game-wallpaper { width: 100%; height: 400px; object-fit: cover; opacity: 0; transition: opacity 0.3s ease; }
         .game-wallpaper.loaded { opacity: 1; }
+
         .gallery-controls { position: absolute; bottom: 80px; right: 20px; display: flex; gap: 10px; z-index: 10; }
         .gallery-btn {
             background: rgba(0, 0, 0, 0.85);
@@ -204,9 +172,9 @@
             padding: 8px 16px;
             border-radius: 8px;
             cursor: pointer;
-            font-family: 'Share Tech Mono', monospace;
         }
         .gallery-btn:hover { background: #00ff41; color: #000; }
+
         .game-indicators { position: absolute; bottom: 80px; left: 20px; display: flex; gap: 8px; z-index: 10; }
         .indicator {
             width: 8px;
@@ -217,6 +185,7 @@
             cursor: pointer;
         }
         .indicator.active { background: #00ff41; box-shadow: 0 0 10px #00ff41; }
+
         .game-title {
             position: absolute;
             bottom: 20px;
@@ -225,9 +194,9 @@
             padding: 6px 15px;
             border-radius: 20px;
             font-size: 13px;
-            font-family: 'Share Tech Mono', monospace;
             border-left: 3px solid #00ff41;
         }
+
         .ticktacks {
             position: absolute;
             bottom: 20px;
@@ -261,6 +230,7 @@
             padding: 40px;
             margin-top: 30px;
         }
+
         .auth-tabs { display: flex; gap: 15px; margin-bottom: 30px; border-bottom: 1px solid rgba(0, 255, 65, 0.3); }
         .auth-tab {
             background: none;
@@ -283,14 +253,12 @@
             background: #00ff41;
             box-shadow: 0 0 10px #00ff41;
         }
+
         .auth-form { display: none; animation: fadeInUp 0.5s ease; }
         .auth-form.active { display: block; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
 
-        .form-group {
-            margin-bottom: 25px;
-            position: relative;
-        }
+        .form-group { margin-bottom: 25px; position: relative; }
         .form-group label {
             display: block;
             margin-bottom: 8px;
@@ -298,12 +266,8 @@
             font-family: 'Share Tech Mono', monospace;
         }
         .form-group label i { margin-right: 8px; }
-        
-        .password-wrapper {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
+
+        .password-wrapper { position: relative; display: flex; align-items: center; }
         .form-group input {
             width: 100%;
             padding: 14px 18px;
@@ -313,11 +277,8 @@
             color: #00ff41;
             font-size: 16px;
             transition: all 0.3s ease;
-            font-family: 'Space Grotesk', sans-serif;
         }
-        .password-wrapper input {
-            padding-right: 45px;
-        }
+        .password-wrapper input { padding-right: 45px; }
         .toggle-password {
             position: absolute;
             right: 15px;
@@ -325,17 +286,8 @@
             transform: translateY(-50%);
             cursor: pointer;
             color: #00ff41;
-            z-index: 10;
             background: transparent;
             border: none;
-            font-size: 16px;
-        }
-        .toggle-password:hover { color: #fff; text-shadow: 0 0 5px #00ff41; }
-        
-        .form-group input:focus {
-            outline: none;
-            border-color: #00ff41;
-            box-shadow: 0 0 15px rgba(0, 255, 65, 0.2);
         }
 
         .btn {
@@ -348,7 +300,6 @@
             font-size: 16px;
             font-weight: bold;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-family: 'Orbitron', sans-serif;
         }
         .btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(0, 255, 65, 0.3); }
@@ -358,7 +309,6 @@
             color: #00ff41;
             margin-top: 10px;
         }
-        .btn-outline:hover { background: rgba(0, 255, 65, 0.1); }
         .btn-link {
             background: none;
             border: none;
@@ -421,6 +371,7 @@
             border-radius: 8px;
             cursor: pointer;
         }
+
         .features {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
@@ -438,6 +389,7 @@
         .feature-icon { font-size: 48px; margin-bottom: 20px; }
         .feature h3 { color: #00ff41; margin-bottom: 10px; font-family: 'Orbitron', sans-serif; }
         .feature p { color: #aaa; font-size: 14px; }
+
         .footer {
             margin-top: 60px;
             padding: 30px;
@@ -445,6 +397,7 @@
             border-top: 1px solid rgba(0, 255, 65, 0.2);
             color: #666;
         }
+
         .toast {
             position: fixed;
             bottom: 20px;
@@ -456,12 +409,9 @@
             border-radius: 12px;
             z-index: 1000;
             display: none;
-            font-family: 'Share Tech Mono', monospace;
+            font-family: monospace;
         }
-        @keyframes slideInRight {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
+
         @media (max-width: 968px) {
             .hero { grid-template-columns: 1fr; }
             h1 { font-size: 32px; }
@@ -518,14 +468,12 @@
             </div>
         </div>
 
-        <!-- Auth Section -->
         <div class="auth-section" id="authSection">
             <div class="auth-tabs">
                 <button class="auth-tab active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
                 <button class="auth-tab" onclick="switchTab('register')"><i class="fas fa-user-plus"></i> REGISTER</button>
             </div>
 
-            <!-- LOGIN FORM -->
             <div id="loginForm" class="auth-form active">
                 <form id="loginFormElement" onsubmit="handleLogin(event)">
                     <div class="form-group">
@@ -554,7 +502,6 @@
                 </form>
             </div>
 
-            <!-- REGISTER FORM -->
             <div id="registerForm" class="auth-form">
                 <form id="registerFormElement" onsubmit="handleRegister(event)">
                     <div class="form-group">
@@ -626,12 +573,10 @@
     <div id="toast" class="toast"></div>
 
     <script type="module">
-        // ============ FIREBASE CONFIGURATION ============
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, signOut, sendPasswordResetEmail, onAuthStateChanged, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-firestore.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
-        // Your Firebase config
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -639,18 +584,18 @@
             storageBucket: "shora-games.firebasestorage.app",
             messagingSenderId: "1045658148606",
             appId: "1:1045658148606:web:394ed053ca22778d5d4faf",
-            measurementId: "G-Y8QMXRHRMP"
+            measurementId: "G-Y8QMXRHRMP",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
-        const db = getFirestore(app);
+        const db = getDatabase(app);
         const googleProvider = new GoogleAuthProvider();
 
-        console.log("🔥 Firebase initialized with Google Sign-In!");
+        console.log("✅ Firebase with Realtime Database ready!");
 
-        // ============ GAME GALLERY ============
+        // Game Gallery
         const gameWallpapers = [
             { url: "https://images.unsplash.com/photo-1542751371-adc38448a05e?w=600&h=400&fit=crop", title: "🎮 ESPORTS ARENA", game: "League of Legends" },
             { url: "https://images.unsplash.com/photo-1511512578047-dfb367046420?w=600&h=400&fit=crop", title: "⚡ RACING LEGENDS", game: "Need for Speed" },
@@ -693,7 +638,6 @@
         function nextImage() { currentIndex = (currentIndex + 1) % gameWallpapers.length; updateGallery(); }
         function prevImage() { currentIndex = (currentIndex - 1 + gameWallpapers.length) % gameWallpapers.length; updateGallery(); }
 
-        // ============ TOAST NOTIFICATION ============
         function showToast(message, isError = false) {
             const toast = document.getElementById('toast');
             if (toast) {
@@ -705,7 +649,6 @@
             }
         }
 
-        // ============ PASSWORD TOGGLE ============
         window.togglePassword = function(inputId, iconElement) {
             const input = document.getElementById(inputId);
             if (input.type === 'password') {
@@ -719,64 +662,7 @@
             }
         };
 
-        // ============ GOOGLE SIGN IN ============
-        async function handleGoogleSignIn() {
-            showToast('Connecting to Google...');
-            
-            try {
-                const result = await signInWithPopup(auth, googleProvider);
-                const user = result.user;
-                
-                // Check if user exists in Firestore
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                
-                if (!userDoc.exists()) {
-                    // New user - save their info
-                    const displayName = user.displayName || user.email.split('@')[0];
-                    const phoneNumber = user.phoneNumber || 'Not provided';
-                    
-                    await setDoc(doc(db, "users", user.uid), {
-                        username: displayName,
-                        email: user.email,
-                        phone: phoneNumber,
-                        photoURL: user.photoURL || '',
-                        createdAt: new Date().toISOString(),
-                        totalWinnings: 0,
-                        gamesPlayed: 0,
-                        authMethod: 'google'
-                    });
-                    
-                    showToast(`✓ Welcome ${displayName}! Account created with Google.`);
-                } else {
-                    const userData = userDoc.data();
-                    showToast(`✓ Welcome back, ${userData.username}!`);
-                }
-                
-                // Get user data and show dashboard
-                const finalUserDoc = await getDoc(doc(db, "users", user.uid));
-                if (finalUserDoc.exists()) {
-                    showUserDashboard(finalUserDoc.data());
-                } else {
-                    showUserDashboard({
-                        username: user.displayName || user.email.split('@')[0],
-                        email: user.email,
-                        phone: 'Google User'
-                    });
-                }
-                
-            } catch (error) {
-                console.error('Google Sign-In Error:', error);
-                if (error.code === 'auth/popup-blocked') {
-                    showToast('ERROR: Popup blocked. Please allow popups for this site.', true);
-                } else if (error.code === 'auth/cancelled-popup-request') {
-                    showToast('Sign-in cancelled.', true);
-                } else {
-                    showToast(`ERROR: ${error.message}`, true);
-                }
-            }
-        }
-
-        // ============ REGISTRATION ============
+        // REGISTRATION
         window.handleRegister = async function(event) {
             event.preventDefault();
             
@@ -807,14 +693,13 @@
                 const userCredential = await createUserWithEmailAndPassword(auth, email, password);
                 const user = userCredential.user;
                 
-                await setDoc(doc(db, "users", user.uid), {
+                await set(ref(db, 'users/' + user.uid), {
                     username: username,
                     phone: phone,
                     email: email,
                     createdAt: new Date().toISOString(),
                     totalWinnings: 0,
-                    gamesPlayed: 0,
-                    authMethod: 'email'
+                    gamesPlayed: 0
                 });
                 
                 await sendEmailVerification(user);
@@ -837,7 +722,7 @@
             }
         };
 
-        // ============ LOGIN ============
+        // LOGIN
         window.handleLogin = async function(event) {
             event.preventDefault();
             
@@ -861,10 +746,10 @@
                     return;
                 }
                 
-                const userDoc = await getDoc(doc(db, "users", user.uid));
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
                 
-                if (userDoc.exists()) {
-                    const userData = userDoc.data();
+                if (snapshot.exists()) {
+                    const userData = snapshot.val();
                     localStorage.setItem('shora_user', JSON.stringify(userData));
                     showToast(`✓ Welcome back, ${userData.username}!`);
                     showUserDashboard(userData);
@@ -887,7 +772,52 @@
             }
         };
 
-        // ============ FORGOT PASSWORD ============
+        // GOOGLE SIGN IN
+        async function handleGoogleSignIn() {
+            showToast('Connecting to Google...');
+            
+            try {
+                const result = await signInWithPopup(auth, googleProvider);
+                const user = result.user;
+                
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                
+                if (!snapshot.exists()) {
+                    const displayName = user.displayName || user.email.split('@')[0];
+                    await set(ref(db, 'users/' + user.uid), {
+                        username: displayName,
+                        email: user.email,
+                        phone: user.phoneNumber || 'Not provided',
+                        photoURL: user.photoURL || '',
+                        createdAt: new Date().toISOString(),
+                        totalWinnings: 0,
+                        gamesPlayed: 0,
+                        authMethod: 'google'
+                    });
+                    showToast(`✓ Welcome ${displayName}!`);
+                } else {
+                    const userData = snapshot.val();
+                    showToast(`✓ Welcome back, ${userData.username}!`);
+                }
+                
+                const finalSnapshot = await get(child(ref(db), `users/${user.uid}`));
+                if (finalSnapshot.exists()) {
+                    showUserDashboard(finalSnapshot.val());
+                } else {
+                    showUserDashboard({
+                        username: user.displayName || user.email.split('@')[0],
+                        email: user.email,
+                        phone: 'Google User'
+                    });
+                }
+                
+            } catch (error) {
+                console.error('Google Sign-In Error:', error);
+                showToast(`Error: ${error.message}`, true);
+            }
+        }
+
+        // FORGOT PASSWORD
         window.handleForgotPassword = async function() {
             const email = prompt('Enter your email address to reset your password:');
             if (!email) return;
@@ -902,7 +832,7 @@
             }
         };
 
-        // ============ LOGOUT ============
+        // LOGOUT
         window.handleLogout = async function() {
             try {
                 await signOut(auth);
@@ -915,61 +845,71 @@
             }
         };
 
-        // ============ USER DASHBOARD ============
+        // SHOW USER DASHBOARD
         function showUserDashboard(user) {
-            document.getElementById('authSection').style.display = 'none';
-            document.getElementById('userDashboard').classList.add('active');
-            document.getElementById('welcomeUsername').innerHTML = `<i class="fas fa-user-astronaut"></i> Welcome, ${user.username}!`;
-            document.getElementById('userPhone').innerHTML = user.phone || 'Not set';
-            document.getElementById('userEmail').innerHTML = user.email;
-            document.getElementById('userId').innerHTML = '✓';
+            const authSection = document.getElementById('authSection');
+            const dashboard = document.getElementById('userDashboard');
+            if (authSection) authSection.style.display = 'none';
+            if (dashboard) dashboard.classList.add('active');
+            
+            const welcomeSpan = document.getElementById('welcomeUsername');
+            const phoneSpan = document.getElementById('userPhone');
+            const emailSpan = document.getElementById('userEmail');
+            
+            if (welcomeSpan) welcomeSpan.innerHTML = `<i class="fas fa-user-astronaut"></i> Welcome, ${user.username || user.email || 'Player'}!`;
+            if (phoneSpan) phoneSpan.innerHTML = user.phone || 'Not set';
+            if (emailSpan) emailSpan.innerHTML = user.email || 'Unknown';
         }
 
-        // ============ CHECK LOGGED IN USER ============
+        // CHECK LOGGED IN USER
         onAuthStateChanged(auth, async (user) => {
             if (user && user.emailVerified) {
-                const userDoc = await getDoc(doc(db, "users", user.uid));
-                if (userDoc.exists()) {
-                    showUserDashboard(userDoc.data());
-                } else if (user) {
-                    // User exists in Auth but not in Firestore (could be Google user)
-                    const userData = {
-                        username: user.displayName || user.email.split('@')[0],
+                try {
+                    const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                    if (snapshot.exists()) {
+                        showUserDashboard(snapshot.val());
+                    } else if (user) {
+                        showUserDashboard({
+                            username: user.displayName || user.email.split('@')[0],
+                            email: user.email,
+                            phone: user.phoneNumber || 'Not provided'
+                        });
+                    }
+                } catch (err) {
+                    console.warn("Could not fetch user data:", err);
+                    showUserDashboard({
+                        username: user.email.split('@')[0],
                         email: user.email,
-                        phone: user.phoneNumber || 'Google User'
-                    };
-                    showUserDashboard(userData);
+                        phone: 'Loading...'
+                    });
                 }
             }
         });
 
-        // ============ MTN INFO ============
         window.showMtnInfo = function() {
             showToast('MTN Mobile Money Integration | Coming soon!');
         };
 
-        // ============ TAB SWITCHING ============
         window.switchTab = function(tab) {
             const loginForm = document.getElementById('loginForm');
             const registerForm = document.getElementById('registerForm');
             const tabs = document.querySelectorAll('.auth-tab');
             
             if (tab === 'login') {
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-                tabs[0].classList.add('active');
-                tabs[1].classList.remove('active');
+                if (loginForm) loginForm.classList.add('active');
+                if (registerForm) registerForm.classList.remove('active');
+                if (tabs[0]) tabs[0].classList.add('active');
+                if (tabs[1]) tabs[1].classList.remove('active');
             } else {
-                loginForm.classList.remove('active');
-                registerForm.classList.add('active');
-                tabs[0].classList.remove('active');
-                tabs[1].classList.add('active');
+                if (loginForm) loginForm.classList.remove('active');
+                if (registerForm) registerForm.classList.add('active');
+                if (tabs[0]) tabs[0].classList.remove('active');
+                if (tabs[1]) tabs[1].classList.add('active');
             }
         };
 
-        // ============ INITIALIZATION ============
+        // INITIALIZATION
         function init() {
-            // Matrix rain effect
             const rainDiv = document.getElementById('matrixRain');
             if (rainDiv) {
                 const chars = '01アイウエオカキクケコ';
@@ -980,7 +920,6 @@
                 rainDiv.innerHTML = matrixHTML;
             }
             
-            // Game gallery
             const skeleton = document.getElementById('skeletonLoader');
             const gameImage = document.getElementById('gameWallpaper');
             
@@ -992,35 +931,22 @@
                 }, 2000);
             }
             
-            // Gallery controls
             const prevBtn = document.getElementById('prevBtn');
             const nextBtn = document.getElementById('nextBtn');
             if (prevBtn) prevBtn.addEventListener('click', prevImage);
             if (nextBtn) nextBtn.addEventListener('click', nextImage);
             
-            // Auto-rotate gallery
             setInterval(() => { nextImage(); }, 5000);
             
-            // Google Sign-In buttons
             const googleSignInBtn = document.getElementById('googleSignInBtn');
             const googleSignUpBtn = document.getElementById('googleSignUpBtn');
             
-            if (googleSignInBtn) {
-                googleSignInBtn.addEventListener('click', handleGoogleSignIn);
-            }
-            if (googleSignUpBtn) {
-                googleSignUpBtn.addEventListener('click', handleGoogleSignIn);
-            }
+            if (googleSignInBtn) googleSignInBtn.addEventListener('click', handleGoogleSignIn);
+            if (googleSignUpBtn) googleSignUpBtn.addEventListener('click', handleGoogleSignIn);
             
-            console.log('%c╔════════════════════════════════════════╗', 'color: #00ff41');
-            console.log('%c║   🔥 SHORA GAMES WITH FIREBASE 🔥     ║', 'color: #00ff41');
-            console.log('%c║   ✅ Email/Password Authentication    ║', 'color: #00ff41');
-            console.log('%c║   ✅ Google Sign-In ACTIVE            ║', 'color: #00ff41');
-            console.log('%c║   ✅ Firestore Database Connected     ║', 'color: #00ff41');
-            console.log('%c╚════════════════════════════════════════╝', 'color: #00ff41');
+            console.log('🎮 Shora Games Ready!');
         }
         
-        // Start the app
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', init);
         } else {
