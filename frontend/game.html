@@ -1,1 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Shora Games · Play</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/loaders.css">
+    <style>
+        .game-container {
+            background: rgba(5, 12, 24, 0.85);
+            backdrop-filter: blur(12px);
+            border-radius: 24px;
+            padding: 30px 20px;
+            margin: 16px;
+            text-align: center;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .game-title {
+            font-size: 28px;
+            font-weight: 800;
+            background: linear-gradient(135deg, #4a9eff, #0066ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 20px;
+        }
+        .score-display {
+            font-size: 48px;
+            font-weight: 800;
+            color: #FFD700;
+            margin: 20px 0;
+        }
+        .click-area {
+            background: rgba(59, 130, 246, 0.1);
+            border: 2px dashed #3b82f6;
+            border-radius: 20px;
+            padding: 60px 20px;
+            cursor: pointer;
+            transition: all 0.1s ease;
+            margin: 20px 0;
+        }
+        .click-area:active {
+            transform: scale(0.98);
+        }
+        .click-area.game-active {
+            background: rgba(59, 130, 246, 0.2);
+            border-color: #4a9eff;
+        }
+        .timer {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 20px 0;
+            color: #3b82f6;
+        }
+        .timer.warning {
+            color: #ff4444;
+            animation: pulse 0.5s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        .game-over {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        .game-over.show {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .result-card {
+            background: rgba(5, 12, 24, 0.95);
+            border-radius: 20px;
+            padding: 25px;
+            margin-top: 20px;
+            text-align: center;
+        }
+        .final-score {
+            font-size: 56px;
+            font-weight: 800;
+            color: #FFD700;
+            margin: 10px 0;
+        }
+        .rank-badge {
+            display: inline-block;
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            border-radius: 40px;
+            padding: 8px 20px;
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .restart-btn {
+            background: rgba(59, 130, 246, 0.2);
+            border: 1px solid #3b82f6;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 40px;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+        }
+        .restart-btn:hover {
+            background: rgba(59, 130, 246, 0.4);
+        }
+    </style>
+</head>
+<body>
 
+<!-- Page Loader -->
+<div class="page-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING GAME</div>
+    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+</div>
+
+<!-- Progress Bar for Navigation -->
+<div class="progress-bar-container"><div class="progress-bar"></div></div>
+
+<!-- Header -->
+<div class="main-header">
+    <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
+    <div class="wallet-area">
+        <button class="deposit-btn-header" onclick="window.location.href='profile.html'">Deposit</button>
+        <span class="balance-header" id="headerBalance">0 RWF</span>
+        <div class="avatar-icon" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></div>
+    </div>
+</div>
+
+<!-- Game Container -->
+<div class="game-container">
+    <div class="game-title" id="gameName">Arcade Legends</div>
+    
+    <div class="score-display">
+        🎯 SCORE: <span id="score">0</span>
+    </div>
+    
+    <div class="timer" id="timer">30s</div>
+    
+    <div id="clickArea" class="click-area">
+        <i class="fas fa-gamepad" style="font-size: 64px; color: #3b82f6; margin-bottom: 16px;"></i>
+        <p style="font-size: 18px; font-weight: 600;">CLICK HERE TO SCORE!</p>
+        <p style="font-size: 12px; color: #888;">Click as fast as you can in 30 seconds</p>
+    </div>
+    
+    <div id="gameOver" class="game-over">
+        <div class="result-card">
+            <i class="fas fa-trophy" style="font-size: 48px; color: #FFD700;"></i>
+            <h3>GAME OVER!</h3>
+            <div class="final-score" id="finalScore">0</div>
+            <p>Your Score</p>
+            <div class="rank-badge" id="rankMessage">Submit your score to see ranking</div>
+            <div style="display: flex; gap: 12px; justify-content: center; margin-top: 20px;">
+                <button class="restart-btn" id="restartBtn"><i class="fas fa-redo-alt"></i> Play Again</button>
+                <button class="join-btn" id="submitScoreBtn" style="background: #FFD700; color: #000; width: auto; padding: 12px 24px;">Submit Score →</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="leaderboard.html"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
+    <a href="#"><i class="fas fa-search"></i><span>Explore</span></a>
+    <a href="#"><i class="fas fa-ticket-alt"></i><span>My Events</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getDatabase, ref, get, child, push, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+        authDomain: "shora-games.firebaseapp.com",
+        projectId: "shora-games",
+        databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    // Game variables
+    let score = 0;
+    let timeLeft = 30;
+    let gameActive = false;
+    let timerInterval;
+    let currentUser;
+    let currentEventId;
+    let currentEventName;
+
+    const events = {
+        1: { name: "Arcade Legends" },
+        2: { name: "Speed Racing" },
+        3: { name: "Puzzle Masters" },
+        4: { name: "Chess Championship" }
+    };
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? '#ff4444' : '#3b82f6';
+        toast.style.color = isError ? '#ff4444' : '#3b82f6';
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function updateUI() {
+        document.getElementById('score').innerHTML = score;
+        document.getElementById('timer').innerHTML = timeLeft + 's';
+        
+        // Warning when 5 seconds left
+        const timerElement = document.getElementById('timer');
+        if (timeLeft <= 5) {
+            timerElement.classList.add('warning');
+        } else {
+            timerElement.classList.remove('warning');
+        }
+    }
+
+    function endGame() {
+        gameActive = false;
+        clearInterval(timerInterval);
+        document.getElementById('clickArea').classList.remove('game-active');
+        document.getElementById('clickArea').style.pointerEvents = 'none';
+        document.getElementById('finalScore').innerHTML = score;
+        document.getElementById('gameOver').classList.add('show');
+        
+        // Check if score is high
+        if (score > 0) {
+            document.getElementById('rankMessage').innerHTML = '🎉 Great score! Submit to see your rank!';
+        } else {
+            document.getElementById('rankMessage').innerHTML = '😅 Try again! Click faster!';
+        }
+    }
+
+    function startGame() {
+        // Reset game state
+        score = 0;
+        timeLeft = 30;
+        gameActive = true;
+        
+        // Update UI
+        updateUI();
+        document.getElementById('gameOver').classList.remove('show');
+        document.getElementById('clickArea').classList.add('game-active');
+        document.getElementById('clickArea').style.pointerEvents = 'auto';
+        
+        // Clear any existing interval
+        if (timerInterval) clearInterval(timerInterval);
+        
+        // Start timer
+        timerInterval = setInterval(() => {
+            if (timeLeft <= 1) {
+                endGame();
+            } else {
+                timeLeft--;
+                updateUI();
+            }
+        }, 1000);
+    }
+
+    // Click to score
+    document.getElementById('clickArea').addEventListener('click', () => {
+        if (gameActive) {
+            score++;
+            document.getElementById('score').innerHTML = score;
+            
+            // Add visual feedback
+            const clickArea = document.getElementById('clickArea');
+            clickArea.style.transform = 'scale(0.98)';
+            setTimeout(() => {
+                clickArea.style.transform = 'scale(1)';
+            }, 100);
+        }
+    });
+
+    // Restart game
+    document.getElementById('restartBtn').addEventListener('click', () => {
+        startGame();
+    });
+
+    // Submit score to Firebase
+    document.getElementById('submitScoreBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('submitScoreBtn');
+        const originalText = btn.innerHTML;
+        
+        // Show button loader
+        setButtonLoading(btn, true);
+        
+        try {
+            // Save score to database
+            const scoreData = {
+                userId: currentUser.uid,
+                username: currentUser.username || 'Player',
+                score: score,
+                eventId: currentEventId,
+                eventName: currentEventName,
+                timestamp: new Date().toISOString()
+            };
+            
+            await push(ref(db, `scores/${currentEventId}`), scoreData);
+            
+            // Update user's games played count
+            const userRef = ref(db, `users/${currentUser.uid}`);
+            const snapshot = await get(userRef);
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                const gamesPlayed = (userData.gamesPlayed || 0) + 1;
+                await update(userRef, { gamesPlayed: gamesPlayed });
+            }
+            
+            showToast(`✓ Score of ${score} submitted! Check leaderboard.`);
+            
+            setTimeout(() => {
+                window.location.href = 'leaderboard.html';
+            }, 1500);
+        } catch (error) {
+            showToast('Error submitting score. Please try again.', true);
+            setButtonLoading(btn, false, originalText);
+        }
+    });
+
+    // Load event details and start game
+    async function loadGame() {
+        currentEventId = localStorage.getItem('selectedEventId');
+        if (!currentEventId) {
+            window.location.href = 'dashboard.html';
+            return;
+        }
+        
+        currentEventName = events[currentEventId]?.name || 'Game Event';
+        document.getElementById('gameName').innerHTML = currentEventName;
+        
+        // Start the game
+        startGame();
+        
+        // Hide page loader
+        setTimeout(() => {
+            const loader = document.querySelector('.page-loader');
+            if (loader) loader.classList.add('hidden');
+        }, 500);
+    }
+
+    // Check authentication and load user data
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) {
+            window.location.href = 'login.html';
+        } else {
+            currentUser = { uid: user.uid };
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) {
+                const userData = snapshot.val();
+                currentUser.username = userData.username;
+                document.getElementById('headerBalance').innerHTML = (userData.balance || 0) + ' RWF';
+            }
+            await loadGame();
+        }
+    });
+</script>
+<script src="js/loaders.js"></script>
+</body>
+</html>
