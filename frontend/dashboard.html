@@ -6,22 +6,82 @@
     <title>Shora Games · Events</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/loaders.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
+            color: #ffffff;
+            padding-bottom: 70px;
+        }
+        /* Header */
+        .main-header {
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #4a9eff, #0066ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo i { background: none; -webkit-text-fill-color: #3b82f6; margin-right: 6px; }
+        .wallet-area { display: flex; align-items: center; gap: 12px; }
+        .deposit-btn-header { background: linear-gradient(145deg, #002244, #001433); border: 1px solid #2a7fff; color: white; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; cursor: pointer; }
+        .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
+        .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
+        /* Navigation */
+        .nav-menu { background: rgba(5, 12, 24, 0.9); backdrop-filter: blur(12px); padding: 12px 16px; display: flex; gap: 20px; overflow-x: auto; border-bottom: 1px solid rgba(59, 130, 246, 0.1); }
+        .nav-menu a { color: #aaa; text-decoration: none; font-size: 14px; font-weight: 600; white-space: nowrap; }
+        .nav-menu a:hover, .nav-menu a.active { color: #3b82f6; }
+        /* Banner */
+        .banner { margin: 16px; border-radius: 16px; background: linear-gradient(145deg, #002244, #001433); padding: 30px; text-align: center; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .banner h3 { color: #FFD700; margin-bottom: 8px; }
+        /* Filter Tabs */
+        .filter-tabs { display: flex; gap: 12px; padding: 0 16px; margin-bottom: 16px; overflow-x: auto; }
+        .filter-tab { background: rgba(5, 12, 24, 0.85); border: 1px solid rgba(59, 130, 246, 0.3); padding: 8px 20px; border-radius: 30px; color: #aaa; font-size: 13px; font-weight: 600; cursor: pointer; white-space: nowrap; }
+        .filter-tab.active { background: #3b82f6; border-color: #3b82f6; color: white; }
+        /* Event Card */
+        .event-card { background: rgba(5, 12, 24, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: 20px; margin: 12px 16px; padding: 20px; transition: all 0.3s ease; }
+        .event-card:hover { border-color: #3b82f6; transform: translateY(-3px); }
+        .event-game-icon { font-size: 40px; margin-bottom: 12px; text-align: center; }
+        .event-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
+        .event-details { display: flex; justify-content: space-between; margin: 16px 0; padding: 12px 0; border-top: 1px solid rgba(59, 130, 246, 0.1); border-bottom: 1px solid rgba(59, 130, 246, 0.1); }
+        .detail-item { text-align: center; }
+        .detail-label { font-size: 11px; color: #888; }
+        .detail-value { font-weight: 700; font-size: 16px; color: #FFD700; }
+        .join-btn { width: 100%; background: linear-gradient(145deg, #002244, #001433); border: 2px solid #2a7fff; padding: 12px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; }
+        .join-btn:hover { background: linear-gradient(145deg, #003366, #001f4d); transform: translateY(-2px); }
+        /* Bottom Navigation */
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5, 12, 24, 0.95); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 10px 16px; border-top: 1px solid rgba(59, 130, 246, 0.2); z-index: 100; }
+        .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #aaa; text-decoration: none; font-size: 11px; }
+        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a:hover, .bottom-nav a.active { color: #3b82f6; }
+        /* Loaders */
+        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .page-loader.hidden { display: none; }
+        .loader-spinner { width: 60px; height: 60px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        .loader-text { margin-top: 20px; color: #3b82f6; font-size: 14px; }
+        .skeleton-card { background: rgba(5, 12, 24, 0.85); border-radius: 20px; padding: 20px; margin: 12px 16px; }
+        .skeleton { background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 12px; }
+        .skeleton-title { height: 24px; width: 60%; margin-bottom: 16px; }
+        .skeleton-text { height: 14px; width: 90%; margin-bottom: 12px; }
+        .skeleton-button { height: 48px; width: 100%; border-radius: 40px; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(5, 12, 24, 0.95); border: 1px solid #3b82f6; border-radius: 50px; padding: 12px 24px; color: #3b82f6; font-size: 14px; z-index: 1000; display: none; }
+    </style>
 </head>
 <body>
 
-<!-- Page Loader -->
 <div class="page-loader">
     <div class="loader-spinner"></div>
     <div class="loader-text">LOADING SHORA GAMES</div>
-    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
 </div>
 
-<!-- Progress Bar -->
-<div class="progress-bar-container"><div class="progress-bar"></div></div>
-
-<!-- Header -->
 <div class="main-header">
     <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
     <div class="wallet-area">
@@ -31,7 +91,6 @@
     </div>
 </div>
 
-<!-- Navigation -->
 <div class="nav-menu">
     <a href="dashboard.html" class="active">🎮 Events</a>
     <a href="#">🏆 Tournaments</a>
@@ -39,13 +98,11 @@
     <a href="#">📱 Mobile</a>
 </div>
 
-<!-- Banner with Lazy Loading -->
 <div class="banner">
     <h3><i class="fas fa-trophy"></i> Weekly Tournament</h3>
     <p>1,000,000 RWF Prize Pool • Ends Sunday</p>
 </div>
 
-<!-- Filter Tabs -->
 <div class="filter-tabs">
     <button class="filter-tab active" data-filter="all">All Events</button>
     <button class="filter-tab" data-filter="arcade">Arcade</button>
@@ -54,10 +111,8 @@
     <button class="filter-tab" data-filter="strategy">Strategy</button>
 </div>
 
-<!-- Events Container -->
 <div id="eventsContainer" class="events-container"></div>
 
-<!-- Bottom Navigation -->
 <div class="bottom-nav">
     <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
     <a href="leaderboard.html"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
@@ -85,10 +140,10 @@
     const db = getDatabase(app);
 
     const events = [
-        { id: 1, name: "Arcade Legends", category: "arcade", icon: "fa-dice-d6", entryFee: 500, prizePool: 5000, players: 24, maxPlayers: 50, startTime: "Today, 7:00 PM", image: "🎮" },
-        { id: 2, name: "Speed Racing", category: "racing", icon: "fa-car", entryFee: 1000, prizePool: 10000, players: 32, maxPlayers: 64, startTime: "Today, 8:00 PM", image: "🏎️" },
-        { id: 3, name: "Puzzle Masters", category: "puzzle", icon: "fa-puzzle-piece", entryFee: 300, prizePool: 3000, players: 18, maxPlayers: 40, startTime: "Tomorrow, 6:00 PM", image: "🧩" },
-        { id: 4, name: "Chess Championship", category: "strategy", icon: "fa-chess-queen", entryFee: 1500, prizePool: 15000, players: 16, maxPlayers: 32, startTime: "Tomorrow, 8:00 PM", image: "♟️" }
+        { id: 1, name: "Arcade Legends", category: "arcade", icon: "🎮", entryFee: 500, prizePool: 5000, players: 24, maxPlayers: 50, startTime: "Today, 7:00 PM" },
+        { id: 2, name: "Speed Racing", category: "racing", icon: "🏎️", entryFee: 1000, prizePool: 10000, players: 32, maxPlayers: 64, startTime: "Today, 8:00 PM" },
+        { id: 3, name: "Puzzle Masters", category: "puzzle", icon: "🧩", entryFee: 300, prizePool: 3000, players: 18, maxPlayers: 40, startTime: "Tomorrow, 6:00 PM" },
+        { id: 4, name: "Chess Championship", category: "strategy", icon: "♟️", entryFee: 1500, prizePool: 15000, players: 16, maxPlayers: 32, startTime: "Tomorrow, 8:00 PM" }
     ];
 
     let currentUserBalance = 0;
@@ -96,26 +151,28 @@
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
-        toast.style.borderColor = isError ? '#ff4444' : '#3b82f6';
-        toast.style.color = isError ? '#ff4444' : '#3b82f6';
         toast.style.display = 'block';
         setTimeout(() => toast.style.display = 'none', 3000);
     }
 
+    function showSkeleton() {
+        const container = document.getElementById('eventsContainer');
+        container.innerHTML = `
+            <div class="skeleton-card"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-button"></div></div>
+            <div class="skeleton-card"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-button"></div></div>
+            <div class="skeleton-card"><div class="skeleton skeleton-title"></div><div class="skeleton skeleton-text"></div><div class="skeleton skeleton-button"></div></div>
+        `;
+    }
+
     async function renderEvents(category = 'all') {
         const container = document.getElementById('eventsContainer');
-        
-        // Show skeleton loader
-        showSkeleton('eventsContainer', 'event', 3);
-        
-        // Simulate API delay
+        showSkeleton();
         await new Promise(resolve => setTimeout(resolve, 800));
         
         const filtered = category === 'all' ? events : events.filter(e => e.category === category);
-        
         container.innerHTML = filtered.map(event => `
             <div class="event-card" data-event-id="${event.id}">
-                <div class="event-game-icon">${event.image}</div>
+                <div class="event-game-icon">${event.icon}</div>
                 <div class="event-title">${event.name}</div>
                 <div class="event-details">
                     <div class="detail-item"><div class="detail-label">Entry Fee</div><div class="detail-value">${event.entryFee} RWF</div></div>
@@ -137,7 +194,6 @@
         }
     };
 
-    // Filter tabs with loading
     document.querySelectorAll('.filter-tab').forEach(tab => {
         tab.addEventListener('click', async () => {
             document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
@@ -146,7 +202,6 @@
         });
     });
 
-    // Load user data and hide page loader
     onAuthStateChanged(auth, async (user) => {
         if (!user) window.location.href = 'login.html';
         else {
@@ -156,15 +211,9 @@
                 document.getElementById('headerBalance').innerHTML = currentUserBalance + ' RWF';
             }
             await renderEvents();
-            
-            // Hide page loader after everything loads
-            setTimeout(() => {
-                const loader = document.querySelector('.page-loader');
-                if (loader) loader.classList.add('hidden');
-            }, 500);
+            document.querySelector('.page-loader').classList.add('hidden');
         }
     });
 </script>
-<script src="js/loaders.js"></script>
 </body>
 </html>
