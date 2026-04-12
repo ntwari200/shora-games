@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Shora Games · Event Details</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/loaders.css">
+    <style>
+        .event-hero {
+            background: linear-gradient(145deg, #002244, #001433);
+            padding: 30px 20px;
+            text-align: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        .prize-distribution {
+            background: rgba(5, 12, 24, 0.85);
+            border-radius: 16px;
+            padding: 20px;
+            margin: 16px;
+        }
+        .prize-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+        }
+    </style>
+</head>
+<body>
+
+<div class="page-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING EVENT DETAILS</div>
+    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+</div>
+
+<div class="main-header">
+    <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
+    <div class="wallet-area">
+        <button class="deposit-btn-header" onclick="window.location.href='profile.html'">Deposit</button>
+        <span class="balance-header" id="headerBalance">0 RWF</span>
+        <div class="avatar-icon" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></div>
+    </div>
+</div>
+
+<div id="eventHero" class="event-hero">
+    <div class="icon" id="eventIcon" style="font-size: 60px;">🎮</div>
+    <h2 id="eventName">Loading...</h2>
+</div>
+
+<div id="prizeContainer" class="prize-distribution">
+    <div class="section-loader"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>
+</div>
+
+<div style="padding: 16px;">
+    <button class="join-btn" id="payBtn" style="background: #FFD700; color: #000;">Pay Entry Fee & Join</button>
+</div>
+
+<div class="bottom-nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="leaderboard.html"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
+    <a href="#"><i class="fas fa-search"></i><span>Explore</span></a>
+    <a href="#"><i class="fas fa-ticket-alt"></i><span>My Events</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getDatabase, ref, get, child, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+        authDomain: "shora-games.firebaseapp.com",
+        projectId: "shora-games",
+        databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const events = {
+        1: { name: "Arcade Legends", entryFee: 500, prizePool: 5000, icon: "🎮", prize1: 2500, prize2: 1500, prize3: 1000, prize4: "500 each" },
+        2: { name: "Speed Racing", entryFee: 1000, prizePool: 10000, icon: "🏎️", prize1: 5000, prize2: 3000, prize3: 2000, prize4: "1000 total" },
+        3: { name: "Puzzle Masters", entryFee: 300, prizePool: 3000, icon: "🧩", prize1: 1500, prize2: 1000, prize3: 500, prize4: "200 total" },
+        4: { name: "Chess Championship", entryFee: 1500, prizePool: 15000, icon: "♟️", prize1: 7500, prize2: 4500, prize3: 3000, prize4: "1000 total" }
+    };
+
+    let currentEvent, currentUser, currentBalance;
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    async function loadEventDetails() {
+        const eventId = localStorage.getItem('selectedEventId');
+        if (!eventId) window.location.href = 'dashboard.html';
+        
+        currentEvent = events[eventId];
+        
+        document.getElementById('eventIcon').innerHTML = currentEvent.icon;
+        document.getElementById('eventName').innerHTML = currentEvent.name;
+        
+        // Hide section loader and show content
+        const prizeContainer = document.getElementById('prizeContainer');
+        prizeContainer.innerHTML = `
+            <h3 style="margin-bottom: 16px;"><i class="fas fa-trophy"></i> Prize Distribution</h3>
+            <div class="prize-row"><span>🥇 1st Place</span><span style="color: #FFD700;">${currentEvent.prize1} RWF</span></div>
+            <div class="prize-row"><span>🥈 2nd Place</span><span style="color: #C0C0C0;">${currentEvent.prize2} RWF</span></div>
+            <div class="prize-row"><span>🥉 3rd Place</span><span style="color: #CD7F32;">${currentEvent.prize3} RWF</span></div>
+            <div class="prize-row"><span>👥 4th-10th Place</span><span>${currentEvent.prize4}</span></div>
+        `;
+        
+        document.getElementById('payBtn').innerHTML = `Pay ${currentEvent.entryFee} RWF & Join`;
+        
+        // Hide page loader
+        setTimeout(() => {
+            const loader = document.querySelector('.page-loader');
+            if (loader) loader.classList.add('hidden');
+        }, 300);
+    }
+
+    document.getElementById('payBtn').addEventListener('click', async () => {
+        const btn = document.getElementById('payBtn');
+        setButtonLoading(btn, true);
+        
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        if (currentBalance >= currentEvent.entryFee) {
+            const newBalance = currentBalance - currentEvent.entryFee;
+            await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
+            showToast(`✓ Joined ${currentEvent.name}! Good luck!`);
+            setButtonLoading(btn, false);
+            setTimeout(() => window.location.href = 'game.html', 2000);
+        } else {
+            showToast(`Insufficient balance! Need ${currentEvent.entryFee} RWF.`, true);
+            setButtonLoading(btn, false);
+        }
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) window.location.href = 'login.html';
+        else {
+            currentUser = user;
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) {
+                currentBalance = snapshot.val().balance || 0;
+                document.getElementById('headerBalance').innerHTML = currentBalance + ' RWF';
+            }
+            await loadEventDetails();
+        }
+    });
+</script>
+<script src="js/loaders.js"></script>
+</body>
+</html>
