@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Shora Games · Leaderboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/loaders.css">
+    <style>
+        .leaderboard-card {
+            background: rgba(5, 12, 24, 0.85);
+            border-radius: 20px;
+            margin: 12px 16px;
+            padding: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .rank { font-size: 24px; font-weight: 800; width: 60px; }
+        .rank-1 { color: #FFD700; }
+        .rank-2 { color: #C0C0C0; }
+        .rank-3 { color: #CD7F32; }
+        .player-info { flex: 1; }
+        .player-name { font-weight: 700; }
+        .player-score { font-size: 18px; font-weight: 800; color: #4a9eff; }
+    </style>
+</head>
+<body>
+
+<div class="page-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING LEADERBOARD</div>
+    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+</div>
+
+<div class="main-header">
+    <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
+    <div class="wallet-area">
+        <span class="balance-header" id="headerBalance">0 RWF</span>
+        <div class="avatar-icon" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></div>
+    </div>
+</div>
+
+<div class="nav-menu">
+    <a href="dashboard.html">🎮 Events</a>
+    <a href="leaderboard.html" class="active">🏆 Leaderboard</a>
+    <a href="#">⭐ Winners</a>
+    <a href="#">📊 Stats</a>
+</div>
+
+<div id="leaderboardContainer" class="leaderboard-container"></div>
+
+<div class="bottom-nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="leaderboard.html" class="active"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
+    <a href="#"><i class="fas fa-search"></i><span>Explore</span></a>
+    <a href="#"><i class="fas fa-ticket-alt"></i><span>My Events</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+        authDomain: "shora-games.firebaseapp.com",
+        projectId: "shora-games",
+        databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    async function loadLeaderboard() {
+        const container = document.getElementById('leaderboardContainer');
+        
+        // Show data loader
+        showDataLoader('leaderboardContainer');
+        
+        const eventId = localStorage.getItem('selectedEventId') || '1';
+        const scoresRef = ref(db, `scores/${eventId}`);
+        const snapshot = await get(scoresRef);
+        const scores = [];
+        snapshot.forEach(child => scores.push({ id: child.key, ...child.val() }));
+        scores.sort((a, b) => b.score - a.score);
+        
+        const top10 = scores.slice(0, 10);
+        
+        if (top10.length === 0) {
+            container.innerHTML = '<div class="text-center" style="padding: 40px;">No scores yet. Be the first to play!</div>';
+            return;
+        }
+        
+        container.innerHTML = top10.map((entry, idx) => `
+            <div class="leaderboard-card">
+                <div class="rank ${idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : ''}">#${idx + 1}</div>
+                <div class="player-info"><div class="player-name">Player ${entry.userId?.substring(0, 6) || 'Unknown'}</div></div>
+                <div class="player-score">${entry.score} pts</div>
+            </div>
+        `).join('');
+    }
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) window.location.href = 'login.html';
+        else {
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) document.getElementById('headerBalance').innerHTML = (snapshot.val().balance || 0) + ' RWF';
+            await loadLeaderboard();
+            
+            setTimeout(() => {
+                const loader = document.querySelector('.page-loader');
+                if (loader) loader.classList.add('hidden');
+            }, 500);
+        }
+    });
+</script>
+<script src="js/loaders.js"></script>
+</body>
+</html>
