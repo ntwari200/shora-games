@@ -2,552 +2,169 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes, viewport-fit=cover">
-    <title>Shora Games · My Profile</title>
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    
-    <!-- Google Fonts -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Shora Games · Events</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-    
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', sans-serif;
-            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
-            color: #ffffff;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            padding: 20px;
-        }
-        
-        /* Main Container - Mobile First */
-        .dashboard-container {
-            max-width: 400px;
-            width: 100%;
-            margin: 0 auto;
-            background: transparent;
-            border-radius: 24px;
-            overflow: hidden;
-        }
-        
-        /* ========== 1. TOP HEADER BAR ========== */
-        .top-header {
-            background: rgba(5, 12, 24, 0.75);
-            backdrop-filter: blur(12px);
-            padding: 16px 20px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        
-        .logo {
-            font-size: 20px;
-            font-weight: 800;
-            background: linear-gradient(135deg, #4a9eff, #0066ff);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            letter-spacing: 1px;
-        }
-        
-        .logo i {
-            margin-right: 6px;
-            font-size: 18px;
-            background: none;
-            -webkit-text-fill-color: #3b82f6;
-        }
-        
-        .header-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .deposit-btn-header {
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 2px solid #2a7fff;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 30px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-        
-        .deposit-btn-header:hover {
-            background: linear-gradient(145deg, #003366, #001f4d);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-        
-        .balance-header {
-            font-weight: 700;
-            font-size: 14px;
-            color: #4a9eff;
-        }
-        
-        .profile-icon {
-            width: 36px;
-            height: 36px;
-            background: rgba(59, 130, 246, 0.15);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .profile-icon:hover {
-            background: rgba(59, 130, 246, 0.3);
-            transform: scale(1.05);
-        }
-        
-        .profile-icon i {
-            font-size: 18px;
-            color: #3b82f6;
-        }
-        
-        /* ========== 2. PAGE TITLE SECTION ========== */
-        .title-bar {
-            background: rgba(5, 12, 24, 0.85);
-            backdrop-filter: blur(12px);
-            padding: 14px 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
-        }
-        
-        .back-arrow {
-            background: none;
-            border: none;
-            color: #3b82f6;
-            font-size: 20px;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            transition: all 0.3s ease;
-        }
-        
-        .back-arrow:hover {
-            transform: translateX(-3px);
-            color: #4a9eff;
-        }
-        
-        .title-bar h1 {
-            font-size: 18px;
-            font-weight: 700;
-            color: #ffffff;
-            margin: 0;
-        }
-        
-        /* ========== 3. GREETING AREA ========== */
-        .greeting-area {
-            padding: 24px 20px 16px 20px;
-            background: transparent;
-        }
-        
-        .greeting-area h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: #ffffff;
-        }
-        
-        .greeting-area h2 span {
-            color: #3b82f6;
-        }
-        
-        .greeting-area p {
-            color: #888;
-            font-size: 13px;
-            margin-top: 6px;
-        }
-        
-        /* ========== 4. USER INFORMATION PANEL ========== */
-        .info-panel {
-            background: rgba(5, 12, 24, 0.85);
-            backdrop-filter: blur(12px);
-            margin: 0 16px 20px 16px;
-            border-radius: 20px;
-            overflow: hidden;
-            border: 1px solid rgba(59, 130, 246, 0.3);
-        }
-        
-        .info-row {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 16px 20px;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
-            transition: all 0.3s ease;
-        }
-        
-        .info-row:last-child {
-            border-bottom: none;
-        }
-        
-        .info-row:hover {
-            background: rgba(59, 130, 246, 0.05);
-        }
-        
-        .info-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-        
-        .info-left i {
-            width: 24px;
-            font-size: 18px;
-            color: #3b82f6;
-        }
-        
-        .info-left .label {
-            font-weight: 500;
-            color: #cccccc;
-            font-size: 14px;
-        }
-        
-        .info-value {
-            font-weight: 700;
-            color: #ffffff;
-            font-size: 14px;
-        }
-        
-        .info-value.balance {
-            color: #4a9eff;
-            font-size: 16px;
-        }
-        
-        /* ========== 5. ACTION BUTTONS ========== */
-        .action-buttons {
-            padding: 0 16px 24px 16px;
-            display: flex;
-            gap: 12px;
-        }
-        
-        .action-btn {
-            flex: 1;
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 2px solid #2a7fff;
-            color: white;
-            padding: 16px 0;
-            border-radius: 60px;
-            font-weight: 800;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
-        }
-        
-        .action-btn i {
-            font-size: 18px;
-            color: #3b82f6;
-        }
-        
-        .action-btn:hover {
-            background: linear-gradient(145deg, #003366, #001f4d);
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.3);
-        }
-        
-        .action-btn:active {
-            transform: scale(0.98);
-        }
-        
-        /* Loading Spinner */
-        .loading-spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            border-radius: 50%;
-            border-top-color: #3b82f6;
-            animation: spin 0.8s linear infinite;
-        }
-        
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        
-        /* Toast Notification */
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(5, 12, 24, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid #3b82f6;
-            border-radius: 50px;
-            padding: 12px 24px;
-            color: #3b82f6;
-            font-size: 14px;
-            z-index: 1000;
-            display: none;
-            white-space: nowrap;
-            font-weight: 500;
-        }
-        
-        /* Footer */
-        .footer {
-            text-align: center;
-            padding: 20px;
-            border-top: 1px solid rgba(59, 130, 246, 0.2);
-            margin-top: 10px;
-        }
-        
-        .footer p {
-            font-size: 10px;
-            color: #555;
-        }
-        
-        .footer i {
-            color: #ffcc00;
-        }
-        
-        /* Responsive */
-        @media (max-width: 450px) {
-            .dashboard-container {
-                border-radius: 0;
-            }
-            body {
-                padding: 0;
-            }
-            .info-row {
-                padding: 14px 16px;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/loaders.css">
 </head>
 <body>
-    <div class="dashboard-container">
-        
-        <!-- 1. TOP HEADER BAR -->
-        <div class="top-header">
-            <div class="logo">
-                <i class="fas fa-gamepad"></i> SHORA
-            </div>
-            <div class="header-right">
-                <button class="deposit-btn-header" id="quickDepositBtn">
-                    <i class="fas fa-plus-circle"></i> Deposit
-                </button>
-                <span class="balance-header" id="headerBalance">0 RWF</span>
-                <div class="profile-icon" id="profileIcon">
-                    <i class="fas fa-user"></i>
-                </div>
-            </div>
-        </div>
-        
-        <!-- 2. PAGE TITLE SECTION -->
-        <div class="title-bar">
-            <button class="back-arrow" id="backArrow">
-                <i class="fas fa-arrow-left"></i>
-            </button>
-            <h1>MY PROFILE</h1>
-        </div>
-        
-        <!-- 3. GREETING AREA -->
-        <div class="greeting-area">
-            <h2>Hi, <span id="username">Player</span>!</h2>
-            <p><i class="fas fa-chart-line"></i> Ready to play and win today?</p>
-        </div>
-        
-        <!-- 4. USER INFORMATION PANEL -->
-        <div class="info-panel">
-            <div class="info-row">
-                <div class="info-left">
-                    <i class="fas fa-id-card"></i>
-                    <span class="label">User ID</span>
-                </div>
-                <div class="info-value" id="userId">Loading...</div>
-            </div>
-            <div class="info-row">
-                <div class="info-left">
-                    <i class="fas fa-phone-alt"></i>
-                    <span class="label">Phone Number</span>
-                </div>
-                <div class="info-value" id="userPhone">Loading...</div>
-            </div>
-            <div class="info-row">
-                <div class="info-left">
-                    <i class="fas fa-wallet"></i>
-                    <span class="label">Balance</span>
-                </div>
-                <div class="info-value balance" id="userBalance">0 RWF</div>
-            </div>
-            <div class="info-row">
-                <div class="info-left">
-                    <i class="fas fa-clock"></i>
-                    <span class="label">Pending Withdraw</span>
-                </div>
-                <div class="info-value" id="pendingWithdraw">0 RWF</div>
-            </div>
-        </div>
-        
-        <!-- 5. ACTION BUTTONS -->
-        <div class="action-buttons">
-            <button class="action-btn" id="depositBtn">
-                <i class="fas fa-plus-circle"></i> DEPOSIT
-            </button>
-            <button class="action-btn" id="withdrawBtn">
-                <i class="fas fa-minus-circle"></i> WITHDRAW
-            </button>
-        </div>
-        
-        <!-- Footer -->
-        <div class="footer">
-            <p><i class="fas fa-mobile-alt"></i> Secured by MTN Mobile Money</p>
-        </div>
+
+<!-- Page Loader -->
+<div class="page-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING SHORA GAMES</div>
+    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
+</div>
+
+<!-- Progress Bar -->
+<div class="progress-bar-container"><div class="progress-bar"></div></div>
+
+<!-- Header -->
+<div class="main-header">
+    <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
+    <div class="wallet-area">
+        <button class="deposit-btn-header" onclick="window.location.href='profile.html'">Deposit</button>
+        <span class="balance-header" id="headerBalance">0 RWF</span>
+        <div class="avatar-icon" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></div>
     </div>
-    
-    <!-- Toast Notification -->
-    <div id="toast" class="toast"></div>
+</div>
 
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-        import { getAuth, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+<!-- Navigation -->
+<div class="nav-menu">
+    <a href="dashboard.html" class="active">🎮 Events</a>
+    <a href="#">🏆 Tournaments</a>
+    <a href="#">⭐ Featured</a>
+    <a href="#">📱 Mobile</a>
+</div>
 
-        // Firebase Configuration
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
-            authDomain: "shora-games.firebaseapp.com",
-            projectId: "shora-games",
-            storageBucket: "shora-games.firebasestorage.app",
-            messagingSenderId: "1045658148606",
-            appId: "1:1045658148606:web:394ed053ca22778d5d4faf",
-            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
-        };
+<!-- Banner with Lazy Loading -->
+<div class="banner">
+    <h3><i class="fas fa-trophy"></i> Weekly Tournament</h3>
+    <p>1,000,000 RWF Prize Pool • Ends Sunday</p>
+</div>
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getDatabase(app);
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <button class="filter-tab active" data-filter="all">All Events</button>
+    <button class="filter-tab" data-filter="arcade">Arcade</button>
+    <button class="filter-tab" data-filter="racing">Racing</button>
+    <button class="filter-tab" data-filter="puzzle">Puzzle</button>
+    <button class="filter-tab" data-filter="strategy">Strategy</button>
+</div>
 
-        // DOM Elements
-        const usernameSpan = document.getElementById('username');
-        const userIdSpan = document.getElementById('userId');
-        const userPhoneSpan = document.getElementById('userPhone');
-        const userBalanceSpan = document.getElementById('userBalance');
-        const pendingWithdrawSpan = document.getElementById('pendingWithdraw');
-        const headerBalanceSpan = document.getElementById('headerBalance');
+<!-- Events Container -->
+<div id="eventsContainer" class="events-container"></div>
+
+<!-- Bottom Navigation -->
+<div class="bottom-nav">
+    <a href="dashboard.html" class="active"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="leaderboard.html"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
+    <a href="#"><i class="fas fa-search"></i><span>Explore</span></a>
+    <a href="#"><i class="fas fa-ticket-alt"></i><span>My Events</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getDatabase, ref, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+        authDomain: "shora-games.firebaseapp.com",
+        projectId: "shora-games",
+        databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    const events = [
+        { id: 1, name: "Arcade Legends", category: "arcade", icon: "fa-dice-d6", entryFee: 500, prizePool: 5000, players: 24, maxPlayers: 50, startTime: "Today, 7:00 PM", image: "🎮" },
+        { id: 2, name: "Speed Racing", category: "racing", icon: "fa-car", entryFee: 1000, prizePool: 10000, players: 32, maxPlayers: 64, startTime: "Today, 8:00 PM", image: "🏎️" },
+        { id: 3, name: "Puzzle Masters", category: "puzzle", icon: "fa-puzzle-piece", entryFee: 300, prizePool: 3000, players: 18, maxPlayers: 40, startTime: "Tomorrow, 6:00 PM", image: "🧩" },
+        { id: 4, name: "Chess Championship", category: "strategy", icon: "fa-chess-queen", entryFee: 1500, prizePool: 15000, players: 16, maxPlayers: 32, startTime: "Tomorrow, 8:00 PM", image: "♟️" }
+    ];
+
+    let currentUserBalance = 0;
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.borderColor = isError ? '#ff4444' : '#3b82f6';
+        toast.style.color = isError ? '#ff4444' : '#3b82f6';
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    async function renderEvents(category = 'all') {
+        const container = document.getElementById('eventsContainer');
         
-        // Toast function
-        function showToast(message, isError = false) {
-            const toast = document.getElementById('toast');
-            toast.textContent = message;
-            toast.style.borderColor = isError ? '#ff4444' : '#3b82f6';
-            toast.style.color = isError ? '#ff4444' : '#3b82f6';
-            toast.style.display = 'block';
-            setTimeout(() => {
-                toast.style.display = 'none';
-            }, 3000);
+        // Show skeleton loader
+        showSkeleton('eventsContainer', 'event', 3);
+        
+        // Simulate API delay
+        await new Promise(resolve => setTimeout(resolve, 800));
+        
+        const filtered = category === 'all' ? events : events.filter(e => e.category === category);
+        
+        container.innerHTML = filtered.map(event => `
+            <div class="event-card" data-event-id="${event.id}">
+                <div class="event-game-icon">${event.image}</div>
+                <div class="event-title">${event.name}</div>
+                <div class="event-details">
+                    <div class="detail-item"><div class="detail-label">Entry Fee</div><div class="detail-value">${event.entryFee} RWF</div></div>
+                    <div class="detail-item"><div class="detail-label">Prize Pool</div><div class="detail-value">${event.prizePool} RWF</div></div>
+                    <div class="detail-item"><div class="detail-label">Players</div><div class="detail-value">${event.players}/${event.maxPlayers}</div></div>
+                </div>
+                <button class="join-btn" onclick="joinEvent(${event.id}, ${event.entryFee})">Join Event →</button>
+            </div>
+        `).join('');
+    }
+
+    window.joinEvent = (eventId, entryFee) => {
+        if (currentUserBalance >= entryFee) {
+            localStorage.setItem('selectedEventId', eventId);
+            window.location.href = 'event-details.html';
+        } else {
+            showToast(`Insufficient balance! Need ${entryFee} RWF. Please deposit.`, true);
+            setTimeout(() => window.location.href = 'profile.html', 2000);
         }
-        
-        // Load user data from Firebase
-        async function loadUserData(user) {
-            try {
-                const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    
-                    // Update UI with user data
-                    usernameSpan.textContent = data.username || 'Player';
-                    userIdSpan.textContent = user.uid.substring(0, 8).toUpperCase();
-                    userPhoneSpan.textContent = data.phone || 'Not provided';
-                    
-                    const balance = data.totalWinnings || 0;
-                    userBalanceSpan.textContent = balance + ' RWF';
-                    headerBalanceSpan.textContent = balance + ' RWF';
-                    
-                    pendingWithdrawSpan.textContent = (data.pendingWithdraw || 0) + ' RWF';
-                    
-                    // Store balance for later use
-                    window.userBalance = balance;
-                } else {
-                    showToast('User data not found', true);
-                }
-            } catch (error) {
-                console.error('Error loading user data:', error);
-                showToast('Error loading profile', true);
-            }
-        }
-        
-        // Check authentication state
-        onAuthStateChanged(auth, (user) => {
-            if (!user) {
-                // Redirect to login if not authenticated
-                window.location.href = 'login.html';
-            } else {
-                loadUserData(user);
-            }
+    };
+
+    // Filter tabs with loading
+    document.querySelectorAll('.filter-tab').forEach(tab => {
+        tab.addEventListener('click', async () => {
+            document.querySelectorAll('.filter-tab').forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            await renderEvents(tab.dataset.filter);
         });
-        
-        // Logout function
-        async function handleLogout() {
-            try {
-                await signOut(auth);
-                showToast('Logged out successfully');
-                setTimeout(() => {
-                    window.location.href = 'login.html';
-                }, 1000);
-            } catch (error) {
-                showToast(error.message, true);
+    });
+
+    // Load user data and hide page loader
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) window.location.href = 'login.html';
+        else {
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) {
+                currentUserBalance = snapshot.val().balance || 0;
+                document.getElementById('headerBalance').innerHTML = currentUserBalance + ' RWF';
             }
+            await renderEvents();
+            
+            // Hide page loader after everything loads
+            setTimeout(() => {
+                const loader = document.querySelector('.page-loader');
+                if (loader) loader.classList.add('hidden');
+            }, 500);
         }
-        
-        // Deposit action
-        function handleDeposit() {
-            showToast('💳 Deposit feature coming soon! MTN Mobile Money integration in progress.');
-        }
-        
-        // Withdraw action
-        function handleWithdraw() {
-            if (window.userBalance > 0) {
-                showToast(`💰 Withdraw up to ${window.userBalance} RWF via MTN Mobile Money. Coming soon!`);
-            } else {
-                showToast('⚠️ No funds available for withdrawal', true);
-            }
-        }
-        
-        // Back button - go to previous page
-        function goBack() {
-            window.history.back();
-        }
-        
-        // Profile icon - show settings
-        function showSettings() {
-            showToast('⚙️ Settings page coming soon!');
-        }
-        
-        // Event Listeners
-        document.getElementById('depositBtn').addEventListener('click', handleDeposit);
-        document.getElementById('withdrawBtn').addEventListener('click', handleWithdraw);
-        document.getElementById('quickDepositBtn').addEventListener('click', handleDeposit);
-        document.getElementById('backArrow').addEventListener('click', goBack);
-        document.getElementById('profileIcon').addEventListener('click', showSettings);
-        
-        console.log('✅ Dashboard loaded - Blue/Black Theme');
-    </script>
+    });
+</script>
+<script src="js/loaders.js"></script>
 </body>
 </html>
