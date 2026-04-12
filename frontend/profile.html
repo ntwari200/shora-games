@@ -6,50 +6,48 @@
     <title>Shora Games · Profile</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="css/style.css">
-    <link rel="stylesheet" href="css/loaders.css">
     <style>
-        .profile-header {
-            background: linear-gradient(145deg, #002244, #001433);
-            padding: 30px 20px;
-            text-align: center;
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
+            color: #ffffff;
+            padding-bottom: 70px;
         }
-        .avatar-large {
-            width: 80px;
-            height: 80px;
-            background: rgba(59, 130, 246, 0.2);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto 16px;
-            border: 2px solid #3b82f6;
-        }
-        .info-panel {
-            background: rgba(5, 12, 24, 0.85);
-            border-radius: 20px;
-            margin: 16px;
-            padding: 20px;
-        }
-        .info-row {
+        .main-header {
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 16px;
             display: flex;
             justify-content: space-between;
-            padding: 12px 0;
-            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
         }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #4a9eff, #0066ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
+        .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .profile-header { background: linear-gradient(145deg, #002244, #001433); padding: 30px 20px; text-align: center; }
+        .avatar-large { width: 80px; height: 80px; background: rgba(59, 130, 246, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; border: 2px solid #3b82f6; }
+        .avatar-large i { font-size: 40px; color: #3b82f6; }
+        .info-panel { background: rgba(5, 12, 24, 0.85); border-radius: 20px; margin: 16px; padding: 20px; }
+        .info-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(59, 130, 246, 0.1); }
         .balance-large { font-size: 32px; font-weight: 800; color: #FFD700; }
         .action-buttons { display: flex; gap: 12px; padding: 0 16px; margin: 20px 0; }
-        .action-btn {
-            flex: 1;
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 2px solid #2a7fff;
-            padding: 14px;
-            border-radius: 40px;
-            color: white;
-            font-weight: 700;
-            text-align: center;
-            cursor: pointer;
-        }
+        .action-btn { flex: 1; background: linear-gradient(145deg, #002244, #001433); border: 2px solid #2a7fff; padding: 14px; border-radius: 40px; color: white; font-weight: 700; text-align: center; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5, 12, 24, 0.95); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 10px 16px; border-top: 1px solid rgba(59, 130, 246, 0.2); }
+        .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #aaa; text-decoration: none; font-size: 11px; }
+        .bottom-nav a i { font-size: 20px; }
+        .bottom-nav a.active { color: #3b82f6; }
+        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .page-loader.hidden { display: none; }
+        .loader-spinner { width: 60px; height: 60px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .skeleton { background: linear-gradient(90deg, #1a1a2e 25%, #2a2a3e 50%, #1a1a2e 75%); background-size: 200% 100%; animation: skeleton-loading 1.5s infinite; border-radius: 12px; }
+        .skeleton-title { height: 24px; width: 150px; margin: 0 auto 8px; }
+        .skeleton-text { height: 14px; width: 200px; margin: 8px auto; }
+        .skeleton-row { height: 40px; width: 100%; margin: 12px 0; }
+        @keyframes skeleton-loading { 0% { background-position: 200% 0; } 100% { background-position: -200% 0; } }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(5, 12, 24, 0.95); border: 1px solid #3b82f6; border-radius: 50px; padding: 12px 24px; color: #3b82f6; font-size: 14px; z-index: 1000; display: none; }
     </style>
 </head>
 <body>
@@ -57,7 +55,6 @@
 <div class="page-loader">
     <div class="loader-spinner"></div>
     <div class="loader-text">LOADING YOUR PROFILE</div>
-    <div class="loader-progress"><div class="loader-progress-bar"></div></div>
 </div>
 
 <div class="main-header">
@@ -71,15 +68,14 @@
 <div id="profileContent">
     <div class="profile-header">
         <div class="avatar-large"><i class="fas fa-user"></i></div>
-        <div class="skeleton skeleton-title" style="width: 150px; height: 24px; margin: 0 auto;"></div>
-        <div class="skeleton skeleton-text" style="width: 200px; height: 14px; margin: 8px auto 0;"></div>
+        <div class="skeleton skeleton-title"></div>
+        <div class="skeleton skeleton-text"></div>
     </div>
-
     <div class="info-panel">
-        <div class="skeleton skeleton-title" style="width: 100%; height: 60px;"></div>
-        <div class="skeleton skeleton-text" style="width: 100%; height: 40px; margin-top: 12px;"></div>
-        <div class="skeleton skeleton-text" style="width: 100%; height: 40px; margin-top: 12px;"></div>
-        <div class="skeleton skeleton-text" style="width: 100%; height: 40px; margin-top: 12px;"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
+        <div class="skeleton skeleton-row"></div>
     </div>
 </div>
 
@@ -120,8 +116,7 @@
             const snapshot = await get(child(ref(db), `users/${user.uid}`));
             if (snapshot.exists()) {
                 const data = snapshot.val();
-                const profileContent = document.getElementById('profileContent');
-                profileContent.innerHTML = `
+                document.getElementById('profileContent').innerHTML = `
                     <div class="profile-header">
                         <div class="avatar-large"><i class="fas fa-user"></i></div>
                         <h2>${data.username}</h2>
@@ -136,14 +131,9 @@
                 `;
                 document.getElementById('headerBalance').innerHTML = (data.balance || 0) + ' RWF';
             }
-            
-            setTimeout(() => {
-                const loader = document.querySelector('.page-loader');
-                if (loader) loader.classList.add('hidden');
-            }, 500);
+            document.querySelector('.page-loader').classList.add('hidden');
         }
     });
 </script>
-<script src="js/loaders.js"></script>
 </body>
 </html>
