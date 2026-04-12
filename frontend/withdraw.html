@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <title>Shora Games · Withdraw</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
+            color: #ffffff;
+            padding-bottom: 70px;
+        }
+        .main-header {
+            background: rgba(5, 12, 24, 0.95);
+            backdrop-filter: blur(12px);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #4a9eff, #0066ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
+        .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .info-panel { background: rgba(5, 12, 24, 0.85); border-radius: 20px; margin: 16px; padding: 20px; }
+        .withdraw-input { background: rgba(5, 12, 24, 0.85); border: 1px solid rgba(59, 130, 246, 0.3); border-radius: 16px; padding: 16px; width: 100%; color: white; font-size: 24px; text-align: center; font-weight: bold; }
+        .mtn-payment { background: rgba(5, 12, 24, 0.85); border-radius: 20px; padding: 20px; margin: 16px; display: flex; align-items: center; gap: 16px; border: 1px solid rgba(59, 130, 246, 0.3); }
+        .mtn-logo { background: #ffcc00; padding: 12px 20px; border-radius: 12px; font-weight: bold; color: #000; }
+        .join-btn { width: calc(100% - 32px); margin: 0 16px; background: #FFD700; border: none; padding: 16px; border-radius: 40px; color: #000; font-weight: 700; cursor: pointer; font-size: 16px; }
+        .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5, 12, 24, 0.95); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 10px 16px; border-top: 1px solid rgba(59, 130, 246, 0.2); }
+        .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #aaa; text-decoration: none; font-size: 11px; }
+        .bottom-nav a i { font-size: 20px; }
+        .page-loader { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%); z-index: 9999; display: flex; justify-content: center; align-items: center; flex-direction: column; }
+        .page-loader.hidden { display: none; }
+        .loader-spinner { width: 60px; height: 60px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-loader { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(0,0,0,0.3); border-top: 2px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
+        .toast { position: fixed; bottom: 80px; left: 50%; transform: translateX(-50%); background: rgba(5, 12, 24, 0.95); border: 1px solid #3b82f6; border-radius: 50px; padding: 12px 24px; color: #3b82f6; font-size: 14px; z-index: 1000; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="page-loader">
+    <div class="loader-spinner"></div>
+    <div class="loader-text">LOADING WITHDRAW</div>
+</div>
+
+<div class="main-header">
+    <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
+    <div class="wallet-area">
+        <span class="balance-header" id="headerBalance">0 RWF</span>
+        <div class="avatar-icon" onclick="window.location.href='profile.html'"><i class="fas fa-user"></i></div>
+    </div>
+</div>
+
+<div class="info-panel" style="text-align: center;"><h3>Withdraw Funds</h3><p style="color: #888;">Enter amount to send to your MTN Mobile Money</p></div>
+
+<div style="padding: 0 16px;">
+    <div class="info-panel" style="margin: 0 0 20px 0;">
+        <div class="info-row" style="display: flex; justify-content: space-between;"><span>Available Balance</span><span style="color: #FFD700; font-size: 24px; font-weight: bold;" id="availableBalance">0 RWF</span></div>
+    </div>
+    <input type="number" id="withdrawAmount" class="withdraw-input" placeholder="Enter amount" min="500">
+    <div class="mtn-payment"><div class="mtn-logo"><i class="fas fa-mobile-alt"></i> MTN MoMo</div><div style="flex: 1; margin-left: 16px;">Withdraw to MTN Mobile Money</div></div>
+    <button class="join-btn" id="withdrawBtn">Withdraw Now</button>
+</div>
+
+<div class="bottom-nav">
+    <a href="dashboard.html"><i class="fas fa-home"></i><span>Home</span></a>
+    <a href="leaderboard.html"><i class="fas fa-chart-line"></i><span>Leaderboard</span></a>
+    <a href="#"><i class="fas fa-search"></i><span>Explore</span></a>
+    <a href="#"><i class="fas fa-ticket-alt"></i><span>My Events</span></a>
+    <a href="profile.html"><i class="fas fa-user"></i><span>Profile</span></a>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
+    import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+    import { getDatabase, ref, get, child, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+        authDomain: "shora-games.firebaseapp.com",
+        projectId: "shora-games",
+        databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getDatabase(app);
+
+    let currentUser, currentBalance;
+
+    function showToast(msg, isError = false) {
+        const toast = document.getElementById('toast');
+        toast.textContent = msg;
+        toast.style.display = 'block';
+        setTimeout(() => toast.style.display = 'none', 3000);
+    }
+
+    function setButtonLoading(btn, loading) {
+        if (loading) {
+            btn.dataset.original = btn.innerHTML;
+            btn.innerHTML = '<span class="btn-loader"></span> Processing...';
+            btn.disabled = true;
+        } else {
+            btn.innerHTML = btn.dataset.original;
+            btn.disabled = false;
+        }
+    }
+
+    document.getElementById('withdrawBtn').addEventListener('click', async () => {
+        const amount = parseInt(document.getElementById('withdrawAmount').value);
+        if (!amount || amount < 500) return showToast('Minimum withdrawal is 500 RWF', true);
+        if (amount > currentBalance) return showToast('Insufficient balance', true);
+        const btn = document.getElementById('withdrawBtn');
+        setButtonLoading(btn, true);
+        const newBalance = currentBalance - amount;
+        await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
+        showToast(`✓ Withdrawal request of ${amount} RWF submitted to MTN MoMo!`);
+        setTimeout(() => window.location.href = 'profile.html', 1500);
+    });
+
+    onAuthStateChanged(auth, async (user) => {
+        if (!user) window.location.href = 'login.html';
+        else {
+            const snapshot = await get(child(ref(db), `users/${user.uid}`));
+            if (snapshot.exists()) {
+                currentBalance = snapshot.val().balance || 0;
+                currentUser = { uid: user.uid, balance: currentBalance };
+                document.getElementById('headerBalance').innerHTML = currentBalance + ' RWF';
+                document.getElementById('availableBalance').innerHTML = currentBalance + ' RWF';
+            }
+            document.querySelector('.page-loader').classList.add('hidden');
+        }
+    });
+</script>
+</body>
+</html>
