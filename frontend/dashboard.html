@@ -50,7 +50,7 @@
         .event-game-icon { font-size: 40px; margin-bottom: 12px; text-align: center; }
         .event-title { font-size: 18px; font-weight: 700; text-align: center; margin-bottom: 8px; }
         .event-details { display: flex; justify-content: space-between; margin: 16px 0; padding: 12px 0; border-top: 1px solid rgba(59, 130, 246, 0.1); border-bottom: 1px solid rgba(59, 130, 246, 0.1); }
-        .detail-item { text-align: center; }
+        .detail-item { text-align: center; flex: 1; }
         .detail-label { font-size: 11px; color: #888; }
         .detail-value { font-weight: 700; font-size: 16px; color: #FFD700; }
         .join-btn { width: 100%; background: linear-gradient(145deg, #002244, #001433); border: 2px solid #2a7fff; padding: 12px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; }
@@ -99,16 +99,17 @@
 </div>
 
 <div class="banner">
-    <h3><i class="fas fa-trophy"></i> Weekly Tournament</h3>
-    <p>1,000,000 RWF Prize Pool • Ends Sunday</p>
+    <h3><i class="fas fa-trophy"></i> 🫧 BUBLIX BUBBLE HIT TOURNAMENT</h3>
+    <p>Match 3+ bubbles of the same color! Entry Fee: 500 RWF | Prize Pool: 5,000 RWF</p>
+    <p style="font-size: 12px; margin-top: 8px;">⭐ Featured Game - Click Join Event below to play!</p>
 </div>
 
 <div class="filter-tabs">
     <button class="filter-tab active" data-filter="all">All Events</button>
+    <button class="filter-tab" data-filter="featured">Featured</button>
     <button class="filter-tab" data-filter="arcade">Arcade</button>
-    <button class="filter-tab" data-filter="racing">Racing</button>
     <button class="filter-tab" data-filter="puzzle">Puzzle</button>
-    <button class="filter-tab" data-filter="strategy">Strategy</button>
+    <button class="filter-tab" data-filter="racing">Racing</button>
 </div>
 
 <div id="eventsContainer" class="events-container"></div>
@@ -139,7 +140,9 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // Events array - INCLUDING BUBLIX BUBBLE HIT as event ID 5
     const events = [
+        { id: 5, name: "BUBLIX BUBBLE HIT", category: "featured", icon: "🫧", entryFee: 500, prizePool: 5000, players: 28, maxPlayers: 50, startTime: "Live Now!" },
         { id: 1, name: "Arcade Legends", category: "arcade", icon: "🎮", entryFee: 500, prizePool: 5000, players: 24, maxPlayers: 50, startTime: "Today, 7:00 PM" },
         { id: 2, name: "Speed Racing", category: "racing", icon: "🏎️", entryFee: 1000, prizePool: 10000, players: 32, maxPlayers: 64, startTime: "Today, 8:00 PM" },
         { id: 3, name: "Puzzle Masters", category: "puzzle", icon: "🧩", entryFee: 300, prizePool: 3000, players: 18, maxPlayers: 40, startTime: "Tomorrow, 6:00 PM" },
@@ -185,8 +188,10 @@
     }
 
     window.joinEvent = (eventId, entryFee) => {
+        // Save selected event to localStorage
+        localStorage.setItem('selectedEventId', eventId);
+        
         if (currentUserBalance >= entryFee) {
-            localStorage.setItem('selectedEventId', eventId);
             window.location.href = 'event-details.html';
         } else {
             showToast(`Insufficient balance! Need ${entryFee} RWF. Please deposit.`, true);
