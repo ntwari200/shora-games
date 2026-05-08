@@ -27,14 +27,17 @@
             z-index: 100;
         }
         .logo { font-size: 20px; font-weight: 800; background: linear-gradient(135deg, #4a9eff, #0066ff); -webkit-background-clip: text; background-clip: text; color: transparent; }
+        .logo i { background: none; -webkit-text-fill-color: #3b82f6; margin-right: 6px; }
         .wallet-area { display: flex; align-items: center; gap: 12px; }
         .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
         .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
         .event-hero { background: linear-gradient(145deg, #002244, #001433); padding: 30px 20px; text-align: center; border-bottom: 1px solid rgba(59, 130, 246, 0.3); }
         .prize-distribution { background: rgba(5, 12, 24, 0.85); border-radius: 16px; padding: 20px; margin: 16px; }
         .prize-row { display: flex; justify-content: space-between; padding: 12px 0; border-bottom: 1px solid rgba(59, 130, 246, 0.1); }
-        .join-btn { width: calc(100% - 32px); margin: 0 16px; background: linear-gradient(145deg, #002244, #001433); border: 2px solid #2a7fff; padding: 16px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 16px; }
+        .join-btn { width: calc(100% - 32px); margin: 0 16px; background: linear-gradient(145deg, #002244, #001433); border: 2px solid #2a7fff; padding: 16px; border-radius: 40px; color: white; font-weight: 700; cursor: pointer; font-size: 16px; transition: all 0.3s ease; }
         .join-btn:hover { background: linear-gradient(145deg, #003366, #001f4d); transform: translateY(-2px); }
+        .join-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-loader { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(0,0,0,0.3); border-top: 2px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
         .bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: rgba(5, 12, 24, 0.95); backdrop-filter: blur(12px); display: flex; justify-content: space-around; padding: 10px 16px; border-top: 1px solid rgba(59, 130, 246, 0.2); z-index: 100; }
         .bottom-nav a { display: flex; flex-direction: column; align-items: center; gap: 4px; color: #aaa; text-decoration: none; font-size: 11px; }
         .bottom-nav a i { font-size: 20px; }
@@ -43,7 +46,6 @@
         .page-loader.hidden { display: none; }
         .loader-spinner { width: 60px; height: 60px; border: 3px solid rgba(59, 130, 246, 0.2); border-top: 3px solid #3b82f6; border-radius: 50%; animation: spin 1s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .btn-loader { display: inline-block; width: 20px; height: 20px; border: 2px solid rgba(0,0,0,0.3); border-top: 2px solid #000; border-radius: 50%; animation: spin 0.8s linear infinite; margin-right: 8px; }
         .section-loader { display: flex; justify-content: center; padding: 40px; gap: 12px; }
         .section-loader .dot { width: 12px; height: 12px; background: #3b82f6; border-radius: 50%; animation: bounce 1.4s infinite; }
         .section-loader .dot:nth-child(2) { animation-delay: -0.16s; }
@@ -103,11 +105,13 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
+    // Updated events - INCLUDING BUBLIX BUBBLE HIT (ID 5)
     const events = {
         1: { name: "Arcade Legends", entryFee: 500, prizePool: 5000, icon: "🎮", prize1: 2500, prize2: 1500, prize3: 1000, prize4: "500 each" },
         2: { name: "Speed Racing", entryFee: 1000, prizePool: 10000, icon: "🏎️", prize1: 5000, prize2: 3000, prize3: 2000, prize4: "1000 total" },
         3: { name: "Puzzle Masters", entryFee: 300, prizePool: 3000, icon: "🧩", prize1: 1500, prize2: 1000, prize3: 500, prize4: "200 total" },
-        4: { name: "Chess Championship", entryFee: 1500, prizePool: 15000, icon: "♟️", prize1: 7500, prize2: 4500, prize3: 3000, prize4: "1000 total" }
+        4: { name: "Chess Championship", entryFee: 1500, prizePool: 15000, icon: "♟️", prize1: 7500, prize2: 4500, prize3: 3000, prize4: "1000 total" },
+        5: { name: "BUBLIX BUBBLE HIT", entryFee: 500, prizePool: 5000, icon: "🫧", prize1: 2500, prize2: 1500, prize3: 1000, prize4: "500 each" }
     };
 
     let currentEvent, currentUser, currentBalance;
@@ -115,6 +119,8 @@
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
         toast.textContent = msg;
+        toast.style.borderColor = isError ? '#ff4444' : '#3b82f6';
+        toast.style.color = isError ? '#ff4444' : '#3b82f6';
         toast.style.display = 'block';
         setTimeout(() => toast.style.display = 'none', 3000);
     }
@@ -132,9 +138,19 @@
 
     async function loadEventDetails() {
         const eventId = localStorage.getItem('selectedEventId');
-        if (!eventId) window.location.href = 'dashboard.html';
+        if (!eventId) {
+            showToast('No event selected', true);
+            setTimeout(() => window.location.href = 'dashboard.html', 2000);
+            return;
+        }
         
         currentEvent = events[eventId];
+        if (!currentEvent) {
+            showToast('Event not found', true);
+            setTimeout(() => window.location.href = 'dashboard.html', 2000);
+            return;
+        }
+        
         document.getElementById('eventIcon').innerHTML = currentEvent.icon;
         document.getElementById('eventName').innerHTML = currentEvent.name;
         
@@ -152,7 +168,6 @@
     document.getElementById('payBtn').addEventListener('click', async () => {
         const btn = document.getElementById('payBtn');
         setButtonLoading(btn, true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
         
         if (currentBalance >= currentEvent.entryFee) {
             const newBalance = currentBalance - currentEvent.entryFee;
@@ -163,20 +178,22 @@
         } else {
             showToast(`Insufficient balance! Need ${currentEvent.entryFee} RWF.`, true);
             setButtonLoading(btn, false);
+            setTimeout(() => window.location.href = 'profile.html', 2000);
         }
     });
 
     onAuthStateChanged(auth, async (user) => {
-        if (!user) window.location.href = 'login.html';
-        else {
-            currentUser = user;
-            const snapshot = await get(child(ref(db), `users/${user.uid}`));
-            if (snapshot.exists()) {
-                currentBalance = snapshot.val().balance || 0;
-                document.getElementById('headerBalance').innerHTML = currentBalance + ' RWF';
-            }
-            await loadEventDetails();
+        if (!user) {
+            window.location.href = 'login.html';
+            return;
         }
+        currentUser = user;
+        const snapshot = await get(child(ref(db), `users/${user.uid}`));
+        if (snapshot.exists()) {
+            currentBalance = snapshot.val().balance || 0;
+            document.getElementById('headerBalance').innerHTML = currentBalance + ' RWF';
+        }
+        await loadEventDetails();
     });
 </script>
 </body>
