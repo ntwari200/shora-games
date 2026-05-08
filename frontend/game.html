@@ -34,6 +34,7 @@
         .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
         
         .game-wrapper {
+            position: relative;
             background: #000;
             border-radius: 20px;
             overflow: hidden;
@@ -41,11 +42,53 @@
             border: 2px solid rgba(59, 130, 246, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
         }
-        iframe {
+        
+        /* Game iframe - prevents external redirects */
+        .game-frame {
             display: block;
             width: 100%;
             height: 600px;
             border: none;
+            /* Prevent sandbox restrictions from breaking the game */
+            sandbox: "allow-same-origin allow-scripts allow-popups allow-forms allow-modals";
+        }
+        
+        /* Warning overlay for external links */
+        .redirect-warning {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 10000;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            text-align: center;
+            padding: 20px;
+        }
+        .redirect-warning.show {
+            display: flex;
+        }
+        .redirect-warning .warning-box {
+            background: linear-gradient(145deg, #002244, #001433);
+            border: 2px solid #ff4444;
+            border-radius: 20px;
+            padding: 30px;
+            max-width: 400px;
+        }
+        .redirect-warning h3 { color: #ff4444; margin-bottom: 16px; }
+        .redirect-warning p { color: #ccc; margin-bottom: 20px; }
+        .redirect-warning button {
+            background: #3b82f6;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 40px;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
         }
         
         .game-info-panel {
@@ -174,7 +217,7 @@
         .score-received { color: #00cc44; font-size: 12px; margin-top: 8px; }
         
         @media (max-width: 600px) {
-            iframe { height: 450px; }
+            .game-frame { height: 450px; }
             .tournament-info { flex-direction: column; gap: 10px; }
             .score-section { flex-direction: column; }
             .submit-btn { width: 100%; }
@@ -188,6 +231,16 @@
     <div class="loader-text">LOADING BUBLIX BUBBLE HIT</div>
 </div>
 
+<!-- Redirect Warning Overlay -->
+<div id="redirectWarning" class="redirect-warning">
+    <div class="warning-box">
+        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff4444; margin-bottom: 16px;"></i>
+        <h3>⚠️ Leaving Shora Games</h3>
+        <p>You're about to leave the game. Click below to stay and continue playing.</p>
+        <button onclick="closeWarningAndReload()">🔄 Stay in Game</button>
+    </div>
+</div>
+
 <div class="main-header">
     <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
     <div class="wallet-area">
@@ -199,8 +252,10 @@
 <div class="game-wrapper">
     <iframe 
         id="gameFrame"
+        class="game-frame"
         src="https://html5.gamedistribution.com/908ed6a402314c1e8dc62b8103dd4adf/?gd_sdk_referrer_url=https://shora-frontend.onrender.com/game.html"
-        allow="fullscreen">
+        allow="fullscreen"
+        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-popups-to-escape-sandbox">
     </iframe>
 </div>
 
@@ -232,7 +287,7 @@
         </button>
     </div>
     <p style="font-size: 11px; color: #666; text-align: center; margin-top: 12px;">
-        <i class="fas fa-info-circle"></i> Match 3 or more bubbles of the same color to earn points. Your score will appear automatically.
+        <i class="fas fa-info-circle"></i> Match 3 or more bubbles of the same color to earn points.
     </p>
 </div>
 
@@ -268,10 +323,11 @@
         1: { name: "Arcade Legends", entryFee: 500, prizePool: 5000 },
         2: { name: "Speed Racing", entryFee: 1000, prizePool: 10000 },
         3: { name: "Puzzle Masters", entryFee: 300, prizePool: 3000 },
-        4: { name: "Chess Championship", entryFee: 1500, prizePool: 15000 }
+        4: { name: "Chess Championship", entryFee: 1500, prizePool: 15000 },
+        5: { name: "BUBLIX BUBBLE HIT", entryFee: 500, prizePool: 5000 }
     };
     
-    let currentEvent = events[eventId] || events[1];
+    let currentEvent = events[eventId] || events[5];
     let currentUser = null;
     let currentScore = 0;
     let scoreSubmitted = false;
@@ -286,6 +342,16 @@
         setTimeout(() => toast.style.display = 'none', 3000);
     }
 
+    function closeWarningAndReload() {
+        document.getElementById('redirectWarning').classList.remove('show');
+        // Reload the iframe to reset the game
+        const iframe = document.getElementById('gameFrame');
+        const src = iframe.src;
+        iframe.src = '';
+        setTimeout(() => { iframe.src = src; }, 100);
+    }
+    window.closeWarningAndReload = closeWarningAndReload;
+
     function setButtonLoading(btn, loading) {
         if (loading) {
             btn.dataset.original = btn.innerHTML;
@@ -297,11 +363,32 @@
         }
     }
 
+    // Prevent iframe from navigating away
+    const iframe = document.getElementById('gameFrame');
+    iframe.addEventListener('load', () => {
+        // Try to prevent navigation
+        try {
+            iframe.contentWindow.addEventListener('beforeunload', (e) => {
+                e.preventDefault();
+                e.returnValue = '';
+                return 'Are you sure you want to leave the game?';
+            });
+        } catch(e) { console.log('Cannot access iframe content'); }
+    });
+
+    // Detect when user tries to leave the page
+    window.addEventListener('beforeunload', (e) => {
+        if (!scoreSubmitted && currentScore > 0) {
+            e.preventDefault();
+            e.returnValue = 'You have not submitted your score! Are you sure you want to leave?';
+            return 'You have not submitted your score! Are you sure you want to leave?';
+        }
+    });
+
     // Listen for score from GameDistribution game
     window.addEventListener('message', function(event) {
         console.log('Message received:', event.data);
         
-        // Check for score event from the game
         if (event.data && event.data.type === 'SCORE') {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
@@ -310,7 +397,6 @@
             showToast(`Score updated: ${currentScore}`, false);
         }
         
-        // Some games use different format
         if (event.data && event.data.score && !event.data.type) {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
@@ -334,7 +420,6 @@
         setButtonLoading(btn, true);
         
         try {
-            // Save score to Firebase
             const scoreData = {
                 userId: currentUser.uid,
                 username: currentUser.username || 'Player',
@@ -347,7 +432,6 @@
             
             await push(ref(db, `scores/${eventId}`), scoreData);
             
-            // Update user's games played count
             const userRef = ref(db, `users/${currentUser.uid}`);
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
@@ -358,7 +442,6 @@
             
             scoreSubmitted = true;
             showToast(`✓ Score of ${currentScore} submitted! Redirecting to leaderboard...`);
-            document.getElementById('scoreStatus').innerHTML = '✓ Score submitted! Redirecting...';
             
             setTimeout(() => {
                 window.location.href = 'leaderboard.html';
@@ -382,16 +465,13 @@
         document.getElementById('prizePool').innerHTML = currentEvent.prizePool + ' RWF';
         document.getElementById('playerCount').innerHTML = '32/50';
         
-        // Generate game session ID
         gameSessionId = Date.now().toString() + Math.random().toString(36).substring(2);
         
-        // Hide loader after 2 seconds
         setTimeout(() => {
             document.querySelector('.page-loader').classList.add('hidden');
         }, 2000);
     }
 
-    // Event Listeners
     document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
 
     onAuthStateChanged(auth, async (user) => {
