@@ -12,7 +12,7 @@
             font-family: 'Inter', sans-serif;
             background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
             color: #ffffff;
-            padding-bottom: 70px;
+            min-height: 100vh;
         }
         
         .main-header {
@@ -33,62 +33,87 @@
         .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
         .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
         
+        /* Game Container with sizing controls */
+        .game-container {
+            margin: 16px;
+            transition: all 0.3s ease;
+        }
+        .game-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            z-index: 1000;
+            background: #000;
+            border-radius: 0;
+        }
+        .game-container.fullscreen .game-wrapper {
+            height: calc(100vh - 80px);
+            border-radius: 0;
+            margin: 0;
+        }
+        .game-container.fullscreen .game-frame {
+            height: 100%;
+        }
+        .game-container.fullscreen .game-controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1001;
+        }
+        .game-container.fullscreen .game-info-panel {
+            display: none;
+        }
+        .game-container.minimized .game-wrapper {
+            height: 300px;
+        }
+        .game-container.minimized .game-frame {
+            height: 300px;
+        }
+        
         .game-wrapper {
             position: relative;
             background: #000;
             border-radius: 20px;
             overflow: hidden;
-            margin: 16px;
             border: 2px solid rgba(59, 130, 246, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
+            transition: all 0.3s ease;
         }
         
-        /* Game iframe - prevents external redirects */
         .game-frame {
             display: block;
             width: 100%;
-            height: 600px;
+            height: 550px;
             border: none;
-            /* Prevent sandbox restrictions from breaking the game */
-            sandbox: "allow-same-origin allow-scripts allow-popups allow-forms allow-modals";
+            transition: all 0.3s ease;
         }
         
-        /* Warning overlay for external links */
-        .redirect-warning {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.95);
-            z-index: 10000;
-            display: none;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-            text-align: center;
-            padding: 20px;
-        }
-        .redirect-warning.show {
+        /* Game Controls Bar */
+        .game-controls {
             display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            justify-content: flex-end;
         }
-        .redirect-warning .warning-box {
-            background: linear-gradient(145deg, #002244, #001433);
-            border: 2px solid #ff4444;
-            border-radius: 20px;
-            padding: 30px;
-            max-width: 400px;
-        }
-        .redirect-warning h3 { color: #ff4444; margin-bottom: 16px; }
-        .redirect-warning p { color: #ccc; margin-bottom: 20px; }
-        .redirect-warning button {
-            background: #3b82f6;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 40px;
+        .ctrl-btn {
+            background: rgba(5, 12, 24, 0.85);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            padding: 8px 16px;
+            border-radius: 30px;
             color: white;
-            font-weight: bold;
+            font-size: 12px;
             cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .ctrl-btn:hover {
+            background: #3b82f6;
+            transform: translateY(-2px);
         }
         
         .game-info-panel {
@@ -96,8 +121,9 @@
             backdrop-filter: blur(12px);
             border-radius: 16px;
             padding: 20px;
-            margin: 16px;
+            margin-top: 16px;
             border: 1px solid rgba(59, 130, 246, 0.3);
+            transition: all 0.3s ease;
         }
         .game-title {
             font-size: 24px;
@@ -106,7 +132,6 @@
             -webkit-background-clip: text;
             background-clip: text;
             color: transparent;
-            margin-bottom: 8px;
         }
         .tournament-info {
             display: flex;
@@ -145,17 +170,11 @@
             color: white;
             font-weight: 700;
             cursor: pointer;
-            transition: all 0.3s ease;
             font-size: 16px;
+            transition: all 0.3s ease;
         }
-        .submit-btn:hover {
-            background: linear-gradient(145deg, #003366, #001f4d);
-            transform: translateY(-2px);
-        }
-        .submit-btn:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
+        .submit-btn:hover { background: linear-gradient(145deg, #003366, #001f4d); transform: translateY(-2px); }
+        .submit-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         
         .bottom-nav {
             position: fixed;
@@ -231,16 +250,6 @@
     <div class="loader-text">LOADING BUBLIX BUBBLE HIT</div>
 </div>
 
-<!-- Redirect Warning Overlay -->
-<div id="redirectWarning" class="redirect-warning">
-    <div class="warning-box">
-        <i class="fas fa-exclamation-triangle" style="font-size: 48px; color: #ff4444; margin-bottom: 16px;"></i>
-        <h3>⚠️ Leaving Shora Games</h3>
-        <p>You're about to leave the game. Click below to stay and continue playing.</p>
-        <button onclick="closeWarningAndReload()">🔄 Stay in Game</button>
-    </div>
-</div>
-
 <div class="main-header">
     <div class="logo"><i class="fas fa-gamepad"></i> SHORA</div>
     <div class="wallet-area">
@@ -249,17 +258,29 @@
     </div>
 </div>
 
-<div class="game-wrapper">
-    <iframe 
-        id="gameFrame"
-        class="game-frame"
-        src="https://html5.gamedistribution.com/908ed6a402314c1e8dc62b8103dd4adf/?gd_sdk_referrer_url=https://shora-frontend.onrender.com/game.html"
-        allow="fullscreen"
-        sandbox="allow-same-origin allow-scripts allow-popups allow-forms allow-modals allow-popups-to-escape-sandbox">
-    </iframe>
+<div class="game-container" id="gameContainer">
+    <div class="game-controls">
+        <button class="ctrl-btn" id="minimizeBtn" onclick="toggleMinimize()">
+            <i class="fas fa-compress-alt"></i> Minimize
+        </button>
+        <button class="ctrl-btn" id="fullscreenBtn" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i> Full Screen
+        </button>
+        <button class="ctrl-btn" id="resetViewBtn" onclick="resetView()">
+            <i class="fas fa-window-restore"></i> Reset
+        </button>
+    </div>
+    <div class="game-wrapper">
+        <iframe 
+            id="gameFrame"
+            class="game-frame"
+            src="https://html5.gamedistribution.com/908ed6a402314c1e8dc62b8103dd4adf/?gd_sdk_referrer_url=https://shora-frontend.onrender.com/game.html"
+            allow="fullscreen">
+        </iframe>
+    </div>
 </div>
 
-<div class="game-info-panel">
+<div class="game-info-panel" id="infoPanel">
     <div class="game-title">🏆 BUBLIX BUBBLE HIT - TOURNAMENT</div>
     <div class="tournament-info">
         <div class="tournament-stat">
@@ -286,9 +307,6 @@
             <i class="fas fa-check-circle"></i> SUBMIT SCORE
         </button>
     </div>
-    <p style="font-size: 11px; color: #666; text-align: center; margin-top: 12px;">
-        <i class="fas fa-info-circle"></i> Match 3 or more bubbles of the same color to earn points.
-    </p>
 </div>
 
 <div class="bottom-nav">
@@ -317,7 +335,6 @@
     const auth = getAuth(app);
     const db = getDatabase(app);
 
-    // Tournament data
     const eventId = localStorage.getItem('selectedEventId');
     const events = {
         1: { name: "Arcade Legends", entryFee: 500, prizePool: 5000 },
@@ -331,7 +348,6 @@
     let currentUser = null;
     let currentScore = 0;
     let scoreSubmitted = false;
-    let gameSessionId = null;
 
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
@@ -342,61 +358,66 @@
         setTimeout(() => toast.style.display = 'none', 3000);
     }
 
-    function closeWarningAndReload() {
-        document.getElementById('redirectWarning').classList.remove('show');
-        // Reload the iframe to reset the game
-        const iframe = document.getElementById('gameFrame');
-        const src = iframe.src;
-        iframe.src = '';
-        setTimeout(() => { iframe.src = src; }, 100);
-    }
-    window.closeWarningAndReload = closeWarningAndReload;
-
-    function setButtonLoading(btn, loading) {
-        if (loading) {
-            btn.dataset.original = btn.innerHTML;
-            btn.innerHTML = '<span class="loader-spinner" style="width:16px;height:16px;border-top-color:#000;"></span> Submitting...';
-            btn.disabled = true;
+    // Fullscreen functions
+    window.toggleFullscreen = function() {
+        const container = document.getElementById('gameContainer');
+        if (!document.fullscreenElement) {
+            container.classList.add('fullscreen');
+            document.documentElement.requestFullscreen();
+            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-compress"></i> Exit';
         } else {
-            btn.innerHTML = btn.dataset.original;
-            btn.disabled = false;
+            container.classList.remove('fullscreen');
+            document.exitFullscreen();
+            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
         }
-    }
+    };
 
-    // Prevent iframe from navigating away
-    const iframe = document.getElementById('gameFrame');
-    iframe.addEventListener('load', () => {
-        // Try to prevent navigation
-        try {
-            iframe.contentWindow.addEventListener('beforeunload', (e) => {
-                e.preventDefault();
-                e.returnValue = '';
-                return 'Are you sure you want to leave the game?';
-            });
-        } catch(e) { console.log('Cannot access iframe content'); }
-    });
-
-    // Detect when user tries to leave the page
-    window.addEventListener('beforeunload', (e) => {
-        if (!scoreSubmitted && currentScore > 0) {
-            e.preventDefault();
-            e.returnValue = 'You have not submitted your score! Are you sure you want to leave?';
-            return 'You have not submitted your score! Are you sure you want to leave?';
-        }
-    });
-
-    // Listen for score from GameDistribution game
-    window.addEventListener('message', function(event) {
-        console.log('Message received:', event.data);
+    window.toggleMinimize = function() {
+        const container = document.getElementById('gameContainer');
+        const infoPanel = document.getElementById('infoPanel');
+        const minimizeBtn = document.getElementById('minimizeBtn');
         
+        if (container.classList.contains('minimized')) {
+            container.classList.remove('minimized');
+            infoPanel.style.display = 'block';
+            minimizeBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Minimize';
+        } else {
+            container.classList.add('minimized');
+            infoPanel.style.display = 'none';
+            minimizeBtn.innerHTML = '<i class="fas fa-expand-alt"></i> Expand';
+        }
+    };
+
+    window.resetView = function() {
+        const container = document.getElementById('gameContainer');
+        const infoPanel = document.getElementById('infoPanel');
+        
+        if (document.fullscreenElement) {
+            document.exitFullscreen();
+        }
+        container.classList.remove('fullscreen');
+        container.classList.remove('minimized');
+        infoPanel.style.display = 'block';
+        document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
+        document.getElementById('minimizeBtn').innerHTML = '<i class="fas fa-compress-alt"></i> Minimize';
+    };
+
+    // Listen for fullscreen change
+    document.addEventListener('fullscreenchange', () => {
+        if (!document.fullscreenElement) {
+            document.getElementById('gameContainer').classList.remove('fullscreen');
+            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
+        }
+    });
+
+    // Listen for score from game
+    window.addEventListener('message', function(event) {
         if (event.data && event.data.type === 'SCORE') {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
             document.getElementById('scoreStatus').innerHTML = '✓ Score received! Click SUBMIT to save.';
             document.getElementById('scoreStatus').style.color = '#4a9eff';
-            showToast(`Score updated: ${currentScore}`, false);
         }
-        
         if (event.data && event.data.score && !event.data.type) {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
@@ -417,79 +438,53 @@
         }
         
         const btn = document.getElementById('submitScoreBtn');
-        setButtonLoading(btn, true);
+        btn.innerHTML = '<span class="loader-spinner" style="width:16px;height:16px;border-top-color:#000;display:inline-block;"></span> Submitting...';
+        btn.disabled = true;
         
         try {
-            const scoreData = {
+            await push(ref(db, `scores/${eventId}`), {
                 userId: currentUser.uid,
                 username: currentUser.username || 'Player',
                 score: currentScore,
                 eventId: eventId,
                 eventName: currentEvent.name,
-                timestamp: new Date().toISOString(),
-                gameSessionId: gameSessionId || Date.now().toString()
-            };
-            
-            await push(ref(db, `scores/${eventId}`), scoreData);
+                timestamp: new Date().toISOString()
+            });
             
             const userRef = ref(db, `users/${currentUser.uid}`);
             const snapshot = await get(userRef);
             if (snapshot.exists()) {
-                const userData = snapshot.val();
-                const gamesPlayed = (userData.gamesPlayed || 0) + 1;
-                await update(userRef, { gamesPlayed: gamesPlayed });
+                await update(userRef, { gamesPlayed: (snapshot.val().gamesPlayed || 0) + 1 });
             }
             
             scoreSubmitted = true;
             showToast(`✓ Score of ${currentScore} submitted! Redirecting to leaderboard...`);
-            
-            setTimeout(() => {
-                window.location.href = 'leaderboard.html';
-            }, 2000);
-            
+            setTimeout(() => window.location.href = 'leaderboard.html', 2000);
         } catch (error) {
-            console.error('Score submission error:', error);
             showToast('Error submitting score. Please try again.', true);
-            setButtonLoading(btn, false);
+            btn.innerHTML = 'SUBMIT SCORE';
+            btn.disabled = false;
         }
     }
 
     async function initGamePage() {
-        if (!eventId) {
-            showToast('No tournament selected', true);
-            setTimeout(() => window.location.href = 'dashboard.html', 2000);
-            return;
-        }
-        
         document.getElementById('entryFee').innerHTML = currentEvent.entryFee + ' RWF';
         document.getElementById('prizePool').innerHTML = currentEvent.prizePool + ' RWF';
         document.getElementById('playerCount').innerHTML = '32/50';
-        
-        gameSessionId = Date.now().toString() + Math.random().toString(36).substring(2);
-        
-        setTimeout(() => {
-            document.querySelector('.page-loader').classList.add('hidden');
-        }, 2000);
+        setTimeout(() => document.querySelector('.page-loader').classList.add('hidden'), 2000);
     }
 
     document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
 
     onAuthStateChanged(auth, async (user) => {
-        if (!user) {
-            window.location.href = 'login.html';
-            return;
-        }
-        
+        if (!user) { window.location.href = 'login.html'; return; }
         currentUser = user;
         const snapshot = await get(child(ref(db), `users/${user.uid}`));
         if (snapshot.exists()) {
             currentUser.username = snapshot.val().username;
             currentUser.balance = snapshot.val().balance || 0;
             document.getElementById('headerBalance').innerHTML = currentUser.balance + ' RWF';
-        } else {
-            currentUser.username = user.email.split('@')[0];
         }
-        
         await initGamePage();
     });
 </script>
