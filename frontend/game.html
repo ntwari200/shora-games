@@ -13,6 +13,7 @@
             background: linear-gradient(135deg, #0b0f17 0%, #0a0e1a 100%);
             color: #ffffff;
             min-height: 100vh;
+            overflow-x: hidden;
         }
         
         .main-header {
@@ -33,44 +34,10 @@
         .balance-header { font-weight: 700; font-size: 14px; color: #4a9eff; }
         .avatar-icon { width: 32px; height: 32px; background: rgba(59, 130, 246, 0.15); border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; border: 1px solid rgba(59, 130, 246, 0.3); }
         
-        /* Game Container with sizing controls */
+        /* Game Container */
         .game-container {
             margin: 16px;
-            transition: all 0.3s ease;
-        }
-        .game-container.fullscreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            margin: 0;
-            z-index: 1000;
-            background: #000;
-            border-radius: 0;
-        }
-        .game-container.fullscreen .game-wrapper {
-            height: calc(100vh - 80px);
-            border-radius: 0;
-            margin: 0;
-        }
-        .game-container.fullscreen .game-frame {
-            height: 100%;
-        }
-        .game-container.fullscreen .game-controls {
-            position: fixed;
-            top: 10px;
-            right: 10px;
-            z-index: 1001;
-        }
-        .game-container.fullscreen .game-info-panel {
-            display: none;
-        }
-        .game-container.minimized .game-wrapper {
-            height: 300px;
-        }
-        .game-container.minimized .game-frame {
-            height: 300px;
+            position: relative;
         }
         
         .game-wrapper {
@@ -80,21 +47,20 @@
             overflow: hidden;
             border: 2px solid rgba(59, 130, 246, 0.3);
             box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4);
-            transition: all 0.3s ease;
         }
         
+        /* CRITICAL: This sandbox prevents ALL redirects */
         .game-frame {
             display: block;
             width: 100%;
-            height: 550px;
+            height: 600px;
             border: none;
-            transition: all 0.3s ease;
         }
         
         /* Game Controls Bar */
         .game-controls {
             display: flex;
-            gap: 8px;
+            gap: 12px;
             margin-bottom: 12px;
             justify-content: flex-end;
         }
@@ -104,7 +70,7 @@
             padding: 8px 16px;
             border-radius: 30px;
             color: white;
-            font-size: 12px;
+            font-size: 13px;
             cursor: pointer;
             transition: all 0.3s ease;
             display: flex;
@@ -123,7 +89,6 @@
             padding: 20px;
             margin-top: 16px;
             border: 1px solid rgba(59, 130, 246, 0.3);
-            transition: all 0.3s ease;
         }
         .game-title {
             font-size: 24px;
@@ -165,7 +130,7 @@
             flex: 1;
             background: linear-gradient(145deg, #002244, #001433);
             border: 2px solid #2a7fff;
-            padding: 16px 24px;
+            padding: 14px 24px;
             border-radius: 40px;
             color: white;
             font-weight: 700;
@@ -235,6 +200,41 @@
         
         .score-received { color: #00cc44; font-size: 12px; margin-top: 8px; }
         
+        /* Fullscreen styles */
+        .game-container.fullscreen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            margin: 0;
+            z-index: 1000;
+            background: #000;
+        }
+        .game-container.fullscreen .game-wrapper {
+            height: 100vh;
+            border-radius: 0;
+            margin: 0;
+        }
+        .game-container.fullscreen .game-frame {
+            height: 100vh;
+        }
+        .game-container.fullscreen .game-controls {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 1001;
+        }
+        .game-container.fullscreen .game-info-panel {
+            display: none;
+        }
+        .game-container.fullscreen .main-header {
+            display: none;
+        }
+        .game-container.fullscreen .bottom-nav {
+            display: none;
+        }
+        
         @media (max-width: 600px) {
             .game-frame { height: 450px; }
             .tournament-info { flex-direction: column; gap: 10px; }
@@ -260,21 +260,20 @@
 
 <div class="game-container" id="gameContainer">
     <div class="game-controls">
-        <button class="ctrl-btn" id="minimizeBtn" onclick="toggleMinimize()">
-            <i class="fas fa-compress-alt"></i> Minimize
-        </button>
         <button class="ctrl-btn" id="fullscreenBtn" onclick="toggleFullscreen()">
             <i class="fas fa-expand"></i> Full Screen
         </button>
-        <button class="ctrl-btn" id="resetViewBtn" onclick="resetView()">
-            <i class="fas fa-window-restore"></i> Reset
+        <button class="ctrl-btn" onclick="resetGame()">
+            <i class="fas fa-redo-alt"></i> Reset Game
         </button>
     </div>
     <div class="game-wrapper">
+        <!-- CRITICAL: sandbox="allow-scripts allow-same-origin" prevents redirects! -->
         <iframe 
             id="gameFrame"
             class="game-frame"
-            src="https://html5.gamedistribution.com/908ed6a402314c1e8dc62b8103dd4adf/?gd_sdk_referrer_url=https://shora-frontend.onrender.com/game.html"
+            src="about:blank"
+            sandbox="allow-scripts allow-same-origin allow-popups allow-forms"
             allow="fullscreen">
         </iframe>
     </div>
@@ -348,6 +347,7 @@
     let currentUser = null;
     let currentScore = 0;
     let scoreSubmitted = false;
+    let gameLoaded = false;
 
     function showToast(msg, isError = false) {
         const toast = document.getElementById('toast');
@@ -358,66 +358,61 @@
         setTimeout(() => toast.style.display = 'none', 3000);
     }
 
-    // Fullscreen functions
+    // Load game into iframe safely
+    function loadGame() {
+        const iframe = document.getElementById('gameFrame');
+        iframe.src = 'https://html5.gamedistribution.com/908ed6a402314c1e8dc62b8103dd4adf/?gd_sdk_referrer_url=https://shora-frontend.onrender.com/game.html';
+        gameLoaded = true;
+    }
+
+    // Reset game (reload iframe)
+    window.resetGame = function() {
+        const iframe = document.getElementById('gameFrame');
+        const currentSrc = iframe.src;
+        iframe.src = '';
+        setTimeout(() => {
+            iframe.src = currentSrc;
+            showToast('Game reset! Play again to get a new score.', false);
+        }, 500);
+    };
+
+    // Fullscreen toggle
     window.toggleFullscreen = function() {
         const container = document.getElementById('gameContainer');
+        const btn = document.getElementById('fullscreenBtn');
+        
         if (!document.fullscreenElement) {
             container.classList.add('fullscreen');
             document.documentElement.requestFullscreen();
-            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-compress"></i> Exit';
+            btn.innerHTML = '<i class="fas fa-compress"></i> Exit';
         } else {
             container.classList.remove('fullscreen');
             document.exitFullscreen();
-            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
+            btn.innerHTML = '<i class="fas fa-expand"></i> Full Screen';
         }
     };
 
-    window.toggleMinimize = function() {
-        const container = document.getElementById('gameContainer');
-        const infoPanel = document.getElementById('infoPanel');
-        const minimizeBtn = document.getElementById('minimizeBtn');
-        
-        if (container.classList.contains('minimized')) {
-            container.classList.remove('minimized');
-            infoPanel.style.display = 'block';
-            minimizeBtn.innerHTML = '<i class="fas fa-compress-alt"></i> Minimize';
-        } else {
-            container.classList.add('minimized');
-            infoPanel.style.display = 'none';
-            minimizeBtn.innerHTML = '<i class="fas fa-expand-alt"></i> Expand';
-        }
-    };
-
-    window.resetView = function() {
-        const container = document.getElementById('gameContainer');
-        const infoPanel = document.getElementById('infoPanel');
-        
-        if (document.fullscreenElement) {
-            document.exitFullscreen();
-        }
-        container.classList.remove('fullscreen');
-        container.classList.remove('minimized');
-        infoPanel.style.display = 'block';
-        document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
-        document.getElementById('minimizeBtn').innerHTML = '<i class="fas fa-compress-alt"></i> Minimize';
-    };
-
-    // Listen for fullscreen change
     document.addEventListener('fullscreenchange', () => {
+        const container = document.getElementById('gameContainer');
+        const btn = document.getElementById('fullscreenBtn');
         if (!document.fullscreenElement) {
-            document.getElementById('gameContainer').classList.remove('fullscreen');
-            document.getElementById('fullscreenBtn').innerHTML = '<i class="fas fa-expand"></i> Full Screen';
+            container.classList.remove('fullscreen');
+            btn.innerHTML = '<i class="fas fa-expand"></i> Full Screen';
         }
     });
 
     // Listen for score from game
     window.addEventListener('message', function(event) {
+        console.log('Message received:', event.data);
+        
         if (event.data && event.data.type === 'SCORE') {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
             document.getElementById('scoreStatus').innerHTML = '✓ Score received! Click SUBMIT to save.';
             document.getElementById('scoreStatus').style.color = '#4a9eff';
+            showToast(`Score: ${currentScore} points!`, false);
         }
+        
         if (event.data && event.data.score && !event.data.type) {
             currentScore = event.data.score;
             document.getElementById('currentScore').innerHTML = currentScore;
@@ -471,7 +466,15 @@
         document.getElementById('entryFee').innerHTML = currentEvent.entryFee + ' RWF';
         document.getElementById('prizePool').innerHTML = currentEvent.prizePool + ' RWF';
         document.getElementById('playerCount').innerHTML = '32/50';
-        setTimeout(() => document.querySelector('.page-loader').classList.add('hidden'), 2000);
+        
+        // Load the game after a short delay
+        setTimeout(() => {
+            loadGame();
+        }, 500);
+        
+        setTimeout(() => {
+            document.querySelector('.page-loader').classList.add('hidden');
+        }, 2000);
     }
 
     document.getElementById('submitScoreBtn').addEventListener('click', submitScore);
