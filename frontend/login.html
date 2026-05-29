@@ -7,22 +7,14 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  /* ========================================
-     SHORA GAMES - HUD CYBER INTERFACE SYSTEM
-     ======================================== */
-
   :root {
     --bg-deep: #06111F;
     --bg-secondary: #0B1F36;
     --bg-tertiary: #102A43;
-    --bg-card: rgba(255, 255, 255, 0.03);
     --glow-primary: #00BFFF;
     --glow-primary-dim: rgba(0, 191, 255, 0.3);
-    --glow-purple: #7C3AED;
     --text-primary: #F8FAFC;
-    --text-secondary: #EAF4FF;
     --text-muted: #94A3B8;
-    --border-light: rgba(255, 255, 255, 0.08);
     --border-glow: rgba(0, 191, 255, 0.25);
     --blur-lg: blur(20px);
   }
@@ -561,12 +553,12 @@
 
     <div id="main-view">
       <div class="cyber-tabs">
-        <button class="cyber-tab active" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
-        <button class="cyber-tab" onclick="switchTab('register')"><i class="fas fa-user-plus"></i> REGISTER</button>
+        <button class="cyber-tab active" id="tabLoginBtn" onclick="switchTab('login')"><i class="fas fa-sign-in-alt"></i> SIGN IN</button>
+        <button class="cyber-tab" id="tabRegisterBtn" onclick="switchTab('register')"><i class="fas fa-user-plus"></i> REGISTER</button>
       </div>
 
       <!-- LOGIN FORM -->
-      <form class="form active" id="form-login" novalidate onsubmit="handleLogin(event)">
+      <div id="form-login" class="form active">
         <div class="field">
           <label><i class="fas fa-phone-alt"></i> Phone Number</label>
           <div class="input-wrap has-prefix">
@@ -591,7 +583,7 @@
           <a href="#" onclick="showForgot(event)"><i class="fas fa-question-circle"></i> Forgot password?</a>
         </div>
 
-        <button type="submit" class="btn-cyber" id="btn-login">
+        <button type="button" class="btn-cyber" id="btn-login" onclick="handleLogin()">
           <i class="fas fa-arrow-right"></i>
           <span class="btn-text">SIGN IN</span>
           <div class="spinner"></div>
@@ -606,10 +598,10 @@
         <div class="register-link">
           Don't have an account? <a href="#" onclick="switchTab('register'); return false;"><i class="fas fa-user-plus"></i> Create one</a>
         </div>
-      </form>
+      </div>
 
-      <!-- REGISTER FORM - FIXED -->
-      <form class="form" id="form-register" novalidate onsubmit="handleRegister(event)">
+      <!-- REGISTER FORM - FULLY VISIBLE -->
+      <div id="form-register" class="form">
         <div class="field">
           <label><i class="fas fa-phone-alt"></i> Phone Number</label>
           <div class="input-wrap has-prefix">
@@ -658,7 +650,7 @@
           <span class="error-msg" id="reg-confirm-err"><i class="fas fa-exclamation-circle"></i> Passwords do not match</span>
         </div>
 
-        <button type="submit" class="btn-cyber" id="btn-register">
+        <button type="button" class="btn-cyber" id="btn-register" onclick="handleRegister()">
           <i class="fas fa-user-shield"></i>
           <span class="btn-text">CREATE ACCOUNT</span>
           <div class="spinner"></div>
@@ -668,15 +660,13 @@
           Already have an account? <a href="#" onclick="switchTab('login'); return false;"><i class="fas fa-sign-in-alt"></i> Sign in</a>
         </div>
 
-        <!-- Success Message -->
         <div class="success-msg" id="reg-success">
           <div class="success-circle"><i class="fas fa-check-circle"></i></div>
           <div style="font-family:'Orbitron',monospace;font-size:0.9rem;color:#00E5A0;">Account Created!</div>
-          <div style="font-size:0.8rem;color:var(--text-muted);">✓ Phone number saved: <span id="savedPhone"></span></div>
-          <div style="font-size:0.8rem;color:var(--text-muted);">✓ Email saved: <span id="savedEmail"></span></div>
-          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;"><i class="fas fa-envelope"></i> Verification email sent - Please verify before logging in</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);">✓ Verification email sent</div>
+          <div style="font-size:0.7rem;color:var(--text-muted);margin-top:8px;">Please verify your email before logging in</div>
         </div>
-      </form>
+      </div>
     </div>
 
     <!-- FORGOT PASSWORD VIEW -->
@@ -685,22 +675,20 @@
       <div class="forgot-title"><i class="fas fa-key"></i> Reset Password</div>
       <div class="forgot-desc"><i class="fas fa-info-circle"></i> Enter your email address. We'll send you a password reset link.</div>
 
-      <form novalidate onsubmit="handleForgot(event)" style="display:flex;flex-direction:column;gap:1rem;">
-        <div class="field">
-          <label><i class="fas fa-envelope"></i> Email Address</label>
-          <div class="input-wrap">
-            <span class="input-icon"><i class="fas fa-at"></i></span>
-            <input type="email" id="forgot-email" placeholder="you@gmail.com"/>
-          </div>
-          <span class="error-msg" id="forgot-email-err"><i class="fas fa-exclamation-circle"></i> Enter a valid email address</span>
+      <div class="field">
+        <label><i class="fas fa-envelope"></i> Email Address</label>
+        <div class="input-wrap">
+          <span class="input-icon"><i class="fas fa-at"></i></span>
+          <input type="email" id="forgot-email" placeholder="you@gmail.com"/>
         </div>
+        <span class="error-msg" id="forgot-email-err"><i class="fas fa-exclamation-circle"></i> Enter a valid email address</span>
+      </div>
 
-        <button type="submit" class="btn-cyber" id="btn-forgot">
-          <i class="fas fa-paper-plane"></i>
-          <span class="btn-text">SEND RESET LINK</span>
-          <div class="spinner"></div>
-        </button>
-      </form>
+      <button type="button" class="btn-cyber" id="btn-forgot" onclick="handleForgot()">
+        <i class="fas fa-paper-plane"></i>
+        <span class="btn-text">SEND RESET LINK</span>
+        <div class="spinner"></div>
+      </button>
 
       <div class="success-msg" id="forgot-success">
         <div class="success-circle"><i class="fas fa-envelope"></i></div>
@@ -795,16 +783,27 @@
   }
 
   window.switchTab = function(tab){
-    document.querySelectorAll('.cyber-tab').forEach(t=>t.classList.remove('active'));
-    document.querySelectorAll('.form').forEach(f=>f.classList.remove('active'));
-    document.getElementById(tab === 'login' ? 'tab-login' : 'tab-register').classList.add('active');
-    document.getElementById('form-'+tab).classList.add('active');
+    const loginForm = document.getElementById('form-login');
+    const registerForm = document.getElementById('form-register');
+    const loginTab = document.getElementById('tabLoginBtn');
+    const registerTab = document.getElementById('tabRegisterBtn');
+    
+    if(tab === 'login'){
+      loginForm.classList.add('active');
+      registerForm.classList.remove('active');
+      loginTab.classList.add('active');
+      registerTab.classList.remove('active');
+    } else {
+      loginForm.classList.remove('active');
+      registerForm.classList.add('active');
+      loginTab.classList.remove('active');
+      registerTab.classList.add('active');
+    }
     clearErrors();
   };
 
   // ============ LOGIN ============
-  window.handleLogin = async function(e){
-    e.preventDefault();
+  window.handleLogin = async function(){
     clearErrors();
     const phone = document.getElementById('login-phone').value.trim();
     const fullPhone = '+250' + phone;
@@ -819,21 +818,17 @@
     showLoading(true);
     
     try {
-      // Search for user by phone number in database
       const usersRef = ref(db, 'users');
       const snapshot = await get(usersRef);
       let userEmail = null;
-      let foundUser = null;
       
       snapshot.forEach(child => { 
         if(child.val().phone === fullPhone) {
           userEmail = child.val().email;
-          foundUser = child.val();
         }
       });
       
-      if(!userEmail) throw new Error('Phone number not registered. Please create an account first.');
-      
+      if(!userEmail) throw new Error('Phone number not registered');
       await signInWithEmailAndPassword(auth, userEmail, pass);
       showToast('✓ Login successful! Redirecting...');
       setTimeout(() => window.location.href = 'dashboard.html', 1500);
@@ -844,9 +839,8 @@
     }
   };
 
-  // ============ REGISTER (SAVES BOTH PHONE AND EMAIL) ============
-  window.handleRegister = async function(e){
-    e.preventDefault();
+  // ============ REGISTER ============
+  window.handleRegister = async function(){
     clearErrors();
     
     const phone = document.getElementById('reg-phone').value.trim();
@@ -872,7 +866,7 @@
       const userCred = await createUserWithEmailAndPassword(auth, email, pass);
       const user = userCred.user;
       
-      // Save user data to Realtime Database with BOTH phone and email
+      // Save user data to Realtime Database
       await set(ref(db, `users/${user.uid}`), {
         username: username,
         email: email,
@@ -885,27 +879,23 @@
       
       // Send verification email
       await sendEmailVerification(user);
-      
-      // Sign out until email is verified
       await auth.signOut();
       
-      // Update success message with saved info
-      document.getElementById('savedPhone').innerHTML = fullPhone;
-      document.getElementById('savedEmail').innerHTML = email;
+      // Show success
       document.getElementById('reg-success').classList.add('show');
       
-      // Clear form fields
+      // Clear form
       document.getElementById('reg-phone').value = '';
       document.getElementById('reg-email').value = '';
       document.getElementById('reg-username').value = '';
       document.getElementById('reg-pass').value = '';
       document.getElementById('reg-confirm').value = '';
       
-      showToast('✓ Account created successfully! Please verify your email.', false);
+      showToast('✓ Account created! Please verify your email.', false);
       showLoading(false);
       setLoading('btn-register', false);
       
-      // Automatically switch to login after 4 seconds
+      // Switch to login after 4 seconds
       setTimeout(() => {
         switchTab('login');
         document.getElementById('reg-success').classList.remove('show');
@@ -913,17 +903,16 @@
       
     } catch(err) {
       let errorMsg = err.message;
-      if(err.code === 'auth/email-already-in-use') errorMsg = 'Email already registered. Please use a different email.';
-      if(err.code === 'auth/invalid-email') errorMsg = 'Please enter a valid email address.';
+      if(err.code === 'auth/email-already-in-use') errorMsg = 'Email already registered';
+      if(err.code === 'auth/invalid-email') errorMsg = 'Please enter a valid email address';
       showToast(errorMsg, true);
       setLoading('btn-register', false);
       showLoading(false);
     }
   };
 
-  // ============ FORGOT PASSWORD (USES EMAIL) ============
-  window.handleForgot = async function(e){
-    e.preventDefault();
+  // ============ FORGOT PASSWORD ============
+  window.handleForgot = async function(){
     clearErrors();
     const email = document.getElementById('forgot-email').value.trim();
     if(!validateEmail(email)){ showError('forgot-email','forgot-email-err'); return; }
@@ -936,12 +925,10 @@
       document.getElementById('btn-forgot').style.display = 'none';
       document.getElementById('forgot-email').closest('.field').style.display = 'none';
       document.getElementById('forgot-success').classList.add('show');
-      showToast('✓ Password reset link sent to your email!', false);
+      showToast('✓ Password reset link sent!', false);
       showLoading(false);
     } catch(err){ 
-      let errorMsg = err.message;
-      if(err.code === 'auth/user-not-found') errorMsg = 'No account found with this email address.';
-      showToast(errorMsg, true);
+      showToast(err.message, true);
       setLoading('btn-forgot', false);
       showLoading(false);
     }
@@ -1001,8 +988,8 @@
 
   document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
   
-  console.log('%c🎮 SHORA GAMES - HUD CYBER INTERFACE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
-  console.log('%c✅ Registration saves Phone & Email | Password reset uses Email', 'color: #00E5A0; font-size: 12px;');
+  console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
+  console.log('%c✅ Registration form is VISIBLE and WORKING', 'color: #00E5A0; font-size: 12px;');
 </script>
 </body>
 </html>
