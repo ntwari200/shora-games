@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes"/>
-<title>Shora Games — Cyber Interface</title>
+<title>Shora Games — Login</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
@@ -13,6 +13,7 @@
     --bg-tertiary: #102A43;
     --glow-primary: #00BFFF;
     --glow-primary-dim: rgba(0, 191, 255, 0.3);
+    --glow-success: #00E5A0;
     --text-primary: #F8FAFC;
     --text-muted: #94A3B8;
     --border-glow: rgba(0, 191, 255, 0.25);
@@ -600,7 +601,7 @@
         </div>
       </div>
 
-      <!-- REGISTER FORM - FULLY VISIBLE -->
+      <!-- REGISTER FORM -->
       <div id="form-register" class="form">
         <div class="field">
           <label><i class="fas fa-phone-alt"></i> Phone Number</label>
@@ -862,11 +863,9 @@
     showLoading(true);
     
     try {
-      // Create user in Firebase Auth
       const userCred = await createUserWithEmailAndPassword(auth, email, pass);
       const user = userCred.user;
       
-      // Save user data to Realtime Database
       await set(ref(db, `users/${user.uid}`), {
         username: username,
         email: email,
@@ -877,14 +876,11 @@
         createdAt: new Date().toISOString()
       });
       
-      // Send verification email
       await sendEmailVerification(user);
       await auth.signOut();
       
-      // Show success
       document.getElementById('reg-success').classList.add('show');
       
-      // Clear form
       document.getElementById('reg-phone').value = '';
       document.getElementById('reg-email').value = '';
       document.getElementById('reg-username').value = '';
@@ -895,7 +891,6 @@
       showLoading(false);
       setLoading('btn-register', false);
       
-      // Switch to login after 4 seconds
       setTimeout(() => {
         switchTab('login');
         document.getElementById('reg-success').classList.remove('show');
@@ -989,7 +984,7 @@
   document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
   
   console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
-  console.log('%c✅ Registration form is VISIBLE and WORKING', 'color: #00E5A0; font-size: 12px;');
+  console.log('%c✅ Modern design matching reset password page', 'color: #00E5A0; font-size: 12px;');
 </script>
 </body>
 </html>
