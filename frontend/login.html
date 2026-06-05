@@ -708,7 +708,7 @@
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendEmailVerification, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
   import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
   const firebaseConfig = {
@@ -722,6 +722,9 @@
   const auth = getAuth(app);
   const db = getDatabase(app);
   const googleProvider = new GoogleAuthProvider();
+
+  // BACKEND API URL (Render)
+  const API_URL = 'https://shora-games.onrender.com/api';
 
   // Particles
   (function(){
@@ -803,7 +806,7 @@
     clearErrors();
   };
 
-  // ============ LOGIN ============
+  // ============ LOGIN (CALLS BACKEND API) ============
   window.handleLogin = async function(){
     clearErrors();
     const phone = document.getElementById('login-phone').value.trim();
@@ -819,20 +822,26 @@
     showLoading(true);
     
     try {
-      const usersRef = ref(db, 'users');
-      const snapshot = await get(usersRef);
-      let userEmail = null;
-      
-      snapshot.forEach(child => { 
-        if(child.val().phone === fullPhone) {
-          userEmail = child.val().email;
-        }
+      // Call your backend API
+      const response = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: fullPhone, password: pass })
       });
       
-      if(!userEmail) throw new Error('Phone number not registered');
-      await signInWithEmailAndPassword(auth, userEmail, pass);
-      showToast('✓ Login successful! Redirecting...');
-      setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.error || 'Login failed');
+      }
+      
+      if (data.success) {
+        // Store token and user data
+        localStorage.setItem('shora_token', data.token);
+        localStorage.setItem('shora_user', JSON.stringify(data.user));
+        showToast('✓ Login successful! Redirecting...');
+        setTimeout(() => window.location.href = 'dashboard.html', 1500);
+      }
     } catch(err){ 
       showToast(err.message, true); 
       setLoading('btn-login', false); 
@@ -840,7 +849,7 @@
     }
   };
 
-  // ============ REGISTER ============
+  // ============ REGISTER (CALLS BACKEND API) ============
   window.handleRegister = async function(){
     clearErrors();
     
@@ -863,44 +872,39 @@
     showLoading(true);
     
     try {
-      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
-      const user = userCred.user;
-      
-      await set(ref(db, `users/${user.uid}`), {
-        username: username,
-        email: email,
-        phone: fullPhone,
-        balance: 0,
-        totalWinnings: 0,
-        gamesPlayed: 0,
-        createdAt: new Date().toISOString()
+      // Call your backend API
+      const response = await fetch(`${API_URL}/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone: fullPhone, email, username, password: pass })
       });
       
-      await sendEmailVerification(user);
-      await auth.signOut();
+      const data = await response.json();
       
-      document.getElementById('reg-success').classList.add('show');
+      if (!response.ok) {
+        throw new Error(data.error || 'Registration failed');
+      }
       
-      document.getElementById('reg-phone').value = '';
-      document.getElementById('reg-email').value = '';
-      document.getElementById('reg-username').value = '';
-      document.getElementById('reg-pass').value = '';
-      document.getElementById('reg-confirm').value = '';
-      
-      showToast('✓ Account created! Please verify your email.', false);
-      showLoading(false);
-      setLoading('btn-register', false);
-      
-      setTimeout(() => {
-        switchTab('login');
-        document.getElementById('reg-success').classList.remove('show');
-      }, 4000);
-      
+      if (data.success) {
+        document.getElementById('reg-success').classList.add('show');
+        
+        document.getElementById('reg-phone').value = '';
+        document.getElementById('reg-email').value = '';
+        document.getElementById('reg-username').value = '';
+        document.getElementById('reg-pass').value = '';
+        document.getElementById('reg-confirm').value = '';
+        
+        showToast('✓ Account created! Please verify your email.', false);
+        showLoading(false);
+        setLoading('btn-register', false);
+        
+        setTimeout(() => {
+          switchTab('login');
+          document.getElementById('reg-success').classList.remove('show');
+        }, 4000);
+      }
     } catch(err) {
-      let errorMsg = err.message;
-      if(err.code === 'auth/email-already-in-use') errorMsg = 'Email already registered';
-      if(err.code === 'auth/invalid-email') errorMsg = 'Please enter a valid email address';
-      showToast(errorMsg, true);
+      showToast(err.message, true);
       setLoading('btn-register', false);
       showLoading(false);
     }
@@ -984,7 +988,7 @@
   document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
   
   console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
-  console.log('%c✅ Modern design matching reset password page', 'color: #00E5A0; font-size: 12px;');
+  console.log('%c✅ Using Backend API:', API_URL, 'color: #00E5A0; font-size: 12px;');
 </script>
 </body>
 </html>
