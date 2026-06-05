@@ -3,173 +3,122 @@ const cors = require('cors');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv');
+const admin = require('firebase-admin');
 
-// Load environment variables
 dotenv.config();
 
-const app = express();
+// Initialize Firebase Admin SDK
+const serviceAccount = {
+  type: "service_account",
+  project_id: "shora-games",
+  private_key: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
+  client_email: process.env.FIREBASE_CLIENT_EMAIL,
+};
 
-// Middleware
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount),
+  databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+});
+
+const db = admin.database();
+const usersRef = db.ref('users');
+
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// In-memory storage (for demo)
-let users = [];
-
-// ============ ROOT ROUTE ============
-app.get('/', (req, res) => {
-    res.json({
-        name: 'Shora Games API',
-        version: '1.0.0',
-        status: 'online',
-        message: 'Welcome to Shora Games Backend API',
-        endpoints: {
-            health: 'GET /api/health',
-            register: 'POST /api/auth/register',
-            login: 'POST /api/auth/login',
-            users: 'GET /api/users'
-        },
-        documentation: 'https://github.com/ntwari200/shora-games',
-        timestamp: new Date().toISOString()
-    });
-});
-
-// Health check endpoint
+// HEALTH CHECK
 app.get('/api/health', (req, res) => {
-    res.json({ 
-        status: 'ok', 
-        message: 'Shora Games API is running!',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
-    });
+    res.json({ status: 'ok', message: 'Shora Games API running!' });
 });
 
-// REGISTER endpoint
+// REGISTER
 app.post('/api/auth/register', async (req, res) => {
     const { phone, email, username, password } = req.body;
     
-    console.log('📝 Registration attempt:', { phone, email, username });
-    
-    // Validate input
     if (!phone || !email || !username || !password) {
-        return res.status(400).json({ 
-            error: 'All fields are required' 
-        });
+        return res.status(400).json({ error: 'All fields required' });
     }
     
-    // Check if user exists
-    const existingUser = users.find(u => u.phone === phone || u.email === email);
-    if (existingUser) {
-        return res.status(400).json({ 
-            error: 'User already exists with this phone or email' 
+    try {
+        // Check if user exists in Firebase
+        const snapshot = await usersRef.once('value');
+        let existingUser = null;
+        snapshot.forEach(child => {
+            if (child.val().phone === phone || child.val().email === email) {
+                existingUser = child.val();
+            }
         });
-    }
-    
-    // Hash password
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    // Create new user
-    const newUser = {
-        id: users.length + 1,
-        phone,
-        email,
-        username,
-        password: hashedPassword,
-        createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    
-    // Generate JWT token using environment variable
-    const token = jwt.sign(
-        { id: newUser.id, phone: newUser.phone },
-        process.env.JWT_SECRET || 'shora_secret_key_2026',
-        { expiresIn: '7d' }
-    );
-    
-    // Return user without password
-    res.status(201).json({
-        success: true,
-        message: 'Account created successfully!',
-        token,
-        user: {
-            id: newUser.id,
-            phone: newUser.phone,
-            email: newUser.email,
-            username: newUser.username
+        
+        if (existingUser) {
+            return res.status(400).json({ error: 'User already exists' });
         }
-    });
+        
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUserRef = usersRef.push();
+        const userId = newUserRef.key;
+        
+        await newUserRef.set({
+            id: userId,
+            phone,
+            email,
+            username,
+            password: hashedPassword,
+            createdAt: new Date().toISOString(),
+            balance: 0,
+            gamesPlayed: 0
+        });
+        
+        const token = jwt.sign({ id: userId, phone }, process.env.JWT_SECRET || 'shora_secret', { expiresIn: '7d' });
+        
+        res.status(201).json({
+            success: true,
+            message: 'Account created!',
+            token,
+            user: { id: userId, phone, email, username }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// LOGIN endpoint
+// LOGIN
 app.post('/api/auth/login', async (req, res) => {
     const { phone, password } = req.body;
     
-    console.log('🔐 Login attempt:', { phone });
-    
-    if (!phone || !password) {
-        return res.status(400).json({ 
-            error: 'Phone number and password are required' 
+    try {
+        const snapshot = await usersRef.once('value');
+        let foundUser = null;
+        let userId = null;
+        
+        snapshot.forEach(child => {
+            if (child.val().phone === phone) {
+                foundUser = child.val();
+                userId = child.key;
+            }
         });
-    }
-    
-    // Find user
-    const user = users.find(u => u.phone === phone);
-    if (!user) {
-        return res.status(401).json({ 
-            error: 'Invalid credentials' 
-        });
-    }
-    
-    // Check password
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-        return res.status(401).json({ 
-            error: 'Invalid credentials' 
-        });
-    }
-    
-    // Generate token using environment variable
-    const token = jwt.sign(
-        { id: user.id, phone: user.phone },
-        process.env.JWT_SECRET || 'shora_secret_key_2026',
-        { expiresIn: '7d' }
-    );
-    
-    res.json({
-        success: true,
-        message: 'Login successful!',
-        token,
-        user: {
-            id: user.id,
-            phone: user.phone,
-            email: user.email,
-            username: user.username
+        
+        if (!foundUser) {
+            return res.status(401).json({ error: 'Invalid credentials' });
         }
-    });
+        
+        const isValid = await bcrypt.compare(password, foundUser.password);
+        if (!isValid) {
+            return res.status(401).json({ error: 'Invalid credentials' });
+        }
+        
+        const token = jwt.sign({ id: userId, phone }, process.env.JWT_SECRET || 'shora_secret', { expiresIn: '7d' });
+        
+        res.json({
+            success: true,
+            message: 'Login successful!',
+            token,
+            user: { id: userId, phone: foundUser.phone, email: foundUser.email, username: foundUser.username }
+        });
+    } catch (error) {
+        res.status(500).json({ error: error.message });
+    }
 });
 
-// Get all users (for testing)
-app.get('/api/users', (req, res) => {
-    const usersList = users.map(({ password, ...rest }) => rest);
-    res.json(usersList);
-});
-
-// 404 handler for undefined routes
-app.use((req, res) => {
-    res.status(404).json({ 
-        error: 'Route not found',
-        message: 'Please check the API documentation for available endpoints'
-    });
-});
-
-// Start server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => {
-    console.log(`✅ Shora Games Backend is running!`);
-    console.log(`📍 API URL: http://localhost:${PORT}`);
-    console.log(`🧪 Test API: http://localhost:${PORT}/api/health`);
-    console.log(`🏠 Root: http://localhost:${PORT}/`);
-    console.log(`🔧 Environment: ${process.env.NODE_ENV || 'development'}`);
-    console.log(`📋 Users registered: ${users.length}`);
-});
+app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
