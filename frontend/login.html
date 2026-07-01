@@ -706,10 +706,25 @@
   <span id="toastMessage">Message</span>
 </div>
 
+<!-- ============ VERIFICATION MODAL ============ -->
+<div id="verificationModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(8px); z-index: 9999; align-items: center; justify-content: center;">
+    <div style="background: var(--bg-secondary); border: 1px solid var(--glow-primary); border-radius: 24px; padding: 40px; max-width: 400px; width: 90%; text-align: center; box-shadow: 0 0 40px rgba(0, 191, 255, 0.15);">
+        <div style="font-size: 48px; margin-bottom: 16px;">📧</div>
+        <h2 style="color: var(--glow-primary); font-family: 'Orbitron', monospace; font-size: 1.2rem; margin-bottom: 12px;">VERIFY YOUR EMAIL</h2>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Enter the 6-digit code sent to your email</p>
+        <input type="text" id="verificationCode" maxlength="6" placeholder="Enter code" style="width: 100%; padding: 14px; border-radius: 12px; background: var(--bg-deep); border: 1px solid var(--border-glow); color: var(--text-primary); font-size: 24px; text-align: center; letter-spacing: 8px; margin-bottom: 20px; outline: none; font-family: 'Syne', sans-serif;">
+        <div style="display: flex; gap: 12px;">
+            <button onclick="verifyEmail()" style="flex: 1; padding: 12px; background: linear-gradient(135deg, var(--glow-primary), #0088CC); border: none; border-radius: 12px; color: #000; font-weight: 700; cursor: pointer; font-family: 'Orbitron', monospace;">VERIFY</button>
+            <button onclick="resendVerification()" style="flex: 1; padding: 12px; background: transparent; border: 1px solid var(--glow-primary); border-radius: 12px; color: var(--glow-primary); cursor: pointer; font-family: 'Orbitron', monospace;">RESEND</button>
+        </div>
+        <p onclick="closeVerificationModal()" style="color: var(--text-muted); margin-top: 20px; cursor: pointer; font-size: 0.8rem;">Skip for now</p>
+    </div>
+</div>
+
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
+  import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
@@ -723,8 +738,38 @@
   const db = getDatabase(app);
   const googleProvider = new GoogleAuthProvider();
 
-  // BACKEND API URL (Render)
-  const API_URL = 'https://shora-games.onrender.com/api';
+  // ============ EMAIL SERVICE API ============
+  const EMAIL_API_URL = 'https://shora-email-backend.onrender.com/api';
+
+  // ============ SEND VERIFICATION EMAIL ============
+  async function sendVerificationEmail(email, username, code) {
+    try {
+      const response = await fetch(`${EMAIL_API_URL}/send-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, code })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Email error:', error);
+      return { success: false, error: error.message };
+    }
+  }
+
+  // ============ SEND PASSWORD RESET EMAIL ============
+  async function sendPasswordResetEmail(email, username, resetLink) {
+    try {
+      const response = await fetch(`${EMAIL_API_URL}/send-password-reset`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, username, resetLink })
+      });
+      return await response.json();
+    } catch (error) {
+      console.error('Email error:', error);
+      return { success: false, error: error.message };
+    }
+  }
 
   // Particles
   (function(){
@@ -806,7 +851,63 @@
     clearErrors();
   };
 
-  // ============ LOGIN (CALLS BACKEND API) ============
+  // ============ VERIFICATION FUNCTIONS ============
+  function showVerificationModal() {
+    document.getElementById('verificationModal').style.display = 'flex';
+  }
+
+  window.closeVerificationModal = function() {
+    document.getElementById('verificationModal').style.display = 'none';
+    document.getElementById('verificationCode').value = '';
+  };
+
+  window.verifyEmail = async function() {
+    const code = document.getElementById('verificationCode').value.trim();
+    const email = localStorage.getItem('pendingEmail');
+    const storedCode = localStorage.getItem('verificationCode');
+
+    if (!code || code.length !== 6) {
+      showToast('Please enter the 6-digit verification code', true);
+      return;
+    }
+
+    if (code === storedCode) {
+      // Update user as verified in Firebase
+      const user = auth.currentUser;
+      if (user) {
+        await update(ref(db, `users/${user.uid}`), { verified: true });
+      }
+      localStorage.removeItem('verificationCode');
+      localStorage.removeItem('pendingEmail');
+      closeVerificationModal();
+      showToast('✓ Email verified successfully! You can now log in.', false);
+      switchTab('login');
+    } else {
+      showToast('Invalid verification code. Please try again.', true);
+    }
+  };
+
+  window.resendVerification = async function() {
+    const email = localStorage.getItem('pendingEmail');
+    const username = document.getElementById('reg-username')?.value || 'Player';
+
+    if (!email) {
+      showToast('No email found. Please register again.', true);
+      return;
+    }
+
+    const newCode = Math.floor(100000 + Math.random() * 900000).toString();
+    localStorage.setItem('verificationCode', newCode);
+
+    const result = await sendVerificationEmail(email, username, newCode);
+    if (result.success) {
+      showToast('✓ New verification code sent!', false);
+    } else {
+      showToast('Failed to send code. Please try again.', true);
+    }
+  };
+
+  // ============ LOGIN ============
   window.handleLogin = async function(){
     clearErrors();
     const phone = document.getElementById('login-phone').value.trim();
@@ -822,26 +923,35 @@
     showLoading(true);
     
     try {
-      // Call your backend API
-      const response = await fetch(`${API_URL}/auth/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: fullPhone, password: pass })
+      const usersRef = ref(db, 'users');
+      const snapshot = await get(usersRef);
+      let userEmail = null;
+      let userId = null;
+      
+      snapshot.forEach(child => { 
+        if(child.val().phone === fullPhone) {
+          userEmail = child.val().email;
+          userId = child.key;
+        }
       });
       
-      const data = await response.json();
+      if(!userEmail) throw new Error('Phone number not registered');
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Login failed');
+      await signInWithEmailAndPassword(auth, userEmail, pass);
+      
+      // Check if user is verified
+      const userSnapshot = await get(child(ref(db), `users/${userId}`));
+      if (userSnapshot.exists() && !userSnapshot.val().verified) {
+        await auth.signOut();
+        showToast('⚠️ Please verify your email first. Check your inbox.', true);
+        setLoading('btn-login', false);
+        showLoading(false);
+        return;
       }
       
-      if (data.success) {
-        // Store token and user data
-        localStorage.setItem('shora_token', data.token);
-        localStorage.setItem('shora_user', JSON.stringify(data.user));
-        showToast('✓ Login successful! Redirecting...');
-        setTimeout(() => window.location.href = 'dashboard.html', 1500);
-      }
+      localStorage.setItem('shora_user', JSON.stringify({ phone: fullPhone, email: userEmail }));
+      showToast('✓ Login successful! Redirecting...');
+      setTimeout(() => window.location.href = 'dashboard.html', 1500);
     } catch(err){ 
       showToast(err.message, true); 
       setLoading('btn-login', false); 
@@ -849,7 +959,7 @@
     }
   };
 
-  // ============ REGISTER (CALLS BACKEND API) ============
+  // ============ REGISTER ============
   window.handleRegister = async function(){
     clearErrors();
     
@@ -872,37 +982,47 @@
     showLoading(true);
     
     try {
-      // Call your backend API
-      const response = await fetch(`${API_URL}/auth/register`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ phone: fullPhone, email, username, password: pass })
+      // 1. Create user in Firebase Auth
+      const userCred = await createUserWithEmailAndPassword(auth, email, pass);
+      const user = userCred.user;
+
+      // 2. Save user data to Firebase Database
+      await set(ref(db, `users/${user.uid}`), {
+        username: username,
+        email: email,
+        phone: fullPhone,
+        verified: false,
+        balance: 0,
+        totalWinnings: 0,
+        gamesPlayed: 0,
+        createdAt: new Date().toISOString()
       });
-      
-      const data = await response.json();
-      
-      if (!response.ok) {
-        throw new Error(data.error || 'Registration failed');
+
+      // 3. Generate verification code
+      const code = Math.floor(100000 + Math.random() * 900000).toString();
+      localStorage.setItem('verificationCode', code);
+      localStorage.setItem('pendingEmail', email);
+
+      // 4. Send verification email via Resend
+      const emailResult = await sendVerificationEmail(email, username, code);
+
+      if (emailResult.success) {
+        showToast('✓ Verification code sent to your email!', false);
+        showVerificationModal();
+      } else {
+        showToast('⚠️ Account created but email failed. Please try resending.', true);
       }
-      
-      if (data.success) {
-        document.getElementById('reg-success').classList.add('show');
-        
-        document.getElementById('reg-phone').value = '';
-        document.getElementById('reg-email').value = '';
-        document.getElementById('reg-username').value = '';
-        document.getElementById('reg-pass').value = '';
-        document.getElementById('reg-confirm').value = '';
-        
-        showToast('✓ Account created! Please verify your email.', false);
-        showLoading(false);
-        setLoading('btn-register', false);
-        
-        setTimeout(() => {
-          switchTab('login');
-          document.getElementById('reg-success').classList.remove('show');
-        }, 4000);
-      }
+
+      // Clear form
+      document.getElementById('reg-phone').value = '';
+      document.getElementById('reg-email').value = '';
+      document.getElementById('reg-username').value = '';
+      document.getElementById('reg-pass').value = '';
+      document.getElementById('reg-confirm').value = '';
+
+      setLoading('btn-register', false);
+      showLoading(false);
+
     } catch(err) {
       showToast(err.message, true);
       setLoading('btn-register', false);
@@ -920,12 +1040,22 @@
     showLoading(true);
     
     try {
-      await sendPasswordResetEmail(auth, email);
-      document.getElementById('btn-forgot').style.display = 'none';
-      document.getElementById('forgot-email').closest('.field').style.display = 'none';
-      document.getElementById('forgot-success').classList.add('show');
-      showToast('✓ Password reset link sent!', false);
-      showLoading(false);
+      // Generate reset token
+      const resetToken = Math.random().toString(36).substring(2, 15);
+      const resetLink = `https://shora-frontend.onrender.com/reset-password.html?token=${resetToken}`;
+      
+      // Send email via Resend
+      const username = 'Player';
+      const emailResult = await sendPasswordResetEmail(email, username, resetLink);
+      
+      if (emailResult.success) {
+        document.getElementById('btn-forgot').style.display = 'none';
+        document.getElementById('forgot-email').closest('.field').style.display = 'none';
+        document.getElementById('forgot-success').classList.add('show');
+        showToast('✓ Password reset link sent!', false);
+      } else {
+        showToast('Failed to send reset link. Please try again.', true);
+      }
     } catch(err){ 
       showToast(err.message, true);
       setLoading('btn-forgot', false);
@@ -948,6 +1078,7 @@
           username: user.displayName || user.email.split('@')[0],
           email: user.email,
           phone: user.phoneNumber || 'Not provided',
+          verified: true,
           balance: 0,
           totalWinnings: 0,
           gamesPlayed: 0,
@@ -988,7 +1119,7 @@
   document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
   
   console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
-  console.log('%c✅ Using Backend API:', API_URL, 'color: #00E5A0; font-size: 12px;');
+  console.log('%c📧 Resend email integration active', 'color: #00E5A0; font-size: 12px;');
 </script>
 </body>
 </html>
