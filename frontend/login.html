@@ -524,6 +524,104 @@
     font-size: 14px;
   }
 
+  /* VERIFICATION MODAL */
+  .verify-overlay {
+    position: fixed;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    background: rgba(0,0,0,0.8);
+    backdrop-filter: blur(6px);
+    z-index: 4000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+  }
+  .verify-overlay.show { display: flex; }
+  .verify-card {
+    background: rgba(6, 17, 31, 0.95);
+    border: 1px solid var(--border-glow);
+    border-radius: 20px;
+    padding: 2rem 1.75rem;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6), 0 0 30px rgba(0,191,255,0.15);
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .verify-icon {
+    width: 56px; height: 56px;
+    border-radius: 50%;
+    background: rgba(0, 191, 255, 0.1);
+    border: 1px solid rgba(0, 191, 255, 0.3);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    color: var(--glow-primary);
+    margin: 0 auto 1rem;
+  }
+  .verify-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 8px;
+  }
+  .verify-desc {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+  }
+  .verify-desc span { color: var(--glow-primary); font-weight: 600; }
+  .verify-input {
+    width: 100%;
+    padding: 14px;
+    border-radius: 14px;
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(0, 191, 255, 0.3);
+    color: var(--text-primary);
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    text-align: center;
+    letter-spacing: 10px;
+    outline: none;
+    margin-bottom: 1.25rem;
+    transition: all 0.3s ease;
+  }
+  .verify-input:focus {
+    border-color: var(--glow-primary);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
+  }
+  .verify-actions {
+    display: flex;
+    gap: 12px;
+  }
+  .btn-verify-secondary {
+    flex: 1;
+    padding: 12px;
+    background: transparent;
+    border: 1px solid rgba(0, 191, 255, 0.3);
+    border-radius: 12px;
+    color: var(--glow-primary);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+  .btn-verify-secondary:hover { background: rgba(0, 191, 255, 0.08); }
+  .btn-verify-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
+  .verify-skip {
+    margin-top: 1.25rem;
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .verify-skip:hover { color: var(--glow-primary); }
+
   @media (max-width: 480px) {
     .login-card { padding: 1.5rem; }
     .toast-cyber { white-space: normal; text-align: center; max-width: 90%; }
@@ -542,6 +640,29 @@
 <div id="loadingOverlay" class="loading-overlay">
   <div class="loading-spinner-large"></div>
   <div class="loading-text">PROCESSING</div>
+</div>
+
+<!-- EMAIL VERIFICATION MODAL -->
+<div id="verifyOverlay" class="verify-overlay">
+  <div class="verify-card">
+    <div class="verify-icon"><i class="fas fa-envelope-open-text"></i></div>
+    <div class="verify-title">Verify Your Email</div>
+    <div class="verify-desc">We sent a 6-digit code to <span id="verifyEmailDisplay">your email</span>. Enter it below to activate your account.</div>
+    <input type="text" id="verifyCodeInput" class="verify-input" maxlength="6" inputmode="numeric" placeholder="000000"/>
+    <div class="verify-actions">
+      <button type="button" class="btn-cyber" id="btn-verify" style="margin-top:0;" onclick="verifyEmail()">
+        <i class="fas fa-check"></i>
+        <span class="btn-text">VERIFY</span>
+        <div class="spinner"></div>
+      </button>
+    </div>
+    <div class="verify-actions" style="margin-top:10px;">
+      <button type="button" class="btn-verify-secondary" id="btn-resend" onclick="resendVerification()">
+        <i class="fas fa-redo"></i> RESEND CODE
+      </button>
+    </div>
+    <div class="verify-skip" onclick="closeVerificationModal()">Skip for now</div>
+  </div>
 </div>
 
 <div class="page">
@@ -806,6 +927,95 @@
     clearErrors();
   };
 
+  // ============ EMAIL VERIFICATION (CALLS BACKEND — CODE NEVER TOUCHES THE CLIENT) ============
+
+  window.showVerificationModal = function(email){
+    document.getElementById('verifyEmailDisplay').textContent = email || 'your email';
+    document.getElementById('verifyCodeInput').value = '';
+    document.getElementById('verifyOverlay').classList.add('show');
+  };
+
+  window.closeVerificationModal = function(){
+    document.getElementById('verifyOverlay').classList.remove('show');
+    document.getElementById('verifyCodeInput').value = '';
+  };
+
+  window.verifyEmail = async function(){
+    const code = document.getElementById('verifyCodeInput').value.trim();
+    const phone = localStorage.getItem('shora_pending_phone');
+    const email = localStorage.getItem('shora_pending_email');
+
+    if(!code || code.length !== 6){
+      showToast('Please enter the 6-digit code', true);
+      return;
+    }
+    if(!phone && !email){
+      showToast('No pending verification found. Please register again.', true);
+      return;
+    }
+
+    setLoading('btn-verify', true);
+
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-email`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, email, code })
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        throw new Error(data.error || 'Verification failed');
+      }
+
+      if(data.success){
+        localStorage.removeItem('shora_pending_phone');
+        localStorage.removeItem('shora_pending_email');
+        closeVerificationModal();
+        showToast('✓ Email verified successfully! You can now log in.', false);
+        switchTab('login');
+      }
+    } catch(err){
+      showToast(err.message, true);
+    } finally {
+      setLoading('btn-verify', false);
+    }
+  };
+
+  window.resendVerification = async function(){
+    const phone = localStorage.getItem('shora_pending_phone');
+    const email = localStorage.getItem('shora_pending_email');
+
+    if(!phone && !email){
+      showToast('No pending verification found. Please register again.', true);
+      return;
+    }
+
+    const btn = document.getElementById('btn-resend');
+    btn.disabled = true;
+
+    try {
+      const response = await fetch(`${API_URL}/auth/resend-verification`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone, email })
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        throw new Error(data.error || 'Failed to resend code');
+      }
+
+      showToast('✓ New verification code sent!', false);
+    } catch(err){
+      showToast(err.message, true);
+    } finally {
+      setTimeout(() => { btn.disabled = false; }, 15000); // basic resend cooldown
+    }
+  };
+
   // ============ LOGIN (CALLS BACKEND API) ============
   window.handleLogin = async function(){
     clearErrors();
@@ -832,6 +1042,16 @@
       const data = await response.json();
       
       if (!response.ok) {
+        // If backend flags the account as unverified, reopen the code modal instead of a generic error
+        if (data.error === 'email_not_verified' || data.code === 'EMAIL_NOT_VERIFIED') {
+          localStorage.setItem('shora_pending_phone', fullPhone);
+          if (data.email) localStorage.setItem('shora_pending_email', data.email);
+          showVerificationModal(data.email || '');
+          showToast('Please verify your email to continue.', true);
+          setLoading('btn-login', false);
+          showLoading(false);
+          return;
+        }
         throw new Error(data.error || 'Login failed');
       }
       
@@ -872,7 +1092,8 @@
     showLoading(true);
     
     try {
-      // Call your backend API
+      // Call your backend API — this should create the user AND send the
+      // verification code server-side (the code itself is never returned here).
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -887,21 +1108,25 @@
       
       if (data.success) {
         document.getElementById('reg-success').classList.add('show');
-        
+
+        // Remember who we're verifying (identifiers only — never a code)
+        localStorage.setItem('shora_pending_phone', fullPhone);
+        localStorage.setItem('shora_pending_email', email);
+
         document.getElementById('reg-phone').value = '';
         document.getElementById('reg-email').value = '';
         document.getElementById('reg-username').value = '';
         document.getElementById('reg-pass').value = '';
         document.getElementById('reg-confirm').value = '';
         
-        showToast('✓ Account created! Please verify your email.', false);
+        showToast('✓ Account created! Check your email for a code.', false);
         showLoading(false);
         setLoading('btn-register', false);
         
         setTimeout(() => {
-          switchTab('login');
           document.getElementById('reg-success').classList.remove('show');
-        }, 4000);
+          showVerificationModal(email);
+        }, 1500);
       }
     } catch(err) {
       showToast(err.message, true);
