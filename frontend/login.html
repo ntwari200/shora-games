@@ -872,7 +872,6 @@
     }
 
     if (code === storedCode) {
-      // Update user as verified in Firebase
       const user = auth.currentUser;
       if (user) {
         await update(ref(db, `users/${user.uid}`), { verified: true });
@@ -939,7 +938,6 @@
       
       await signInWithEmailAndPassword(auth, userEmail, pass);
       
-      // Check if user is verified
       const userSnapshot = await get(child(ref(db), `users/${userId}`));
       if (userSnapshot.exists() && !userSnapshot.val().verified) {
         await auth.signOut();
@@ -982,11 +980,9 @@
     showLoading(true);
     
     try {
-      // 1. Create user in Firebase Auth
       const userCred = await createUserWithEmailAndPassword(auth, email, pass);
       const user = userCred.user;
 
-      // 2. Save user data to Firebase Database
       await set(ref(db, `users/${user.uid}`), {
         username: username,
         email: email,
@@ -998,12 +994,10 @@
         createdAt: new Date().toISOString()
       });
 
-      // 3. Generate verification code
       const code = Math.floor(100000 + Math.random() * 900000).toString();
       localStorage.setItem('verificationCode', code);
       localStorage.setItem('pendingEmail', email);
 
-      // 4. Send verification email via Resend
       const emailResult = await sendVerificationEmail(email, username, code);
 
       if (emailResult.success) {
@@ -1013,7 +1007,6 @@
         showToast('⚠️ Account created but email failed. Please try resending.', true);
       }
 
-      // Clear form
       document.getElementById('reg-phone').value = '';
       document.getElementById('reg-email').value = '';
       document.getElementById('reg-username').value = '';
@@ -1040,11 +1033,8 @@
     showLoading(true);
     
     try {
-      // Generate reset token
       const resetToken = Math.random().toString(36).substring(2, 15);
       const resetLink = `https://shora-frontend.onrender.com/reset-password.html?token=${resetToken}`;
-      
-      // Send email via Resend
       const username = 'Player';
       const emailResult = await sendPasswordResetEmail(email, username, resetLink);
       
@@ -1116,7 +1106,19 @@
     clearErrors();
   };
 
-  document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
+  // Ensure Google button works
+  document.getElementById('googleLoginBtn').addEventListener('click', function(e) {
+    e.preventDefault();
+    handleGoogle();
+  });
+
+  // Ensure tab switching works
+  document.querySelectorAll('.cyber-tab').forEach(tab => {
+    tab.addEventListener('click', function(e) {
+      const tabId = this.id.replace('tab', '').toLowerCase();
+      switchTab(tabId);
+    });
+  });
   
   console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
   console.log('%c📧 Resend email integration active', 'color: #00E5A0; font-size: 12px;');
