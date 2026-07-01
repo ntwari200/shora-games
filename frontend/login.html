@@ -7,6 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
+  /* ============ STYLES (Keep your existing styles) ============ */
   :root {
     --bg-deep: #06111F;
     --bg-secondary: #0B1F36;
@@ -828,36 +829,10 @@
 </div>
 
 <script type="module">
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-  import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
-
-  const firebaseConfig = {
-    apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
-    authDomain: "shora-games.firebaseapp.com",
-    projectId: "shora-games",
-    databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
-  };
-
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getDatabase(app);
-  const googleProvider = new GoogleAuthProvider();
-
-  // BACKEND API URL (Render)
+  // ============ BACKEND API URL ============
   const API_URL = 'https://shora-games.onrender.com/api';
 
-  // Particles
-  (function(){
-    const c = document.getElementById('particles');
-    for(let i=0;i<40;i++){
-      const p = document.createElement('div');
-      p.className = 'particle';
-      p.style.cssText = `left:${Math.random()*100}%;bottom:${Math.random()*20}%;animation-duration:${6+Math.random()*10}s;animation-delay:${Math.random()*8}s;width:${1+Math.random()*3}px;height:${1+Math.random()*3}px`;
-      c.appendChild(p);
-    }
-  })();
-
+  // ============ TOAST & LOADING FUNCTIONS ============
   function showToast(msg, isError = false){
     const toast = document.getElementById('toast');
     const icon = toast.querySelector('i');
@@ -889,6 +864,12 @@
   function validatePhone(val){ return /^[07]\d{8}$/.test(val) || /^\d{9}$/.test(val); }
   function validateEmail(val){ return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(val); }
 
+  function setLoading(btnId, loading){
+    const btn = document.getElementById(btnId);
+    btn.disabled = loading;
+    btn.classList.toggle('loading', loading);
+  }
+
   window.togglePw = function(inputId, btn){
     const inp = document.getElementById(inputId);
     const icon = btn.querySelector('i');
@@ -900,12 +881,6 @@
       icon.className = 'fas fa-eye';
     }
   };
-
-  function setLoading(btnId, loading){
-    const btn = document.getElementById(btnId);
-    btn.disabled = loading;
-    btn.classList.toggle('loading', loading);
-  }
 
   window.switchTab = function(tab){
     const loginForm = document.getElementById('form-login');
@@ -927,8 +902,7 @@
     clearErrors();
   };
 
-  // ============ EMAIL VERIFICATION (CALLS BACKEND — CODE NEVER TOUCHES THE CLIENT) ============
-
+  // ============ VERIFICATION FUNCTIONS ============
   window.showVerificationModal = function(email){
     document.getElementById('verifyEmailDisplay').textContent = email || 'your email';
     document.getElementById('verifyCodeInput').value = '';
@@ -1012,11 +986,11 @@
     } catch(err){
       showToast(err.message, true);
     } finally {
-      setTimeout(() => { btn.disabled = false; }, 15000); // basic resend cooldown
+      setTimeout(() => { btn.disabled = false; }, 15000);
     }
   };
 
-  // ============ LOGIN (CALLS BACKEND API) ============
+  // ============ LOGIN ============
   window.handleLogin = async function(){
     clearErrors();
     const phone = document.getElementById('login-phone').value.trim();
@@ -1032,7 +1006,6 @@
     showLoading(true);
     
     try {
-      // Call your backend API
       const response = await fetch(`${API_URL}/auth/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1042,8 +1015,7 @@
       const data = await response.json();
       
       if (!response.ok) {
-        // If backend flags the account as unverified, reopen the code modal instead of a generic error
-        if (data.error === 'email_not_verified' || data.code === 'EMAIL_NOT_VERIFIED') {
+        if (data.error === 'email_not_verified') {
           localStorage.setItem('shora_pending_phone', fullPhone);
           if (data.email) localStorage.setItem('shora_pending_email', data.email);
           showVerificationModal(data.email || '');
@@ -1056,7 +1028,6 @@
       }
       
       if (data.success) {
-        // Store token and user data
         localStorage.setItem('shora_token', data.token);
         localStorage.setItem('shora_user', JSON.stringify(data.user));
         showToast('✓ Login successful! Redirecting...');
@@ -1069,7 +1040,7 @@
     }
   };
 
-  // ============ REGISTER (CALLS BACKEND API) ============
+  // ============ REGISTER ============
   window.handleRegister = async function(){
     clearErrors();
     
@@ -1092,8 +1063,6 @@
     showLoading(true);
     
     try {
-      // Call your backend API — this should create the user AND send the
-      // verification code server-side (the code itself is never returned here).
       const response = await fetch(`${API_URL}/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -1109,7 +1078,6 @@
       if (data.success) {
         document.getElementById('reg-success').classList.add('show');
 
-        // Remember who we're verifying (identifiers only — never a code)
         localStorage.setItem('shora_pending_phone', fullPhone);
         localStorage.setItem('shora_pending_email', email);
 
@@ -1145,12 +1113,22 @@
     showLoading(true);
     
     try {
-      await sendPasswordResetEmail(auth, email);
-      document.getElementById('btn-forgot').style.display = 'none';
-      document.getElementById('forgot-email').closest('.field').style.display = 'none';
-      document.getElementById('forgot-success').classList.add('show');
-      showToast('✓ Password reset link sent!', false);
-      showLoading(false);
+      const response = await fetch(`${API_URL}/auth/forgot-password`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email })
+      });
+      
+      const data = await response.json();
+      
+      if (!response.ok) throw new Error(data.error);
+      
+      if (data.success) {
+        document.getElementById('btn-forgot').style.display = 'none';
+        document.getElementById('forgot-email').closest('.field').style.display = 'none';
+        document.getElementById('forgot-success').classList.add('show');
+        showToast('✓ Password reset link sent!', false);
+      }
     } catch(err){ 
       showToast(err.message, true);
       setLoading('btn-forgot', false);
@@ -1158,38 +1136,9 @@
     }
   };
 
-  // ============ GOOGLE SIGN IN ============
-  window.handleGoogle = async function(){
-    const btn = document.getElementById('googleLoginBtn');
-    btn.disabled = true;
-    showLoading(true);
-    try {
-      const result = await signInWithPopup(auth, googleProvider);
-      const user = result.user;
-      const snapshot = await get(child(ref(db), `users/${user.uid}`));
-      
-      if(!snapshot.exists()){
-        await set(ref(db, `users/${user.uid}`), {
-          username: user.displayName || user.email.split('@')[0],
-          email: user.email,
-          phone: user.phoneNumber || 'Not provided',
-          balance: 0,
-          totalWinnings: 0,
-          gamesPlayed: 0,
-          createdAt: new Date().toISOString()
-        });
-      }
-      showToast('✓ Google Sign-In successful! Redirecting...');
-      setTimeout(() => window.location.href = 'dashboard.html', 1500);
-    } catch(err){ 
-      if(err.code === 'auth/popup-blocked'){
-        showToast('Popup blocked! Please allow popups for this site.', true);
-      } else {
-        showToast(err.message, true);
-      }
-      btn.disabled = false;
-      showLoading(false);
-    }
+  // ============ GOOGLE SIGN IN (Placeholder) ============
+  window.handleGoogle = function(){
+    showToast('Google Sign-In coming soon!', false);
   };
 
   window.showForgot = function(e){
@@ -1213,7 +1162,7 @@
   document.getElementById('googleLoginBtn').addEventListener('click', handleGoogle);
   
   console.log('%c🎮 SHORA GAMES LOGIN PAGE ACTIVE', 'color: #00BFFF; font-size: 14px; font-weight: bold;');
-  console.log('%c✅ Using Backend API:', API_URL, 'color: #00E5A0; font-size: 12px;');
+  console.log('%c📧 Using backend API:', API_URL, 'color: #00E5A0; font-size: 12px;');
 </script>
 </body>
 </html>
