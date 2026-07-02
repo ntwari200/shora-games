@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  /* ============ STYLES (Keep your existing styles) ============ */
+  /* ============ YOUR EXISTING STYLES (Keep them the same) ============ */
   :root {
     --bg-deep: #06111F;
     --bg-secondary: #0B1F36;
@@ -868,6 +868,10 @@
     const btn = document.getElementById(btnId);
     btn.disabled = loading;
     btn.classList.toggle('loading', loading);
+    // Store original text for later restoration
+    if (loading) {
+      btn.dataset.originalText = btn.innerHTML;
+    }
   }
 
   window.togglePw = function(inputId, btn){
@@ -967,8 +971,11 @@
     }
 
     const btn = document.getElementById('btn-resend');
+    
+    // Disable button and show loading state
     btn.disabled = true;
-
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> SENDING...';
+    
     try {
       const response = await fetch(`${API_URL}/auth/resend-verification`, {
         method: 'POST',
@@ -982,11 +989,19 @@
         throw new Error(data.error || 'Failed to resend code');
       }
 
-      showToast('✓ New verification code sent!', false);
+      showToast('✓ New verification code sent! Check your email.', false);
+      
+      // Reset the code input
+      document.getElementById('verifyCodeInput').value = '';
+      
     } catch(err){
       showToast(err.message, true);
     } finally {
-      setTimeout(() => { btn.disabled = false; }, 15000);
+      // Re-enable button after 30 seconds (cooldown)
+      setTimeout(() => {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="fas fa-redo"></i> RESEND CODE';
+      }, 30000);
     }
   };
 
