@@ -6,7 +6,7 @@
     <title>Shora Games — Play. Compete. Earn. Repeat.</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ========================================
            SHORA GAMES - COMPLETE HOME PAGE
@@ -197,6 +197,11 @@
             font-weight: 500;
             transition: var(--transition);
             position: relative;
+        }
+
+        .nav-links a i {
+            margin-right: 6px;
+            font-size: 0.8rem;
         }
 
         .nav-links a:hover {
@@ -642,6 +647,10 @@
             text-transform: uppercase;
         }
 
+        .section-header .label i {
+            margin-right: 6px;
+        }
+
         .section-header h2 {
             font-family: 'Orbitron', monospace;
             font-size: clamp(2rem, 3vw, 2.5rem);
@@ -716,6 +725,11 @@
             letter-spacing: 1px;
         }
 
+        .game-info .tag i {
+            margin-right: 4px;
+            font-size: 0.5rem;
+        }
+
         .game-info h4 {
             font-size: 1rem;
             margin: 4px 0;
@@ -724,6 +738,11 @@
         .game-info .players {
             font-size: 0.75rem;
             color: var(--muted);
+        }
+
+        .game-info .players i {
+            margin-right: 4px;
+            color: var(--primary);
         }
 
         /* ========== TOURNAMENTS ========== */
@@ -784,6 +803,11 @@
             color: var(--muted);
         }
 
+        .tournament-card .details i {
+            margin-right: 4px;
+            color: var(--primary);
+        }
+
         .tournament-card .prize-pool {
             font-family: 'Orbitron', monospace;
             font-weight: 700;
@@ -830,6 +854,10 @@
             transition: var(--transition);
         }
 
+        .btn-join i {
+            margin-right: 6px;
+        }
+
         .btn-join:hover {
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(0, 191, 255, 0.3);
@@ -865,11 +893,17 @@
             font-size: 2.5rem;
             margin-bottom: 12px;
             display: block;
+            color: var(--primary);
         }
 
         .feature-item h4 {
             font-size: 1rem;
             margin-bottom: 4px;
+        }
+
+        .feature-item h4 i {
+            margin-right: 6px;
+            color: var(--primary);
         }
 
         .feature-item p {
@@ -904,13 +938,19 @@
         }
 
         .reward-card .icon {
-            font-size: 2rem;
+            font-size: 2.5rem;
             margin-bottom: 8px;
             display: block;
+            color: var(--primary);
         }
 
         .reward-card h4 {
             font-size: 1rem;
+        }
+
+        .reward-card h4 i {
+            margin-right: 6px;
+            color: var(--primary);
         }
 
         .reward-card p {
@@ -985,6 +1025,11 @@
             color: var(--muted);
         }
 
+        .testimonial-card .author .handle i {
+            margin-right: 4px;
+            color: var(--primary);
+        }
+
         /* ========== FOOTER ========== */
         .footer {
             padding: 40px 0 20px;
@@ -1016,6 +1061,11 @@
             color: var(--text);
         }
 
+        .footer-col h5 i {
+            margin-right: 6px;
+            color: var(--primary);
+        }
+
         .footer-col a {
             display: block;
             color: var(--muted);
@@ -1023,6 +1073,13 @@
             font-size: 0.8rem;
             padding: 4px 0;
             transition: var(--transition);
+        }
+
+        .footer-col a i {
+            margin-right: 6px;
+            width: 16px;
+            color: var(--primary);
+            font-size: 0.7rem;
         }
 
         .footer-col a:hover {
@@ -1045,11 +1102,13 @@
             justify-content: center;
             color: var(--muted);
             transition: var(--transition);
+            text-decoration: none;
         }
 
         .footer-social a:hover {
             border-color: var(--primary);
             color: var(--primary);
+            transform: translateY(-2px);
         }
 
         .footer-bottom {
@@ -1057,6 +1116,11 @@
             padding-top: 20px;
             font-size: 0.75rem;
             color: var(--muted);
+        }
+
+        .footer-bottom i {
+            color: var(--primary);
+            margin: 0 4px;
         }
 
         /* ========== RESPONSIVE ========== */
@@ -1285,18 +1349,18 @@
             </div>
 
             <ul class="nav-links" id="navLinks">
-                <li><a href="#home" class="active">Home</a></li>
-                <li><a href="#games">Games</a></li>
-                <li><a href="#tournaments">Tournaments</a></li>
-                <li><a href="#leaderboard">Leaderboard</a></li>
-                <li><a href="#rewards">Rewards</a></li>
-                <li><a href="#">Support</a></li>
+                <li><a href="#home" class="active"><i class="fas fa-home"></i> Home</a></li>
+                <li><a href="#games"><i class="fas fa-gamepad"></i> Games</a></li>
+                <li><a href="#tournaments"><i class="fas fa-trophy"></i> Tournaments</a></li>
+                <li><a href="#leaderboard"><i class="fas fa-ranking-star"></i> Leaderboard</a></li>
+                <li><a href="#rewards"><i class="fas fa-gift"></i> Rewards</a></li>
+                <li><a href="#support"><i class="fas fa-headset"></i> Support</a></li>
             </ul>
 
             <div class="nav-actions">
                 <button class="search-btn"><i class="fas fa-search"></i></button>
-                <a href="login.html" class="btn btn-ghost">Login</a>
-                <a href="login.html" class="btn btn-primary">Sign Up</a>
+                <a href="login.html" class="btn btn-ghost"><i class="fas fa-sign-in-alt"></i> Login</a>
+                <a href="login.html" class="btn btn-primary"><i class="fas fa-user-plus"></i> Sign Up</a>
                 <button class="menu-toggle" id="menuToggle"><i class="fas fa-bars"></i></button>
             </div>
         </div>
@@ -1306,7 +1370,7 @@
     <section class="hero container" id="home">
         <div class="hero-content">
             <div class="hero-badge">
-                <span class="dot"></span> SEASON 4 IS LIVE
+                <span class="dot"></span> <i class="fas fa-fire"></i> SEASON 4 IS LIVE
             </div>
             <h1>
                 <span class="grad">PLAY.</span><br>
@@ -1315,12 +1379,13 @@
                 REPEAT.
             </h1>
             <p>
+                <i class="fas fa-rocket" style="color:var(--primary);margin-right:8px;"></i>
                 The next-generation gaming platform where players compete in tournaments,
                 unlock achievements, earn rewards, and enjoy immersive HTML5 games.
             </p>
             <div class="hero-buttons">
                 <a href="login.html" class="btn btn-primary btn-primary-lg">
-                    <i class="fas fa-rocket"></i> PLAY NOW
+                    <i class="fas fa-play"></i> PLAY NOW
                 </a>
                 <a href="#tournaments" class="btn btn-outline-primary btn-primary-lg">
                     <i class="fas fa-trophy"></i> JOIN TOURNAMENT
@@ -1337,35 +1402,37 @@
         <div class="hero-visual">
             <div class="hero-ring">
                 <div class="ring ring-1">
-                    <div class="ring-badge">🏁</div>
+                    <div class="ring-badge"><i class="fas fa-flag-checkered"></i></div>
                 </div>
                 <div class="ring ring-2">
-                    <div class="ring-badge">🎯</div>
+                    <div class="ring-badge"><i class="fas fa-crosshairs"></i></div>
                 </div>
                 <div class="ring ring-3">
-                    <div class="ring-badge">🕹️</div>
+                    <div class="ring-badge"><i class="fas fa-gamepad"></i></div>
                 </div>
                 <div class="ring-core">YOUR<br>NEXT<br>MATCH</div>
 
                 <div class="float-card float-card-1">
-                    <div class="label">LIVE TOURNAMENT</div>
+                    <div class="label"><i class="fas fa-trophy"></i> LIVE TOURNAMENT</div>
                     <div class="value">Speed Legends Cup</div>
-                    <div class="action">Prize Pool: 50,000 RWF</div>
-                    <div style="font-size:0.7rem;color:var(--primary);margin-top:4px;">▶ JOIN NOW</div>
+                    <div class="action"><i class="fas fa-coins"></i> Prize Pool: 50,000 RWF</div>
+                    <div style="font-size:0.7rem;color:var(--primary);margin-top:4px;">
+                        <i class="fas fa-play-circle"></i> JOIN NOW
+                    </div>
                 </div>
 
                 <div class="float-card float-card-2">
-                    <div class="label">PLAYERS ONLINE</div>
+                    <div class="label"><i class="fas fa-users"></i> PLAYERS ONLINE</div>
                     <div class="value" id="onlineCount">18,457</div>
-                    <div class="action">🟢 Live Now</div>
+                    <div class="action"><i class="fas fa-circle" style="color:var(--success);font-size:0.5rem;"></i> Live Now</div>
                 </div>
 
                 <div class="float-card float-card-3">
-                    <div class="label">WALLET</div>
-                    <div class="value">💰 0 RWF</div>
+                    <div class="label"><i class="fas fa-wallet"></i> WALLET</div>
+                    <div class="value"><i class="fas fa-coins"></i> 0 RWF</div>
                     <div style="display:flex;gap:8px;margin-top:4px;">
-                        <span class="action" style="color:var(--success);">Deposit</span>
-                        <span class="action" style="color:var(--danger);">Withdraw</span>
+                        <span class="action" style="color:var(--success);"><i class="fas fa-arrow-down"></i> Deposit</span>
+                        <span class="action" style="color:var(--danger);"><i class="fas fa-arrow-up"></i> Withdraw</span>
                     </div>
                 </div>
             </div>
@@ -1376,22 +1443,22 @@
     <section class="stats-section">
         <div class="container stats-grid">
             <div class="stat-card">
-                <span class="stat-icon">👾</span>
+                <span class="stat-icon"><i class="fas fa-users"></i></span>
                 <div class="stat-number" data-count="18457">0</div>
                 <div class="stat-label">Players Online</div>
             </div>
             <div class="stat-card">
-                <span class="stat-icon">🎮</span>
+                <span class="stat-icon"><i class="fas fa-gamepad"></i></span>
                 <div class="stat-number" data-count="58">0</div>
                 <div class="stat-label">Games Available</div>
             </div>
             <div class="stat-card">
-                <span class="stat-icon">🏆</span>
+                <span class="stat-icon"><i class="fas fa-trophy"></i></span>
                 <div class="stat-number" data-count="310000000">0</div>
                 <div class="stat-label">Prize Pool (RWF)</div>
             </div>
             <div class="stat-card">
-                <span class="stat-icon">⭐</span>
+                <span class="stat-icon"><i class="fas fa-star"></i></span>
                 <div class="stat-number" data-count="3124">0</div>
                 <div class="stat-label">Today's Winners</div>
             </div>
@@ -1402,97 +1469,97 @@
     <section class="games-section" id="games">
         <div class="container">
             <div class="section-header reveal">
-                <div class="label">POPULAR NOW</div>
+                <div class="label"><i class="fas fa-fire"></i> POPULAR NOW</div>
                 <h2>Trending Games</h2>
                 <p>Jump into the most played games on Shora right now</p>
             </div>
             <div class="games-grid">
                 <div class="game-card reveal">
                     <div class="game-art">
-                        🏍️
+                        <i class="fas fa-motorcycle"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Racing</div>
+                        <div class="tag"><i class="fas fa-flag-checkered"></i> Racing</div>
                         <h4>Moto Racer</h4>
-                        <div class="players">1,284 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 1,284 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.1s;">
                     <div class="game-art">
-                        🚗
+                        <i class="fas fa-car"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Racing</div>
+                        <div class="tag"><i class="fas fa-flag-checkered"></i> Racing</div>
                         <h4>City Drift</h4>
-                        <div class="players">956 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 956 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.2s;">
                     <div class="game-art">
-                        🎯
+                        <i class="fas fa-crosshairs"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Action</div>
+                        <div class="tag"><i class="fas fa-bolt"></i> Action</div>
                         <h4>Battle Arena</h4>
-                        <div class="players">2,341 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 2,341 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.3s;">
                     <div class="game-art">
-                        ⚽
+                        <i class="fas fa-futbol"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Sports</div>
+                        <div class="tag"><i class="fas fa-trophy"></i> Sports</div>
                         <h4>Soccer Legends</h4>
-                        <div class="players">1,876 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 1,876 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.4s;">
                     <div class="game-art">
-                        🧟
+                        <i class="fas fa-skull"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Survival</div>
+                        <div class="tag"><i class="fas fa-shield-alt"></i> Survival</div>
                         <h4>Zombie Escape</h4>
-                        <div class="players">723 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 723 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.5s;">
                     <div class="game-art">
-                        ♟️
+                        <i class="fas fa-chess-king"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Strategy</div>
+                        <div class="tag"><i class="fas fa-brain"></i> Strategy</div>
                         <h4>Chess Arena</h4>
-                        <div class="players">1,102 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 1,102 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.6s;">
                     <div class="game-art">
-                        🚀
+                        <i class="fas fa-rocket"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Arcade</div>
+                        <div class="tag"><i class="fas fa-arcade"></i> Arcade</div>
                         <h4>Space Shooter</h4>
-                        <div class="players">1,567 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 1,567 players</div>
                     </div>
                 </div>
                 <div class="game-card reveal" style="animation-delay:0.7s;">
                     <div class="game-art">
-                        🥊
+                        <i class="fas fa-fist-raised"></i>
                         <span class="play-btn"><i class="fas fa-play-circle"></i></span>
                     </div>
                     <div class="game-info">
-                        <div class="tag">Fighting</div>
+                        <div class="tag"><i class="fas fa-bolt"></i> Fighting</div>
                         <h4>Street Fighter</h4>
-                        <div class="players">834 players</div>
+                        <div class="players"><i class="fas fa-user"></i> 834 players</div>
                     </div>
                 </div>
             </div>
@@ -1503,19 +1570,19 @@
     <section class="tournaments-section" id="tournaments">
         <div class="container">
             <div class="section-header reveal">
-                <div class="label">COMPETE NOW</div>
+                <div class="label"><i class="fas fa-trophy"></i> COMPETE NOW</div>
                 <h2>Live Tournaments</h2>
                 <p>Join active tournaments and compete for real rewards</p>
             </div>
             <div class="tournaments-grid">
                 <div class="tournament-card reveal">
                     <div class="status">
-                        <span class="dot"></span> LIVE NOW
+                        <span class="dot"></span> <i class="fas fa-circle" style="font-size:0.4rem;"></i> LIVE NOW
                     </div>
-                    <h4>🏎️ Speed Legends Cup</h4>
+                    <h4><i class="fas fa-flag-checkered"></i> Speed Legends Cup</h4>
                     <div class="details">
-                        <span>Entry: 500 RWF</span>
-                        <span class="prize-pool">🏆 50,000 RWF</span>
+                        <span><i class="fas fa-ticket-alt"></i> Entry: 500 RWF</span>
+                        <span class="prize-pool"><i class="fas fa-trophy"></i> 50,000 RWF</span>
                     </div>
                     <div class="countdown">
                         <div class="cd-item"><div class="num" id="t1-d">02</div><div class="lbl">Days</div></div>
@@ -1524,20 +1591,20 @@
                         <div class="cd-item"><div class="num" id="t1-s">45</div><div class="lbl">Sec</div></div>
                     </div>
                     <div class="details">
-                        <span>👥 128/256 players</span>
-                        <span>🔴 1.2K watching</span>
+                        <span><i class="fas fa-users"></i> 128/256 players</span>
+                        <span><i class="fas fa-eye"></i> 1.2K watching</span>
                     </div>
-                    <button class="btn-join">⚡ Join Tournament</button>
+                    <button class="btn-join"><i class="fas fa-bolt"></i> Join Tournament</button>
                 </div>
 
                 <div class="tournament-card reveal" style="animation-delay:0.1s;">
                     <div class="status" style="color:var(--primary);">
-                        <span class="dot" style="background:var(--primary);"></span> STARTING SOON
+                        <span class="dot" style="background:var(--primary);"></span> <i class="fas fa-clock"></i> STARTING SOON
                     </div>
-                    <h4>🧩 Puzzle Masters Cup</h4>
+                    <h4><i class="fas fa-puzzle-piece"></i> Puzzle Masters Cup</h4>
                     <div class="details">
-                        <span>Entry: 300 RWF</span>
-                        <span class="prize-pool">🏆 30,000 RWF</span>
+                        <span><i class="fas fa-ticket-alt"></i> Entry: 300 RWF</span>
+                        <span class="prize-pool"><i class="fas fa-trophy"></i> 30,000 RWF</span>
                     </div>
                     <div class="countdown">
                         <div class="cd-item"><div class="num" id="t2-d">01</div><div class="lbl">Days</div></div>
@@ -1546,20 +1613,20 @@
                         <div class="cd-item"><div class="num" id="t2-s">22</div><div class="lbl">Sec</div></div>
                     </div>
                     <div class="details">
-                        <span>👥 64/100 players</span>
-                        <span>🔴 856 watching</span>
+                        <span><i class="fas fa-users"></i> 64/100 players</span>
+                        <span><i class="fas fa-eye"></i> 856 watching</span>
                     </div>
-                    <button class="btn-join">⚡ Join Tournament</button>
+                    <button class="btn-join"><i class="fas fa-bolt"></i> Join Tournament</button>
                 </div>
 
                 <div class="tournament-card reveal" style="animation-delay:0.2s;">
                     <div class="status" style="color:var(--gold);">
-                        <span class="dot" style="background:var(--gold);"></span> REGISTER OPEN
+                        <span class="dot" style="background:var(--gold);"></span> <i class="fas fa-door-open"></i> REGISTER OPEN
                     </div>
-                    <h4>♟️ Grand Chess Championship</h4>
+                    <h4><i class="fas fa-chess-king"></i> Grand Chess Championship</h4>
                     <div class="details">
-                        <span>Entry: 1,500 RWF</span>
-                        <span class="prize-pool">🏆 150,000 RWF</span>
+                        <span><i class="fas fa-ticket-alt"></i> Entry: 1,500 RWF</span>
+                        <span class="prize-pool"><i class="fas fa-trophy"></i> 150,000 RWF</span>
                     </div>
                     <div class="countdown">
                         <div class="cd-item"><div class="num" id="t3-d">03</div><div class="lbl">Days</div></div>
@@ -1568,10 +1635,10 @@
                         <div class="cd-item"><div class="num" id="t3-s">10</div><div class="lbl">Sec</div></div>
                     </div>
                     <div class="details">
-                        <span>👥 32/64 players</span>
-                        <span>🔴 2.1K watching</span>
+                        <span><i class="fas fa-users"></i> 32/64 players</span>
+                        <span><i class="fas fa-eye"></i> 2.1K watching</span>
                     </div>
-                    <button class="btn-join">⚡ Join Tournament</button>
+                    <button class="btn-join"><i class="fas fa-bolt"></i> Join Tournament</button>
                 </div>
             </div>
         </div>
@@ -1581,49 +1648,49 @@
     <section class="features-section">
         <div class="container">
             <div class="section-header reveal">
-                <div class="label">WHY SHORA</div>
+                <div class="label"><i class="fas fa-star"></i> WHY SHORA</div>
                 <h2>Built for Gamers</h2>
                 <p>Everything you need to compete, win, and grow</p>
             </div>
             <div class="features-grid">
                 <div class="feature-item reveal">
-                    <span class="icon">⚡</span>
-                    <h4>Fast Payments</h4>
+                    <span class="icon"><i class="fas fa-bolt"></i></span>
+                    <h4><i class="fas fa-coins"></i> Fast Payments</h4>
                     <p>Instant deposits and withdrawals via MTN Mobile Money</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.1s;">
-                    <span class="icon">🔒</span>
-                    <h4>Secure Wallet</h4>
+                    <span class="icon"><i class="fas fa-lock"></i></span>
+                    <h4><i class="fas fa-shield-alt"></i> Secure Wallet</h4>
                     <p>Your funds are protected with enterprise-grade encryption</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.2s;">
-                    <span class="icon">📱</span>
-                    <h4>Cross Platform</h4>
+                    <span class="icon"><i class="fas fa-mobile-alt"></i></span>
+                    <h4><i class="fas fa-sync-alt"></i> Cross Platform</h4>
                     <p>Play on any device - PC, tablet, or smartphone</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.3s;">
-                    <span class="icon">☁️</span>
-                    <h4>Cloud Saves</h4>
+                    <span class="icon"><i class="fas fa-cloud"></i></span>
+                    <h4><i class="fas fa-cloud-upload-alt"></i> Cloud Saves</h4>
                     <p>Your progress syncs across all your devices</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.4s;">
-                    <span class="icon">🎮</span>
-                    <h4>Real-Time Multiplayer</h4>
+                    <span class="icon"><i class="fas fa-gamepad"></i></span>
+                    <h4><i class="fas fa-users"></i> Real-Time Multiplayer</h4>
                     <p>Compete against players in real-time matches</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.5s;">
-                    <span class="icon">📊</span>
-                    <h4>Leaderboards</h4>
+                    <span class="icon"><i class="fas fa-chart-line"></i></span>
+                    <h4><i class="fas fa-ranking-star"></i> Leaderboards</h4>
                     <p>Track your rank and climb to the top</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.6s;">
-                    <span class="icon">🎯</span>
-                    <h4>Skill-Based Matchmaking</h4>
+                    <span class="icon"><i class="fas fa-crosshairs"></i></span>
+                    <h4><i class="fas fa-balance-scale"></i> Skill-Based Matchmaking</h4>
                     <p>Fair matches against players of similar skill</p>
                 </div>
                 <div class="feature-item reveal" style="animation-delay:0.7s;">
-                    <span class="icon">💬</span>
-                    <h4>24/7 Support</h4>
+                    <span class="icon"><i class="fas fa-headset"></i></span>
+                    <h4><i class="fas fa-clock"></i> 24/7 Support</h4>
                     <p>Real humans ready to help anytime</p>
                 </div>
             </div>
@@ -1634,29 +1701,29 @@
     <section class="rewards-section" id="rewards">
         <div class="container">
             <div class="section-header reveal">
-                <div class="label">REWARDS SYSTEM</div>
+                <div class="label"><i class="fas fa-gift"></i> REWARDS SYSTEM</div>
                 <h2>Earn While You Play</h2>
                 <p>Every game you play brings you closer to real rewards</p>
             </div>
             <div class="rewards-grid">
                 <div class="reward-card reveal">
-                    <span class="icon">💰</span>
-                    <h4>Daily Reward</h4>
+                    <span class="icon"><i class="fas fa-coins"></i></span>
+                    <h4><i class="fas fa-calendar-day"></i> Daily Reward</h4>
                     <p>Claim daily bonuses and keep your streak alive</p>
                 </div>
                 <div class="reward-card reveal" style="animation-delay:0.1s;">
-                    <span class="icon">👥</span>
-                    <h4>Referral Bonus</h4>
+                    <span class="icon"><i class="fas fa-user-plus"></i></span>
+                    <h4><i class="fas fa-handshake"></i> Referral Bonus</h4>
                     <p>Invite friends and earn 10% of their entry fees</p>
                 </div>
                 <div class="reward-card reveal" style="animation-delay:0.2s;">
-                    <span class="icon">🏆</span>
-                    <h4>Achievements</h4>
+                    <span class="icon"><i class="fas fa-trophy"></i></span>
+                    <h4><i class="fas fa-medal"></i> Achievements</h4>
                     <p>Unlock badges and trophies for your profile</p>
                 </div>
                 <div class="reward-card reveal" style="animation-delay:0.3s;">
-                    <span class="icon">⭐</span>
-                    <h4>Premium Membership</h4>
+                    <span class="icon"><i class="fas fa-crown"></i></span>
+                    <h4><i class="fas fa-gem"></i> Premium Membership</h4>
                     <p>Get exclusive access, bonuses, and discounts</p>
                 </div>
             </div>
@@ -1667,41 +1734,41 @@
     <section class="testimonials-section">
         <div class="container">
             <div class="section-header reveal">
-                <div class="label">TESTIMONIALS</div>
+                <div class="label"><i class="fas fa-quote-right"></i> TESTIMONIALS</div>
                 <h2>What Players Say</h2>
                 <p>Real stories from the Shora community</p>
             </div>
             <div class="testimonials-grid">
                 <div class="testimonial-card reveal">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <blockquote>"Shora Games completely changed how I game. I've won over 50,000 RWF in tournaments and made amazing friends!"</blockquote>
                     <div class="author">
                         <div class="avatar">JD</div>
                         <div>
                             <div class="name">Jean D'Amour</div>
-                            <div class="handle">@speed_demon</div>
+                            <div class="handle"><i class="fas fa-at"></i> speed_demon</div>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card reveal" style="animation-delay:0.1s;">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <blockquote>"The best gaming platform in Rwanda! MTN Mobile Money integration is seamless and payouts are instant."</blockquote>
                     <div class="author">
                         <div class="avatar">KM</div>
                         <div>
                             <div class="name">Kelly Mutoni</div>
-                            <div class="handle">@queen_of_games</div>
+                            <div class="handle"><i class="fas fa-at"></i> queen_of_games</div>
                         </div>
                     </div>
                 </div>
                 <div class="testimonial-card reveal" style="animation-delay:0.2s;">
-                    <div class="stars">⭐⭐⭐⭐⭐</div>
+                    <div class="stars"><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i><i class="fas fa-star"></i></div>
                     <blockquote>"From casual gamer to earning real money - Shora made it possible. The tournaments are thrilling and well organized!"</blockquote>
                     <div class="author">
                         <div class="avatar">PN</div>
                         <div>
                             <div class="name">Prince Niyonzima</div>
-                            <div class="handle">@prince_gamer</div>
+                            <div class="handle"><i class="fas fa-at"></i> prince_gamer</div>
                         </div>
                     </div>
                 </div>
@@ -1715,48 +1782,49 @@
             <div class="footer-grid">
                 <div class="footer-brand">
                     <div class="logo"><i class="fas fa-gamepad"></i> SHORA GAMES</div>
-                    <p>Compete · Win · Become a Legend</p>
+                    <p><i class="fas fa-trophy"></i> Compete · <i class="fas fa-crown"></i> Win · <i class="fas fa-star"></i> Become a Legend</p>
                     <div class="footer-social">
                         <a href="#"><i class="fab fa-discord"></i></a>
                         <a href="#"><i class="fab fa-youtube"></i></a>
                         <a href="#"><i class="fab fa-facebook"></i></a>
                         <a href="#"><i class="fab fa-instagram"></i></a>
                         <a href="#"><i class="fab fa-twitter"></i></a>
+                        <a href="#"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
                 <div class="footer-col">
-                    <h5>Games</h5>
-                    <a href="#">Arcade</a>
-                    <a href="#">Racing</a>
-                    <a href="#">Puzzle</a>
-                    <a href="#">Strategy</a>
+                    <h5><i class="fas fa-gamepad"></i> Games</h5>
+                    <a href="#"><i class="fas fa-arcade"></i> Arcade</a>
+                    <a href="#"><i class="fas fa-car"></i> Racing</a>
+                    <a href="#"><i class="fas fa-puzzle-piece"></i> Puzzle</a>
+                    <a href="#"><i class="fas fa-chess"></i> Strategy</a>
                 </div>
                 <div class="footer-col">
-                    <h5>Support</h5>
-                    <a href="#">Help Center</a>
-                    <a href="#">FAQ</a>
-                    <a href="#">Contact</a>
-                    <a href="#">Report Issue</a>
+                    <h5><i class="fas fa-headset"></i> Support</h5>
+                    <a href="#"><i class="fas fa-question-circle"></i> Help Center</a>
+                    <a href="#"><i class="fas fa-info-circle"></i> FAQ</a>
+                    <a href="#"><i class="fas fa-envelope"></i> Contact</a>
+                    <a href="#"><i class="fas fa-flag"></i> Report Issue</a>
                 </div>
                 <div class="footer-col">
-                    <h5>Company</h5>
-                    <a href="#">About Us</a>
-                    <a href="#">Careers</a>
-                    <a href="#">Partners</a>
-                    <a href="#">Blog</a>
+                    <h5><i class="fas fa-building"></i> Company</h5>
+                    <a href="#"><i class="fas fa-info"></i> About Us</a>
+                    <a href="#"><i class="fas fa-briefcase"></i> Careers</a>
+                    <a href="#"><i class="fas fa-handshake"></i> Partners</a>
+                    <a href="#"><i class="fas fa-blog"></i> Blog</a>
                 </div>
                 <div class="footer-col">
-                    <h5>Legal</h5>
-                    <a href="#">Privacy Policy</a>
-                    <a href="#">Terms of Service</a>
-                    <a href="#">Cookie Policy</a>
-                    <a href="#">Responsible Gaming</a>
+                    <h5><i class="fas fa-gavel"></i> Legal</h5>
+                    <a href="#"><i class="fas fa-lock"></i> Privacy Policy</a>
+                    <a href="#"><i class="fas fa-file-contract"></i> Terms of Service</a>
+                    <a href="#"><i class="fas fa-cookie-bite"></i> Cookie Policy</a>
+                    <a href="#"><i class="fas fa-heart"></i> Responsible Gaming</a>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2026 Shora Games — Where Champions Are Made</p>
+                <p><i class="fas fa-copyright"></i> 2026 Shora Games — <i class="fas fa-trophy"></i> Where Champions Are Made</p>
                 <p style="margin-top:4px;font-size:0.65rem;">
-                    <i class="fas fa-shield-alt"></i> Secured by MTN Mobile Money
+                    <i class="fas fa-shield-alt"></i> Secured by MTN Mobile Money <i class="fas fa-check-circle" style="color:var(--success);"></i>
                 </p>
             </div>
         </div>
@@ -1886,8 +1954,8 @@
 
         // ========== CONSOLE ==========
         console.log('%c🎮 SHORA GAMES LANDING PAGE', 'color: #00BFFF; font-size: 20px; font-weight: bold;');
-        console.log('%cPlay. Compete. Earn. Repeat.', 'color: #6C63FF; font-size: 14px;');
-        console.log('%cBuild v1.0 — All features loaded', 'color: #A7B5C5; font-size: 12px;');
+        console.log('%c🎯 Play. Compete. Earn. Repeat.', 'color: #6C63FF; font-size: 14px;');
+        console.log('%c⚡ Build v2.0 — Professional Icons Added', 'color: #A7B5C5; font-size: 12px;');
     </script>
 
 </body>
