@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Shora Games — Verify Email</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Syne:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+<style>
+  :root {
+    --bg-deep: #06111F;
+    --bg-secondary: #0B1F36;
+    --bg-tertiary: #102A43;
+    --glow-primary: #00BFFF;
+    --glow-success: #00E5A0;
+    --glow-error: #FF4D6D;
+    --text-primary: #F8FAFC;
+    --text-muted: #94A3B8;
+    --border-glow: rgba(0, 191, 255, 0.25);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: linear-gradient(135deg, var(--bg-deep) 0%, var(--bg-secondary) 50%, var(--bg-tertiary) 100%);
+    font-family: 'Syne', sans-serif;
+    color: var(--text-primary);
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem 1rem;
+  }
+  .card {
+    background: rgba(6, 17, 31, 0.85);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glow);
+    border-radius: 28px;
+    padding: 2.5rem 2rem;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    max-width: 440px;
+    width: 100%;
+    text-align: center;
+  }
+  .icon-circle {
+    width: 72px; height: 72px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 34px;
+    margin: 0 auto 1.5rem;
+    border: 2px solid var(--glow-primary);
+    background: rgba(0, 191, 255, 0.1);
+    color: var(--glow-primary);
+  }
+  .icon-circle.success { border-color: var(--glow-success); color: var(--glow-success); background: rgba(0,229,160,0.1); }
+  .icon-circle.error { border-color: var(--glow-error); color: var(--glow-error); background: rgba(255,77,109,0.1); }
+  .spinner {
+    width: 34px; height: 34px;
+    border: 3px solid rgba(0,191,255,0.25);
+    border-top-color: var(--glow-primary);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  h1 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.25rem;
+    margin-bottom: 10px;
+    color: var(--text-primary);
+  }
+  p { color: var(--text-muted); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.5rem; }
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 0.85rem 2rem;
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.05));
+    border: 1px solid rgba(0, 191, 255, 0.3);
+    border-radius: 14px;
+    color: var(--text-primary);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+  .btn:hover { border-color: var(--glow-primary); box-shadow: 0 0 20px rgba(0, 191, 255, 0.3); }
+</style>
+</head>
+<body>
+
+<div class="card">
+  <div id="stateIcon" class="icon-circle"><div class="spinner"></div></div>
+  <h1 id="stateTitle">Verifying your email...</h1>
+  <p id="stateDesc">Hang tight, this only takes a second.</p>
+  <a href="login.html" id="actionBtn" class="btn" style="display:none;">
+    <i class="fas fa-sign-in-alt"></i> GO TO SIGN IN
+  </a>
+</div>
+
+<script type="module">
+  // Same backend used for register/login/verify-by-code
+  const API_URL = 'https://shora-games.onrender.com/api';
+
+  const iconEl = document.getElementById('stateIcon');
+  const titleEl = document.getElementById('stateTitle');
+  const descEl = document.getElementById('stateDesc');
+  const btnEl = document.getElementById('actionBtn');
+
+  function showResult(success, title, desc){
+    iconEl.classList.remove('success', 'error');
+    iconEl.innerHTML = success
+      ? '<i class="fas fa-check-circle"></i>'
+      : '<i class="fas fa-exclamation-triangle"></i>';
+    iconEl.classList.add(success ? 'success' : 'error');
+    titleEl.textContent = title;
+    descEl.textContent = desc;
+    btnEl.style.display = 'inline-flex';
+  }
+
+  async function verifyFromLink(){
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get('token');
+
+    if(!token){
+      showResult(false, 'Invalid Link', 'This verification link is missing its token. Please use the link exactly as it appeared in your email, or verify using the code instead.');
+      return;
+    }
+
+    try {
+      const response = await fetch(`${API_URL}/auth/verify-email-link`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token })
+      });
+
+      const data = await response.json();
+
+      if(!response.ok){
+        throw new Error(data.error || 'Verification failed');
+      }
+
+      if(data.success){
+        showResult(true, 'Email Verified!', 'Your account is now active. You can sign in below.');
+      } else {
+        throw new Error('Verification did not succeed');
+      }
+    } catch(err){
+      showResult(false, 'Verification Failed', err.message || 'This link may be invalid or expired. Please request a new one from the sign-in page.');
+    }
+  }
+
+  verifyFromLink();
+</script>
+</body>
+</html>
