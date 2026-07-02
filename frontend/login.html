@@ -7,7 +7,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Syne:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 <style>
-  /* ============ YOUR EXISTING STYLES (Keep them the same) ============ */
+  /* ============ STYLES (Keep your existing styles) ============ */
   :root {
     --bg-deep: #06111F;
     --bg-secondary: #0B1F36;
@@ -74,7 +74,8 @@
   }
   .particle {
     position: absolute;
-    width: 2px; height: 2px;
+    width: 2px;
+    height: 2px;
     background: var(--glow-primary);
     border-radius: 50%;
     opacity: 0;
@@ -117,17 +118,19 @@
     border: 1px solid var(--border-glow);
     border-radius: 28px;
     padding: 2.5rem 2rem;
-    box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
     position: relative;
     overflow: hidden;
     width: 100%;
     max-width: 480px;
-    animation: slide-up 0.5s cubic-bezier(0.16,1,0.3,1) both;
+    animation: slide-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .login-card::before {
     content: '';
     position: absolute;
-    top: 0; left: 0; right: 0;
+    top: 0;
+    left: 0;
+    right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--glow-primary), transparent);
     opacity: 0.5;
@@ -135,7 +138,9 @@
   .login-card::after {
     content: '';
     position: absolute;
-    bottom: 0; left: 0; right: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     height: 1px;
     background: linear-gradient(90deg, transparent, var(--glow-primary), transparent);
     opacity: 0.3;
@@ -152,12 +157,12 @@
     align-items: center;
     justify-content: center;
     width: 60px; height: 60px;
-    background: linear-gradient(135deg, rgba(0,191,255,0.2), rgba(0,191,255,0.05));
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 191, 255, 0.05));
     border-radius: 16px;
     margin-bottom: 0.75rem;
     font-size: 32px;
-    border: 1px solid rgba(0,191,255,0.3);
-    box-shadow: 0 0 20px rgba(0,191,255,0.2);
+    border: 1px solid rgba(0, 191, 255, 0.3);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
   }
   .logo-title {
     font-family: 'Orbitron', monospace;
@@ -180,11 +185,11 @@
   .cyber-tabs {
     display: flex;
     gap: 8px;
-    background: rgba(255,255,255,0.03);
+    background: rgba(255, 255, 255, 0.03);
     border-radius: 60px;
     padding: 4px;
     margin-bottom: 2rem;
-    border: 1px solid rgba(255,255,255,0.08);
+    border: 1px solid rgba(255, 255, 255, 0.08);
   }
   .cyber-tab {
     flex: 1;
@@ -204,9 +209,9 @@
   }
   .cyber-tab i { font-size: 14px; }
   .cyber-tab.active {
-    background: linear-gradient(135deg, rgba(0,191,255,0.2), rgba(0,191,255,0.05));
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(0, 191, 255, 0.05));
     color: var(--glow-primary);
-    box-shadow: 0 0 15px rgba(0,191,255,0.3);
+    box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
   }
 
   .form { display: none; flex-direction: column; gap: 1.25rem; }
@@ -243,8 +248,8 @@
 
   .input-wrap input {
     width: 100%;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(0,191,255,0.25);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(0, 191, 255, 0.25);
     border-radius: 12px;
     padding: 0.85rem 0.85rem 0.85rem 2.75rem;
     color: var(--text-primary);
@@ -255,10 +260,10 @@
   }
   .input-wrap input:focus {
     border-color: var(--glow-primary);
-    background: rgba(0,191,255,0.05);
-    box-shadow: 0 0 20px rgba(0,191,255,0.3);
+    background: rgba(0, 191, 255, 0.05);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
   }
-  .input-wrap input::placeholder { color: rgba(148,163,184,0.5); }
+  .input-wrap input::placeholder { color: rgba(148, 163, 184, 0.5); }
   .input-wrap input.error { border-color: #FF4D6D; }
 
   .prefix {
@@ -312,8 +317,8 @@
   .btn-cyber {
     width: 100%;
     padding: 0.9rem;
-    background: linear-gradient(135deg, rgba(0,191,255,0.15), rgba(0,191,255,0.05));
-    border: 1px solid rgba(0,191,255,0.3);
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.15), rgba(0, 191, 255, 0.05));
+    border: 1px solid rgba(0, 191, 255, 0.3);
     border-radius: 14px;
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
@@ -334,22 +339,25 @@
   .btn-cyber::before {
     content: '';
     position: absolute;
-    top: 0; left: -100%;
-    width: 100%; height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(0,191,255,0.2), transparent);
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.2), transparent);
     transition: left 0.5s ease;
   }
   .btn-cyber:hover {
     border-color: var(--glow-primary);
-    box-shadow: 0 0 20px rgba(0,191,255,0.3);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
     transform: translateY(-2px);
   }
   .btn-cyber:hover::before { left: 100%; }
   .btn-cyber:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
   .spinner {
-    width: 18px; height: 18px;
-    border: 2px solid rgba(255,255,255,0.3);
+    width: 18px;
+    height: 18px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
     border-top-color: #00BFFF;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
@@ -358,6 +366,7 @@
   .btn-cyber.loading .btn-text { display: none; }
   .btn-cyber.loading .spinner { display: inline-block; }
   .btn-cyber.loading i { display: none; }
+  
   @keyframes spin { to { transform: rotate(360deg); } }
 
   .cyber-divider {
@@ -372,14 +381,14 @@
     content: '';
     flex: 1;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(0,191,255,0.3), transparent);
+    background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.3), transparent);
   }
 
   .btn-google {
     width: 100%;
     padding: 0.8rem;
-    background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: 12px;
     color: var(--text-primary);
     font-family: 'Syne', sans-serif;
@@ -393,8 +402,8 @@
     transition: all 0.2s;
   }
   .btn-google:hover {
-    background: rgba(255,255,255,0.08);
-    border-color: rgba(0,191,255,0.3);
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(0, 191, 255, 0.3);
   }
 
   .register-link {
@@ -426,7 +435,7 @@
   .success-circle {
     width: 64px; height: 64px;
     border-radius: 50%;
-    background: rgba(0,191,255,0.1);
+    background: rgba(0, 191, 255, 0.1);
     border: 2px solid #00E5A0;
     display: flex; align-items: center; justify-content: center;
     font-size: 32px;
@@ -470,9 +479,9 @@
     bottom: 30px;
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(6,17,31,0.95);
+    background: rgba(6, 17, 31, 0.95);
     backdrop-filter: blur(12px);
-    border: 1px solid rgba(0,191,255,0.3);
+    border: 1px solid rgba(0, 191, 255, 0.3);
     border-radius: 50px;
     padding: 12px 24px;
     color: #00BFFF;
@@ -482,14 +491,16 @@
     align-items: center;
     gap: 10px;
     font-family: 'Syne', sans-serif;
-    box-shadow: 0 0 20px rgba(0,191,255,0.2);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
   }
 
   .loading-overlay {
     position: fixed;
-    top: 0; left: 0;
-    width: 100%; height: 100%;
-    background: rgba(6,17,31,0.95);
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(6, 17, 31, 0.95);
     backdrop-filter: blur(8px);
     z-index: 3000;
     display: none;
@@ -500,8 +511,9 @@
   }
   .loading-overlay.show { display: flex; }
   .loading-spinner-large {
-    width: 50px; height: 50px;
-    border: 3px solid rgba(0,191,255,0.2);
+    width: 50px;
+    height: 50px;
+    border: 3px solid rgba(0, 191, 255, 0.2);
     border-top-color: #00BFFF;
     border-radius: 50%;
     animation: spin 1s linear infinite;
@@ -528,7 +540,7 @@
   }
   .verify-overlay.show { display: flex; }
   .verify-card {
-    background: rgba(6,17,31,0.95);
+    background: rgba(6, 17, 31, 0.95);
     border: 1px solid var(--border-glow);
     border-radius: 20px;
     padding: 2rem 1.75rem;
@@ -536,13 +548,13 @@
     width: 100%;
     text-align: center;
     box-shadow: 0 25px 50px -12px rgba(0,0,0,0.6), 0 0 30px rgba(0,191,255,0.15);
-    animation: slide-up 0.4s cubic-bezier(0.16,1,0.3,1) both;
+    animation: slide-up 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
   .verify-icon {
     width: 56px; height: 56px;
     border-radius: 50%;
-    background: rgba(0,191,255,0.1);
-    border: 1px solid rgba(0,191,255,0.3);
+    background: rgba(0, 191, 255, 0.1);
+    border: 1px solid rgba(0, 191, 255, 0.3);
     display: flex; align-items: center; justify-content: center;
     font-size: 26px;
     color: var(--glow-primary);
@@ -567,7 +579,7 @@
     padding: 14px;
     border-radius: 14px;
     background: rgba(255,255,255,0.04);
-    border: 1px solid rgba(0,191,255,0.3);
+    border: 1px solid rgba(0, 191, 255, 0.3);
     color: var(--text-primary);
     font-family: 'Orbitron', monospace;
     font-size: 1.5rem;
@@ -579,7 +591,7 @@
   }
   .verify-input:focus {
     border-color: var(--glow-primary);
-    box-shadow: 0 0 20px rgba(0,191,255,0.3);
+    box-shadow: 0 0 20px rgba(0, 191, 255, 0.3);
   }
   .verify-actions {
     display: flex;
@@ -589,7 +601,7 @@
     flex: 1;
     padding: 12px;
     background: transparent;
-    border: 1px solid rgba(0,191,255,0.3);
+    border: 1px solid rgba(0, 191, 255, 0.3);
     border-radius: 12px;
     color: var(--glow-primary);
     font-family: 'Orbitron', monospace;
@@ -599,7 +611,7 @@
     cursor: pointer;
     transition: all 0.2s ease;
   }
-  .btn-verify-secondary:hover { background: rgba(0,191,255,0.08); }
+  .btn-verify-secondary:hover { background: rgba(0, 191, 255, 0.08); }
   .btn-verify-secondary:disabled { opacity: 0.5; cursor: not-allowed; }
   .verify-skip {
     margin-top: 1.25rem;
@@ -858,19 +870,6 @@
     btn.classList.toggle('loading', loading);
   }
 
-  // ============ SET BUTTON LOADING (WITH ORIGINAL TEXT RESTORE) ============
-  function setButtonLoading(btn, loading, originalText = null) {
-    if (loading) {
-      btn.disabled = true;
-      btn.innerHTML = '<span class="spinner" style="display:inline-block;"></span> SENDING...';
-      btn.classList.add('loading');
-    } else {
-      btn.disabled = false;
-      btn.innerHTML = originalText || '<i class="fas fa-paper-plane"></i> SEND RESET LINK';
-      btn.classList.remove('loading');
-    }
-  }
-
   window.togglePw = function(inputId, btn){
     const inp = document.getElementById(inputId);
     const icon = btn.querySelector('i');
@@ -958,7 +957,6 @@
     }
   };
 
-  // ============ FIXED RESEND VERIFICATION ============
   window.resendVerification = async function(){
     const phone = localStorage.getItem('shora_pending_phone');
     const email = localStorage.getItem('shora_pending_email');
@@ -969,8 +967,8 @@
     }
 
     const btn = document.getElementById('btn-resend');
-    setButtonLoading(btn, true);
-    
+    btn.disabled = true;
+
     try {
       const response = await fetch(`${API_URL}/auth/resend-verification`, {
         method: 'POST',
@@ -984,15 +982,11 @@
         throw new Error(data.error || 'Failed to resend code');
       }
 
-      document.getElementById('verifyCodeInput').value = '';
-      showToast('✓ New verification code sent! Check your email.', false);
-      
+      showToast('✓ New verification code sent!', false);
     } catch(err){
       showToast(err.message, true);
     } finally {
-      setTimeout(() => {
-        setButtonLoading(btn, false);
-      }, 15000);
+      setTimeout(() => { btn.disabled = false; }, 15000);
     }
   };
 
@@ -1109,22 +1103,13 @@
     }
   };
 
-  // ============ FIXED FORGOT PASSWORD ============
+  // ============ FORGOT PASSWORD ============
   window.handleForgot = async function(){
     clearErrors();
     const email = document.getElementById('forgot-email').value.trim();
+    if(!validateEmail(email)){ showError('forgot-email','forgot-email-err'); return; }
     
-    if(!validateEmail(email)){
-      showError('forgot-email','forgot-email-err');
-      return;
-    }
-    
-    // Get the button
-    const btn = document.getElementById('btn-forgot');
-    
-    // Show loading state
-    setButtonLoading(btn, true);
-    
+    setLoading('btn-forgot', true);
     showLoading(true);
     
     try {
@@ -1136,22 +1121,17 @@
       
       const data = await response.json();
       
-      if (!response.ok) {
-        throw new Error(data.error || 'Failed to send reset link');
-      }
+      if (!response.ok) throw new Error(data.error);
       
       if (data.success) {
-        // Hide the form and show success message
         document.getElementById('btn-forgot').style.display = 'none';
         document.getElementById('forgot-email').closest('.field').style.display = 'none';
         document.getElementById('forgot-success').classList.add('show');
-        showToast('✓ Password reset link sent! Check your email.', false);
+        showToast('✓ Password reset link sent!', false);
       }
     } catch(err){ 
       showToast(err.message, true);
-      setButtonLoading(btn, false);
-      showLoading(false);
-    } finally {
+      setLoading('btn-forgot', false);
       showLoading(false);
     }
   };
