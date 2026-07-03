@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Under Maintenance - Shora Games</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06111F;
+            color: #F5F7FA;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-layer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #06111F 0%, #0B1F36 50%, #0D1B2A 100%);
+        }
+
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(255, 200, 87, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: glow 6s ease-in-out infinite;
+        }
+
+        @keyframes glow {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .container {
+            position: relative;
+            z-index: 1;
+            text-align: center;
+            max-width: 600px;
+            padding: 40px 20px;
+            animation: slideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .icon {
+            font-size: 4rem;
+            color: #FFC857;
+            margin-bottom: 20px;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .spinner {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(255, 200, 87, 0.1);
+            border-top: 3px solid #FFC857;
+            border-radius: 50%;
+            animation: spin 1.5s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, #FFC857, #FFD700);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 16px;
+        }
+
+        .subtitle {
+            font-size: 1.1rem;
+            color: #A7B5C5;
+            margin-bottom: 24px;
+        }
+
+        .message-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 200, 87, 0.15);
+            border-radius: 16px;
+            padding: 24px;
+            margin-bottom: 30px;
+        }
+
+        .message-box .label {
+            font-size: 0.6rem;
+            color: #A7B5C5;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 8px;
+        }
+
+        .message-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            color: #FFC857;
+            font-size: 1.1rem;
+        }
+
+        .message-item:last-child {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            display: inline-block;
+            background: rgba(255, 200, 87, 0.1);
+            color: #FFC857;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            border: 1px solid rgba(255, 200, 87, 0.2);
+            margin-bottom: 20px;
+        }
+
+        .footer-text {
+            color: rgba(167, 181, 197, 0.2);
+            font-size: 0.65rem;
+            margin-top: 30px;
+            letter-spacing: 1px;
+        }
+
+        .footer-text i {
+            color: #FFC857;
+            opacity: 0.3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+    <div class="container">
+        <div class="spinner"></div>
+        <div class="icon"><i class="fas fa-tools"></i></div>
+        
+        <div class="status-badge">
+            <i class="fas fa-clock"></i> UNDER MAINTENANCE
+        </div>
+        
+        <h1>SHORA GAMES</h1>
+        <p class="subtitle">We're currently improving your gaming experience</p>
+
+        <div class="message-box" id="messageBox">
+            <div class="label"><i class="fas fa-comment"></i> MESSAGE FROM ADMIN</div>
+            <div id="maintenanceMessages">
+                <div style="color:#A7B5C5;font-size:0.9rem;padding:10px;">Loading messages...</div>
+            </div>
+        </div>
+
+        <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
+            <span style="font-size:0.8rem;color:#A7B5C5;">
+                <i class="fas fa-envelope"></i> support@shoragames.com
+            </span>
+            <span style="font-size:0.8rem;color:#A7B5C5;">
+                <i class="fab fa-twitter"></i> @ShoraGames
+            </span>
+        </div>
+
+        <div class="footer-text">
+            <i class="fas fa-shield-alt"></i> We'll be back soon! Thank you for your patience.
+        </div>
+    </div>
+
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, onValue } from "firebase/database";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        function loadMaintenanceMessages() {
+            const maintenanceRef = ref(db, 'maintenance');
+            onValue(maintenanceRef, (snapshot) => {
+                try {
+                    const data = snapshot.val();
+                    const messagesContainer = document.getElementById('maintenanceMessages');
+
+                    if (data && data.messages && data.messages.length > 0) {
+                        messagesContainer.innerHTML = data.messages.map(msg => `
+                            <div class="message-item"><i class="fas fa-chevron-right" style="color:#FFC857;font-size:0.6rem;margin-right:8px;"></i>${msg}</div>
+                        `).join('');
+                    } else {
+                        messagesContainer.innerHTML = '<div style="color:#A7B5C5;font-size:0.9rem;padding:10px;">No messages from admin</div>';
+                    }
+                } catch (error) {
+                    console.error('Error loading maintenance messages:', error);
+                }
+            });
+        }
+
+        loadMaintenanceMessages();
+
+        console.log('%c🛠️ SHORA GAMES - MAINTENANCE MODE', 'color: #FFC857; font-size: 18px; font-weight: bold;');
+        console.log('%c⏳ Please check back soon!', 'color: #A7B5C5; font-size: 14px;');
+    </script>
+</body>
+</html>
