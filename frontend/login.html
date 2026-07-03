@@ -8,6 +8,10 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ========================================
+           SHORA GAMES - LOGIN PAGE
+           ======================================== */
+
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -72,7 +76,9 @@
         .grid-overlay {
             position: fixed;
             inset: 0;
-            background-image: linear-gradient(rgba(0, 191, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
+            background-image:
+                linear-gradient(rgba(0, 191, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
             pointer-events: none;
             z-index: 1;
@@ -805,7 +811,7 @@
         // ============ IMPORTS ============
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child, onValue } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
         // ============ FIREBASE CONFIG ============
         const firebaseConfig = {
@@ -819,6 +825,25 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
         const googleProvider = new GoogleAuthProvider();
+
+        // ============ CHECK MAINTENANCE MODE ============
+        function checkMaintenanceMode() {
+            const maintenanceRef = ref(db, 'maintenance');
+            onValue(maintenanceRef, (snapshot) => {
+                try {
+                    const data = snapshot.val();
+                    console.log('🔧 Maintenance check:', data);
+                    if (data && data.enabled === true) {
+                        console.log('🛠️ Maintenance mode is ON - Redirecting to maintenance page');
+                        window.location.href = 'maintenance.html';
+                    } else {
+                        console.log('✅ Maintenance mode is OFF - Site available');
+                    }
+                } catch (error) {
+                    console.error('❌ Error checking maintenance:', error);
+                }
+            });
+        }
 
         // ============ PARTICLES ============
         (function() {
@@ -948,7 +973,6 @@
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCred.user;
 
-                // Save to BOTH paths so admin dashboard can see it
                 const userData = {
                     username: username,
                     email: email,
@@ -961,13 +985,9 @@
                     status: 'active'
                 };
 
-                // Save to standard 'users' path
                 await set(ref(db, `users/${user.uid}`), userData);
-                
-                // Also save to 'shora-games/users' path for admin compatibility
                 await set(ref(db, `shora-games/users/${user.uid}`), userData);
 
-                // Save session
                 localStorage.setItem('shora_user', JSON.stringify({
                     uid: user.uid,
                     username: username,
@@ -1164,10 +1184,13 @@
             }
         });
 
+        // ============ START MAINTENANCE CHECK ============
+        checkMaintenanceMode();
+
         console.log('%c🎮 SHORA GAMES LOGIN', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
         console.log('%c🔐 Firebase Auth Active', 'color: #6C63FF; font-size: 13px;');
-        console.log('%c✅ No email verification required', 'color: #00E676;');
-        console.log('%c👤 New users saved to BOTH Firebase paths for admin compatibility', 'color: #FFC857;');
+        console.log('%c🛠️ Maintenance mode check enabled', 'color: #FFC857;');
+        console.log('%c👤 New users saved to BOTH Firebase paths for admin compatibility', 'color: #00E676;');
     </script>
 
 </body>
