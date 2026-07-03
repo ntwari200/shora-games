@@ -8,10 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ========================================
-           SHORA GAMES - LOGIN PAGE
-           ======================================== */
-
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -29,11 +25,7 @@
             --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Inter', 'Space Grotesk', sans-serif;
@@ -46,7 +38,6 @@
             justify-content: center;
         }
 
-        /* ========== BACKGROUND LAYERS ========== */
         .bg-layer {
             position: fixed;
             inset: 0;
@@ -81,9 +72,7 @@
         .grid-overlay {
             position: fixed;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 191, 255, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
+            background-image: linear-gradient(rgba(0, 191, 255, 0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 191, 255, 0.03) 1px, transparent 1px);
             background-size: 40px 40px;
             pointer-events: none;
             z-index: 1;
@@ -128,7 +117,6 @@
         .glow-line-top { top: 80px; }
         .glow-line-bottom { bottom: 80px; }
 
-        /* ========== CONTAINER ========== */
         .container {
             position: relative;
             z-index: 2;
@@ -137,7 +125,6 @@
             padding: 20px;
         }
 
-        /* ========== LOGIN CARD ========== */
         .login-card {
             background: rgba(6, 17, 31, 0.85);
             backdrop-filter: blur(20px);
@@ -177,11 +164,7 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ========== LOGO ========== */
-        .logo {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
+        .logo { text-align: center; margin-bottom: 2rem; }
 
         .logo-icon {
             display: inline-flex;
@@ -217,7 +200,6 @@
             margin-top: 4px;
         }
 
-        /* ========== TABS ========== */
         .cyber-tabs {
             display: flex;
             gap: 8px;
@@ -254,33 +236,17 @@
             box-shadow: 0 0 20px rgba(0, 191, 255, 0.2);
         }
 
-        .cyber-tab:hover:not(.active) {
-            color: var(--text);
-        }
+        .cyber-tab:hover:not(.active) { color: var(--text); }
 
-        /* ========== FORMS ========== */
-        .form {
-            display: none;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .form.active {
-            display: flex;
-            animation: fadeIn 0.3s ease;
-        }
+        .form { display: none; flex-direction: column; gap: 1.25rem; }
+        .form.active { display: flex; animation: fadeIn 0.3s ease; }
 
         @keyframes fadeIn {
             from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
 
-        /* ========== FIELDS ========== */
-        .field {
-            display: flex;
-            flex-direction: column;
-            gap: 6px;
-        }
+        .field { display: flex; flex-direction: column; gap: 6px; }
 
         .field label {
             font-size: 0.7rem;
@@ -293,10 +259,7 @@
             gap: 6px;
         }
 
-        .field label i {
-            font-size: 12px;
-            color: var(--primary);
-        }
+        .field label i { font-size: 12px; color: var(--primary); }
 
         .input-wrap {
             position: relative;
@@ -314,9 +277,7 @@
             z-index: 1;
         }
 
-        .input-wrap:focus-within .input-icon {
-            color: var(--primary);
-        }
+        .input-wrap:focus-within .input-icon { color: var(--primary); }
 
         .input-wrap input {
             width: 100%;
@@ -337,14 +298,8 @@
             box-shadow: 0 0 25px rgba(0, 191, 255, 0.15);
         }
 
-        .input-wrap input::placeholder {
-            color: rgba(148, 163, 184, 0.4);
-        }
-
-        .input-wrap input.error {
-            border-color: var(--danger);
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.2);
-        }
+        .input-wrap input::placeholder { color: rgba(148, 163, 184, 0.4); }
+        .input-wrap input.error { border-color: var(--danger); box-shadow: 0 0 20px rgba(255, 77, 109, 0.2); }
 
         .prefix {
             position: absolute;
@@ -356,9 +311,7 @@
             z-index: 1;
         }
 
-        .has-prefix input {
-            padding-left: 5.5rem;
-        }
+        .has-prefix input { padding-left: 5.5rem; }
 
         .toggle-pw {
             position: absolute;
@@ -376,9 +329,7 @@
             z-index: 1;
         }
 
-        .toggle-pw:hover {
-            color: var(--primary);
-        }
+        .toggle-pw:hover { color: var(--primary); }
 
         .error-msg {
             font-size: 0.7rem;
@@ -389,19 +340,10 @@
             margin-top: 2px;
         }
 
-        .error-msg.show {
-            display: flex;
-        }
+        .error-msg.show { display: flex; }
+        .error-msg i { font-size: 10px; }
 
-        .error-msg i {
-            font-size: 10px;
-        }
-
-        /* ========== FORGOT PASSWORD ========== */
-        .forgot {
-            text-align: right;
-            margin-top: -4px;
-        }
+        .forgot { text-align: right; margin-top: -4px; }
 
         .forgot a {
             font-size: 0.7rem;
@@ -413,11 +355,8 @@
             gap: 4px;
         }
 
-        .forgot a:hover {
-            opacity: 0.7;
-        }
+        .forgot a:hover { opacity: 0.7; }
 
-        /* ========== BUTTONS ========== */
         .btn-cyber {
             width: 100%;
             padding: 0.9rem;
@@ -439,9 +378,7 @@
             gap: 10px;
         }
 
-        .btn-cyber i {
-            font-size: 16px;
-        }
+        .btn-cyber i { font-size: 16px; }
 
         .btn-cyber::before {
             content: '';
@@ -460,15 +397,9 @@
             transform: translateY(-2px);
         }
 
-        .btn-cyber:hover:not(:disabled)::before {
-            left: 100%;
-        }
+        .btn-cyber:hover:not(:disabled)::before { left: 100%; }
 
-        .btn-cyber:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
+        .btn-cyber:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
 
         .btn-cyber .spinner {
             width: 18px;
@@ -480,21 +411,12 @@
             display: none;
         }
 
-        .btn-cyber.loading .btn-text {
-            display: none;
-        }
-        .btn-cyber.loading .spinner {
-            display: inline-block;
-        }
-        .btn-cyber.loading i {
-            display: none;
-        }
+        .btn-cyber.loading .btn-text { display: none; }
+        .btn-cyber.loading .spinner { display: inline-block; }
+        .btn-cyber.loading i { display: none; }
 
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ========== DIVIDER ========== */
         .cyber-divider {
             display: flex;
             align-items: center;
@@ -512,7 +434,6 @@
             background: linear-gradient(90deg, transparent, rgba(0, 191, 255, 0.3), transparent);
         }
 
-        /* ========== GOOGLE BUTTON ========== */
         .btn-google {
             width: 100%;
             padding: 0.8rem;
@@ -537,12 +458,8 @@
             transform: translateY(-2px);
         }
 
-        .btn-google i {
-            font-size: 1.2rem;
-            color: #EA4335;
-        }
+        .btn-google i { font-size: 1.2rem; color: #EA4335; }
 
-        /* ========== REGISTER LINK ========== */
         .register-link {
             text-align: center;
             font-size: 0.8rem;
@@ -560,11 +477,8 @@
             transition: opacity 0.2s;
         }
 
-        .register-link a:hover {
-            opacity: 0.7;
-        }
+        .register-link a:hover { opacity: 0.7; }
 
-        /* ========== SUCCESS MESSAGE ========== */
         .success-msg {
             display: none;
             flex-direction: column;
@@ -575,9 +489,7 @@
             animation: fadeIn 0.4s ease;
         }
 
-        .success-msg.show {
-            display: flex;
-        }
+        .success-msg.show { display: flex; }
 
         .success-circle {
             width: 64px;
@@ -592,7 +504,6 @@
             color: var(--success);
         }
 
-        /* ========== FORGOT VIEW ========== */
         #forgot-view {
             display: none;
             flex-direction: column;
@@ -600,9 +511,7 @@
             animation: fadeIn 0.3s ease;
         }
 
-        #forgot-view.active {
-            display: flex;
-        }
+        #forgot-view.active { display: flex; }
 
         .back-btn {
             background: none;
@@ -620,9 +529,7 @@
             transition: opacity 0.2s;
         }
 
-        .back-btn:hover {
-            opacity: 0.7;
-        }
+        .back-btn:hover { opacity: 0.7; }
 
         .forgot-title {
             font-family: 'Orbitron', monospace;
@@ -634,9 +541,7 @@
             gap: 8px;
         }
 
-        .forgot-title i {
-            color: var(--primary);
-        }
+        .forgot-title i { color: var(--primary); }
 
         .forgot-desc {
             font-size: 0.8rem;
@@ -644,12 +549,8 @@
             line-height: 1.6;
         }
 
-        .forgot-desc i {
-            color: var(--primary);
-            margin-right: 4px;
-        }
+        .forgot-desc i { color: var(--primary); margin-right: 4px; }
 
-        /* ========== TOAST ========== */
         .toast-cyber {
             position: fixed;
             bottom: 30px;
@@ -671,11 +572,8 @@
             max-width: 90%;
         }
 
-        .toast-cyber i {
-            font-size: 1rem;
-        }
+        .toast-cyber i { font-size: 1rem; }
 
-        /* ========== LOADING OVERLAY ========== */
         .loading-overlay {
             position: fixed;
             top: 0;
@@ -692,9 +590,7 @@
             gap: 20px;
         }
 
-        .loading-overlay.show {
-            display: flex;
-        }
+        .loading-overlay.show { display: flex; }
 
         .loading-spinner-large {
             width: 50px;
@@ -712,86 +608,44 @@
             font-size: 0.85rem;
         }
 
-        /* ========== RESPONSIVE ========== */
         @media (max-width: 480px) {
-            .login-card {
-                padding: 1.5rem 1.25rem;
-                border-radius: 20px;
-            }
-
-            .logo-title {
-                font-size: 1.3rem;
-            }
-
-            .logo-icon {
-                width: 54px;
-                height: 54px;
-                font-size: 1.6rem;
-            }
-
-            .cyber-tab {
-                font-size: 0.6rem;
-                padding: 8px 12px;
-            }
-
-            .cyber-tab i {
-                font-size: 12px;
-            }
-
-            .toast-cyber {
-                white-space: normal;
-                text-align: center;
-                max-width: 90%;
-                font-size: 0.8rem;
-                padding: 10px 18px;
-            }
+            .login-card { padding: 1.5rem 1.25rem; border-radius: 20px; }
+            .logo-title { font-size: 1.3rem; }
+            .logo-icon { width: 54px; height: 54px; font-size: 1.6rem; }
+            .cyber-tab { font-size: 0.6rem; padding: 8px 12px; }
+            .cyber-tab i { font-size: 12px; }
+            .toast-cyber { white-space: normal; text-align: center; max-width: 90%; font-size: 0.8rem; padding: 10px 18px; }
         }
 
         @media (max-width: 360px) {
-            .login-card {
-                padding: 1.25rem 1rem;
-            }
-
-            .cyber-tabs {
-                flex-direction: column;
-                border-radius: 16px;
-                gap: 4px;
-            }
-
-            .cyber-tab {
-                border-radius: 12px;
-            }
+            .login-card { padding: 1.25rem 1rem; }
+            .cyber-tabs { flex-direction: column; border-radius: 16px; gap: 4px; }
+            .cyber-tab { border-radius: 12px; }
         }
     </style>
 </head>
 <body>
 
-    <!-- ========== BACKGROUND LAYERS ========== -->
     <div class="bg-layer"></div>
     <div class="grid-overlay"></div>
     <div class="particles" id="particles"></div>
     <div class="glow-line glow-line-top"></div>
     <div class="glow-line glow-line-bottom"></div>
 
-    <!-- ========== LOADING OVERLAY ========== -->
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner-large"></div>
         <div class="loading-text">PROCESSING</div>
     </div>
 
-    <!-- ========== MAIN CONTENT ========== -->
     <div class="container">
         <div class="login-card">
-            <!-- LOGO -->
             <div class="logo">
                 <div class="logo-icon"><i class="fas fa-gamepad"></i></div>
                 <div class="logo-title">SHORA</div>
                 <div class="logo-sub">Play · Compete · Win</div>
             </div>
 
-            <!-- MAIN VIEW -->
             <div id="main-view">
-                <!-- TABS -->
                 <div class="cyber-tabs">
                     <button class="cyber-tab active" id="tabLoginBtn" onclick="switchTab('login')">
                         <i class="fas fa-sign-in-alt"></i> SIGN IN
@@ -942,18 +796,16 @@
         </div>
     </div>
 
-    <!-- ========== TOAST ========== -->
     <div id="toast" class="toast-cyber">
         <i class="fas fa-info-circle"></i>
         <span id="toastMessage">Message</span>
     </div>
 
-    <!-- ========== JAVASCRIPT ========== -->
     <script type="module">
         // ============ IMPORTS ============
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js";
         import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js";
-        import { getDatabase, ref, set, get, child, update } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
+        import { getDatabase, ref, set, get, child } from "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js";
 
         // ============ FIREBASE CONFIG ============
         const firebaseConfig = {
@@ -1093,12 +945,11 @@
             showLoading(true);
 
             try {
-                // Create user in Firebase Auth
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCred.user;
 
-                // Save user data to Firebase Database
-                await set(ref(db, `users/${user.uid}`), {
+                // Save to BOTH paths so admin dashboard can see it
+                const userData = {
                     username: username,
                     email: email,
                     phone: fullPhone,
@@ -1108,9 +959,15 @@
                     gamesPlayed: 0,
                     createdAt: new Date().toISOString(),
                     status: 'active'
-                });
+                };
 
-                // Store session
+                // Save to standard 'users' path
+                await set(ref(db, `users/${user.uid}`), userData);
+                
+                // Also save to 'shora-games/users' path for admin compatibility
+                await set(ref(db, `shora-games/users/${user.uid}`), userData);
+
+                // Save session
                 localStorage.setItem('shora_user', JSON.stringify({
                     uid: user.uid,
                     username: username,
@@ -1119,7 +976,7 @@
                     balance: 0
                 }));
 
-                showToast('✅ Account created successfully! Welcome to Shora!', false);
+                showToast('✅ Account created successfully!', false);
 
                 document.getElementById('reg-phone').value = '';
                 document.getElementById('reg-email').value = '';
@@ -1130,7 +987,6 @@
                 setLoading('btn-register', false);
                 showLoading(false);
 
-                // Redirect to dashboard
                 setTimeout(() => {
                     window.location.href = 'dashboard.html';
                 }, 1500);
@@ -1211,7 +1067,7 @@
                 const snapshot = await get(child(ref(db), `users/${user.uid}`));
 
                 if (!snapshot.exists()) {
-                    await set(ref(db, `users/${user.uid}`), {
+                    const userData = {
                         username: user.displayName || user.email.split('@')[0],
                         email: user.email,
                         phone: user.phoneNumber || 'Not provided',
@@ -1219,8 +1075,11 @@
                         balance: 0,
                         totalWinnings: 0,
                         gamesPlayed: 0,
-                        createdAt: new Date().toISOString()
-                    });
+                        createdAt: new Date().toISOString(),
+                        status: 'active'
+                    };
+                    await set(ref(db, `users/${user.uid}`), userData);
+                    await set(ref(db, `shora-games/users/${user.uid}`), userData);
                 }
 
                 localStorage.setItem('shora_user', JSON.stringify({
@@ -1301,18 +1160,14 @@
         // ============ AUTH STATE ============
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                if (snapshot.exists() && snapshot.val().verified) {
-                    // User is logged in
-                    console.log('✅ User logged in:', user.email);
-                }
+                console.log('✅ User logged in:', user.email);
             }
         });
 
         console.log('%c🎮 SHORA GAMES LOGIN', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
         console.log('%c🔐 Firebase Auth Active', 'color: #6C63FF; font-size: 13px;');
         console.log('%c✅ No email verification required', 'color: #00E676;');
-        console.log('%c👤 New users auto-verified and redirected to dashboard', 'color: #FFC857;');
+        console.log('%c👤 New users saved to BOTH Firebase paths for admin compatibility', 'color: #FFC857;');
     </script>
 
 </body>
