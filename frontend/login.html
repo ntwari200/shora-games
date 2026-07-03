@@ -712,137 +712,6 @@
             font-size: 0.85rem;
         }
 
-        /* ========== VERIFICATION MODAL ========== */
-        .verify-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            z-index: 4000;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-        }
-
-        .verify-overlay.show {
-            display: flex;
-        }
-
-        .verify-card {
-            background: rgba(6, 17, 31, 0.95);
-            border: 1px solid rgba(0, 191, 255, 0.2);
-            border-radius: 24px;
-            padding: 2rem 1.75rem;
-            max-width: 400px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6), 0 0 40px rgba(0, 191, 255, 0.1);
-            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        .verify-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 50%;
-            background: rgba(0, 191, 255, 0.1);
-            border: 1px solid rgba(0, 191, 255, 0.3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.6rem;
-            color: var(--primary);
-            margin: 0 auto 1rem;
-        }
-
-        .verify-title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
-            font-weight: 700;
-            color: var(--text);
-            margin-bottom: 8px;
-        }
-
-        .verify-desc {
-            font-size: 0.85rem;
-            color: var(--muted);
-            line-height: 1.6;
-            margin-bottom: 1.5rem;
-        }
-
-        .verify-desc span {
-            color: var(--primary);
-            font-weight: 600;
-        }
-
-        .verify-input {
-            width: 100%;
-            padding: 14px;
-            border-radius: 14px;
-            background: rgba(255, 255, 255, 0.04);
-            border: 1px solid rgba(0, 191, 255, 0.3);
-            color: var(--text);
-            font-family: 'Orbitron', monospace;
-            font-size: 1.5rem;
-            text-align: center;
-            letter-spacing: 12px;
-            outline: none;
-            margin-bottom: 1.25rem;
-            transition: var(--transition);
-        }
-
-        .verify-input:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 25px rgba(0, 191, 255, 0.2);
-        }
-
-        .verify-actions {
-            display: flex;
-            gap: 12px;
-        }
-
-        .btn-verify-secondary {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: 1px solid rgba(0, 191, 255, 0.3);
-            border-radius: 12px;
-            color: var(--primary);
-            font-family: 'Orbitron', monospace;
-            font-size: 0.7rem;
-            font-weight: 700;
-            letter-spacing: 1px;
-            cursor: pointer;
-            transition: var(--transition);
-        }
-
-        .btn-verify-secondary:hover:not(:disabled) {
-            background: rgba(0, 191, 255, 0.08);
-            transform: translateY(-2px);
-        }
-
-        .btn-verify-secondary:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .verify-skip {
-            margin-top: 1.25rem;
-            font-size: 0.75rem;
-            color: var(--muted);
-            cursor: pointer;
-            text-decoration: underline;
-            text-underline-offset: 3px;
-            transition: color 0.2s;
-        }
-
-        .verify-skip:hover {
-            color: var(--primary);
-        }
-
         /* ========== RESPONSIVE ========== */
         @media (max-width: 480px) {
             .login-card {
@@ -876,16 +745,6 @@
                 font-size: 0.8rem;
                 padding: 10px 18px;
             }
-
-            .verify-card {
-                padding: 1.5rem 1.25rem;
-            }
-
-            .verify-input {
-                font-size: 1.2rem;
-                letter-spacing: 8px;
-                padding: 12px;
-            }
         }
 
         @media (max-width: 360px) {
@@ -918,29 +777,6 @@
     <div id="loadingOverlay" class="loading-overlay">
         <div class="loading-spinner-large"></div>
         <div class="loading-text">PROCESSING</div>
-    </div>
-
-    <!-- ========== VERIFICATION MODAL ========== -->
-    <div id="verifyOverlay" class="verify-overlay">
-        <div class="verify-card">
-            <div class="verify-icon"><i class="fas fa-envelope-open-text"></i></div>
-            <div class="verify-title">Verify Your Email</div>
-            <div class="verify-desc">We sent a 6-digit code to <span id="verifyEmailDisplay">your email</span>. Enter it below to activate your account.</div>
-            <input type="text" id="verifyCodeInput" class="verify-input" maxlength="6" inputmode="numeric" placeholder="000000"/>
-            <div class="verify-actions">
-                <button type="button" class="btn-cyber" id="btn-verify" style="margin-top:0;" onclick="verifyEmail()">
-                    <i class="fas fa-check"></i>
-                    <span class="btn-text">VERIFY</span>
-                    <div class="spinner"></div>
-                </button>
-            </div>
-            <div class="verify-actions" style="margin-top:10px;">
-                <button type="button" class="btn-verify-secondary" id="btn-resend" onclick="resendVerification()">
-                    <i class="fas fa-redo"></i> RESEND CODE
-                </button>
-            </div>
-            <div class="verify-skip" onclick="closeVerificationModal()">Skip for now</div>
-        </div>
     </div>
 
     <!-- ========== MAIN CONTENT ========== -->
@@ -1071,8 +907,7 @@
                     <div class="success-msg" id="reg-success">
                         <div class="success-circle"><i class="fas fa-check-circle"></i></div>
                         <div style="font-family:'Orbitron',monospace;font-size:0.9rem;color:var(--success);">Account Created!</div>
-                        <div style="font-size:0.8rem;color:var(--muted);">✓ Verification email sent</div>
-                        <div style="font-size:0.7rem;color:var(--muted);margin-top:8px;">Please verify your email before logging in</div>
+                        <div style="font-size:0.8rem;color:var(--muted);">Welcome to Shora Games!</div>
                     </div>
                 </div>
             </div>
@@ -1132,9 +967,6 @@
         const auth = getAuth(app);
         const db = getDatabase(app);
         const googleProvider = new GoogleAuthProvider();
-
-        // ============ BACKEND API URL ============
-        const API_URL = 'https://shora-games.onrender.com/api';
 
         // ============ PARTICLES ============
         (function() {
@@ -1199,18 +1031,6 @@
             btn.classList.toggle('loading', loading);
         }
 
-        function setButtonLoading(btn, loading, originalText = null) {
-            if (loading) {
-                btn.disabled = true;
-                btn.innerHTML = '<span class="spinner" style="display:inline-block;"></span> SENDING...';
-                btn.classList.add('loading');
-            } else {
-                btn.disabled = false;
-                btn.innerHTML = originalText || '<i class="fas fa-paper-plane"></i> SEND RESET LINK';
-                btn.classList.remove('loading');
-            }
-        }
-
         // ============ TOGGLE PASSWORD ============
         window.togglePw = function(inputId, btn) {
             const inp = document.getElementById(inputId);
@@ -1245,18 +1065,6 @@
             clearErrors();
         };
 
-        // ============ VERIFICATION FUNCTIONS ============
-        window.showVerificationModal = function(email) {
-            document.getElementById('verifyEmailDisplay').textContent = email || 'your email';
-            document.getElementById('verifyCodeInput').value = '';
-            document.getElementById('verifyOverlay').classList.add('show');
-        };
-
-        window.closeVerificationModal = function() {
-            document.getElementById('verifyOverlay').classList.remove('show');
-            document.getElementById('verifyCodeInput').value = '';
-        };
-
         // ============ REGISTER ============
         window.handleRegister = async function() {
             clearErrors();
@@ -1285,36 +1093,33 @@
             showLoading(true);
 
             try {
+                // Create user in Firebase Auth
                 const userCred = await createUserWithEmailAndPassword(auth, email, pass);
                 const user = userCred.user;
 
+                // Save user data to Firebase Database
                 await set(ref(db, `users/${user.uid}`), {
                     username: username,
                     email: email,
                     phone: fullPhone,
-                    verified: false,
+                    verified: true,
                     balance: 0,
                     totalWinnings: 0,
                     gamesPlayed: 0,
-                    createdAt: new Date().toISOString()
+                    createdAt: new Date().toISOString(),
+                    status: 'active'
                 });
 
-                const response = await fetch(`${API_URL}/auth/send-verification`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, username, userId: user.uid })
-                });
+                // Store session
+                localStorage.setItem('shora_user', JSON.stringify({
+                    uid: user.uid,
+                    username: username,
+                    email: email,
+                    phone: fullPhone,
+                    balance: 0
+                }));
 
-                const data = await response.json();
-
-                if (data.success) {
-                    localStorage.setItem('shora_pending_email', email);
-                    localStorage.setItem('shora_pending_uid', user.uid);
-                    showToast('✓ Verification code sent to your email!', false);
-                    showVerificationModal(email);
-                } else {
-                    showToast('⚠️ Account created but email failed. Please try resending.', true);
-                }
+                showToast('✅ Account created successfully! Welcome to Shora!', false);
 
                 document.getElementById('reg-phone').value = '';
                 document.getElementById('reg-email').value = '';
@@ -1325,96 +1130,23 @@
                 setLoading('btn-register', false);
                 showLoading(false);
 
+                // Redirect to dashboard
+                setTimeout(() => {
+                    window.location.href = 'dashboard.html';
+                }, 1500);
+
             } catch (err) {
                 let errorMsg = err.message;
-                if (err.code === 'auth/email-already-in-use') errorMsg = 'Email already registered';
-                if (err.code === 'auth/invalid-email') errorMsg = 'Please enter a valid email address';
+                if (err.code === 'auth/email-already-in-use') {
+                    errorMsg = 'Email already registered. Please login instead.';
+                } else if (err.code === 'auth/invalid-email') {
+                    errorMsg = 'Please enter a valid email address.';
+                } else if (err.code === 'auth/weak-password') {
+                    errorMsg = 'Password should be at least 6 characters.';
+                }
                 showToast(errorMsg, true);
                 setLoading('btn-register', false);
                 showLoading(false);
-            }
-        };
-
-        // ============ VERIFY EMAIL ============
-        window.verifyEmail = async function() {
-            const code = document.getElementById('verifyCodeInput').value.trim();
-            const email = localStorage.getItem('shora_pending_email');
-            const uid = localStorage.getItem('shora_pending_uid');
-
-            if (!code || code.length !== 6) {
-                showToast('Please enter the 6-digit code', true);
-                return;
-            }
-            if (!email || !uid) {
-                showToast('No pending verification found. Please register again.', true);
-                return;
-            }
-
-            setLoading('btn-verify', true);
-
-            try {
-                const response = await fetch(`${API_URL}/auth/verify-email`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email, code })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Verification failed');
-                }
-
-                if (data.success) {
-                    await update(ref(db, `users/${uid}`), { verified: true });
-                    localStorage.removeItem('shora_pending_email');
-                    localStorage.removeItem('shora_pending_uid');
-                    closeVerificationModal();
-                    showToast('✓ Email verified successfully! You can now log in.', false);
-                    switchTab('login');
-                }
-            } catch (err) {
-                showToast(err.message, true);
-            } finally {
-                setLoading('btn-verify', false);
-            }
-        };
-
-        // ============ RESEND VERIFICATION ============
-        window.resendVerification = async function() {
-            const email = localStorage.getItem('shora_pending_email');
-            const uid = localStorage.getItem('shora_pending_uid');
-
-            if (!email || !uid) {
-                showToast('No pending verification found. Please register again.', true);
-                return;
-            }
-
-            const btn = document.getElementById('btn-resend');
-            setButtonLoading(btn, true);
-
-            try {
-                const response = await fetch(`${API_URL}/auth/resend-verification`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
-                });
-
-                const data = await response.json();
-
-                if (!response.ok) {
-                    throw new Error(data.error || 'Failed to resend code');
-                }
-
-                document.getElementById('verifyCodeInput').value = '';
-                showToast('✓ New verification code sent! Check your email.', false);
-
-            } catch (err) {
-                showToast(err.message, true);
-            } finally {
-                setTimeout(() => {
-                    setButtonLoading(btn, false);
-                }, 15000);
             }
         };
 
@@ -1455,16 +1187,6 @@
 
                 await signInWithEmailAndPassword(auth, userEmail, pass);
 
-                const userSnapshot = await get(child(ref(db), `users/${userId}`));
-                if (userSnapshot.exists() && !userSnapshot.val().verified) {
-                    await auth.signOut();
-                    showVerificationModal(userEmail);
-                    showToast('⚠️ Please verify your email first. Check your inbox.', true);
-                    setLoading('btn-login', false);
-                    showLoading(false);
-                    return;
-                }
-
                 localStorage.setItem('shora_user', JSON.stringify({ phone: fullPhone, email: userEmail }));
                 showToast('✓ Login successful! Redirecting...');
                 setTimeout(() => window.location.href = 'dashboard.html', 1500);
@@ -1501,6 +1223,12 @@
                     });
                 }
 
+                localStorage.setItem('shora_user', JSON.stringify({
+                    uid: user.uid,
+                    username: user.displayName || user.email.split('@')[0],
+                    email: user.email
+                }));
+
                 showToast('✓ Google Sign-In successful! Redirecting...');
                 setTimeout(() => window.location.href = 'dashboard.html', 1500);
 
@@ -1526,12 +1254,12 @@
             }
 
             const btn = document.getElementById('btn-forgot');
-            setButtonLoading(btn, true);
+            btn.disabled = true;
+            btn.classList.add('loading');
             showLoading(true);
 
             try {
                 await sendPasswordResetEmail(auth, email);
-
                 document.getElementById('btn-forgot').style.display = 'none';
                 document.getElementById('forgot-email').closest('.field').style.display = 'none';
                 document.getElementById('forgot-success').classList.add('show');
@@ -1543,7 +1271,8 @@
                     errorMsg = 'No account found with this email.';
                 }
                 showToast(errorMsg, true);
-                setButtonLoading(btn, false);
+                btn.disabled = false;
+                btn.classList.remove('loading');
                 showLoading(false);
             } finally {
                 showLoading(false);
@@ -1574,14 +1303,16 @@
             if (user) {
                 const snapshot = await get(child(ref(db), `users/${user.uid}`));
                 if (snapshot.exists() && snapshot.val().verified) {
-                    // Auto-redirect to dashboard
-                    // window.location.href = 'dashboard.html';
+                    // User is logged in
+                    console.log('✅ User logged in:', user.email);
                 }
             }
         });
 
         console.log('%c🎮 SHORA GAMES LOGIN', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c🔐 Firebase Auth + Resend Email', 'color: #6C63FF; font-size: 13px;');
+        console.log('%c🔐 Firebase Auth Active', 'color: #6C63FF; font-size: 13px;');
+        console.log('%c✅ No email verification required', 'color: #00E676;');
+        console.log('%c👤 New users auto-verified and redirected to dashboard', 'color: #FFC857;');
     </script>
 
 </body>
