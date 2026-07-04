@@ -79,7 +79,7 @@
             z-index: 1;
         }
 
-        /* ===== NOTIFICATION TOAST ===== */
+        /* ===== NOTIFICATION CONTAINER ===== */
         .notification-container {
             position: fixed;
             top: 20px;
@@ -866,6 +866,14 @@
             cursor: pointer;
         }
 
+        /* Phone input - read-only style */
+        .modal .form-group input[readonly] {
+            background: rgba(255, 255, 255, 0.02);
+            cursor: not-allowed;
+            opacity: 0.7;
+            border-color: rgba(0, 191, 255, 0.1);
+        }
+
         .modal .btn-submit {
             width: 100%;
             padding: 12px;
@@ -1322,15 +1330,18 @@
                 </div>
                 <div class="form-group">
                     <label>Payment Method</label>
-                    <select id="modalMethod" onchange="updatePhoneDefault()">
+                    <select id="modalMethod" disabled style="cursor:not-allowed; opacity:0.7;">
                         <option value="MTN">📱 MTN Mobile Money</option>
                         <option value="Airtel">📱 Airtel Money</option>
                         <option value="Wallet">💳 Wallet Transfer</option>
                     </select>
+                    <div style="font-size:0.55rem; color:var(--muted); margin-top:2px;">
+                        <i class="fas fa-info-circle"></i> Auto-detected from your phone number
+                    </div>
                 </div>
                 <div class="form-group" id="modalPhoneGroup">
-                    <label>Phone Number</label>
-                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" style="background:rgba(255,255,255,0.04);">
+                    <label>Phone Number (Registered)</label>
+                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" readonly style="background:rgba(255,255,255,0.02); cursor:not-allowed; opacity:0.7;">
                     <div style="font-size:0.6rem; margin-top:4px;" id="phoneStatus">
                         <i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Using your registered phone number
                     </div>
@@ -1625,16 +1636,6 @@
             return 'Unknown';
         }
 
-        function getNetworkDisplay(network) {
-            const networks = {
-                'MTN': { icon: '📱', color: '#FFD700', name: 'MTN Mobile Money' },
-                'Airtel': { icon: '📱', color: '#FF6B6B', name: 'Airtel Money' },
-                'Other': { icon: '📱', color: '#A7B5C5', name: 'Other' },
-                'Unknown': { icon: '❓', color: '#A7B5C5', name: 'Unknown' }
-            };
-            return networks[network] || networks['Unknown'];
-        }
-
         function isValidRwandanPhone(phone) {
             if (!phone) return false;
             const cleaned = phone.replace(/\s/g, '').replace('+250', '');
@@ -1858,32 +1859,36 @@
                 registeredPhone = registeredPhone.substring(4);
             }
 
-            // Set default phone number from user data
+            // Set default phone number from user data (9 digits only)
             if (registeredPhone && registeredPhone !== 'loading...' && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
-                phoneInput.value = registeredPhone;
+                // Ensure only 9 digits
+                let cleanPhone = registeredPhone.replace(/\D/g, '');
+                if (cleanPhone.length > 9) {
+                    cleanPhone = cleanPhone.slice(-9);
+                }
+                phoneInput.value = cleanPhone;
+                phoneInput.readOnly = true;
                 
-                // Auto-detect network
-                const network = getNetworkProvider(registeredPhone);
+                // Auto-detect network and set method
+                const network = getNetworkProvider(cleanPhone);
                 
                 if (network === 'MTN') {
                     methodSelect.value = 'MTN';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${registeredPhone})`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${cleanPhone})`;
                     phoneStatus.style.color = 'var(--success)';
                 } else if (network === 'Airtel') {
                     methodSelect.value = 'Airtel';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${registeredPhone})`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${cleanPhone})`;
                     phoneStatus.style.color = 'var(--success)';
-                } else if (network === 'Other') {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please select manually.`;
-                    phoneStatus.style.color = 'var(--gold)';
                 } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Please enter your phone number`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please contact support.`;
                     phoneStatus.style.color = 'var(--gold)';
                 }
             } else {
                 phoneInput.value = '';
-                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Please enter your phone number`;
-                phoneStatus.style.color = 'var(--muted)';
+                phoneInput.readOnly = false;
+                phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> ⚠️ No registered phone number found. Please contact support.`;
+                phoneStatus.style.color = 'var(--danger)';
             }
 
             if (type === 'deposit') {
@@ -1909,36 +1914,6 @@
             document.getElementById('modalOverlay').classList.remove('show');
         };
 
-        function updatePhoneDefault() {
-            const phoneInput = document.getElementById('modalPhone');
-            const methodSelect = document.getElementById('modalMethod');
-            const phoneStatus = document.getElementById('phoneStatus');
-            const phone = phoneInput.value;
-
-            if (phone && phone.length >= 9) {
-                const network = getNetworkProvider(phone);
-                
-                if (network === 'MTN') {
-                    methodSelect.value = 'MTN';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${phone})`;
-                    phoneStatus.style.color = 'var(--success)';
-                } else if (network === 'Airtel') {
-                    methodSelect.value = 'Airtel';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${phone})`;
-                    phoneStatus.style.color = 'var(--success)';
-                } else if (network === 'Other') {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please select manually.`;
-                    phoneStatus.style.color = 'var(--gold)';
-                } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Network not detected. Please enter a valid number.`;
-                    phoneStatus.style.color = 'var(--gold)';
-                }
-            } else {
-                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Please enter your phone number`;
-                phoneStatus.style.color = 'var(--muted)';
-            }
-        }
-
         // ========================================
         // HANDLE MODAL SUBMIT
         // ========================================
@@ -1948,7 +1923,7 @@
 
             const amount = parseInt(document.getElementById('modalAmount').value);
             const method = document.getElementById('modalMethod').value;
-            let phone = document.getElementById('modalPhone').value.trim();
+            const phone = document.getElementById('modalPhone').value.trim();
 
             // Validation
             if (!amount || amount < 100) {
@@ -1960,19 +1935,10 @@
                 return;
             }
 
-            if (!phone || phone.length < 9) {
+            if (!phone || phone.length !== 9) {
                 showNotification(
                     '⚠️ Invalid Phone Number',
-                    'Please enter a valid phone number',
-                    'error'
-                );
-                return;
-            }
-
-            if (!isValidRwandanPhone(phone)) {
-                showNotification(
-                    '⚠️ Invalid Rwandan Number',
-                    'Please enter a valid Rwandan phone number starting with 07 (e.g., 078XXXXXXX)',
+                    'Please use a valid 9-digit Rwandan phone number',
                     'error'
                 );
                 return;
@@ -1983,19 +1949,23 @@
             if (registeredPhone.startsWith('+250')) {
                 registeredPhone = registeredPhone.substring(4);
             }
+            let cleanRegistered = registeredPhone.replace(/\D/g, '');
+            if (cleanRegistered.length > 9) {
+                cleanRegistered = cleanRegistered.slice(-9);
+            }
             
-            if (registeredPhone && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
-                if (phone !== registeredPhone) {
+            if (cleanRegistered && cleanRegistered !== 'No phone' && cleanRegistered !== 'Not provided') {
+                if (phone !== cleanRegistered) {
                     showNotification(
                         '⚠️ Phone Number Mismatch',
-                        `Your registered number is ${registeredPhone}. Please use your registered number.`,
+                        `Your registered number is ${cleanRegistered}. Please use your registered number.`,
                         'error'
                     );
                     return;
                 }
             }
 
-            // Auto-detect network and validate
+            // Auto-detect network
             const detectedNetwork = getNetworkProvider(phone);
             if (detectedNetwork === 'Unknown' || detectedNetwork === 'Other') {
                 showNotification(
@@ -2004,13 +1974,6 @@
                     'error'
                 );
                 return;
-            }
-
-            if (detectedNetwork !== method && method !== 'Wallet') {
-                const confirmMsg = `⚠️ You selected ${method} but the phone number appears to be ${detectedNetwork}.\n\nDo you want to continue with ${method}?`;
-                if (!confirm(confirmMsg)) {
-                    return;
-                }
             }
 
             if (!currentUser) {
@@ -2242,6 +2205,7 @@
         console.log('%c📞 Phone number validation active', 'color: #00BFFF;');
         console.log('%c✅ Auto-detects MTN (078) or Airtel (072/073)', 'color: #00E676;');
         console.log('%c📢 Notification system active', 'color: #FFC857;');
+        console.log('%c🔒 Phone number is read-only (9 digits)', 'color: #FFD700;');
     </script>
 
 </body>
