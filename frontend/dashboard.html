@@ -79,6 +79,133 @@
             z-index: 1;
         }
 
+        /* ===== NOTIFICATION TOAST ===== */
+        .notification-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            max-width: 400px;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .notification {
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(16px);
+            border-radius: 16px;
+            padding: 18px 22px;
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+            pointer-events: auto;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .notification.hiding {
+            animation: slideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes slideInRight {
+            from { opacity: 0; transform: translateX(100px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        @keyframes slideOutRight {
+            from { opacity: 1; transform: translateX(0); }
+            to { opacity: 0; transform: translateX(100px); }
+        }
+
+        .notification .icon {
+            font-size: 1.6rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .notification .content {
+            flex: 1;
+        }
+
+        .notification .content .title {
+            font-weight: 700;
+            font-size: 0.9rem;
+            color: var(--text);
+            margin-bottom: 2px;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .notification .content .message {
+            font-size: 0.8rem;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .notification .content .details {
+            font-size: 0.7rem;
+            color: rgba(167, 181, 197, 0.5);
+            margin-top: 4px;
+        }
+
+        .notification .close-btn {
+            background: none;
+            border: none;
+            color: var(--muted);
+            cursor: pointer;
+            font-size: 1rem;
+            padding: 4px;
+            transition: var(--transition);
+            flex-shrink: 0;
+        }
+
+        .notification .close-btn:hover {
+            color: var(--text);
+        }
+
+        .notification.success {
+            border-color: rgba(0, 230, 118, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 230, 118, 0.1);
+        }
+
+        .notification.success .icon {
+            color: var(--success);
+        }
+
+        .notification.success .content .title {
+            color: var(--success);
+        }
+
+        .notification.error {
+            border-color: rgba(255, 77, 109, 0.3);
+            box-shadow: 0 10px 40px rgba(255, 77, 109, 0.1);
+        }
+
+        .notification.error .icon {
+            color: var(--danger);
+        }
+
+        .notification.error .content .title {
+            color: var(--danger);
+        }
+
+        .notification.info {
+            border-color: rgba(0, 191, 255, 0.3);
+            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.1);
+        }
+
+        .notification.info .icon {
+            color: var(--primary);
+        }
+
+        .notification.info .content .title {
+            color: var(--primary);
+        }
+
         /* ===== NAVBAR ===== */
         .navbar {
             position: sticky;
@@ -647,30 +774,6 @@
             margin-top: 2px;
         }
 
-        /* ===== TOAST ===== */
-        .toast-cyber {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 191, 255, 0.3);
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: var(--primary);
-            font-size: 0.8rem;
-            z-index: 2000;
-            display: none;
-            align-items: center;
-            gap: 8px;
-            max-width: 90%;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-        }
-
-        .toast-cyber.error { border-color: var(--danger); color: var(--danger); }
-        .toast-cyber.success { border-color: var(--success); color: var(--success); }
-
         /* ===== MODAL ===== */
         .modal-overlay {
             position: fixed;
@@ -865,6 +968,11 @@
             .profile-card .status-badge {
                 align-self: center;
             }
+            .notification-container {
+                max-width: 350px;
+                right: 10px;
+                top: 10px;
+            }
         }
 
         @media (max-width: 768px) {
@@ -909,6 +1017,16 @@
             .profile-card .avatar {
                 margin: 0 auto;
             }
+            .notification-container {
+                max-width: 100%;
+                right: 0;
+                top: 0;
+                padding: 10px;
+            }
+            .notification {
+                border-radius: 12px;
+                padding: 14px 16px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -952,10 +1070,18 @@
             .modal h2 {
                 font-size: 1rem;
             }
-            .toast-cyber {
+            .notification {
+                padding: 12px 14px;
+                border-radius: 10px;
+            }
+            .notification .icon {
+                font-size: 1.2rem;
+            }
+            .notification .content .title {
+                font-size: 0.8rem;
+            }
+            .notification .content .message {
                 font-size: 0.7rem;
-                padding: 8px 16px;
-                bottom: 10px;
             }
         }
 
@@ -1000,6 +1126,9 @@
     <!-- ===== BACKGROUND ===== -->
     <div class="bg-layer"></div>
     <div class="grid-overlay"></div>
+
+    <!-- ===== NOTIFICATION CONTAINER ===== -->
+    <div class="notification-container" id="notificationContainer"></div>
 
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
@@ -1194,16 +1323,16 @@
                 <div class="form-group">
                     <label>Payment Method</label>
                     <select id="modalMethod" onchange="updatePhoneDefault()">
-                        <option value="MTN">MTN Mobile Money</option>
-                        <option value="Airtel">Airtel Money</option>
-                        <option value="Wallet">Wallet Transfer</option>
+                        <option value="MTN">📱 MTN Mobile Money</option>
+                        <option value="Airtel">📱 Airtel Money</option>
+                        <option value="Wallet">💳 Wallet Transfer</option>
                     </select>
                 </div>
                 <div class="form-group" id="modalPhoneGroup">
                     <label>Phone Number</label>
                     <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" style="background:rgba(255,255,255,0.04);">
-                    <div style="font-size:0.6rem; color:var(--muted); margin-top:4px;" id="phoneStatus">
-                        <i class="fas fa-info-circle"></i> Please enter your registered phone number
+                    <div style="font-size:0.6rem; margin-top:4px;" id="phoneStatus">
+                        <i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Using your registered phone number
                     </div>
                 </div>
                 <button type="submit" class="btn-submit deposit" id="modalSubmitBtn">
@@ -1214,12 +1343,6 @@
                 <button type="button" class="btn-close" onclick="closeModal()">Cancel</button>
             </form>
         </div>
-    </div>
-
-    <!-- ===== TOAST ===== -->
-    <div id="toast" class="toast-cyber">
-        <i class="fas fa-info-circle"></i>
-        <span id="toastMessage">Message</span>
     </div>
 
     <!-- ===== FIREBASE IMPORTS ===== -->
@@ -1485,7 +1608,7 @@
 
         function getNetworkProvider(phone) {
             if (!phone) return 'Unknown';
-            const cleaned = phone.replace(/\s/g, '');
+            const cleaned = phone.replace(/\s/g, '').replace('+250', '');
             
             // MTN prefixes: 078, 0788, 0789
             if (cleaned.startsWith('078') || cleaned.startsWith('0788') || cleaned.startsWith('0789')) {
@@ -1502,17 +1625,63 @@
             return 'Unknown';
         }
 
-        // ========================================
-        // VALIDATE PHONE NUMBER
-        // ========================================
+        function getNetworkDisplay(network) {
+            const networks = {
+                'MTN': { icon: '📱', color: '#FFD700', name: 'MTN Mobile Money' },
+                'Airtel': { icon: '📱', color: '#FF6B6B', name: 'Airtel Money' },
+                'Other': { icon: '📱', color: '#A7B5C5', name: 'Other' },
+                'Unknown': { icon: '❓', color: '#A7B5C5', name: 'Unknown' }
+            };
+            return networks[network] || networks['Unknown'];
+        }
 
         function isValidRwandanPhone(phone) {
             if (!phone) return false;
-            const cleaned = phone.replace(/\s/g, '');
-            // Must start with 07 and be exactly 9 digits (or 10 with 0)
+            const cleaned = phone.replace(/\s/g, '').replace('+250', '');
+            // Must start with 07 and be exactly 9 digits
             if (!cleaned.startsWith('07')) return false;
-            if (cleaned.length !== 9 && cleaned.length !== 10) return false;
+            if (cleaned.length !== 9) return false;
             return true;
+        }
+
+        // ========================================
+        // NOTIFICATION SYSTEM
+        // ========================================
+
+        function showNotification(title, message, type = 'info', details = null) {
+            const container = document.getElementById('notificationContainer');
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+
+            const icons = {
+                success: '✅',
+                error: '❌',
+                info: 'ℹ️'
+            };
+
+            notification.innerHTML = `
+                <div class="icon">${icons[type] || 'ℹ️'}</div>
+                <div class="content">
+                    <div class="title">${title}</div>
+                    <div class="message">${message}</div>
+                    ${details ? `<div class="details">${details}</div>` : ''}
+                </div>
+                <button class="close-btn" onclick="this.closest('.notification').remove()">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+
+            container.appendChild(notification);
+
+            // Auto remove after 6 seconds
+            setTimeout(() => {
+                notification.classList.add('hiding');
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.remove();
+                    }
+                }, 500);
+            }, 6000);
         }
 
         // ========================================
@@ -1683,34 +1852,37 @@
             const methodSelect = document.getElementById('modalMethod');
             const phoneStatus = document.getElementById('phoneStatus');
 
+            // Get user's registered phone number
+            let registeredPhone = userData.phone || '';
+            if (registeredPhone.startsWith('+250')) {
+                registeredPhone = registeredPhone.substring(4);
+            }
+
             // Set default phone number from user data
-            if (userData.phone && userData.phone !== 'loading...' && userData.phone !== 'No phone' && userData.phone !== 'Not provided') {
-                let phone = userData.phone;
-                if (phone.startsWith('+250')) {
-                    phone = phone.substring(4);
-                }
-                phoneInput.value = phone;
+            if (registeredPhone && registeredPhone !== 'loading...' && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
+                phoneInput.value = registeredPhone;
                 
                 // Auto-detect network
-                const network = getNetworkProvider(phone);
+                const network = getNetworkProvider(registeredPhone);
+                
                 if (network === 'MTN') {
                     methodSelect.value = 'MTN';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> MTN number detected`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${registeredPhone})`;
                     phoneStatus.style.color = 'var(--success)';
                 } else if (network === 'Airtel') {
                     methodSelect.value = 'Airtel';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> Airtel number detected`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${registeredPhone})`;
                     phoneStatus.style.color = 'var(--success)';
                 } else if (network === 'Other') {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Unknown network. Please select manually.`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please select manually.`;
                     phoneStatus.style.color = 'var(--gold)';
                 } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Please enter your phone number`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Please enter your phone number`;
                     phoneStatus.style.color = 'var(--gold)';
                 }
             } else {
                 phoneInput.value = '';
-                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> Please enter your phone number`;
+                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Please enter your phone number`;
                 phoneStatus.style.color = 'var(--muted)';
             }
 
@@ -1745,23 +1917,31 @@
 
             if (phone && phone.length >= 9) {
                 const network = getNetworkProvider(phone);
+                
                 if (network === 'MTN') {
                     methodSelect.value = 'MTN';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> MTN number detected`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${phone})`;
                     phoneStatus.style.color = 'var(--success)';
                 } else if (network === 'Airtel') {
                     methodSelect.value = 'Airtel';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> Airtel number detected`;
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${phone})`;
                     phoneStatus.style.color = 'var(--success)';
                 } else if (network === 'Other') {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Unknown network`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please select manually.`;
                     phoneStatus.style.color = 'var(--gold)';
                 } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Network not detected`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Network not detected. Please enter a valid number.`;
                     phoneStatus.style.color = 'var(--gold)';
                 }
+            } else {
+                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Please enter your phone number`;
+                phoneStatus.style.color = 'var(--muted)';
             }
         }
+
+        // ========================================
+        // HANDLE MODAL SUBMIT
+        // ========================================
 
         window.handleModalSubmit = async function(event) {
             event.preventDefault();
@@ -1772,18 +1952,29 @@
 
             // Validation
             if (!amount || amount < 100) {
-                showToast('Please enter a valid amount (minimum 100 RWF)', 'error');
+                showNotification(
+                    '⚠️ Invalid Amount',
+                    'Please enter a valid amount (minimum 100 RWF)',
+                    'error'
+                );
                 return;
             }
 
             if (!phone || phone.length < 9) {
-                showToast('Please enter a valid phone number', 'error');
+                showNotification(
+                    '⚠️ Invalid Phone Number',
+                    'Please enter a valid phone number',
+                    'error'
+                );
                 return;
             }
 
-            // Validate Rwandan phone number
             if (!isValidRwandanPhone(phone)) {
-                showToast('Please enter a valid Rwandan phone number (starting with 07, e.g., 078XXXXXXX)', 'error');
+                showNotification(
+                    '⚠️ Invalid Rwandan Number',
+                    'Please enter a valid Rwandan phone number starting with 07 (e.g., 078XXXXXXX)',
+                    'error'
+                );
                 return;
             }
 
@@ -1795,7 +1986,11 @@
             
             if (registeredPhone && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
                 if (phone !== registeredPhone) {
-                    showToast(`⚠️ Phone number does not match your registered number (${registeredPhone}). Please use your registered number.`, 'error');
+                    showNotification(
+                        '⚠️ Phone Number Mismatch',
+                        `Your registered number is ${registeredPhone}. Please use your registered number.`,
+                        'error'
+                    );
                     return;
                 }
             }
@@ -1803,23 +1998,36 @@
             // Auto-detect network and validate
             const detectedNetwork = getNetworkProvider(phone);
             if (detectedNetwork === 'Unknown' || detectedNetwork === 'Other') {
-                showToast('⚠️ Invalid phone number. Please use a valid MTN or Airtel number.', 'error');
+                showNotification(
+                    '⚠️ Invalid Network',
+                    'Please use a valid MTN or Airtel number.',
+                    'error'
+                );
                 return;
             }
 
             if (detectedNetwork !== method && method !== 'Wallet') {
-                if (!confirm(`⚠️ You selected ${method} but the phone number appears to be ${detectedNetwork}.\n\nDo you want to continue with ${method}?`)) {
+                const confirmMsg = `⚠️ You selected ${method} but the phone number appears to be ${detectedNetwork}.\n\nDo you want to continue with ${method}?`;
+                if (!confirm(confirmMsg)) {
                     return;
                 }
             }
 
             if (!currentUser) {
-                showToast('Please login first', 'error');
+                showNotification(
+                    '🔐 Login Required',
+                    'Please login first to continue',
+                    'error'
+                );
                 return;
             }
 
             if (isMaintenanceActive) {
-                showToast('⚠️ Site is under maintenance. Please try again later.', 'error');
+                showNotification(
+                    '🛠️ Maintenance Mode',
+                    'Site is under maintenance. Please try again later.',
+                    'error'
+                );
                 return;
             }
 
@@ -1847,18 +2055,33 @@
                     await saveTransactionToFirebase(uid, tx);
                     await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                    showToast(`💰 ${method} Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
+                    showNotification(
+                        '💰 Deposit Initiated',
+                        `${method} deposit of ${amount.toLocaleString()} RWF has been initiated.`,
+                        'success',
+                        `📱 Phone: ${phone} | Status: Pending confirmation`
+                    );
 
                     await new Promise(resolve => setTimeout(resolve, 2000));
 
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
-                    showToast(`✅ ${method} Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
+                    
+                    showNotification(
+                        '✅ Deposit Confirmed!',
+                        `${method} deposit of ${amount.toLocaleString()} RWF has been confirmed and added to your balance.`,
+                        'success',
+                        `💰 New Balance: ${userData.balance.toLocaleString()} RWF`
+                    );
 
                 } else {
                     if (amount > userData.balance) {
-                        showToast('❌ Insufficient balance!', 'error');
+                        showNotification(
+                            '❌ Insufficient Balance',
+                            `Your balance is ${userData.balance.toLocaleString()} RWF. You need ${amount.toLocaleString()} RWF.`,
+                            'error'
+                        );
                         submitBtn.disabled = false;
                         submitBtn.classList.remove('loading');
                         return;
@@ -1879,14 +2102,25 @@
                     await saveTransactionToFirebase(uid, tx);
                     await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                    showToast(`💸 ${method} Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
+                    showNotification(
+                        '💸 Withdrawal Initiated',
+                        `${method} withdrawal of ${amount.toLocaleString()} RWF has been initiated.`,
+                        'success',
+                        `📱 Phone: ${phone} | Status: Pending processing`
+                    );
 
                     await new Promise(resolve => setTimeout(resolve, 3000));
 
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
-                    showToast(`✅ ${method} Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
+                    
+                    showNotification(
+                        '✅ Withdrawal Processed!',
+                        `${method} withdrawal of ${amount.toLocaleString()} RWF has been processed.`,
+                        'success',
+                        `💰 New Balance: ${userData.balance.toLocaleString()} RWF`
+                    );
                 }
 
                 updateUI();
@@ -1894,7 +2128,12 @@
 
             } catch (error) {
                 console.error('Transaction error:', error);
-                showToast('❌ Transaction failed. Please try again.', 'error');
+                showNotification(
+                    '❌ Transaction Failed',
+                    'An error occurred while processing your transaction. Please try again.',
+                    'error',
+                    `Error: ${error.message || 'Unknown error'}`
+                );
             } finally {
                 submitBtn.disabled = false;
                 submitBtn.classList.remove('loading');
@@ -1914,6 +2153,7 @@
                 await update(txRef, txData);
             } catch (error) {
                 console.error('Error saving transaction:', error);
+                throw error;
             }
         }
 
@@ -1933,25 +2173,8 @@
                 }
             } catch (error) {
                 console.error('Error updating transaction:', error);
+                throw error;
             }
-        }
-
-        // ========================================
-        // TOAST
-        // ========================================
-
-        function showToast(message, type = 'info') {
-            const toast = document.getElementById('toast');
-            const msg = document.getElementById('toastMessage');
-            msg.textContent = message;
-            toast.className = 'toast-cyber';
-            if (type === 'error') toast.classList.add('error');
-            if (type === 'success') toast.classList.add('success');
-            toast.style.display = 'flex';
-            clearTimeout(window.toastTimeout);
-            window.toastTimeout = setTimeout(() => {
-                toast.style.display = 'none';
-            }, 4000);
         }
 
         // ========================================
@@ -2002,6 +2225,12 @@
         });
 
         // ========================================
+        // EXPOSE NOTIFICATION TO GLOBAL
+        // ========================================
+
+        window.showNotification = showNotification;
+
+        // ========================================
         // CONSOLE
         // ========================================
 
@@ -2011,7 +2240,8 @@
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
         console.log('%c📞 Phone number validation active', 'color: #00BFFF;');
-        console.log('%c✅ Only registered numbers can deposit/withdraw', 'color: #00E676;');
+        console.log('%c✅ Auto-detects MTN (078) or Airtel (072/073)', 'color: #00E676;');
+        console.log('%c📢 Notification system active', 'color: #FFC857;');
     </script>
 
 </body>
