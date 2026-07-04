@@ -1109,7 +1109,7 @@
                 </div>
                 <div class="form-group">
                     <label>Payment Method</label>
-                    <select id="modalMethod">
+                    <select id="modalMethod" onchange="updatePhoneDefault()">
                         <option value="MTN">MTN Mobile Money</option>
                         <option value="Airtel">Airtel Money</option>
                         <option value="Wallet">Wallet Transfer</option>
@@ -1117,7 +1117,10 @@
                 </div>
                 <div class="form-group" id="modalPhoneGroup">
                     <label>Phone Number</label>
-                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9">
+                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" readonly style="background:rgba(255,255,255,0.02); cursor:not-allowed;">
+                    <div style="font-size:0.6rem; color:var(--muted); margin-top:4px;" id="phoneStatus">
+                        <i class="fas fa-info-circle"></i> Using your registered phone number
+                    </div>
                 </div>
                 <button type="submit" class="btn-submit deposit" id="modalSubmitBtn">
                     <i class="fas fa-check"></i> Confirm
@@ -1391,6 +1394,29 @@
         }
 
         // ========================================
+        // NETWORK DETECTION
+        // ========================================
+
+        function getNetworkProvider(phone) {
+            if (!phone) return 'Unknown';
+            // Clean the phone number
+            const cleaned = phone.replace(/\s/g, '');
+            // Check for MTN prefixes (078, 0788, 0789)
+            if (cleaned.startsWith('078') || cleaned.startsWith('0788') || cleaned.startsWith('0789')) {
+                return 'MTN';
+            }
+            // Check for Airtel prefixes (072, 073)
+            if (cleaned.startsWith('072') || cleaned.startsWith('073')) {
+                return 'Airtel';
+            }
+            // Check for other Rwandan prefixes
+            if (cleaned.startsWith('07')) {
+                return 'Other';
+            }
+            return 'Unknown';
+        }
+
+        // ========================================
         // UPDATE UI
         // ========================================
 
@@ -1544,7 +1570,7 @@
         }
 
         // ========================================
-        // MODAL
+        // MODAL FUNCTIONS WITH AUTO-DETECTION
         // ========================================
 
         window.openModal = function(type) {
@@ -1554,6 +1580,45 @@
             const sub = document.getElementById('modalSub');
             const submitBtn = document.getElementById('modalSubmitBtn');
             const phoneGroup = document.getElementById('modalPhoneGroup');
+            const phoneInput = document.getElementById('modalPhone');
+            const methodSelect = document.getElementById('modalMethod');
+            const phoneStatus = document.getElementById('phoneStatus');
+
+            // Set default phone number from user data
+            if (userData.phone && userData.phone !== 'loading...' && userData.phone !== 'No phone' && userData.phone !== 'Not provided') {
+                // Clean the phone number (remove +250 if present)
+                let phone = userData.phone;
+                if (phone.startsWith('+250')) {
+                    phone = phone.substring(4);
+                }
+                phoneInput.value = phone;
+                phoneInput.readOnly = true;
+                
+                // Auto-detect network
+                const network = getNetworkProvider(phone);
+                if (network === 'MTN') {
+                    methodSelect.value = 'MTN';
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> MTN number detected`;
+                    phoneStatus.style.color = 'var(--success)';
+                } else if (network === 'Airtel') {
+                    methodSelect.value = 'Airtel';
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> Airtel number detected`;
+                    phoneStatus.style.color = 'var(--success)';
+                } else if (network === 'Other') {
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Unknown network. Please select manually.`;
+                    phoneStatus.style.color = 'var(--gold)';
+                    phoneInput.readOnly = false;
+                } else {
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Network not detected. Please enter manually.`;
+                    phoneStatus.style.color = 'var(--gold)';
+                    phoneInput.readOnly = false;
+                }
+            } else {
+                phoneInput.value = '';
+                phoneInput.readOnly = false;
+                phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> Please enter your phone number`;
+                phoneStatus.style.color = 'var(--muted)';
+            }
 
             if (type === 'deposit') {
                 title.textContent = '💰 Deposit Funds';
@@ -1570,8 +1635,6 @@
             }
 
             document.getElementById('modalAmount').value = '';
-            document.getElementById('modalMethod').value = 'MTN';
-            document.getElementById('modalPhone').value = '';
 
             overlay.classList.add('show');
         };
@@ -1580,12 +1643,38 @@
             document.getElementById('modalOverlay').classList.remove('show');
         };
 
+        function updatePhoneDefault() {
+            const phoneInput = document.getElementById('modalPhone');
+            const methodSelect = document.getElementById('modalMethod');
+            const phoneStatus = document.getElementById('phoneStatus');
+            const phone = phoneInput.value;
+
+            if (phone && phone.length >= 9) {
+                const network = getNetworkProvider(phone);
+                if (network === 'MTN') {
+                    methodSelect.value = 'MTN';
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> MTN number detected`;
+                    phoneStatus.style.color = 'var(--success)';
+                } else if (network === 'Airtel') {
+                    methodSelect.value = 'Airtel';
+                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> Airtel number detected`;
+                    phoneStatus.style.color = 'var(--success)';
+                } else if (network === 'Other') {
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Unknown network`;
+                    phoneStatus.style.color = 'var(--gold)';
+                } else {
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Network not detected`;
+                    phoneStatus.style.color = 'var(--gold)';
+                }
+            }
+        }
+
         window.handleModalSubmit = async function(event) {
             event.preventDefault();
 
             const amount = parseInt(document.getElementById('modalAmount').value);
             const method = document.getElementById('modalMethod').value;
-            const phone = document.getElementById('modalPhone').value.trim();
+            let phone = document.getElementById('modalPhone').value.trim();
 
             if (!amount || amount < 100) {
                 showToast('Please enter a valid amount (minimum 100 RWF)', 'error');
@@ -1595,6 +1684,14 @@
             if (!phone || phone.length < 9) {
                 showToast('Please enter a valid phone number', 'error');
                 return;
+            }
+
+            // Auto-detect network and warn if mismatch
+            const detectedNetwork = getNetworkProvider(phone);
+            if (detectedNetwork !== 'Unknown' && detectedNetwork !== 'Other' && detectedNetwork !== method) {
+                if (!confirm(`⚠️ You selected ${method} but the phone number appears to be ${detectedNetwork}.\n\nDo you want to continue with ${method}?`)) {
+                    return;
+                }
             }
 
             if (!currentUser) {
@@ -1609,6 +1706,14 @@
 
             const uid = currentUser.uid;
 
+            // Clean phone number
+            if (phone.startsWith('0')) {
+                // Keep as is
+            } else if (!phone.startsWith('07')) {
+                showToast('Please enter a valid Rwandan phone number (starting with 07)', 'error');
+                return;
+            }
+
             if (modalType === 'deposit') {
                 const tx = {
                     type: 'deposit',
@@ -1616,7 +1721,8 @@
                     method: method,
                     status: 'pending',
                     date: new Date().toISOString(),
-                    phone: phone
+                    phone: phone,
+                    detectedNetwork: detectedNetwork
                 };
                 userData.transactions.unshift(tx);
                 userData.balance += amount;
@@ -1624,13 +1730,13 @@
                 await saveTransactionToFirebase(uid, tx);
                 await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                showToast(`💰 Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
+                showToast(`💰 ${method} Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
 
                 setTimeout(async () => {
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
-                    showToast(`✅ Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
+                    showToast(`✅ ${method} Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
                 }, 2000);
 
             } else {
@@ -1645,7 +1751,8 @@
                     method: method,
                     status: 'pending',
                     date: new Date().toISOString(),
-                    phone: phone
+                    phone: phone,
+                    detectedNetwork: detectedNetwork
                 };
                 userData.transactions.unshift(tx);
                 userData.balance -= amount;
@@ -1653,13 +1760,13 @@
                 await saveTransactionToFirebase(uid, tx);
                 await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                showToast(`💸 Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
+                showToast(`💸 ${method} Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
 
                 setTimeout(async () => {
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
-                    showToast(`✅ Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
+                    showToast(`✅ ${method} Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
                 }, 3000);
             }
 
@@ -1776,6 +1883,7 @@
         console.log('%c👤 User data loaded from Firebase', 'color: #FFC857;');
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
+        console.log('%c📞 Auto-detecting phone network (MTN/Airtel)', 'color: #00BFFF;');
     </script>
 
 </body>
