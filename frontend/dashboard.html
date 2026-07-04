@@ -371,11 +371,38 @@
             transition: var(--transition);
             display: flex;
             align-items: center;
+            justify-content: center;
             gap: 8px;
             text-decoration: none;
             flex: 1;
-            justify-content: center;
             min-width: 100px;
+            position: relative;
+        }
+
+        .quick-actions .btn .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .quick-actions .btn.loading .btn-text {
+            display: none;
+        }
+
+        .quick-actions .btn.loading .spinner {
+            display: inline-block;
+        }
+
+        .quick-actions .btn.loading i {
+            display: none;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
 
         .btn-deposit {
@@ -383,7 +410,7 @@
             color: #000;
         }
 
-        .btn-deposit:hover {
+        .btn-deposit:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3);
         }
@@ -393,7 +420,7 @@
             color: #fff;
         }
 
-        .btn-withdraw:hover {
+        .btn-withdraw:hover:not(:disabled) {
             transform: translateY(-2px);
             box-shadow: 0 8px 25px rgba(255, 77, 109, 0.3);
         }
@@ -427,6 +454,12 @@
         .btn-history:hover {
             border-color: var(--primary);
             background: rgba(0, 191, 255, 0.05);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         /* ===== MAIN GRID ===== */
@@ -580,7 +613,7 @@
         .sidebar-card .item .value.green { color: var(--success); }
         .sidebar-card .item .value.red { color: var(--danger); }
 
-        /* ===== GAME CARD (Reserved Space) ===== */
+        /* ===== GAME CARD ===== */
         .game-card-reserved {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 191, 255, 0.1);
@@ -741,6 +774,32 @@
             cursor: pointer;
             transition: var(--transition);
             margin-top: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .modal .btn-submit .spinner {
+            display: none;
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255,255,255,0.3);
+            border-top: 2px solid #fff;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        .modal .btn-submit.loading .btn-text {
+            display: none;
+        }
+
+        .modal .btn-submit.loading .spinner {
+            display: inline-block;
+        }
+
+        .modal .btn-submit.loading i {
+            display: none;
         }
 
         .modal .btn-submit.deposit {
@@ -748,13 +807,23 @@
             color: #000;
         }
 
+        .modal .btn-submit.deposit .spinner {
+            border-top-color: #000;
+        }
+
         .modal .btn-submit.withdraw {
             background: linear-gradient(135deg, var(--danger), #D50000);
             color: #fff;
         }
 
-        .modal .btn-submit:hover {
+        .modal .btn-submit:hover:not(:disabled) {
             transform: translateY(-2px);
+        }
+
+        .modal .btn-submit:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
         }
 
         .modal .btn-close {
@@ -771,6 +840,11 @@
 
         .modal .btn-close:hover {
             color: var(--text);
+        }
+
+        .modal .btn-close:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
         }
 
         /* ===== RESPONSIVE ===== */
@@ -1002,19 +1076,29 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
             <button class="btn btn-deposit" onclick="openModal('deposit')">
-                <i class="fas fa-arrow-down"></i> Deposit
+                <i class="fas fa-arrow-down"></i>
+                <span class="btn-text">Deposit</span>
+                <div class="spinner"></div>
             </button>
             <button class="btn btn-withdraw" onclick="openModal('withdraw')">
-                <i class="fas fa-arrow-up"></i> Withdraw
+                <i class="fas fa-arrow-up"></i>
+                <span class="btn-text">Withdraw</span>
+                <div class="spinner"></div>
             </button>
             <button class="btn btn-games" onclick="window.location.href='/games/game-lobby.html'">
-                <i class="fas fa-gamepad"></i> Play Games
+                <i class="fas fa-gamepad"></i>
+                <span class="btn-text">Play Games</span>
+                <div class="spinner"></div>
             </button>
             <button class="btn btn-tournaments" onclick="window.location.href='/tournaments.html'">
-                <i class="fas fa-trophy"></i> Tournaments
+                <i class="fas fa-trophy"></i>
+                <span class="btn-text">Tournaments</span>
+                <div class="spinner"></div>
             </button>
             <button class="btn btn-history" onclick="toggleHistory()">
-                <i class="fas fa-history"></i> History
+                <i class="fas fa-history"></i>
+                <span class="btn-text">History</span>
+                <div class="spinner"></div>
             </button>
         </div>
 
@@ -1117,13 +1201,15 @@
                 </div>
                 <div class="form-group" id="modalPhoneGroup">
                     <label>Phone Number</label>
-                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" readonly style="background:rgba(255,255,255,0.02); cursor:not-allowed;">
+                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" style="background:rgba(255,255,255,0.04);">
                     <div style="font-size:0.6rem; color:var(--muted); margin-top:4px;" id="phoneStatus">
-                        <i class="fas fa-info-circle"></i> Using your registered phone number
+                        <i class="fas fa-info-circle"></i> Please enter your registered phone number
                     </div>
                 </div>
                 <button type="submit" class="btn-submit deposit" id="modalSubmitBtn">
-                    <i class="fas fa-check"></i> Confirm
+                    <i class="fas fa-check"></i>
+                    <span class="btn-text">Confirm</span>
+                    <div class="spinner"></div>
                 </button>
                 <button type="button" class="btn-close" onclick="closeModal()">Cancel</button>
             </form>
@@ -1399,21 +1485,34 @@
 
         function getNetworkProvider(phone) {
             if (!phone) return 'Unknown';
-            // Clean the phone number
             const cleaned = phone.replace(/\s/g, '');
-            // Check for MTN prefixes (078, 0788, 0789)
+            
+            // MTN prefixes: 078, 0788, 0789
             if (cleaned.startsWith('078') || cleaned.startsWith('0788') || cleaned.startsWith('0789')) {
                 return 'MTN';
             }
-            // Check for Airtel prefixes (072, 073)
+            // Airtel prefixes: 072, 073
             if (cleaned.startsWith('072') || cleaned.startsWith('073')) {
                 return 'Airtel';
             }
-            // Check for other Rwandan prefixes
+            // Other Rwandan prefixes
             if (cleaned.startsWith('07')) {
                 return 'Other';
             }
             return 'Unknown';
+        }
+
+        // ========================================
+        // VALIDATE PHONE NUMBER
+        // ========================================
+
+        function isValidRwandanPhone(phone) {
+            if (!phone) return false;
+            const cleaned = phone.replace(/\s/g, '');
+            // Must start with 07 and be exactly 9 digits (or 10 with 0)
+            if (!cleaned.startsWith('07')) return false;
+            if (cleaned.length !== 9 && cleaned.length !== 10) return false;
+            return true;
         }
 
         // ========================================
@@ -1586,13 +1685,11 @@
 
             // Set default phone number from user data
             if (userData.phone && userData.phone !== 'loading...' && userData.phone !== 'No phone' && userData.phone !== 'Not provided') {
-                // Clean the phone number (remove +250 if present)
                 let phone = userData.phone;
                 if (phone.startsWith('+250')) {
                     phone = phone.substring(4);
                 }
                 phoneInput.value = phone;
-                phoneInput.readOnly = true;
                 
                 // Auto-detect network
                 const network = getNetworkProvider(phone);
@@ -1607,15 +1704,12 @@
                 } else if (network === 'Other') {
                     phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Unknown network. Please select manually.`;
                     phoneStatus.style.color = 'var(--gold)';
-                    phoneInput.readOnly = false;
                 } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Network not detected. Please enter manually.`;
+                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> Please enter your phone number`;
                     phoneStatus.style.color = 'var(--gold)';
-                    phoneInput.readOnly = false;
                 }
             } else {
                 phoneInput.value = '';
-                phoneInput.readOnly = false;
                 phoneStatus.innerHTML = `<i class="fas fa-info-circle" style="color:var(--muted);"></i> Please enter your phone number`;
                 phoneStatus.style.color = 'var(--muted)';
             }
@@ -1624,13 +1718,13 @@
                 title.textContent = '💰 Deposit Funds';
                 sub.textContent = 'Add money to your Shora Games wallet';
                 submitBtn.className = 'btn-submit deposit';
-                submitBtn.innerHTML = '<i class="fas fa-arrow-down"></i> Deposit';
+                submitBtn.innerHTML = '<i class="fas fa-arrow-down"></i><span class="btn-text">Deposit</span><div class="spinner"></div>';
                 phoneGroup.style.display = 'block';
             } else {
                 title.textContent = '💸 Withdraw Funds';
                 sub.textContent = 'Withdraw money from your Shora Games wallet';
                 submitBtn.className = 'btn-submit withdraw';
-                submitBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Withdraw';
+                submitBtn.innerHTML = '<i class="fas fa-arrow-up"></i><span class="btn-text">Withdraw</span><div class="spinner"></div>';
                 phoneGroup.style.display = 'block';
             }
 
@@ -1676,6 +1770,7 @@
             const method = document.getElementById('modalMethod').value;
             let phone = document.getElementById('modalPhone').value.trim();
 
+            // Validation
             if (!amount || amount < 100) {
                 showToast('Please enter a valid amount (minimum 100 RWF)', 'error');
                 return;
@@ -1686,9 +1781,33 @@
                 return;
             }
 
-            // Auto-detect network and warn if mismatch
+            // Validate Rwandan phone number
+            if (!isValidRwandanPhone(phone)) {
+                showToast('Please enter a valid Rwandan phone number (starting with 07, e.g., 078XXXXXXX)', 'error');
+                return;
+            }
+
+            // Check if phone matches registered number
+            let registeredPhone = userData.phone || '';
+            if (registeredPhone.startsWith('+250')) {
+                registeredPhone = registeredPhone.substring(4);
+            }
+            
+            if (registeredPhone && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
+                if (phone !== registeredPhone) {
+                    showToast(`⚠️ Phone number does not match your registered number (${registeredPhone}). Please use your registered number.`, 'error');
+                    return;
+                }
+            }
+
+            // Auto-detect network and validate
             const detectedNetwork = getNetworkProvider(phone);
-            if (detectedNetwork !== 'Unknown' && detectedNetwork !== 'Other' && detectedNetwork !== method) {
+            if (detectedNetwork === 'Unknown' || detectedNetwork === 'Other') {
+                showToast('⚠️ Invalid phone number. Please use a valid MTN or Airtel number.', 'error');
+                return;
+            }
+
+            if (detectedNetwork !== method && method !== 'Wallet') {
                 if (!confirm(`⚠️ You selected ${method} but the phone number appears to be ${detectedNetwork}.\n\nDo you want to continue with ${method}?`)) {
                     return;
                 }
@@ -1706,72 +1825,80 @@
 
             const uid = currentUser.uid;
 
-            // Clean phone number
-            if (phone.startsWith('0')) {
-                // Keep as is
-            } else if (!phone.startsWith('07')) {
-                showToast('Please enter a valid Rwandan phone number (starting with 07)', 'error');
-                return;
-            }
+            // Show loading state
+            const submitBtn = document.getElementById('modalSubmitBtn');
+            submitBtn.disabled = true;
+            submitBtn.classList.add('loading');
 
-            if (modalType === 'deposit') {
-                const tx = {
-                    type: 'deposit',
-                    amount: amount,
-                    method: method,
-                    status: 'pending',
-                    date: new Date().toISOString(),
-                    phone: phone,
-                    detectedNetwork: detectedNetwork
-                };
-                userData.transactions.unshift(tx);
-                userData.balance += amount;
+            try {
+                if (modalType === 'deposit') {
+                    const tx = {
+                        type: 'deposit',
+                        amount: amount,
+                        method: method,
+                        status: 'pending',
+                        date: new Date().toISOString(),
+                        phone: phone,
+                        detectedNetwork: detectedNetwork
+                    };
+                    userData.transactions.unshift(tx);
+                    userData.balance += amount;
 
-                await saveTransactionToFirebase(uid, tx);
-                await update(ref(db, `users/${uid}`), { balance: userData.balance });
+                    await saveTransactionToFirebase(uid, tx);
+                    await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                showToast(`💰 ${method} Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
+                    showToast(`💰 ${method} Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
 
-                setTimeout(async () => {
+                    await new Promise(resolve => setTimeout(resolve, 2000));
+
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
                     showToast(`✅ ${method} Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
-                }, 2000);
 
-            } else {
-                if (amount > userData.balance) {
-                    showToast('❌ Insufficient balance!', 'error');
-                    return;
-                }
+                } else {
+                    if (amount > userData.balance) {
+                        showToast('❌ Insufficient balance!', 'error');
+                        submitBtn.disabled = false;
+                        submitBtn.classList.remove('loading');
+                        return;
+                    }
 
-                const tx = {
-                    type: 'withdraw',
-                    amount: -amount,
-                    method: method,
-                    status: 'pending',
-                    date: new Date().toISOString(),
-                    phone: phone,
-                    detectedNetwork: detectedNetwork
-                };
-                userData.transactions.unshift(tx);
-                userData.balance -= amount;
+                    const tx = {
+                        type: 'withdraw',
+                        amount: -amount,
+                        method: method,
+                        status: 'pending',
+                        date: new Date().toISOString(),
+                        phone: phone,
+                        detectedNetwork: detectedNetwork
+                    };
+                    userData.transactions.unshift(tx);
+                    userData.balance -= amount;
 
-                await saveTransactionToFirebase(uid, tx);
-                await update(ref(db, `users/${uid}`), { balance: userData.balance });
+                    await saveTransactionToFirebase(uid, tx);
+                    await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                showToast(`💸 ${method} Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
+                    showToast(`💸 ${method} Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
 
-                setTimeout(async () => {
+                    await new Promise(resolve => setTimeout(resolve, 3000));
+
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
                     showToast(`✅ ${method} Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
-                }, 3000);
-            }
+                }
 
-            updateUI();
-            closeModal();
+                updateUI();
+                closeModal();
+
+            } catch (error) {
+                console.error('Transaction error:', error);
+                showToast('❌ Transaction failed. Please try again.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.classList.remove('loading');
+            }
         };
 
         async function saveTransactionToFirebase(uid, tx) {
@@ -1883,7 +2010,8 @@
         console.log('%c👤 User data loaded from Firebase', 'color: #FFC857;');
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
-        console.log('%c📞 Auto-detecting phone network (MTN/Airtel)', 'color: #00BFFF;');
+        console.log('%c📞 Phone number validation active', 'color: #00BFFF;');
+        console.log('%c✅ Only registered numbers can deposit/withdraw', 'color: #00E676;');
     </script>
 
 </body>
