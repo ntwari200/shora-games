@@ -79,69 +79,6 @@
             z-index: 1;
         }
 
-        /* ===== NOTIFICATION CONTAINER ===== */
-        .notification-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-            max-width: 400px;
-            width: 100%;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            pointer-events: none;
-        }
-
-        .notification {
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(16px);
-            border-radius: 16px;
-            padding: 18px 22px;
-            border: 1px solid rgba(0, 191, 255, 0.2);
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            animation: slideInRight 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
-            pointer-events: auto;
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .notification.hiding {
-            animation: slideOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) both;
-        }
-
-        @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
-        }
-
-        @keyframes slideOutRight {
-            from { opacity: 1; transform: translateX(0); }
-            to { opacity: 0; transform: translateX(100px); }
-        }
-
-        .notification .icon { font-size: 1.6rem; flex-shrink: 0; margin-top: 2px; }
-        .notification .content { flex: 1; }
-        .notification .content .title { font-weight: 700; font-size: 0.9rem; color: var(--text); margin-bottom: 2px; font-family: 'Orbitron', monospace; }
-        .notification .content .message { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
-        .notification .content .details { font-size: 0.7rem; color: rgba(167, 181, 197, 0.5); margin-top: 4px; }
-        .notification .close-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 1rem; padding: 4px; transition: var(--transition); flex-shrink: 0; }
-        .notification .close-btn:hover { color: var(--text); }
-
-        .notification.success { border-color: rgba(0, 230, 118, 0.3); box-shadow: 0 10px 40px rgba(0, 230, 118, 0.1); }
-        .notification.success .icon { color: var(--success); }
-        .notification.success .content .title { color: var(--success); }
-
-        .notification.error { border-color: rgba(255, 77, 109, 0.3); box-shadow: 0 10px 40px rgba(255, 77, 109, 0.1); }
-        .notification.error .icon { color: var(--danger); }
-        .notification.error .content .title { color: var(--danger); }
-
-        .notification.info { border-color: rgba(0, 191, 255, 0.3); box-shadow: 0 10px 40px rgba(0, 191, 255, 0.1); }
-        .notification.info .icon { color: var(--primary); }
-        .notification.info .content .title { color: var(--primary); }
-
         /* ===== NAVBAR ===== */
         .navbar {
             position: sticky;
@@ -176,7 +113,11 @@
             align-items: center;
             gap: 8px;
         }
-        .logo i { font-size: 1.4rem; -webkit-text-fill-color: var(--primary); }
+
+        .logo i {
+            font-size: 1.4rem;
+            -webkit-text-fill-color: var(--primary);
+        }
 
         .nav-right {
             display: flex;
@@ -198,7 +139,11 @@
             border-radius: 8px;
             border: 1px solid rgba(0, 230, 118, 0.1);
         }
-        .nav-right .balance-display i { font-size: 0.9rem; color: var(--gold); }
+
+        .nav-right .balance-display i {
+            font-size: 0.9rem;
+            color: var(--gold);
+        }
 
         .nav-right .username-display {
             color: var(--text);
@@ -208,7 +153,11 @@
             align-items: center;
             gap: 6px;
         }
-        .nav-right .username-display i { color: var(--primary); font-size: 0.9rem; }
+
+        .nav-right .username-display i {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
 
         .nav-right .logout-btn {
             color: var(--muted);
@@ -220,7 +169,12 @@
             border: 1px solid rgba(255,255,255,0.05);
             background: rgba(255,255,255,0.02);
         }
-        .nav-right .logout-btn:hover { background: rgba(255, 77, 109, 0.1); border-color: var(--danger); color: var(--danger); }
+
+        .nav-right .logout-btn:hover {
+            background: rgba(255, 77, 109, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
 
         /* ===== CONTAINER ===== */
         .container {
@@ -242,9 +196,20 @@
             flex-wrap: wrap;
             gap: 10px;
         }
-        .welcome-section h1 { font-family: 'Orbitron', monospace; font-size: 1.2rem; }
-        .welcome-section h1 span { color: var(--primary); }
-        .welcome-section .date { color: var(--muted); font-size: 0.75rem; }
+
+        .welcome-section h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+        }
+
+        .welcome-section h1 span {
+            color: var(--primary);
+        }
+
+        .welcome-section .date {
+            color: var(--muted);
+            font-size: 0.75rem;
+        }
 
         /* ===== PROFILE CARD ===== */
         .profile-card {
@@ -258,6 +223,7 @@
             gap: 16px;
             align-items: center;
         }
+
         .profile-card .avatar {
             width: 48px;
             height: 48px;
@@ -270,11 +236,37 @@
             font-weight: 700;
             color: #000;
         }
-        .profile-card .info { display: flex; flex-direction: column; gap: 2px; }
-        .profile-card .info .name { font-weight: 600; font-size: 1rem; }
-        .profile-card .info .details { display: flex; gap: 16px; flex-wrap: wrap; font-size: 0.75rem; color: var(--muted); }
-        .profile-card .info .details span { display: flex; align-items: center; gap: 4px; }
-        .profile-card .info .details i { color: var(--primary); font-size: 0.7rem; }
+
+        .profile-card .info {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+
+        .profile-card .info .name {
+            font-weight: 600;
+            font-size: 1rem;
+        }
+
+        .profile-card .info .details {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .profile-card .info .details span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .profile-card .info .details i {
+            color: var(--primary);
+            font-size: 0.7rem;
+        }
+
         .profile-card .status-badge {
             padding: 4px 14px;
             border-radius: 20px;
@@ -286,8 +278,18 @@
             text-transform: uppercase;
             letter-spacing: 1px;
         }
-        .profile-card .status-badge.blocked { background: rgba(255, 77, 109, 0.1); color: var(--danger); border-color: rgba(255, 77, 109, 0.2); }
-        .profile-card .status-badge.pending { background: rgba(255, 200, 87, 0.1); color: var(--gold); border-color: rgba(255, 200, 87, 0.2); }
+
+        .profile-card .status-badge.blocked {
+            background: rgba(255, 77, 109, 0.1);
+            color: var(--danger);
+            border-color: rgba(255, 77, 109, 0.2);
+        }
+
+        .profile-card .status-badge.pending {
+            background: rgba(255, 200, 87, 0.1);
+            color: var(--gold);
+            border-color: rgba(255, 200, 87, 0.2);
+        }
 
         /* ===== STATS CARDS ===== */
         .stats-grid {
@@ -304,16 +306,49 @@
             padding: 14px 16px;
             transition: var(--transition);
         }
-        .stat-card:hover { border-color: rgba(0, 191, 255, 0.3); transform: translateY(-2px); }
 
-        .stat-card .stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .stat-card .stat-number { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 700; color: var(--text); margin-top: 2px; }
+        .stat-card:hover {
+            border-color: rgba(0, 191, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .stat-card .stat-label {
+            font-size: 0.65rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 600;
+        }
+
+        .stat-card .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            margin-top: 2px;
+        }
+
         .stat-card .stat-number.green { color: var(--success); }
         .stat-card .stat-number.gold { color: var(--gold); }
         .stat-card .stat-number.blue { color: var(--primary); }
         .stat-card .stat-number.red { color: var(--danger); }
-        .stat-card .stat-icon { float: right; font-size: 1.2rem; opacity: 0.3; }
-        .stat-card .stat-change { font-size: 0.6rem; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; margin-top: 2px; }
+
+        .stat-card .stat-icon {
+            float: right;
+            font-size: 1.2rem;
+            opacity: 0.3;
+        }
+
+        .stat-card .stat-change {
+            font-size: 0.6rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 2px 8px;
+            border-radius: 20px;
+            margin-top: 2px;
+        }
+
         .stat-card .stat-change.up { color: var(--success); background: rgba(0, 230, 118, 0.1); }
         .stat-card .stat-change.down { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
 
@@ -336,46 +371,63 @@
             transition: var(--transition);
             display: flex;
             align-items: center;
-            justify-content: center;
             gap: 8px;
             text-decoration: none;
             flex: 1;
+            justify-content: center;
             min-width: 100px;
-            position: relative;
         }
 
-        .quick-actions .btn .spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .btn-deposit {
+            background: linear-gradient(135deg, var(--success), #00C853);
+            color: #000;
         }
 
-        .quick-actions .btn.loading .btn-text { display: none; }
-        .quick-actions .btn.loading .spinner { display: inline-block; }
-        .quick-actions .btn.loading i { display: none; }
+        .btn-deposit:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3);
+        }
 
-        @keyframes spin { to { transform: rotate(360deg); } }
+        .btn-withdraw {
+            background: linear-gradient(135deg, var(--danger), #D50000);
+            color: #fff;
+        }
 
-        .btn-deposit { background: linear-gradient(135deg, var(--success), #00C853); color: #000; }
-        .btn-deposit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
+        .btn-withdraw:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 77, 109, 0.3);
+        }
 
-        .btn-withdraw { background: linear-gradient(135deg, var(--danger), #D50000); color: #fff; }
-        .btn-withdraw:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 77, 109, 0.3); }
+        .btn-games {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #000;
+        }
 
-        .btn-games { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #000; }
-        .btn-games:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
+        .btn-games:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3);
+        }
 
-        .btn-tournaments { background: linear-gradient(135deg, var(--gold), #FFA000); color: #000; }
-        .btn-tournaments:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
+        .btn-tournaments {
+            background: linear-gradient(135deg, var(--gold), #FFA000);
+            color: #000;
+        }
 
-        .btn-history { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text); }
-        .btn-history:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
+        .btn-tournaments:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3);
+        }
 
-        .btn:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
+        .btn-history {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+        }
+
+        .btn-history:hover {
+            border-color: var(--primary);
+            background: rgba(0, 191, 255, 0.05);
+        }
 
         /* ===== MAIN GRID ===== */
         .main-grid {
@@ -401,15 +453,52 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        .table-container .header h3 { font-family: 'Orbitron', monospace; font-size: 0.85rem; }
-        .table-container .header .view-all { color: var(--muted); font-size: 0.7rem; text-decoration: none; transition: var(--transition); cursor: pointer; }
-        .table-container .header .view-all:hover { color: var(--primary); }
 
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        table thead { background: rgba(255, 255, 255, 0.02); }
-        table th { padding: 8px 12px; text-align: left; font-weight: 600; color: var(--muted); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }
-        table td { padding: 8px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
-        table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .table-container .header h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+        }
+
+        .table-container .header .view-all {
+            color: var(--muted);
+            font-size: 0.7rem;
+            text-decoration: none;
+            transition: var(--transition);
+            cursor: pointer;
+        }
+
+        .table-container .header .view-all:hover {
+            color: var(--primary);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.8rem;
+        }
+
+        table thead {
+            background: rgba(255, 255, 255, 0.02);
+        }
+
+        table th {
+            padding: 8px 12px;
+            text-align: left;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        table td {
+            padding: 8px 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        table tbody tr:hover {
+            background: rgba(255, 255, 255, 0.02);
+        }
 
         .tx-type {
             display: inline-flex;
@@ -420,6 +509,7 @@
             font-size: 0.6rem;
             font-weight: 600;
         }
+
         .tx-type.deposit { color: var(--success); background: rgba(0, 230, 118, 0.1); }
         .tx-type.withdraw { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
         .tx-type.game { color: var(--primary); background: rgba(0, 191, 255, 0.1); }
@@ -434,11 +524,15 @@
             font-size: 0.55rem;
             font-weight: 600;
         }
+
         .tx-status.completed { color: var(--success); background: rgba(0, 230, 118, 0.1); }
         .tx-status.pending { color: var(--gold); background: rgba(255, 200, 87, 0.1); }
         .tx-status.failed { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
 
-        .tx-amount { font-weight: 600; }
+        .tx-amount {
+            font-weight: 600;
+        }
+
         .tx-amount.positive { color: var(--success); }
         .tx-amount.negative { color: var(--danger); }
 
@@ -455,15 +549,38 @@
             border-radius: var(--radius);
             padding: 14px 16px;
         }
-        .sidebar-card h4 { font-family: 'Orbitron', monospace; font-size: 0.75rem; margin-bottom: 10px; }
-        .sidebar-card .item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.8rem; }
-        .sidebar-card .item:last-child { border-bottom: none; }
-        .sidebar-card .item .label { color: var(--muted); }
-        .sidebar-card .item .value { color: var(--text); font-weight: 600; }
+
+        .sidebar-card h4 {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            margin-bottom: 10px;
+        }
+
+        .sidebar-card .item {
+            display: flex;
+            justify-content: space-between;
+            padding: 5px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            font-size: 0.8rem;
+        }
+
+        .sidebar-card .item:last-child {
+            border-bottom: none;
+        }
+
+        .sidebar-card .item .label {
+            color: var(--muted);
+        }
+
+        .sidebar-card .item .value {
+            color: var(--text);
+            font-weight: 600;
+        }
+
         .sidebar-card .item .value.green { color: var(--success); }
         .sidebar-card .item .value.red { color: var(--danger); }
 
-        /* ===== GAME CARD ===== */
+        /* ===== GAME CARD (Reserved Space) ===== */
         .game-card-reserved {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(0, 191, 255, 0.1);
@@ -473,10 +590,53 @@
             border-style: dashed;
             transition: var(--transition);
         }
-        .game-card-reserved:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.02); }
-        .game-card-reserved .icon { font-size: 2.5rem; margin-bottom: 6px; opacity: 0.5; }
-        .game-card-reserved .name { font-weight: 600; font-size: 1rem; color: var(--muted); }
-        .game-card-reserved .sub { font-size: 0.75rem; color: rgba(167, 181, 197, 0.3); margin-top: 2px; }
+
+        .game-card-reserved:hover {
+            border-color: var(--primary);
+            background: rgba(0, 191, 255, 0.02);
+        }
+
+        .game-card-reserved .icon {
+            font-size: 2.5rem;
+            margin-bottom: 6px;
+            opacity: 0.5;
+        }
+
+        .game-card-reserved .name {
+            font-weight: 600;
+            font-size: 1rem;
+            color: var(--muted);
+        }
+
+        .game-card-reserved .sub {
+            font-size: 0.75rem;
+            color: rgba(167, 181, 197, 0.3);
+            margin-top: 2px;
+        }
+
+        /* ===== TOAST ===== */
+        .toast-cyber {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: var(--primary);
+            font-size: 0.8rem;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .toast-cyber.error { border-color: var(--danger); color: var(--danger); }
+        .toast-cyber.success { border-color: var(--success); color: var(--success); }
 
         /* ===== MODAL ===== */
         .modal-overlay {
@@ -493,7 +653,10 @@
             justify-content: center;
             padding: 16px;
         }
-        .modal-overlay.show { display: flex; }
+
+        .modal-overlay.show {
+            display: flex;
+        }
 
         .modal {
             background: rgba(6, 17, 31, 0.95);
@@ -504,13 +667,39 @@
             width: 100%;
             animation: slideUp 0.3s ease;
         }
-        @keyframes slideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
 
-        .modal h2 { font-family: 'Orbitron', monospace; font-size: 1.1rem; text-align: center; margin-bottom: 6px; }
-        .modal .sub { text-align: center; color: var(--muted); font-size: 0.75rem; margin-bottom: 16px; }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        .modal .form-group { margin-bottom: 14px; }
-        .modal .form-group label { color: var(--muted); font-size: 0.65rem; font-weight: 600; display: block; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 1px; }
+        .modal h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            text-align: center;
+            margin-bottom: 6px;
+        }
+
+        .modal .sub {
+            text-align: center;
+            color: var(--muted);
+            font-size: 0.75rem;
+            margin-bottom: 16px;
+        }
+
+        .modal .form-group {
+            margin-bottom: 14px;
+        }
+
+        .modal .form-group label {
+            color: var(--muted);
+            font-size: 0.65rem;
+            font-weight: 600;
+            display: block;
+            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
 
         .modal .form-group input,
         .modal .form-group select {
@@ -525,16 +714,20 @@
             outline: none;
             transition: var(--transition);
         }
-        .modal .form-group input:focus,
-        .modal .form-group select:focus { border-color: var(--primary); box-shadow: 0 0 25px rgba(0, 191, 255, 0.1); }
-        .modal .form-group input::placeholder { color: rgba(167, 181, 197, 0.3); }
-        .modal .form-group select { appearance: none; cursor: pointer; }
 
-        .modal .form-group input[readonly] {
-            background: rgba(255, 255, 255, 0.02);
-            cursor: not-allowed;
-            opacity: 0.7;
-            border-color: rgba(0, 191, 255, 0.1);
+        .modal .form-group input:focus,
+        .modal .form-group select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 25px rgba(0, 191, 255, 0.1);
+        }
+
+        .modal .form-group input::placeholder {
+            color: rgba(167, 181, 197, 0.3);
+        }
+
+        .modal .form-group select {
+            appearance: none;
+            cursor: pointer;
         }
 
         .modal .btn-submit {
@@ -548,94 +741,180 @@
             cursor: pointer;
             transition: var(--transition);
             margin-top: 6px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
         }
 
-        .modal .btn-submit .spinner {
-            display: none;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top: 2px solid #fff;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
+        .modal .btn-submit.deposit {
+            background: linear-gradient(135deg, var(--success), #00C853);
+            color: #000;
         }
 
-        .modal .btn-submit.loading .btn-text { display: none; }
-        .modal .btn-submit.loading .spinner { display: inline-block; }
-        .modal .btn-submit.loading i { display: none; }
+        .modal .btn-submit.withdraw {
+            background: linear-gradient(135deg, var(--danger), #D50000);
+            color: #fff;
+        }
 
-        .modal .btn-submit.deposit { background: linear-gradient(135deg, var(--success), #00C853); color: #000; }
-        .modal .btn-submit.deposit .spinner { border-top-color: #000; }
+        .modal .btn-submit:hover {
+            transform: translateY(-2px);
+        }
 
-        .modal .btn-submit.withdraw { background: linear-gradient(135deg, var(--danger), #D50000); color: #fff; }
+        .modal .btn-close {
+            background: none;
+            border: none;
+            color: var(--muted);
+            font-size: 0.75rem;
+            cursor: pointer;
+            margin-top: 10px;
+            display: block;
+            width: 100%;
+            text-align: center;
+        }
 
-        .modal .btn-submit:hover:not(:disabled) { transform: translateY(-2px); }
-        .modal .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; }
-
-        .modal .btn-close { background: none; border: none; color: var(--muted); font-size: 0.75rem; cursor: pointer; margin-top: 10px; display: block; width: 100%; text-align: center; }
-        .modal .btn-close:hover { color: var(--text); }
-        .modal .btn-close:disabled { opacity: 0.5; cursor: not-allowed; }
+        .modal .btn-close:hover {
+            color: var(--text);
+        }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
-            .main-grid { grid-template-columns: 1fr; }
-            .profile-card { grid-template-columns: 1fr; text-align: center; }
-            .profile-card .info .details { justify-content: center; }
-            .profile-card .status-badge { align-self: center; }
-            .notification-container { max-width: 350px; right: 10px; top: 10px; }
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-card {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            .profile-card .info .details {
+                justify-content: center;
+            }
+            .profile-card .status-badge {
+                align-self: center;
+            }
         }
 
         @media (max-width: 768px) {
-            .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
-            .nav-right { justify-content: space-between; }
-            .welcome-section { flex-direction: column; align-items: flex-start; }
-            .quick-actions .btn { flex: 1; min-width: 80px; font-size: 0.7rem; padding: 8px 12px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
-            .main-grid { grid-template-columns: 1fr; }
-            .profile-card .info .details { flex-direction: column; gap: 4px; align-items: center; }
-            table { font-size: 0.7rem; }
-            table th, table td { padding: 6px 8px; }
-            .modal { padding: 20px; }
-            .profile-card .avatar { margin: 0 auto; }
-            .notification-container { max-width: 100%; right: 0; top: 0; padding: 10px; }
-            .notification { border-radius: 12px; padding: 14px 16px; }
+            .nav-row {
+                flex-direction: column;
+                align-items: stretch;
+                gap: 8px;
+            }
+            .nav-right {
+                justify-content: space-between;
+            }
+            .welcome-section {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .quick-actions .btn {
+                flex: 1;
+                min-width: 80px;
+                font-size: 0.7rem;
+                padding: 8px 12px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr 1fr;
+            }
+            .main-grid {
+                grid-template-columns: 1fr;
+            }
+            .profile-card .info .details {
+                flex-direction: column;
+                gap: 4px;
+                align-items: center;
+            }
+            table {
+                font-size: 0.7rem;
+            }
+            table th, table td {
+                padding: 6px 8px;
+            }
+            .modal {
+                padding: 20px;
+            }
+            .profile-card .avatar {
+                margin: 0 auto;
+            }
         }
 
         @media (max-width: 480px) {
-            .container { padding: 10px 10px 30px; }
-            .stats-grid { grid-template-columns: 1fr; }
-            .quick-actions { flex-direction: column; }
-            .quick-actions .btn { width: 100%; }
-            .nav-right .balance-display { font-size: 0.8rem; padding: 4px 10px; }
-            .nav-right .username-display { font-size: 0.7rem; }
-            .logo { font-size: 1rem; }
-            .profile-card { padding: 12px 14px; }
-            .profile-card .info .name { font-size: 0.9rem; }
-            .stat-card .stat-number { font-size: 1.2rem; }
-            .table-container .header h3 { font-size: 0.75rem; }
-            .modal { padding: 16px; }
-            .modal h2 { font-size: 1rem; }
-            .notification { padding: 12px 14px; border-radius: 10px; }
-            .notification .icon { font-size: 1.2rem; }
-            .notification .content .title { font-size: 0.8rem; }
-            .notification .content .message { font-size: 0.7rem; }
+            .container {
+                padding: 10px 10px 30px;
+            }
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            .quick-actions {
+                flex-direction: column;
+            }
+            .quick-actions .btn {
+                width: 100%;
+            }
+            .nav-right .balance-display {
+                font-size: 0.8rem;
+                padding: 4px 10px;
+            }
+            .nav-right .username-display {
+                font-size: 0.7rem;
+            }
+            .logo {
+                font-size: 1rem;
+            }
+            .profile-card {
+                padding: 12px 14px;
+            }
+            .profile-card .info .name {
+                font-size: 0.9rem;
+            }
+            .stat-card .stat-number {
+                font-size: 1.2rem;
+            }
+            .table-container .header h3 {
+                font-size: 0.75rem;
+            }
+            .modal {
+                padding: 16px;
+            }
+            .modal h2 {
+                font-size: 1rem;
+            }
+            .toast-cyber {
+                font-size: 0.7rem;
+                padding: 8px 16px;
+                bottom: 10px;
+            }
         }
 
         @media (max-width: 360px) {
-            .nav-right { flex-wrap: wrap; justify-content: center; }
-            .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
-            .stat-card .stat-number { font-size: 1rem; }
-            .stat-card .stat-label { font-size: 0.55rem; }
-            .stat-card .stat-icon { font-size: 1rem; }
-            .profile-card .info .details { font-size: 0.65rem; }
-            .quick-actions .btn { font-size: 0.65rem; padding: 6px 10px; min-width: 60px; }
+            .nav-right {
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            .nav-right .username-display {
+                width: 100%;
+                text-align: center;
+                justify-content: center;
+            }
+            .stat-card .stat-number {
+                font-size: 1rem;
+            }
+            .stat-card .stat-label {
+                font-size: 0.55rem;
+            }
+            .stat-card .stat-icon {
+                font-size: 1rem;
+            }
+            .profile-card .info .details {
+                font-size: 0.65rem;
+            }
+            .quick-actions .btn {
+                font-size: 0.65rem;
+                padding: 6px 10px;
+                min-width: 60px;
+            }
         }
 
+        /* Scrollbar */
         ::-webkit-scrollbar { width: 4px; }
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: rgba(0, 191, 255, 0.3); border-radius: 2px; }
@@ -647,9 +926,6 @@
     <!-- ===== BACKGROUND ===== -->
     <div class="bg-layer"></div>
     <div class="grid-overlay"></div>
-
-    <!-- ===== NOTIFICATION CONTAINER ===== -->
-    <div class="notification-container" id="notificationContainer"></div>
 
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
@@ -726,29 +1002,19 @@
         <!-- Quick Actions -->
         <div class="quick-actions">
             <button class="btn btn-deposit" onclick="openModal('deposit')">
-                <i class="fas fa-arrow-down"></i>
-                <span class="btn-text">Deposit</span>
-                <div class="spinner"></div>
+                <i class="fas fa-arrow-down"></i> Deposit
             </button>
             <button class="btn btn-withdraw" onclick="openModal('withdraw')">
-                <i class="fas fa-arrow-up"></i>
-                <span class="btn-text">Withdraw</span>
-                <div class="spinner"></div>
+                <i class="fas fa-arrow-up"></i> Withdraw
             </button>
             <button class="btn btn-games" onclick="window.location.href='/games/game-lobby.html'">
-                <i class="fas fa-gamepad"></i>
-                <span class="btn-text">Play Games</span>
-                <div class="spinner"></div>
+                <i class="fas fa-gamepad"></i> Play Games
             </button>
             <button class="btn btn-tournaments" onclick="window.location.href='/tournaments.html'">
-                <i class="fas fa-trophy"></i>
-                <span class="btn-text">Tournaments</span>
-                <div class="spinner"></div>
+                <i class="fas fa-trophy"></i> Tournaments
             </button>
             <button class="btn btn-history" onclick="toggleHistory()">
-                <i class="fas fa-history"></i>
-                <span class="btn-text">History</span>
-                <div class="spinner"></div>
+                <i class="fas fa-history"></i> History
             </button>
         </div>
 
@@ -843,30 +1109,28 @@
                 </div>
                 <div class="form-group">
                     <label>Payment Method</label>
-                    <select id="modalMethod" disabled style="cursor:not-allowed; opacity:0.7;">
-                        <option value="MTN">📱 MTN Mobile Money</option>
-                        <option value="Airtel">📱 Airtel Money</option>
-                        <option value="Wallet">💳 Wallet Transfer</option>
+                    <select id="modalMethod">
+                        <option value="MTN">MTN Mobile Money</option>
+                        <option value="Airtel">Airtel Money</option>
+                        <option value="Wallet">Wallet Transfer</option>
                     </select>
-                    <div style="font-size:0.55rem; color:var(--muted); margin-top:2px;">
-                        <i class="fas fa-info-circle"></i> Auto-detected from your phone number
-                    </div>
                 </div>
                 <div class="form-group" id="modalPhoneGroup">
-                    <label>Phone Number (Registered)</label>
-                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9" readonly style="background:rgba(255,255,255,0.02); cursor:not-allowed; opacity:0.7;">
-                    <div style="font-size:0.6rem; margin-top:4px;" id="phoneStatus">
-                        <i class="fas fa-info-circle" style="color:var(--muted);"></i> ℹ️ Using your registered phone number
-                    </div>
+                    <label>Phone Number</label>
+                    <input type="tel" id="modalPhone" placeholder="07XXXXXXXX" maxlength="9">
                 </div>
                 <button type="submit" class="btn-submit deposit" id="modalSubmitBtn">
-                    <i class="fas fa-check"></i>
-                    <span class="btn-text">Confirm</span>
-                    <div class="spinner"></div>
+                    <i class="fas fa-check"></i> Confirm
                 </button>
                 <button type="button" class="btn-close" onclick="closeModal()">Cancel</button>
             </form>
         </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast-cyber">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Message</span>
     </div>
 
     <!-- ===== FIREBASE IMPORTS ===== -->
@@ -1127,78 +1391,6 @@
         }
 
         // ========================================
-        // NETWORK DETECTION
-        // ========================================
-
-        function getNetworkProvider(phone) {
-            if (!phone) return 'Unknown';
-            const cleaned = phone.replace(/\s/g, '').replace('+250', '');
-            
-            // MTN prefixes: 078, 0788, 0789
-            if (cleaned.startsWith('078') || cleaned.startsWith('0788') || cleaned.startsWith('0789')) {
-                return 'MTN';
-            }
-            // Airtel prefixes: 072, 073
-            if (cleaned.startsWith('072') || cleaned.startsWith('073')) {
-                return 'Airtel';
-            }
-            // Other Rwandan prefixes
-            if (cleaned.startsWith('07')) {
-                return 'Other';
-            }
-            return 'Unknown';
-        }
-
-        function isValidRwandanPhone(phone) {
-            if (!phone) return false;
-            const cleaned = phone.replace(/\s/g, '').replace('+250', '');
-            // Must start with 07 and be exactly 9 digits
-            if (!cleaned.startsWith('07')) return false;
-            if (cleaned.length !== 9) return false;
-            return true;
-        }
-
-        // ========================================
-        // NOTIFICATION SYSTEM
-        // ========================================
-
-        function showNotification(title, message, type = 'info', details = null) {
-            const container = document.getElementById('notificationContainer');
-            const notification = document.createElement('div');
-            notification.className = `notification ${type}`;
-
-            const icons = {
-                success: '✅',
-                error: '❌',
-                info: 'ℹ️'
-            };
-
-            notification.innerHTML = `
-                <div class="icon">${icons[type] || 'ℹ️'}</div>
-                <div class="content">
-                    <div class="title">${title}</div>
-                    <div class="message">${message}</div>
-                    ${details ? `<div class="details">${details}</div>` : ''}
-                </div>
-                <button class="close-btn" onclick="this.closest('.notification').remove()">
-                    <i class="fas fa-times"></i>
-                </button>
-            `;
-
-            container.appendChild(notification);
-
-            // Auto remove after 6 seconds
-            setTimeout(() => {
-                notification.classList.add('hiding');
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.remove();
-                    }
-                }, 500);
-            }, 6000);
-        }
-
-        // ========================================
         // UPDATE UI
         // ========================================
 
@@ -1352,7 +1544,7 @@
         }
 
         // ========================================
-        // MODAL FUNCTIONS WITH AUTO-DETECTION
+        // MODAL
         // ========================================
 
         window.openModal = function(type) {
@@ -1362,63 +1554,24 @@
             const sub = document.getElementById('modalSub');
             const submitBtn = document.getElementById('modalSubmitBtn');
             const phoneGroup = document.getElementById('modalPhoneGroup');
-            const phoneInput = document.getElementById('modalPhone');
-            const methodSelect = document.getElementById('modalMethod');
-            const phoneStatus = document.getElementById('phoneStatus');
-
-            // Get user's registered phone number
-            let registeredPhone = userData.phone || '';
-            if (registeredPhone.startsWith('+250')) {
-                registeredPhone = registeredPhone.substring(4);
-            }
-
-            // Set default phone number from user data (9 digits only)
-            if (registeredPhone && registeredPhone !== 'loading...' && registeredPhone !== 'No phone' && registeredPhone !== 'Not provided') {
-                // Ensure only 9 digits
-                let cleanPhone = registeredPhone.replace(/\D/g, '');
-                if (cleanPhone.length > 9) {
-                    cleanPhone = cleanPhone.slice(-9);
-                }
-                phoneInput.value = cleanPhone;
-                phoneInput.readOnly = true;
-                
-                // Auto-detect network and set method
-                const network = getNetworkProvider(cleanPhone);
-                
-                if (network === 'MTN') {
-                    methodSelect.value = 'MTN';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ MTN number detected (${cleanPhone})`;
-                    phoneStatus.style.color = 'var(--success)';
-                } else if (network === 'Airtel') {
-                    methodSelect.value = 'Airtel';
-                    phoneStatus.innerHTML = `<i class="fas fa-check-circle" style="color:var(--success);"></i> ✅ Airtel number detected (${cleanPhone})`;
-                    phoneStatus.style.color = 'var(--success)';
-                } else {
-                    phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--gold);"></i> ⚠️ Unknown network. Please contact support.`;
-                    phoneStatus.style.color = 'var(--gold)';
-                }
-            } else {
-                phoneInput.value = '';
-                phoneInput.readOnly = false;
-                phoneStatus.innerHTML = `<i class="fas fa-exclamation-triangle" style="color:var(--danger);"></i> ⚠️ No registered phone number found. Please contact support.`;
-                phoneStatus.style.color = 'var(--danger)';
-            }
 
             if (type === 'deposit') {
                 title.textContent = '💰 Deposit Funds';
                 sub.textContent = 'Add money to your Shora Games wallet';
                 submitBtn.className = 'btn-submit deposit';
-                submitBtn.innerHTML = '<i class="fas fa-arrow-down"></i><span class="btn-text">Deposit</span><div class="spinner"></div>';
+                submitBtn.innerHTML = '<i class="fas fa-arrow-down"></i> Deposit';
                 phoneGroup.style.display = 'block';
             } else {
                 title.textContent = '💸 Withdraw Funds';
                 sub.textContent = 'Withdraw money from your Shora Games wallet';
                 submitBtn.className = 'btn-submit withdraw';
-                submitBtn.innerHTML = '<i class="fas fa-arrow-up"></i><span class="btn-text">Withdraw</span><div class="spinner"></div>';
+                submitBtn.innerHTML = '<i class="fas fa-arrow-up"></i> Withdraw';
                 phoneGroup.style.display = 'block';
             }
 
             document.getElementById('modalAmount').value = '';
+            document.getElementById('modalMethod').value = 'MTN';
+            document.getElementById('modalPhone').value = '';
 
             overlay.classList.add('show');
         };
@@ -1427,10 +1580,6 @@
             document.getElementById('modalOverlay').classList.remove('show');
         };
 
-        // ========================================
-        // HANDLE MODAL SUBMIT (DEPOSIT/WITHDRAW SKILLS UNCHANGED)
-        // ========================================
-
         window.handleModalSubmit = async function(event) {
             event.preventDefault();
 
@@ -1438,182 +1587,84 @@
             const method = document.getElementById('modalMethod').value;
             const phone = document.getElementById('modalPhone').value.trim();
 
-            // Validation
             if (!amount || amount < 100) {
-                showNotification(
-                    '⚠️ Invalid Amount',
-                    'Please enter a valid amount (minimum 100 RWF)',
-                    'error'
-                );
+                showToast('Please enter a valid amount (minimum 100 RWF)', 'error');
                 return;
             }
 
-            if (!phone || phone.length !== 9) {
-                showNotification(
-                    '⚠️ Invalid Phone Number',
-                    'Please use a valid 9-digit Rwandan phone number',
-                    'error'
-                );
-                return;
-            }
-
-            // Check if phone matches registered number
-            let registeredPhone = userData.phone || '';
-            if (registeredPhone.startsWith('+250')) {
-                registeredPhone = registeredPhone.substring(4);
-            }
-            let cleanRegistered = registeredPhone.replace(/\D/g, '');
-            if (cleanRegistered.length > 9) {
-                cleanRegistered = cleanRegistered.slice(-9);
-            }
-            
-            if (cleanRegistered && cleanRegistered !== 'No phone' && cleanRegistered !== 'Not provided') {
-                if (phone !== cleanRegistered) {
-                    showNotification(
-                        '⚠️ Phone Number Mismatch',
-                        `Your registered number is ${cleanRegistered}. Please use your registered number.`,
-                        'error'
-                    );
-                    return;
-                }
-            }
-
-            // Auto-detect network
-            const detectedNetwork = getNetworkProvider(phone);
-            if (detectedNetwork === 'Unknown' || detectedNetwork === 'Other') {
-                showNotification(
-                    '⚠️ Invalid Network',
-                    'Please use a valid MTN or Airtel number.',
-                    'error'
-                );
+            if (!phone || phone.length < 9) {
+                showToast('Please enter a valid phone number', 'error');
                 return;
             }
 
             if (!currentUser) {
-                showNotification(
-                    '🔐 Login Required',
-                    'Please login first to continue',
-                    'error'
-                );
+                showToast('Please login first', 'error');
                 return;
             }
 
             if (isMaintenanceActive) {
-                showNotification(
-                    '🛠️ Maintenance Mode',
-                    'Site is under maintenance. Please try again later.',
-                    'error'
-                );
+                showToast('⚠️ Site is under maintenance. Please try again later.', 'error');
                 return;
             }
 
             const uid = currentUser.uid;
 
-            // Show loading state
-            const submitBtn = document.getElementById('modalSubmitBtn');
-            submitBtn.disabled = true;
-            submitBtn.classList.add('loading');
+            if (modalType === 'deposit') {
+                const tx = {
+                    type: 'deposit',
+                    amount: amount,
+                    method: method,
+                    status: 'pending',
+                    date: new Date().toISOString(),
+                    phone: phone
+                };
+                userData.transactions.unshift(tx);
+                userData.balance += amount;
 
-            try {
-                if (modalType === 'deposit') {
-                    const tx = {
-                        type: 'deposit',
-                        amount: amount,
-                        method: method,
-                        status: 'pending',
-                        date: new Date().toISOString(),
-                        phone: phone,
-                        detectedNetwork: detectedNetwork
-                    };
-                    userData.transactions.unshift(tx);
-                    userData.balance += amount;
+                await saveTransactionToFirebase(uid, tx);
+                await update(ref(db, `users/${uid}`), { balance: userData.balance });
 
-                    await saveTransactionToFirebase(uid, tx);
-                    await update(ref(db, `users/${uid}`), { balance: userData.balance });
+                showToast(`💰 Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
 
-                    showNotification(
-                        '💰 Deposit Initiated',
-                        `${method} deposit of ${amount.toLocaleString()} RWF has been initiated.`,
-                        'success',
-                        `📱 Phone: ${phone} | Status: Pending confirmation`
-                    );
-
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-
+                setTimeout(async () => {
                     tx.status = 'completed';
                     await updateTransactionStatus(uid, tx);
                     updateUI();
-                    
-                    showNotification(
-                        '✅ Deposit Confirmed!',
-                        `${method} deposit of ${amount.toLocaleString()} RWF has been confirmed and added to your balance.`,
-                        'success',
-                        `💰 New Balance: ${userData.balance.toLocaleString()} RWF`
-                    );
+                    showToast(`✅ Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
+                }, 2000);
 
-                } else {
-                    if (amount > userData.balance) {
-                        showNotification(
-                            '❌ Insufficient Balance',
-                            `Your balance is ${userData.balance.toLocaleString()} RWF. You need ${amount.toLocaleString()} RWF.`,
-                            'error'
-                        );
-                        submitBtn.disabled = false;
-                        submitBtn.classList.remove('loading');
-                        return;
-                    }
-
-                    const tx = {
-                        type: 'withdraw',
-                        amount: -amount,
-                        method: method,
-                        status: 'pending',
-                        date: new Date().toISOString(),
-                        phone: phone,
-                        detectedNetwork: detectedNetwork
-                    };
-                    userData.transactions.unshift(tx);
-                    userData.balance -= amount;
-
-                    await saveTransactionToFirebase(uid, tx);
-                    await update(ref(db, `users/${uid}`), { balance: userData.balance });
-
-                    showNotification(
-                        '💸 Withdrawal Initiated',
-                        `${method} withdrawal of ${amount.toLocaleString()} RWF has been initiated.`,
-                        'success',
-                        `📱 Phone: ${phone} | Status: Pending processing`
-                    );
-
-                    await new Promise(resolve => setTimeout(resolve, 3000));
-
-                    tx.status = 'completed';
-                    await updateTransactionStatus(uid, tx);
-                    updateUI();
-                    
-                    showNotification(
-                        '✅ Withdrawal Processed!',
-                        `${method} withdrawal of ${amount.toLocaleString()} RWF has been processed.`,
-                        'success',
-                        `💰 New Balance: ${userData.balance.toLocaleString()} RWF`
-                    );
+            } else {
+                if (amount > userData.balance) {
+                    showToast('❌ Insufficient balance!', 'error');
+                    return;
                 }
 
-                updateUI();
-                closeModal();
+                const tx = {
+                    type: 'withdraw',
+                    amount: -amount,
+                    method: method,
+                    status: 'pending',
+                    date: new Date().toISOString(),
+                    phone: phone
+                };
+                userData.transactions.unshift(tx);
+                userData.balance -= amount;
 
-            } catch (error) {
-                console.error('Transaction error:', error);
-                showNotification(
-                    '❌ Transaction Failed',
-                    'An error occurred while processing your transaction. Please try again.',
-                    'error',
-                    `Error: ${error.message || 'Unknown error'}`
-                );
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.classList.remove('loading');
+                await saveTransactionToFirebase(uid, tx);
+                await update(ref(db, `users/${uid}`), { balance: userData.balance });
+
+                showToast(`💸 Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
+
+                setTimeout(async () => {
+                    tx.status = 'completed';
+                    await updateTransactionStatus(uid, tx);
+                    updateUI();
+                    showToast(`✅ Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
+                }, 3000);
             }
+
+            updateUI();
+            closeModal();
         };
 
         async function saveTransactionToFirebase(uid, tx) {
@@ -1629,7 +1680,6 @@
                 await update(txRef, txData);
             } catch (error) {
                 console.error('Error saving transaction:', error);
-                throw error;
             }
         }
 
@@ -1649,8 +1699,25 @@
                 }
             } catch (error) {
                 console.error('Error updating transaction:', error);
-                throw error;
             }
+        }
+
+        // ========================================
+        // TOAST
+        // ========================================
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMessage');
+            msg.textContent = message;
+            toast.className = 'toast-cyber';
+            if (type === 'error') toast.classList.add('error');
+            if (type === 'success') toast.classList.add('success');
+            toast.style.display = 'flex';
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
         }
 
         // ========================================
@@ -1701,12 +1768,6 @@
         });
 
         // ========================================
-        // EXPOSE NOTIFICATION TO GLOBAL
-        // ========================================
-
-        window.showNotification = showNotification;
-
-        // ========================================
         // CONSOLE
         // ========================================
 
@@ -1715,11 +1776,6 @@
         console.log('%c👤 User data loaded from Firebase', 'color: #FFC857;');
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
-        console.log('%c📞 Phone number validation active', 'color: #00BFFF;');
-        console.log('%c✅ Auto-detects MTN (078) or Airtel (072/073)', 'color: #00E676;');
-        console.log('%c📢 Notification system active', 'color: #FFC857;');
-        console.log('%c🔒 Phone number is read-only (9 digits)', 'color: #FFD700;');
-        console.log('%c💰 Deposit/Withdraw skills preserved exactly as you wanted', 'color: #00E676;');
     </script>
 
 </body>
