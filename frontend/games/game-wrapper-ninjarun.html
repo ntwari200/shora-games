@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>NinjaRun - Shora Games</title>
+    <link rel="icon" type="image/png" href="/assets/icons/shora-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #06111F;
+            color: #F5F7FA;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-layer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, #06111F 0%, #0B1F36 50%, #0D1B2A 100%);
+        }
+
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: glowPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .entry-screen {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.03);
+            border-radius: 24px;
+            border: 1px solid rgba(0,191,255,0.15);
+            max-width: 420px;
+            width: 90%;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+
+        .entry-screen .game-icon { font-size: 4rem; margin-bottom: 8px; }
+        .entry-screen h1 { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: #F5F7FA; }
+        .entry-screen .subtitle { color: #A7B5C5; font-size: 0.9rem; margin: 4px 0 16px; }
+
+        .fee-box {
+            background: rgba(255,215,0,0.05);
+            border: 1px solid rgba(255,215,0,0.15);
+            border-radius: 12px;
+            padding: 14px;
+            margin: 12px 0;
+        }
+
+        .fee-box .fee { color: #FFD700; font-size: 1.4rem; font-weight: 700; font-family: 'Orbitron', monospace; }
+        .fee-box .win { color: #00E676; font-size: 1.4rem; font-weight: 700; font-family: 'Orbitron', monospace; }
+        .fee-box .label { color: #A7B5C5; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
+
+        .balance-display {
+            margin: 12px 0;
+            font-size: 0.9rem;
+            color: #A7B5C5;
+        }
+
+        .balance-display .amount {
+            color: #00E676;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+        }
+
+        .btn-play {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #00BFFF, #6C63FF);
+            border: none;
+            border-radius: 12px;
+            color: #000;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: all 0.3s ease;
+            font-family: 'Orbitron', monospace;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-play:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0,191,255,0.3);
+        }
+
+        .btn-play:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-play .spinner {
+            display: none;
+            width: 18px;
+            height: 18px;
+            border: 2px solid rgba(0,0,0,0.15);
+            border-top: 2px solid #000;
+            border-radius: 50%;
+            animation: spin 0.7s linear infinite;
+        }
+
+        .btn-play.loading .btn-text { display: none; }
+        .btn-play.loading .spinner { display: inline-block; }
+        .btn-play.loading i { display: none; }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 14px;
+            color: #A7B5C5;
+            text-decoration: none;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+
+        .back-btn:hover { color: #00BFFF; }
+        .back-btn i { margin-right: 4px; }
+
+        .error-msg {
+            background: rgba(255,77,109,0.1);
+            border: 1px solid rgba(255,77,109,0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #FF4D6D;
+            font-size: 0.8rem;
+            display: none;
+            margin-top: 12px;
+        }
+
+        .error-msg.show { display: block; }
+
+        .success-msg {
+            background: rgba(0,230,118,0.1);
+            border: 1px solid rgba(0,230,118,0.2);
+            border-radius: 8px;
+            padding: 10px 14px;
+            color: #00E676;
+            font-size: 0.8rem;
+            display: none;
+            margin-top: 12px;
+        }
+
+        .success-msg.show { display: block; }
+
+        @media (max-width: 480px) {
+            .entry-screen { padding: 24px 20px; }
+            .entry-screen h1 { font-size: 1.4rem; }
+            .fee-box .fee, .fee-box .win { font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+
+    <div class="entry-screen" id="entryScreen">
+        <div class="game-icon">🏃</div>
+        <h1>NinjaRun</h1>
+        <p class="subtitle">Run, jump and dodge obstacles to win!</p>
+
+        <div class="fee-box">
+            <div>
+                <span class="label">💰 Entry Fee</span>
+                <div class="fee">100 RWF</div>
+            </div>
+            <div style="margin-top:8px;">
+                <span class="label">🏆 Win Prize</span>
+                <div class="win">200 RWF</div>
+            </div>
+        </div>
+
+        <div class="balance-display">
+            Your Balance: <span class="amount" id="balanceDisplay">0</span> RWF
+        </div>
+
+        <div class="error-msg" id="errorMsg">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorText">Error message</span>
+        </div>
+
+        <div class="success-msg" id="successMsg">
+            <i class="fas fa-check-circle"></i>
+            <span id="successText">Success!</span>
+        </div>
+
+        <button class="btn-play" id="playBtn" onclick="startGame()">
+            <i class="fas fa-play"></i>
+            <span class="btn-text">PLAY NOW</span>
+            <div class="spinner"></div>
+        </button>
+
+        <a href="/frontend/game-lobby.html" class="back-btn">
+            <i class="fas fa-arrow-left"></i> Back to Lobby
+        </a>
+    </div>
+
+    <script>
+        // ========================================
+        // SHORA GAMES - NINJARUN WRAPPER
+        // ========================================
+
+        const ENTRY_FEE = 100;
+        const WIN_AMOUNT = 200;
+        let userData = null;
+        let userBalance = 0;
+        let userUid = null;
+
+        // ========================================
+        // FIREBASE SETUP
+        // ========================================
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+        };
+
+        firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // ========================================
+        // LOAD USER DATA
+        // ========================================
+
+        function loadUserData() {
+            try {
+                const session = localStorage.getItem('shora_user');
+                if (!session) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                const parsed = JSON.parse(session);
+                if (!parsed.uid) {
+                    window.location.href = '/login.html';
+                    return;
+                }
+
+                userUid = parsed.uid;
+
+                const userRef = db.ref('users/' + userUid);
+                userRef.once('value').then((snapshot) => {
+                    if (snapshot.exists()) {
+                        userData = snapshot.val();
+                        userBalance = userData.balance || 0;
+                        document.getElementById('balanceDisplay').textContent = userBalance.toLocaleString();
+                    } else {
+                        window.location.href = '/login.html';
+                    }
+                }).catch(() => {
+                    window.location.href = '/login.html';
+                });
+
+            } catch(e) {
+                window.location.href = '/login.html';
+            }
+        }
+
+        // ========================================
+        // START GAME
+        // ========================================
+
+        function startGame() {
+            const btn = document.getElementById('playBtn');
+            const errorMsg = document.getElementById('errorMsg');
+            const errorText = document.getElementById('errorText');
+            const successMsg = document.getElementById('successMsg');
+            const successText = document.getElementById('successText');
+
+            // Reset messages
+            errorMsg.classList.remove('show');
+            successMsg.classList.remove('show');
+
+            // Check balance
+            if (userBalance < ENTRY_FEE) {
+                errorText.textContent = `❌ Insufficient balance! You need ${ENTRY_FEE} RWF to play. Your balance: ${userBalance} RWF. Please deposit first.`;
+                errorMsg.classList.add('show');
+                return;
+            }
+
+            // Show loading
+            btn.disabled = true;
+            btn.classList.add('loading');
+
+            // Deduct entry fee
+            const newBalance = userBalance - ENTRY_FEE;
+
+            // Update Firebase and localStorage
+            const session = JSON.parse(localStorage.getItem('shora_user'));
+            const userRef = db.ref('users/' + session.uid);
+
+            userRef.update({ balance: newBalance }).then(() => {
+                // Update local storage
+                const updatedSession = JSON.parse(localStorage.getItem('shora_user'));
+                updatedSession.balance = newBalance;
+                localStorage.setItem('shora_user', JSON.stringify(updatedSession));
+
+                // Show success
+                successText.textContent = '✅ Entry fee paid! Loading game...';
+                successMsg.classList.add('show');
+
+                // Redirect to game
+                setTimeout(() => {
+                    window.location.href = 'ninja%20run/index.html';
+                }, 1000);
+            }).catch((error) => {
+                errorText.textContent = '❌ Error processing payment. Please try again.';
+                errorMsg.classList.add('show');
+                btn.disabled = false;
+                btn.classList.remove('loading');
+                console.error('Error updating balance:', error);
+            });
+        }
+
+        // Make startGame available globally
+        window.startGame = startGame;
+
+        // Load user data
+        loadUserData();
+
+        console.log('%c🏃 NINJARUN - SHORA GAMES', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
+        console.log('%c💰 Entry Fee: 100 RWF | 🏆 Win: 200 RWF', 'color: #FFC857;');
+        console.log('%c👤 User data loaded', 'color: #00E676;');
+        console.log('%c📁 Game path: ninja run/index.html', 'color: #A7B5C5;');
+    </script>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-database-compat.js"></script>
+
+</body>
+</html>
