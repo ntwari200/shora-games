@@ -1,0 +1,546 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Game Lobby - Shora Games</title>
+    <link rel="icon" type="image/png" href="/assets/icons/shora-icon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #06111F;
+            --bg2: #0B1F36;
+            --primary: #00BFFF;
+            --secondary: #6C63FF;
+            --success: #00E676;
+            --danger: #FF4D6D;
+            --gold: #FFD700;
+            --text: #F5F7FA;
+            --muted: #A7B5C5;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-layer {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        .bg-layer::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0D1B2A 100%);
+        }
+
+        .bg-layer::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%);
+            transform: translate(-50%, -50%);
+            animation: glowPulse 8s ease-in-out infinite;
+        }
+
+        @keyframes glowPulse {
+            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
+            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
+        }
+
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+            padding: 10px 0;
+        }
+
+        .nav-row {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .logo i {
+            font-size: 1.4rem;
+            -webkit-text-fill-color: var(--primary);
+        }
+
+        .nav-right {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .nav-right .balance-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: var(--success);
+            font-size: 0.95rem;
+            background: rgba(0, 230, 118, 0.05);
+            padding: 4px 12px;
+            border-radius: 8px;
+            border: 1px solid rgba(0, 230, 118, 0.1);
+        }
+
+        .nav-right .balance-display i {
+            font-size: 0.9rem;
+            color: var(--gold);
+        }
+
+        .nav-right .username-display {
+            color: var(--text);
+            font-weight: 500;
+            font-size: 0.8rem;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .nav-right .username-display i {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .nav-right .logout-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            transition: var(--transition);
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+        }
+
+        .nav-right .logout-btn:hover {
+            background: rgba(255, 77, 109, 0.1);
+            border-color: var(--danger);
+            color: var(--danger);
+        }
+
+        /* ===== CONTAINER ===== */
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 16px 16px 40px;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* ===== HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .page-header h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+        }
+
+        .page-header h1 span {
+            color: var(--primary);
+        }
+
+        .page-header .sub {
+            color: var(--muted);
+            font-size: 0.8rem;
+        }
+
+        /* ===== CATEGORY FILTERS ===== */
+        .category-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            overflow-x: auto;
+            padding-bottom: 4px;
+            flex-wrap: wrap;
+        }
+
+        .category-filters .filter-btn {
+            padding: 8px 20px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.08);
+            background: transparent;
+            color: var(--muted);
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 500;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: var(--transition);
+            white-space: nowrap;
+        }
+
+        .category-filters .filter-btn:hover {
+            border-color: var(--primary);
+            color: var(--text);
+        }
+
+        .category-filters .filter-btn.active {
+            background: var(--primary);
+            border-color: var(--primary);
+            color: #000;
+        }
+
+        /* ===== GAMES GRID ===== */
+        .games-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 16px;
+        }
+
+        .game-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            cursor: pointer;
+            text-decoration: none;
+            color: var(--text);
+            display: block;
+        }
+
+        .game-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--primary);
+            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.1);
+        }
+
+        .game-card .game-image {
+            height: 140px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3.5rem;
+            background: linear-gradient(160deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.03));
+            position: relative;
+        }
+
+        .game-card .game-image .play-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 17, 31, 0.7);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            transition: var(--transition);
+        }
+
+        .game-card:hover .game-image .play-overlay {
+            opacity: 1;
+        }
+
+        .game-card .game-image .play-overlay i {
+            font-size: 3rem;
+            color: var(--primary);
+            text-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
+        }
+
+        .game-card .game-info {
+            padding: 14px 16px;
+        }
+
+        .game-card .game-info .game-name {
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .game-card .game-info .game-category {
+            font-size: 0.65rem;
+            color: var(--primary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .game-card .game-info .game-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+
+        .game-card .game-info .game-meta span {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .game-card .game-info .game-meta i {
+            font-size: 0.6rem;
+            color: var(--primary);
+        }
+
+        .game-card .game-info .game-fee {
+            margin-top: 8px;
+            padding: 6px 12px;
+            background: rgba(255, 215, 0, 0.08);
+            border-radius: 8px;
+            font-size: 0.7rem;
+            color: var(--gold);
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .game-card .game-info .game-fee i {
+            font-size: 0.6rem;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 1024px) {
+            .games-grid { grid-template-columns: repeat(3, 1fr); }
+        }
+
+        @media (max-width: 768px) {
+            .games-grid { grid-template-columns: repeat(2, 1fr); }
+            .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
+            .nav-right { justify-content: space-between; }
+            .page-header { flex-direction: column; align-items: flex-start; }
+        }
+
+        @media (max-width: 480px) {
+            .games-grid { grid-template-columns: 1fr; }
+            .container { padding: 10px 10px 30px; }
+            .category-filters .filter-btn { font-size: 0.7rem; padding: 6px 14px; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 191, 255, 0.3); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 191, 255, 0.5); }
+    </style>
+</head>
+<body>
+
+    <div class="bg-layer"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-row">
+            <div class="logo">
+                <i class="fas fa-gamepad"></i> SHORA
+            </div>
+            <div class="nav-right">
+                <span class="username-display" id="usernameDisplay">
+                    <i class="fas fa-user"></i> <span id="navUsername">Player</span>
+                </span>
+                <span class="balance-display">
+                    <i class="fas fa-coins"></i>
+                    <span id="balanceDisplay">0</span> RWF
+                </span>
+                <a href="login.html" class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>🎮 <span>Game Lobby</span></h1>
+                <div class="sub">Choose a game to play and start winning!</div>
+            </div>
+            <div style="font-size:0.8rem;color:var(--muted);">
+                <i class="fas fa-users"></i> <span id="onlinePlayers">0</span> players online
+            </div>
+        </div>
+
+        <!-- Category Filters -->
+        <div class="category-filters">
+            <button class="filter-btn active" data-category="all">🎯 All Games</button>
+            <button class="filter-btn" data-category="arcade">🕹️ Arcade</button>
+            <button class="filter-btn" data-category="racing">🏎️ Racing</button>
+            <button class="filter-btn" data-category="puzzle">🧩 Puzzle</button>
+            <button class="filter-btn" data-category="strategy">♟️ Strategy</button>
+            <button class="filter-btn" data-category="sports">⚽ Sports</button>
+            <button class="filter-btn" data-category="featured">⭐ Featured</button>
+        </div>
+
+        <!-- Games Grid -->
+        <div class="games-grid">
+
+            <!-- NinjaRun Game Card -->
+            <a href="/frontend/games/game-wrapper-ninjarun.html" class="game-card">
+                <div class="game-image">
+                    🏃
+                    <div class="play-overlay">
+                        <i class="fas fa-play-circle"></i>
+                    </div>
+                </div>
+                <div class="game-info">
+                    <div class="game-name">NinjaRun</div>
+                    <div class="game-category">⭐ Featured | Arcade</div>
+                    <div class="game-meta">
+                        <span><i class="fas fa-users"></i> 1,284 players</span>
+                        <span><i class="fas fa-trophy"></i> 200 RWF</span>
+                    </div>
+                    <div class="game-fee">
+                        <i class="fas fa-coins"></i> Entry: 100 RWF
+                    </div>
+                </div>
+            </a>
+
+            <!-- More Game Cards (Coming Soon) -->
+            <div class="game-card" style="opacity:0.5;cursor:default;">
+                <div class="game-image">🎮</div>
+                <div class="game-info">
+                    <div class="game-name">More Games</div>
+                    <div class="game-category">Coming Soon</div>
+                    <div class="game-meta">
+                        <span><i class="fas fa-users"></i> 0 players</span>
+                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
+                    </div>
+                    <div class="game-fee">
+                        <i class="fas fa-clock"></i> In Development
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" style="opacity:0.5;cursor:default;">
+                <div class="game-image">🚀</div>
+                <div class="game-info">
+                    <div class="game-name">Coming Soon</div>
+                    <div class="game-category">Arcade</div>
+                    <div class="game-meta">
+                        <span><i class="fas fa-users"></i> 0 players</span>
+                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
+                    </div>
+                    <div class="game-fee">
+                        <i class="fas fa-clock"></i> In Development
+                    </div>
+                </div>
+            </div>
+
+            <div class="game-card" style="opacity:0.5;cursor:default;">
+                <div class="game-image">♟️</div>
+                <div class="game-info">
+                    <div class="game-name">Coming Soon</div>
+                    <div class="game-category">Strategy</div>
+                    <div class="game-meta">
+                        <span><i class="fas fa-users"></i> 0 players</span>
+                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
+                    </div>
+                    <div class="game-fee">
+                        <i class="fas fa-clock"></i> In Development
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ===== FIREBASE IMPORTS ===== -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, onValue, get, child } from "firebase/database";
+        import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    document.getElementById('navUsername').textContent = data.username || 'Player';
+                    document.getElementById('balanceDisplay').textContent = (data.balance || 0).toLocaleString();
+                }
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        console.log('%c🎮 SHORA GAMES - LOBBY', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
+        console.log('%c🏃 NinjaRun ready!', 'color: #00E676;');
+    </script>
+
+</body>
+</html>
