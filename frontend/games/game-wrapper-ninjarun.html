@@ -909,59 +909,69 @@
         }
 
         // ============================================================
-        // INIT GAME - FIXED: Override data.js path
+        // INIT GAME - FIXED: Load jQuery first
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                // STEP 1: Load c2runtime.js
-                const script = document.createElement('script');
-                script.src = '/games/ninja%20run/c2runtime.js';
-                script.onload = () => {
-                    console.log('✅ Runtime loaded');
+                // STEP 1: Load jQuery
+                const jqueryScript = document.createElement('script');
+                jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
+                jqueryScript.onload = () => {
+                    console.log('✅ jQuery loaded');
 
-                    try {
-                        // STEP 2: Override the data.js path in the runtime
-                        // Store the original XMLHttpRequest open method
-                        const originalOpen = XMLHttpRequest.prototype.open;
-                        
-                        // Intercept requests for data.js
-                        XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                            // If the request is for data.js, redirect it
-                            if (url && url.includes('data.js')) {
-                                console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
-                                url = '/games/ninja%20run/data.js';
-                            }
-                            // Call the original open method
-                            originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
-                        };
+                    // STEP 2: Load c2runtime.js
+                    const script = document.createElement('script');
+                    script.src = '/games/ninja%20run/c2runtime.js';
+                    script.onload = () => {
+                        console.log('✅ Runtime loaded');
 
-                        // STEP 3: Now create the runtime
-                        const runtime = new cr.createRuntime('c2canvas');
-                        runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                        window.gameRuntime = runtime;
+                        try {
+                            // STEP 3: Override the data.js path
+                            const originalOpen = XMLHttpRequest.prototype.open;
+                            
+                            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+                                if (url && url.includes('data.js')) {
+                                    console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
+                                    url = '/games/ninja%20run/data.js';
+                                }
+                                originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
+                            };
 
-                        // STEP 4: Restore the original XMLHttpRequest.open
-                        XMLHttpRequest.prototype.open = originalOpen;
+                            // STEP 4: Create the runtime
+                            const runtime = new cr.createRuntime('c2canvas');
+                            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                            window.gameRuntime = runtime;
 
-                        setupTouchControls(runtime);
-                        startLobby();
+                            // STEP 5: Restore XMLHttpRequest
+                            XMLHttpRequest.prototype.open = originalOpen;
 
-                    } catch (e) {
-                        console.error('❌ Error creating runtime:', e);
-                        dom.statusMain.textContent = '⚠️ Game engine error';
-                        dom.statusSub.textContent = 'Please refresh and try again';
+                            setupTouchControls(runtime);
+                            startLobby();
+
+                        } catch (e) {
+                            console.error('❌ Error creating runtime:', e);
+                            dom.statusMain.textContent = '⚠️ Game engine error';
+                            dom.statusSub.textContent = 'Please refresh and try again';
+                            dom.statusMessage.classList.add('show');
+                        }
+                    };
+                    script.onerror = (e) => {
+                        console.error('❌ Failed to load c2runtime.js:', e);
+                        dom.statusMain.textContent = '⚠️ Game engine not found';
+                        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
                         dom.statusMessage.classList.add('show');
-                    }
+                    };
+                    document.head.appendChild(script);
                 };
-                script.onerror = (e) => {
-                    console.error('❌ Failed to load c2runtime.js:', e);
-                    dom.statusMain.textContent = '⚠️ Game engine not found';
-                    dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
+                jqueryScript.onerror = (e) => {
+                    console.error('❌ Failed to load jQuery:', e);
+                    dom.statusMain.textContent = '⚠️ jQuery not found';
+                    dom.statusSub.textContent = 'Make sure jquery-2.1.1.min.js is in the game folder';
                     dom.statusMessage.classList.add('show');
                 };
-                document.head.appendChild(script);
+                document.head.appendChild(jqueryScript);
 
             } catch (e) {
                 console.error('❌ Error initializing game:', e);
