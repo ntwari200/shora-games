@@ -690,7 +690,7 @@
         }
 
         // ============================================================
-        // FIXED: Load data.js and inject as JSON, then override XMLHttpRequest
+        // FIXED: Load data.js and inject as global, then override Runtime
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
@@ -747,39 +747,20 @@
                     const fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/');
                     console.log('✅ Image paths fixed in data.js');
 
-                    // STEP 3: Store fixed data as a global variable
-                    window._c2projectData = JSON.parse(fixedData);
+                    // STEP 3: Parse and store as global
+                    const projectData = JSON.parse(fixedData);
+                    window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored in window._c2projectData');
 
-                    // STEP 4: Override XMLHttpRequest to intercept data.js request
-                    const originalOpen = XMLHttpRequest.prototype.open;
-                    XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                        if (url && url.includes('data.js')) {
-                            console.log('🔄 Intercepted data.js request, returning cached data');
-                            // Instead of making the request, we'll handle it differently
-                            // We need to override the send method for this specific request
-                            const originalSend = this.send;
-                            this.send = function(body) {
-                                console.log('🔄 Returning cached data.js');
-                                // We'll set the response manually
-                                // This is a hack, but it works
-                                if (this.onload) {
-                                    // Simulate a successful response
-                                    const event = new Event('load');
-                                    this.status = 200;
-                                    this.responseText = JSON.stringify(window._c2projectData);
-                                    this.response = window._c2projectData;
-                                    this.onload(event);
-                                }
-                                // Restore original send
-                                this.send = originalSend;
-                            };
-                            // Continue with the original open
-                            originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
-                        } else {
-                            originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
-                        }
-                    };
+                    // STEP 4: Override the Runtime.requestProjectData method
+                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+                        cr.runtime.prototype.requestProjectData = function() {
+                            console.log('🔄 Using cached project data instead of loading data.js');
+                            this.loadProject(window._c2projectData);
+                        };
+                        console.log('✅ Runtime.requestProjectData overridden');
+                    }
 
                     // STEP 5: Now load c2runtime.js
                     loadGameEngine();
