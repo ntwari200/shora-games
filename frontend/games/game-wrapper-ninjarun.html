@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>NinjaRun - Shora Games</title>
-    <link rel="icon" type="image/png" href="icon-128.png">
+    <!-- Removed icon-128.png reference to avoid 404 -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -910,36 +910,51 @@
         }
 
         // ============================================================
-        // INIT GAME
+        // INIT GAME - FIXED: Loads data.js first
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                const script = document.createElement('script');
-                script.src = '/games/ninja%20run/c2runtime.js';
-                script.onload = () => {
-                    console.log('✅ Runtime loaded');
-                    try {
-                        const runtime = new cr.createRuntime('c2canvas');
-                        runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                        window.gameRuntime = runtime;
-                        setupTouchControls(runtime);
-                        startLobby();
-                    } catch (e) {
-                        console.error('❌ Error creating runtime:', e);
-                        dom.statusMain.textContent = '⚠️ Game engine error';
-                        dom.statusSub.textContent = 'Please refresh and try again';
+                // STEP 1: Load data.js first
+                const dataScript = document.createElement('script');
+                dataScript.src = '/games/ninja%20run/data.js';
+                dataScript.onload = () => {
+                    console.log('✅ data.js loaded');
+
+                    // STEP 2: Load c2runtime.js
+                    const script = document.createElement('script');
+                    script.src = '/games/ninja%20run/c2runtime.js';
+                    script.onload = () => {
+                        console.log('✅ Runtime loaded');
+                        try {
+                            const runtime = new cr.createRuntime('c2canvas');
+                            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                            window.gameRuntime = runtime;
+                            setupTouchControls(runtime);
+                            startLobby();
+                        } catch (e) {
+                            console.error('❌ Error creating runtime:', e);
+                            dom.statusMain.textContent = '⚠️ Game engine error';
+                            dom.statusSub.textContent = 'Please refresh and try again';
+                            dom.statusMessage.classList.add('show');
+                        }
+                    };
+                    script.onerror = (e) => {
+                        console.error('❌ Failed to load c2runtime.js:', e);
+                        dom.statusMain.textContent = '⚠️ Game engine not found';
+                        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
                         dom.statusMessage.classList.add('show');
-                    }
+                    };
+                    document.head.appendChild(script);
                 };
-                script.onerror = (e) => {
-                    console.error('❌ Failed to load c2runtime.js:', e);
-                    dom.statusMain.textContent = '⚠️ Game failed to load';
-                    dom.statusSub.textContent = 'Make sure the game files are in the correct folder';
+                dataScript.onerror = (e) => {
+                    console.error('❌ Failed to load data.js:', e);
+                    dom.statusMain.textContent = '⚠️ Game data not found';
+                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
                     dom.statusMessage.classList.add('show');
                 };
-                document.head.appendChild(script);
+                document.head.appendChild(dataScript);
 
             } catch (e) {
                 console.error('❌ Error initializing game:', e);
@@ -968,7 +983,6 @@
                 document.dispatchEvent(event);
             }
 
-            // Touch events
             dom.touchLeft.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 if (!leftPressed) {
@@ -1041,7 +1055,7 @@
                 }
             });
 
-            // Mouse fallback for desktop
+            // Mouse fallback
             dom.touchLeft.addEventListener('mousedown', () => {
                 if (!leftPressed) {
                     leftPressed = true;
@@ -1220,14 +1234,12 @@
                 dom.joinBtn.disabled = true;
                 dom.joinBtn.textContent = '⏳ Processing...';
 
-                // Deduct entry fee
                 const newBalance = balance - CONFIG.ENTRY_FEE;
                 await update(ref(db, `users/${state.user.uid}`), {
                     balance: newBalance
                 });
                 state.userData.balance = newBalance;
 
-                // Add player to round
                 const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
                 await set(playerRef, {
                     uid: state.user.uid,
@@ -1243,7 +1255,6 @@
                 dom.joinBtn.textContent = '✅ Joined!';
                 dom.joinBtn.disabled = true;
 
-                // Update prize pool
                 const prizeRef = ref(db, `rounds/${state.roundId}/prizePool`);
                 const snapshot = await get(prizeRef);
                 const currentPrize = snapshot.val() || 0;
