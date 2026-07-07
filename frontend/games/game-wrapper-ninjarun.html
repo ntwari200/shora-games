@@ -952,12 +952,8 @@
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
-                    // ============================================================
-                    // FIX: Ensure the game's event sheet runs and buttons work
-                    // ============================================================
-                    // The game's event sheet should run automatically via the runtime.
-                    // But we need to make sure the game's layout starts properly.
-                    // The runtime will handle this via the event system.
+                    // Get the canvas reference
+                    const canvas = dom.canvas;
 
                     // Handle click-to-start
                     dom.startOverlay.addEventListener('click', () => {
@@ -974,15 +970,6 @@
 
                     // Start score tracking
                     startScoreTracking();
-
-                    // ============================================================
-                    // FIX: Ensure mouse events reach the game canvas
-                    // ============================================================
-                    // Make sure the canvas receives mouse events for in-game buttons
-                    canvas.addEventListener('click', (e) => {
-                        // Let the game handle the click
-                        // The game's event system will process it
-                    });
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
