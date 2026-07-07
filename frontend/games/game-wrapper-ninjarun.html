@@ -3,77 +3,1396 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NinjaRun - Shora Games</title>
+    <title>NinjaRun Pro - Shora Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ... (same CSS as before - keep all styles) ... */
-        /* I'm keeping the CSS short here for readability, but use the same CSS from the previous version */
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        :root {
-            --bg: #06111F; --bg2: #0B1F36; --primary: #00BFFF;
-            --secondary: #6C63FF; --success: #00E676; --danger: #FF4D6D;
-            --gold: #FFD700; --text: #F5F7FA; --muted: #A7B5C5;
-            --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
-            --radius: 16px; --transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
+        /* ============================================================
+           PROFESSIONAL GAMING THEME
+           ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
-        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Inter','Space Grotesk',sans-serif; color: var(--text); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
-        #gameWrapper { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; }
-        #gameContainer { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
-        #gameContainer canvas { display: block; width: 100% !important; height: 100% !important; max-width: 100vw; max-height: 100vh; max-height: 100dvh; object-fit: contain; image-rendering: auto; background: #000; touch-action: none; }
-        /* ... (keep all other styles from previous version) ... */
+
+        :root {
+            --bg-primary: #0a0e17;
+            --bg-secondary: #111927;
+            --bg-card: rgba(255, 255, 255, 0.03);
+            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --primary: #00d4ff;
+            --primary-glow: rgba(0, 212, 255, 0.3);
+            --secondary: #7c3aed;
+            --secondary-glow: rgba(124, 58, 237, 0.3);
+            --gold: #fbbf24;
+            --gold-glow: rgba(251, 191, 36, 0.3);
+            --success: #34d399;
+            --danger: #f87171;
+            --text-primary: #f8fafc;
+            --text-secondary: #94a3b8;
+            --text-muted: #475569;
+            --border-color: rgba(255, 255, 255, 0.05);
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            --shadow-glow: 0 0 60px rgba(0, 212, 255, 0.05);
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        html,
+        body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg-primary);
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            color: var(--text-primary);
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* ============================================================
+           ANIMATED BACKGROUND
+           ============================================================ */
+        .bg-animation {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+            overflow: hidden;
+        }
+
+        .bg-animation .orb {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.3;
+            animation: orbFloat 20s ease-in-out infinite;
+        }
+
+        .bg-animation .orb:nth-child(1) {
+            width: 600px;
+            height: 600px;
+            background: var(--primary);
+            top: -10%;
+            left: -10%;
+            animation-delay: 0s;
+        }
+
+        .bg-animation .orb:nth-child(2) {
+            width: 400px;
+            height: 400px;
+            background: var(--secondary);
+            bottom: -10%;
+            right: -10%;
+            animation-delay: -7s;
+        }
+
+        .bg-animation .orb:nth-child(3) {
+            width: 300px;
+            height: 300px;
+            background: var(--gold);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            animation-delay: -14s;
+            opacity: 0.1;
+        }
+
+        @keyframes orbFloat {
+            0%,
+            100% {
+                transform: translate(0, 0) scale(1);
+            }
+            25% {
+                transform: translate(100px, -80px) scale(1.1);
+            }
+            50% {
+                transform: translate(-50px, 100px) scale(0.9);
+            }
+            75% {
+                transform: translate(80px, 50px) scale(1.05);
+            }
+        }
+
+        /* Grid overlay */
+        .grid-overlay {
+            position: fixed;
+            inset: 0;
+            background-image:
+                linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        /* ============================================================
+           GAME WRAPPER
+           ============================================================ */
+        #gameWrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh;
+            overflow: hidden;
+            background: transparent;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 2;
+        }
+
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameContainer canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw;
+            max-height: 100vh;
+            max-height: 100dvh;
+            object-fit: contain;
+            image-rendering: auto;
+            background: transparent;
+            touch-action: none;
+            border-radius: 0;
+        }
+
+        /* ============================================================
+           PROFESSIONAL LOADING SCREEN
+           ============================================================ */
+        #loadingScreen {
+            position: absolute;
+            inset: 0;
+            z-index: 50;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg-primary);
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+        }
+
+        #loadingScreen.hidden {
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+        }
+
+        .loading-content {
+            text-align: center;
+            position: relative;
+        }
+
+        .loading-logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+            animation: logoPulse 2s ease-in-out infinite;
+        }
+
+        .loading-logo-sub {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-bottom: 40px;
+        }
+
+        @keyframes logoPulse {
+            0%,
+            100% {
+                transform: scale(1);
+                filter: brightness(1);
+            }
+            50% {
+                transform: scale(1.02);
+                filter: brightness(1.2);
+            }
+        }
+
+        .loading-spinner {
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 24px;
+            position: relative;
+        }
+
+        .loading-spinner::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-top-color: var(--primary);
+            border-right-color: var(--secondary);
+            animation: spin 1s linear infinite;
+        }
+
+        .loading-spinner::after {
+            content: '';
+            position: absolute;
+            inset: 8px;
+            border-radius: 50%;
+            border: 3px solid transparent;
+            border-bottom-color: var(--gold);
+            border-left-color: var(--primary);
+            animation: spin 0.6s linear infinite reverse;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .loading-progress-wrap {
+            width: 280px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+            margin: 0 auto 16px;
+            position: relative;
+        }
+
+        .loading-progress-wrap::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+            animation: shimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                transform: translateX(-100%);
+            }
+            100% {
+                transform: translateX(100%);
+            }
+        }
+
+        .loading-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold));
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-text {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            letter-spacing: 2px;
+            font-weight: 500;
+        }
+
+        .loading-tips {
+            margin-top: 20px;
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            max-width: 300px;
+            opacity: 0.6;
+            animation: tipFade 3s ease-in-out infinite;
+        }
+
+        @keyframes tipFade {
+            0%,
+            100% {
+                opacity: 0.4;
+            }
+            50% {
+                opacity: 0.8;
+            }
+        }
+
+        /* ============================================================
+           CLICK TO START OVERLAY (Professional)
+           ============================================================ */
+        #startOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            cursor: pointer;
+            transition: opacity 0.6s ease;
+            pointer-events: auto;
+        }
+
+        #startOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .start-content {
+            text-align: center;
+            animation: fadeInUp 0.8s ease;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .start-content .icon {
+            font-size: 5rem;
+            margin-bottom: 16px;
+            display: inline-block;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .start-content .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 8px;
+            letter-spacing: 4px;
+        }
+
+        .start-content .sub {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            letter-spacing: 2px;
+        }
+
+        .start-content .sub .highlight {
+            color: var(--gold);
+            font-weight: 600;
+        }
+
+        .start-btn {
+            margin-top: 24px;
+            padding: 14px 48px;
+            border: none;
+            border-radius: 50px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        .start-btn:hover {
+            transform: translateY(-2px) scale(1.02);
+            box-shadow: 0 0 60px var(--primary-glow);
+        }
+
+        .start-btn:active {
+            transform: scale(0.97);
+        }
+
+        @keyframes pulse {
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+        }
+
+        /* ============================================================
+           TOP BAR - Professional
+           ============================================================ */
+        #topBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 12;
+            padding: 14px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(10, 14, 23, 0.7);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            flex-wrap: wrap;
+            gap: 8px;
+            pointer-events: none;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            flex-wrap: wrap;
+        }
+
+        .back-btn {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.8rem;
+            padding: 8px 16px;
+            border-radius: 30px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            pointer-events: auto;
+            font-weight: 500;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+            border-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .back-btn i {
+            font-size: 0.7rem;
+        }
+
+        .top-stat {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+            letter-spacing: 0.5px;
+            padding: 6px 14px;
+            border-radius: 30px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.03);
+        }
+
+        .top-stat .value {
+            color: #fff;
+            font-weight: 700;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .top-stat .value.gold {
+            color: var(--gold);
+        }
+        .top-stat .value.green {
+            color: var(--success);
+        }
+        .top-stat .value.red {
+            color: var(--danger);
+        }
+        .top-stat .value.primary {
+            color: var(--primary);
+        }
+
+        .top-stat .icon {
+            font-size: 0.7rem;
+            opacity: 0.6;
+        }
+
+        /* ============================================================
+           SCORE OVERLAY - Professional
+           ============================================================ */
+        #scoreOverlay {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 14;
+            display: none;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 12px 24px;
+            border-radius: 50px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            gap: 24px;
+            align-items: center;
+            pointer-events: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+        }
+
+        #scoreOverlay.show {
+            display: flex;
+            animation: fadeInUp 0.5s ease;
+        }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .score-item .value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: #fff;
+            font-size: 0.9rem;
+        }
+
+        .score-item .value.gold {
+            color: var(--gold);
+        }
+        .score-item .value.green {
+            color: var(--success);
+        }
+        .score-item .value.primary {
+            color: var(--primary);
+        }
+
+        /* ============================================================
+           PLAYER LIST - Professional
+           ============================================================ */
+        #playerList {
+            position: absolute;
+            top: 80px;
+            right: 16px;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(12px);
+            border-radius: var(--radius);
+            padding: 14px 16px;
+            min-width: 150px;
+            max-width: 200px;
+            max-height: 50vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            z-index: 12;
+            font-size: 0.7rem;
+            pointer-events: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+        }
+
+        #playerList .title {
+            color: var(--text-secondary);
+            font-size: 0.55rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 4px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text-primary);
+            font-size: 0.65rem;
+            align-items: center;
+        }
+
+        .player-item .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .player-item .status-dot.ready {
+            background: var(--success);
+            box-shadow: 0 0 10px var(--success);
+        }
+
+        .player-item .status-dot.waiting {
+            background: var(--gold);
+            box-shadow: 0 0 10px var(--gold-glow);
+        }
+
+        .player-item .player-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-weight: 500;
+        }
+
+        .player-item .player-score {
+            color: var(--text-secondary);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.6rem;
+        }
+
+        /* Scrollbar */
+        #playerList::-webkit-scrollbar {
+            width: 3px;
+        }
+        #playerList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #playerList::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+           LOBBY OVERLAY - Professional
+           ============================================================ */
+        #lobbyOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(10, 14, 23, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 20px;
+            transition: opacity 0.6s ease;
+            pointer-events: auto;
+        }
+
+        #lobbyOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .lobby-box {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            border-radius: var(--radius);
+            padding: 40px 50px;
+            max-width: 480px;
+            width: 100%;
+            text-align: center;
+            box-shadow: var(--shadow);
+            backdrop-filter: blur(8px);
+            animation: fadeInUp 0.6s ease;
+        }
+
+        .lobby-box .game-icon {
+            font-size: 3.5rem;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .lobby-box h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            font-weight: 700;
+            margin-bottom: 2px;
+            letter-spacing: 2px;
+        }
+
+        .lobby-box h2 span {
+            color: var(--primary);
+        }
+
+        .lobby-box .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 24px;
+            letter-spacing: 1px;
+        }
+
+        .lobby-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 10px;
+            margin-bottom: 24px;
+        }
+
+        .lobby-stat {
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: var(--radius-sm);
+            padding: 14px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.03);
+            transition: var(--transition);
+        }
+
+        .lobby-stat:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .lobby-stat .number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.6rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .lobby-stat .number.gold {
+            color: var(--gold);
+        }
+
+        .lobby-stat .number.green {
+            color: var(--success);
+        }
+
+        .lobby-stat .number.red {
+            color: var(--danger);
+        }
+
+        .lobby-stat .label {
+            font-size: 0.55rem;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-top: 4px;
+            font-weight: 600;
+        }
+
+        .lobby-box .prize-pool {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 12px;
+            letter-spacing: 1px;
+        }
+
+        .lobby-box .prize-pool small {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .lobby-box .entry-fee {
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-bottom: 20px;
+        }
+
+        .lobby-box .entry-fee strong {
+            color: var(--gold);
+        }
+
+        .btn-join {
+            padding: 14px 40px;
+            border: none;
+            border-radius: 50px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
+            width: 100%;
+            touch-action: manipulation;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .btn-join:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 50px var(--primary-glow);
+        }
+
+        .btn-join:active {
+            transform: scale(0.97);
+        }
+
+        .btn-join:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none;
+        }
+
+        .btn-join.joined {
+            background: linear-gradient(135deg, var(--success), #059669);
+            box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
+        }
+
+        .btn-join.playing {
+            background: linear-gradient(135deg, var(--danger), #dc2626);
+            box-shadow: 0 0 30px rgba(248, 113, 113, 0.3);
+        }
+
+        /* ============================================================
+           STATUS MESSAGE - Professional
+           ============================================================ */
+        #statusMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 13;
+            text-align: center;
+            pointer-events: none;
+            display: none;
+            background: rgba(10, 14, 23, 0.8);
+            backdrop-filter: blur(12px);
+            padding: 24px 32px;
+            border-radius: var(--radius);
+            border: 1px solid rgba(255, 255, 255, 0.04);
+            box-shadow: var(--shadow);
+            animation: fadeInUp 0.4s ease;
+        }
+
+        #statusMessage.show {
+            display: block;
+        }
+
+        #statusMessage .main {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+            font-family: 'Orbitron', monospace;
+            letter-spacing: 1px;
+        }
+
+        #statusMessage .sub {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 6px;
+        }
+
+        /* ============================================================
+           TOUCH CONTROLS - Professional
+           ============================================================ */
+        #touchControls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: space-between;
+            padding: 0 24px;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        @media (hover: none) and (pointer: coarse) {
+            #touchControls {
+                display: flex !important;
+            }
+        }
+        @media (max-width: 1024px) {
+            #touchControls {
+                display: flex !important;
+            }
+        }
+
+        .touch-btn {
+            pointer-events: auto;
+            width: 65px;
+            height: 65px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.08);
+            background: rgba(255, 255, 255, 0.04);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .touch-btn:active {
+            transform: scale(0.88);
+            background: rgba(255, 255, 255, 0.12);
+            border-color: var(--primary);
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
+
+        .touch-btn.left {
+            margin-right: auto;
+        }
+
+        .touch-btn.right {
+            margin-left: auto;
+        }
+
+        .touch-btn.jump {
+            width: 80px;
+            height: 80px;
+            font-size: 2.2rem;
+            background: rgba(0, 212, 255, 0.08);
+            border-color: rgba(0, 212, 255, 0.15);
+            margin: 0 auto;
+        }
+
+        .touch-btn.jump:active {
+            background: rgba(0, 212, 255, 0.25);
+            border-color: var(--primary);
+            box-shadow: 0 0 40px var(--primary-glow);
+        }
+
+        .touch-controls-group {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        .touch-controls-group .touch-btn {
+            pointer-events: auto;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+        @media (max-width: 1024px) {
+            .lobby-box {
+                padding: 30px 35px;
+                max-width: 400px;
+            }
+            .lobby-box .game-icon {
+                font-size: 3rem;
+            }
+            .lobby-box h2 {
+                font-size: 1.2rem;
+            }
+            #playerList {
+                top: 70px;
+                right: 12px;
+                min-width: 120px;
+                padding: 10px 12px;
+            }
+            .touch-btn {
+                width: 55px;
+                height: 55px;
+                font-size: 1.5rem;
+            }
+            .touch-btn.jump {
+                width: 70px;
+                height: 70px;
+                font-size: 1.8rem;
+            }
+            .top-stat {
+                font-size: 0.6rem;
+                padding: 4px 10px;
+            }
+            #scoreOverlay {
+                padding: 10px 18px;
+                gap: 16px;
+                bottom: 80px;
+            }
+            .score-item {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            #topBar {
+                padding: 10px 14px;
+            }
+            .top-stat {
+                font-size: 0.55rem;
+                padding: 4px 8px;
+                gap: 4px;
+            }
+            .back-btn {
+                font-size: 0.7rem;
+                padding: 6px 12px;
+            }
+            .lobby-box {
+                padding: 24px 20px;
+                max-width: 340px;
+                border-radius: var(--radius-sm);
+            }
+            .lobby-box .game-icon {
+                font-size: 2.5rem;
+            }
+            .lobby-box h2 {
+                font-size: 1rem;
+            }
+            .lobby-box .subtitle {
+                font-size: 0.7rem;
+                margin-bottom: 16px;
+            }
+            .lobby-stats {
+                gap: 6px;
+                margin-bottom: 16px;
+            }
+            .lobby-stat {
+                padding: 10px 4px;
+            }
+            .lobby-stat .number {
+                font-size: 1.2rem;
+            }
+            .lobby-stat .label {
+                font-size: 0.5rem;
+            }
+            .lobby-box .prize-pool {
+                font-size: 1rem;
+            }
+            .lobby-box .entry-fee {
+                font-size: 0.7rem;
+                margin-bottom: 16px;
+            }
+            .btn-join {
+                padding: 12px 20px;
+                font-size: 0.85rem;
+            }
+            #playerList {
+                top: 60px;
+                right: 8px;
+                min-width: 100px;
+                max-width: 140px;
+                padding: 8px 10px;
+                font-size: 0.6rem;
+                max-height: 35vh;
+            }
+            .touch-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            .touch-btn.jump {
+                width: 60px;
+                height: 60px;
+                font-size: 1.5rem;
+            }
+            #touchControls {
+                bottom: 16px;
+                padding: 0 12px;
+            }
+            .touch-controls-group {
+                gap: 8px;
+            }
+            #statusMessage {
+                padding: 16px 20px;
+            }
+            #statusMessage .main {
+                font-size: 1.1rem;
+            }
+            #statusMessage .sub {
+                font-size: 0.7rem;
+            }
+            #scoreOverlay {
+                padding: 8px 14px;
+                gap: 12px;
+                bottom: 70px;
+                border-radius: 30px;
+            }
+            .score-item {
+                font-size: 0.6rem;
+            }
+            .score-item .value {
+                font-size: 0.75rem;
+            }
+            .loading-logo {
+                font-size: 1.8rem;
+            }
+            .loading-progress-wrap {
+                width: 200px;
+            }
+            .start-content .title {
+                font-size: 1.8rem;
+            }
+            .start-content .icon {
+                font-size: 3.5rem;
+            }
+            .start-btn {
+                padding: 12px 32px;
+                font-size: 0.85rem;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .lobby-box {
+                padding: 18px 14px;
+                max-width: 290px;
+            }
+            .lobby-box .game-icon {
+                font-size: 2rem;
+            }
+            .lobby-box h2 {
+                font-size: 0.85rem;
+            }
+            .lobby-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+            .lobby-stat .number {
+                font-size: 1rem;
+            }
+            .btn-join {
+                padding: 10px 16px;
+                font-size: 0.8rem;
+            }
+            .touch-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1rem;
+            }
+            .touch-btn.jump {
+                width: 52px;
+                height: 52px;
+                font-size: 1.2rem;
+            }
+            #touchControls {
+                bottom: 10px;
+                padding: 0 8px;
+            }
+            .touch-controls-group {
+                gap: 6px;
+            }
+            #playerList {
+                top: 55px;
+                right: 6px;
+                min-width: 80px;
+                max-width: 110px;
+                padding: 6px 8px;
+                font-size: 0.5rem;
+                max-height: 30vh;
+            }
+            #topBar {
+                padding: 6px 10px;
+            }
+            .top-stat {
+                font-size: 0.5rem;
+                padding: 3px 6px;
+            }
+            .back-btn {
+                font-size: 0.6rem;
+                padding: 4px 10px;
+            }
+            #statusMessage {
+                padding: 12px 16px;
+            }
+            #statusMessage .main {
+                font-size: 0.9rem;
+            }
+            #statusMessage .sub {
+                font-size: 0.65rem;
+            }
+            #scoreOverlay {
+                padding: 6px 12px;
+                gap: 8px;
+                bottom: 60px;
+                border-radius: 20px;
+            }
+            .score-item {
+                font-size: 0.55rem;
+            }
+            .score-item .value {
+                font-size: 0.65rem;
+            }
+        }
+
+        @media (max-height: 500px) and (orientation: landscape) {
+            #touchControls {
+                bottom: 8px;
+                padding: 0 12px;
+            }
+            .touch-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            .touch-btn.jump {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            .lobby-box {
+                padding: 16px 20px;
+                max-width: 320px;
+            }
+            .lobby-box .game-icon {
+                font-size: 2rem;
+            }
+            .lobby-box h2 {
+                font-size: 0.9rem;
+            }
+            .lobby-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+            .lobby-stat {
+                padding: 4px 4px;
+            }
+            .lobby-stat .number {
+                font-size: 0.9rem;
+            }
+            .btn-join {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            #playerList {
+                top: 45px;
+                right: 6px;
+                min-width: 70px;
+                max-width: 100px;
+                padding: 4px 6px;
+                font-size: 0.5rem;
+                max-height: 30vh;
+            }
+            #topBar {
+                padding: 4px 10px;
+            }
+            .top-stat {
+                font-size: 0.5rem;
+                padding: 3px 6px;
+            }
+            .back-btn {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+            #scoreOverlay {
+                padding: 4px 12px;
+                gap: 10px;
+                bottom: 50px;
+                border-radius: 20px;
+            }
+            .score-item {
+                font-size: 0.55rem;
+            }
+            .score-item .value {
+                font-size: 0.65rem;
+            }
+        }
+
+        /* ============================================================
+           UTILITY CLASSES
+           ============================================================ */
+        .text-glow-primary {
+            text-shadow: 0 0 20px var(--primary-glow);
+        }
+
+        .text-glow-gold {
+            text-shadow: 0 0 20px var(--gold-glow);
+        }
+
+        .border-glow {
+            border-color: var(--primary) !important;
+            box-shadow: 0 0 30px var(--primary-glow);
+        }
     </style>
 </head>
 <body>
 
+    <!-- ===== ANIMATED BACKGROUND ===== -->
+    <div class="bg-animation">
+        <div class="orb"></div>
+        <div class="orb"></div>
+        <div class="orb"></div>
+    </div>
+    <div class="grid-overlay"></div>
+
     <!-- ===== LOADING SCREEN ===== -->
     <div id="loadingScreen">
-        <div class="loader"></div>
-        <div class="loader-text">Loading NinjaRun...</div>
-        <div class="loader-progress">
-            <div class="loader-progress-bar" id="loadProgress"></div>
+        <div class="loading-content">
+            <div class="loading-logo">NINJARUN</div>
+            <div class="loading-logo-sub">Tournament Edition</div>
+            <div class="loading-spinner"></div>
+            <div class="loading-progress-wrap">
+                <div class="loading-progress-bar" id="loadProgress"></div>
+            </div>
+            <div class="loading-text" id="loadingText">Loading Game Assets...</div>
+            <div class="loading-tips" id="loadingTip">💡 Tip: Collect coins to increase your score!</div>
         </div>
     </div>
 
     <!-- ===== CLICK TO START OVERLAY ===== -->
     <div id="startOverlay">
-        <div class="content">
+        <div class="start-content">
             <div class="icon">🎮</div>
-            <div class="title">NinjaRun</div>
-            <div class="sub">👆 Tap anywhere to start<br><span style="font-size:0.7rem;color:#666;">(Audio will be enabled)</span></div>
+            <div class="title">NINJARUN</div>
+            <div class="sub">🏆 <span class="highlight">Tournament Mode</span> • 2-50 Players</div>
+            <button class="start-btn" id="startBtn">
+                <i class="fas fa-play"></i> Click to Start
+            </button>
         </div>
     </div>
 
     <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
+
         <div id="gameContainer"></div>
 
         <!-- ===== TOP BAR ===== -->
         <div id="topBar">
             <div class="top-left">
-                <a href="../game-lobby.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
-                <span class="top-stat">🏆 ROUND <span class="value primary" id="roundNumber">001</span></span>
+                <a href="../game-lobby.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <span class="top-stat">
+                    <i class="fas fa-trophy icon"></i>
+                    ROUND <span class="value primary" id="roundNumber">001</span>
+                </span>
             </div>
             <div class="top-right">
-                <span class="top-stat">👥 <span class="value green" id="playerCount">0</span>/50</span>
-                <span class="top-stat">⏱️ <span class="value red" id="roundTimer">5:00</span></span>
-                <span class="top-stat">💰 <span class="value gold" id="prizeDisplay">0</span> RWF</span>
+                <span class="top-stat">
+                    <i class="fas fa-users icon"></i>
+                    <span class="value green" id="playerCount">0</span>/50
+                </span>
+                <span class="top-stat">
+                    <i class="fas fa-clock icon"></i>
+                    <span class="value red" id="roundTimer">5:00</span>
+                </span>
+                <span class="top-stat">
+                    <i class="fas fa-coins icon"></i>
+                    <span class="value gold" id="prizeDisplay">0</span> RWF
+                </span>
             </div>
         </div>
 
         <!-- ===== SCORE OVERLAY ===== -->
         <div id="scoreOverlay">
-            <div class="score-item">🏃 Score: <span class="value gold" id="liveScore">0</span></div>
-            <div class="score-item">🪙 Coins: <span class="value green" id="liveCoins">0</span></div>
-            <div class="score-item">📏 Dist: <span class="value primary" id="liveDistance">0</span></div>
+            <div class="score-item">
+                <i class="fas fa-running" style="color:var(--gold);"></i>
+                Score: <span class="value gold" id="liveScore">0</span>
+            </div>
+            <div class="score-item">
+                <i class="fas fa-coins" style="color:var(--success);"></i>
+                Coins: <span class="value green" id="liveCoins">0</span>
+            </div>
+            <div class="score-item">
+                <i class="fas fa-route" style="color:var(--primary);"></i>
+                Dist: <span class="value primary" id="liveDistance">0</span>
+            </div>
         </div>
 
         <!-- ===== PLAYER LIST ===== -->
         <div id="playerList">
-            <div class="title">👥 Players</div>
-            <div id="playersContainer"><div class="player-item" style="color:var(--muted);">No players yet...</div></div>
+            <div class="title"><i class="fas fa-users"></i> Players</div>
+            <div id="playersContainer">
+                <div class="player-item" style="color:var(--text-muted);">No players yet...</div>
+            </div>
         </div>
 
         <!-- ===== STATUS MESSAGE ===== -->
@@ -87,29 +1406,57 @@
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
                 <h2>Ninja<span>Run</span></h2>
-                <div class="subtitle">🏆 Tournament Mode</div>
+                <div class="subtitle">🏆 Tournament Mode • Entry Fee: <strong style="color:var(--gold);">100 RWF</strong></div>
+
                 <div class="lobby-stats">
-                    <div class="lobby-stat"><div class="number" id="lobbyPlayers">0</div><div class="label">Players</div></div>
-                    <div class="lobby-stat"><div class="number gold" id="lobbyPrize">0</div><div class="label">Prize Pool</div></div>
-                    <div class="lobby-stat"><div class="number green" id="lobbyTimer">5:00</div><div class="label">Time Left</div></div>
+                    <div class="lobby-stat">
+                        <div class="number" id="lobbyPlayers">0</div>
+                        <div class="label">Players</div>
+                    </div>
+                    <div class="lobby-stat">
+                        <div class="number gold" id="lobbyPrize">0</div>
+                        <div class="label">Prize Pool</div>
+                    </div>
+                    <div class="lobby-stat">
+                        <div class="number green" id="lobbyTimer">5:00</div>
+                        <div class="label">Time Left</div>
+                    </div>
                 </div>
-                <div class="prize-pool">🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF</div>
-                <div class="entry-fee">Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF</div>
-                <button class="btn-join" id="joinBtn"><i class="fas fa-gamepad"></i> Join Round</button>
+
+                <div class="prize-pool">
+                    🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF
+                </div>
+
+                <div class="entry-fee">
+                    Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF
+                </div>
+
+                <button class="btn-join" id="joinBtn">
+                    <i class="fas fa-gamepad"></i> Join Round
+                </button>
             </div>
         </div>
 
         <!-- ===== TOUCH CONTROLS ===== -->
         <div id="touchControls">
             <div class="touch-controls-group">
-                <button class="touch-btn left" id="touchLeft"><i class="fas fa-chevron-left"></i></button>
-                <button class="touch-btn right" id="touchRight"><i class="fas fa-chevron-right"></i></button>
+                <button class="touch-btn left" id="touchLeft">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="touch-btn right" id="touchRight">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
             </div>
-            <button class="touch-btn jump" id="touchJump"><i class="fas fa-arrow-up"></i></button>
+            <button class="touch-btn jump" id="touchJump">
+                <i class="fas fa-arrow-up"></i>
+            </button>
         </div>
+
     </div>
 
-    <!-- ================================================================ -->
+    <!-- ================================================================
+    FIREBASE + GAME INTEGRATION
+    ================================================================ -->
     <script type="importmap">
         {
             "imports": {
@@ -121,10 +1468,16 @@
     </script>
 
     <script type="module">
+        // ============================================================
+        // IMPORTS
+        // ============================================================
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
+        // ============================================================
+        // FIREBASE CONFIG
+        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -136,6 +1489,9 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
+        // ============================================================
+        // CONFIG
+        // ============================================================
         const CONFIG = {
             ENTRY_FEE: 100,
             MAX_PLAYERS: 50,
@@ -145,6 +1501,9 @@
             GAME_HEIGHT: 720
         };
 
+        // ============================================================
+        // STATE
+        // ============================================================
         const state = {
             roundId: '001',
             roundState: 'waiting',
@@ -163,9 +1522,21 @@
             currentDistance: 0,
             _forceStartAttempts: 0,
             _gameStarted: false,
-            _switchAttempts: 0
+            _switchAttempts: 0,
+            loadingTips: [
+                '💡 Collect coins to increase your score!',
+                '🎯 Avoid bombs to stay alive!',
+                '🏃 Run as far as possible for distance points!',
+                '🎮 Use arrow keys or touch controls to play!',
+                '🏆 The player with the highest score wins!',
+                '💰 Entry fee: 100 RWF • Prize pool grows with players!',
+                '🔥 Double jump by pressing jump twice!'
+            ]
         };
 
+        // ============================================================
+        // DOM REFS
+        // ============================================================
         const dom = {
             container: document.getElementById('gameContainer'),
             canvas: null,
@@ -186,10 +1557,13 @@
             statusSub: document.getElementById('statusSub'),
             loadingScreen: document.getElementById('loadingScreen'),
             loadProgress: document.getElementById('loadProgress'),
+            loadingText: document.getElementById('loadingText'),
+            loadingTip: document.getElementById('loadingTip'),
             touchLeft: document.getElementById('touchLeft'),
             touchRight: document.getElementById('touchRight'),
             touchJump: document.getElementById('touchJump'),
             startOverlay: document.getElementById('startOverlay'),
+            startBtn: document.getElementById('startBtn'),
             liveScore: document.getElementById('liveScore'),
             liveCoins: document.getElementById('liveCoins'),
             liveDistance: document.getElementById('liveDistance'),
@@ -198,11 +1572,44 @@
 
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
+        // ============================================================
+        // HELPERS
+        // ============================================================
         function getPlayersArray() {
             if (Array.isArray(state.players)) return state.players;
             if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
             return [];
         }
+
+        function shuffleArray(arr) {
+            for (let i = arr.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [arr[i], arr[j]] = [arr[j], arr[i]];
+            }
+            return arr;
+        }
+
+        // ============================================================
+        // ROTATE LOADING TIPS
+        // ============================================================
+        let tipInterval = null;
+
+        function startTipRotation() {
+            const tips = shuffleArray([...state.loadingTips]);
+            let tipIndex = 0;
+            if (tipInterval) clearInterval(tipInterval);
+            dom.loadingTip.textContent = tips[0] || '💡 Good luck!';
+            tipInterval = setInterval(() => {
+                tipIndex = (tipIndex + 1) % tips.length;
+                dom.loadingTip.style.opacity = '0';
+                setTimeout(() => {
+                    dom.loadingTip.textContent = tips[tipIndex] || '💡 Good luck!';
+                    dom.loadingTip.style.opacity = '0.6';
+                }, 300);
+            }, 4000);
+        }
+
+        startTipRotation();
 
         // ============================================================
         // AUTH
@@ -227,6 +1634,18 @@
         });
 
         // ============================================================
+        // START BUTTON HANDLER
+        // ============================================================
+        dom.startBtn.addEventListener('click', () => {
+            dom.startOverlay.classList.add('hidden');
+            if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance
+                .context) {
+                window.gameRuntime.audioInstance.context.resume();
+            }
+            console.log('🎵 Audio context resumed');
+        });
+
+        // ============================================================
         // GAME LOADER
         // ============================================================
         function loadGame() {
@@ -241,17 +1660,39 @@
             dom.container.appendChild(canvas);
             dom.canvas = canvas;
 
+            const loadingMessages = [
+                'Loading Game Engine...',
+                'Loading Assets...',
+                'Preparing Game World...',
+                'Almost Ready...',
+                'Starting Game...'
+            ];
+            let msgIndex = 0;
+
             let progress = 0;
             const loadInterval = setInterval(() => {
-                progress += Math.random() * 15;
+                progress += Math.random() * 12 + 3;
                 if (progress > 100) progress = 100;
                 dom.loadProgress.style.width = progress + '%';
+
+                // Update loading text at milestones
+                if (progress > 20 && msgIndex < 1) { msgIndex = 1;
+                    dom.loadingText.textContent = loadingMessages[1]; }
+                if (progress > 40 && msgIndex < 2) { msgIndex = 2;
+                    dom.loadingText.textContent = loadingMessages[2]; }
+                if (progress > 65 && msgIndex < 3) { msgIndex = 3;
+                    dom.loadingText.textContent = loadingMessages[3]; }
+                if (progress > 85 && msgIndex < 4) { msgIndex = 4;
+                    dom.loadingText.textContent = loadingMessages[4]; }
+
                 if (progress === 100) {
                     clearInterval(loadInterval);
+                    dom.loadingText.textContent = '✅ Ready!';
                     setTimeout(() => {
                         dom.loadingScreen.classList.add('hidden');
+                        if (tipInterval) clearInterval(tipInterval);
                         initGame();
-                    }, 300);
+                    }, 500);
                 }
             }, 200);
         }
@@ -316,7 +1757,6 @@
                         .replace(/media\//g, '/games/ninja%20run/media/');
                     console.log('✅ Image and audio paths fixed');
 
-                    // IMPORTANT: Keep "Loading" as the first layout
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored');
@@ -376,19 +1816,12 @@
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
-                    dom.startOverlay.addEventListener('click', () => {
-                        dom.startOverlay.classList.add('hidden');
-                        if (runtime.audioInstance && runtime.audioInstance.context) {
-                            runtime.audioInstance.context.resume();
-                        }
-                        console.log('🎵 Audio context resumed');
-                    });
+                    // Show start overlay
+                    dom.startOverlay.classList.remove('hidden');
 
                     setupTouchControls(runtime);
                     startLobby();
                     startScoreTracking();
-
-                    // Monitor layout changes
                     monitorLayoutChanges(runtime);
 
                 } catch (e) {
@@ -438,7 +1871,9 @@
                     const runtime = window.gameRuntime;
                     const vars = runtime.all_global_vars || [];
 
-                    let score = 0, coins = 0, distance = 0;
+                    let score = 0,
+                        coins = 0,
+                        distance = 0;
 
                     for (let v of vars) {
                         if (v.name === 'Score') score = v.data || 0;
@@ -480,7 +1915,9 @@
         // TOUCH CONTROLS
         // ============================================================
         function setupTouchControls(runtime) {
-            let leftPressed = false, rightPressed = false, jumpPressed = false;
+            let leftPressed = false,
+                rightPressed = false,
+                jumpPressed = false;
 
             function dispatchKeyEvent(type, key, keyCode) {
                 const event = new KeyboardEvent(type, {
@@ -680,6 +2117,7 @@
 
                 state.joined = true;
                 dom.joinBtn.textContent = '✅ Joined!';
+                dom.joinBtn.classList.add('joined');
                 dom.joinBtn.disabled = true;
 
                 const snapshot = await get(ref(db, `rounds/${state.roundId}/prizePool`));
@@ -692,6 +2130,7 @@
                 alert('Error joining round. Please try again.');
                 dom.joinBtn.disabled = false;
                 dom.joinBtn.textContent = '🔄 Try Again';
+                dom.joinBtn.classList.remove('joined');
             }
         }
 
@@ -708,13 +2147,12 @@
         }
 
         // ============================================================
-        // GO TO GAME LAYOUT (FIXED - Waits for Loading to complete)
+        // GO TO GAME LAYOUT
         // ============================================================
         function goToGameLayout(runtime) {
             try {
                 const currentLayout = runtime.running_layout;
-                
-                // If we're still on Loading, wait
+
                 if (currentLayout && currentLayout.name === 'Loading') {
                     console.log('⏳ Still on Loading layout, waiting...');
                     state._switchAttempts++;
@@ -725,7 +2163,6 @@
                     } else {
                         console.log('⚠️ Loading taking too long, trying to switch anyway...');
                         state._switchAttempts = 0;
-                        // Try to switch even if still on Loading
                         const gameLayout = runtime.layouts['Game'];
                         if (gameLayout) {
                             runtime.changelayout = gameLayout;
@@ -736,7 +2173,6 @@
                     return false;
                 }
 
-                // Reset attempts
                 state._switchAttempts = 0;
 
                 const gameLayout = runtime.layouts['Game'];
@@ -745,7 +2181,6 @@
                     return false;
                 }
 
-                // If already on Game, just unpause
                 if (currentLayout && currentLayout.name === 'Game') {
                     console.log('✅ Already on Game layout, unpausing...');
                     unpauseGame(runtime);
@@ -767,7 +2202,6 @@
 
             } catch (e) {
                 console.error('❌ Error switching to Game layout:', e);
-                // Retry after delay
                 if (!state._gameStarted && state._switchAttempts < 10) {
                     state._switchAttempts++;
                     setTimeout(() => {
@@ -896,6 +2330,10 @@
             dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
 
+            dom.joinBtn.textContent = '🎮 Playing...';
+            dom.joinBtn.classList.add('playing');
+            dom.joinBtn.disabled = true;
+
             state._forceStartAttempts = 0;
             state._gameStarted = false;
             state._switchAttempts = 0;
@@ -966,6 +2404,7 @@
                 state._switchAttempts = 0;
                 dom.joinBtn.disabled = false;
                 dom.joinBtn.textContent = '🚀 Join Round';
+                dom.joinBtn.classList.remove('playing', 'joined');
                 dom.lobbyOverlay.classList.remove('hidden');
                 updateUI();
                 setTimeout(simulatePlayers, 1000);
@@ -1000,7 +2439,9 @@
         // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
-            let score = 0, coins = 0, distance = 0;
+            let score = 0,
+                coins = 0,
+                distance = 0;
             if (runtime) {
                 try {
                     const vars = runtime.all_global_vars || [];
@@ -1065,7 +2506,7 @@
 
             if (players.length === 0) {
                 dom.playersContainer.innerHTML =
-                    `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
+                    `<div class="player-item" style="color:var(--text-muted);">No players yet...</div>`;
                 return;
             }
 
@@ -1079,7 +2520,7 @@
                             <span class="status-dot ${statusColor}"></span>
                             ${isMe ? '⭐ ' : ''}${p.username || 'Player'}
                         </span>
-                        <span>${p.score || 0}</span>
+                        <span class="player-score">${p.score || 0}</span>
                     </div>
                 `;
             });
@@ -1116,10 +2557,10 @@
         // ============================================================
         // INIT
         // ============================================================
-        console.log('%c🏃 NINJARUN - TOURNAMENT MODE', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c📱 Fully responsive on all devices', 'color: #00E676;');
-        console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #FFD700;');
-        console.log('%c📊 Scores are being recorded in real-time!', 'color: #FF6B6B;');
+        console.log('%c🏃 NINJARUN - TOURNAMENT EDITION', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
+        console.log('%c🎮 Professional Gaming Interface Loaded', 'color: #34d399; font-size: 14px;');
+        console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #fbbf24; font-size: 12px;');
+        console.log('%c📊 Scores are being recorded in real-time!', 'color: #f87171; font-size: 12px;');
 
         loadGame();
 
