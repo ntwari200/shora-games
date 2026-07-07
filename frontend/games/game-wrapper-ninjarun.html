@@ -89,12 +89,8 @@
             z-index: 20;
         }
 
-        @media (hover: none) and (pointer: coarse) {
-            #touchControls { display: flex !important; }
-        }
-        @media (max-width: 1024px) {
-            #touchControls { display: flex !important; }
-        }
+        @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
+        @media (max-width: 1024px) { #touchControls { display: flex !important; } }
 
         .touch-btn {
             pointer-events: auto;
@@ -132,7 +128,6 @@
             border-color: rgba(0, 191, 255, 0.3);
             margin: 0 auto;
         }
-
         .touch-btn.jump:active {
             background: rgba(0, 191, 255, 0.4);
             border-color: var(--primary);
@@ -144,7 +139,6 @@
             align-items: center;
             pointer-events: none;
         }
-
         .touch-controls-group .touch-btn { pointer-events: auto; }
 
         #lobbyOverlay {
@@ -160,7 +154,6 @@
             padding: 20px;
             transition: opacity 0.5s ease;
         }
-
         #lobbyOverlay.hidden {
             opacity: 0;
             pointer-events: none;
@@ -202,7 +195,6 @@
             font-weight: 700;
             color: var(--primary);
         }
-
         .lobby-stat .label {
             font-size: 0.6rem;
             color: var(--muted);
@@ -210,7 +202,6 @@
             letter-spacing: 1px;
             margin-top: 2px;
         }
-
         .lobby-stat .number.gold { color: var(--gold); }
         .lobby-stat .number.green { color: var(--success); }
         .lobby-stat .number.red { color: var(--danger); }
@@ -221,19 +212,16 @@
             color: var(--gold);
             margin-bottom: 16px;
         }
-
         .lobby-box .prize-pool small {
             font-size: 0.7rem;
             color: var(--muted);
             font-weight: 400;
         }
-
         .lobby-box .entry-fee {
             font-size: 0.85rem;
             color: var(--muted);
             margin-bottom: 16px;
         }
-
         .lobby-box .entry-fee strong { color: var(--gold); }
 
         .btn-join {
@@ -250,19 +238,9 @@
             width: 100%;
             touch-action: manipulation;
         }
-
-        .btn-join:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3);
-        }
-
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3); }
         .btn-join:active { transform: scale(0.97); }
-        .btn-join:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-        }
-
+        .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
         .btn-join.joined { background: var(--success); }
         .btn-join.playing { background: var(--danger); }
 
@@ -282,7 +260,6 @@
             z-index: 12;
             font-size: 0.75rem;
         }
-
         #playerList .title {
             color: var(--muted);
             font-size: 0.6rem;
@@ -290,7 +267,6 @@
             letter-spacing: 1px;
             margin-bottom: 8px;
         }
-
         .player-item {
             display: flex;
             justify-content: space-between;
@@ -299,7 +275,6 @@
             color: var(--text);
             font-size: 0.7rem;
         }
-
         .player-item .status-dot {
             width: 6px;
             height: 6px;
@@ -307,15 +282,9 @@
             display: inline-block;
             margin-right: 6px;
         }
-
         .player-item .status-dot.ready { background: var(--success); }
         .player-item .status-dot.waiting { background: var(--gold); }
-
-        .player-item .player-name {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-        }
+        .player-item .player-name { display: flex; align-items: center; gap: 4px; }
 
         #topBar {
             position: absolute;
@@ -333,21 +302,8 @@
             flex-wrap: wrap;
             gap: 6px;
         }
-
-        .top-left {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .top-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
+        .top-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
         .top-stat {
             font-size: 0.7rem;
             color: var(--muted);
@@ -356,7 +312,6 @@
             gap: 4px;
             white-space: nowrap;
         }
-
         .top-stat .value { color: #fff; font-weight: 600; }
         .top-stat .value.gold { color: var(--gold); }
         .top-stat .value.green { color: var(--success); }
@@ -376,11 +331,7 @@
             align-items: center;
             gap: 4px;
         }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-        }
+        .back-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
 
         #statusMessage {
             position: absolute;
@@ -397,20 +348,9 @@
             border-radius: 16px;
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
-
         #statusMessage.show { display: block; }
-
-        #statusMessage .main {
-            font-size: 1.4rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        #statusMessage .sub {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin-top: 6px;
-        }
+        #statusMessage .main { font-size: 1.4rem; font-weight: 700; color: #fff; }
+        #statusMessage .sub { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
 
         @media (max-width: 1024px) {
             .lobby-box { padding: 30px 35px; max-width: 420px; }
@@ -496,11 +436,7 @@
             background: var(--bg);
             transition: opacity 0.6s ease;
         }
-
-        #loadingScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+        #loadingScreen.hidden { opacity: 0; pointer-events: none; }
 
         .loader {
             width: 50px;
@@ -510,10 +446,7 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
         .loader-text {
             margin-top: 16px;
@@ -521,7 +454,6 @@
             font-size: 0.8rem;
             font-weight: 500;
         }
-
         .loader-progress {
             margin-top: 8px;
             width: 150px;
@@ -530,7 +462,6 @@
             border-radius: 2px;
             overflow: hidden;
         }
-
         .loader-progress-bar {
             height: 100%;
             width: 0%;
@@ -714,11 +645,8 @@
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
         function getPlayersArray() {
-            if (Array.isArray(state.players)) {
-                return state.players;
-            } else if (typeof state.players === 'object' && state.players !== null) {
-                return Object.values(state.players);
-            }
+            if (Array.isArray(state.players)) return state.players;
+            if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
             return [];
         }
 
@@ -769,23 +697,21 @@
         }
 
         // ============================================================
-        // FIXED: Load jQuery properly before game engine
+        // FIXED: AudioListener patch + jQuery loading
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                // STEP 1: Load jQuery
+                // Load jQuery
                 const jqueryScript = document.createElement('script');
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
                 jqueryScript.onload = () => {
                     console.log('✅ jQuery loaded');
-                    // Check if jQuery is ready
                     if (typeof jQuery !== 'undefined') {
                         console.log('✅ jQuery is ready!');
                         loadGameEngine();
                     } else {
-                        // Fallback delay
                         setTimeout(() => {
                             if (typeof jQuery !== 'undefined') {
                                 console.log('✅ jQuery is ready (after delay)!');
@@ -817,7 +743,37 @@
 
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
-            
+
+            // ============================================================
+            // FIX: Override AudioListener to prevent NaN errors
+            // ============================================================
+            try {
+                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
+                    const originalSetPosition = AudioListener.prototype.setPosition;
+                    AudioListener.prototype.setPosition = function(x, y, z) {
+                        if (isNaN(x) || x === undefined || x === null) x = 0;
+                        if (isNaN(y) || y === undefined || y === null) y = 0;
+                        if (isNaN(z) || z === undefined || z === null) z = -600;
+                        return originalSetPosition.call(this, x, y, z);
+                    };
+                    console.log('✅ AudioListener patched');
+                }
+
+                // Fix cr.runtime setSize
+                if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                    const originalSetSize = cr.runtime.prototype.setSize;
+                    cr.runtime.prototype.setSize = function(w, h, force) {
+                        if (isNaN(w) || w === undefined || w === null) w = 1280;
+                        if (isNaN(h) || h === undefined || h === null) h = 720;
+                        return originalSetSize.call(this, w, h, force);
+                    };
+                    console.log('✅ Runtime setSize patched');
+                }
+            } catch (e) {
+                console.warn('⚠️ Could not patch AudioListener:', e);
+            }
+
+            // Load c2runtime.js
             const script = document.createElement('script');
             script.src = '/games/ninja%20run/c2runtime.js';
             script.onload = () => {
@@ -825,7 +781,6 @@
 
                 try {
                     const originalOpen = XMLHttpRequest.prototype.open;
-                    
                     XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
                         if (url && url.includes('data.js')) {
                             console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
@@ -859,6 +814,9 @@
             document.head.appendChild(script);
         }
 
+        // ============================================================
+        // TOUCH CONTROLS
+        // ============================================================
         function setupTouchControls(runtime) {
             let leftPressed = false, rightPressed = false, jumpPressed = false;
 
@@ -944,6 +902,9 @@
             });
         }
 
+        // ============================================================
+        // LOBBY SYSTEM
+        // ============================================================
         function startLobby() {
             console.log('🔄 Starting lobby...');
             dom.lobbyOverlay.classList.remove('hidden');
@@ -963,28 +924,15 @@
                         const data = snapshot.val();
                         state.roundState = data.status || 'waiting';
                         state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                        
-                        if (data.players) {
-                            state.players = Array.isArray(data.players) ? data.players : Object.values(data.players);
-                        } else {
-                            state.players = [];
-                        }
-                        
+                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data.players)) : [];
                         state.playerCount = state.players.length;
                         updateUI();
-                        
-                        if (state.roundState === 'playing' && !state.gameStarted) {
-                            startGame();
-                        }
-                        if (state.roundState === 'ended') {
-                            endRound(data.results);
-                        }
+                        if (state.roundState === 'playing' && !state.gameStarted) startGame();
+                        if (state.roundState === 'ended') endRound(data.results);
                     } else {
                         createNewRound();
                     }
-                } catch (e) {
-                    console.error('❌ Error in round listener:', e);
-                }
+                } catch (e) { console.error('❌ Error in round listener:', e); }
             });
         }
 
@@ -998,15 +946,12 @@
                         state.playerCount = state.players.length;
                         updateUI();
                     }
-                } catch (e) {
-                    console.error('❌ Error in player listener:', e);
-                }
+                } catch (e) { console.error('❌ Error in player listener:', e); }
             });
         }
 
         function createNewRound() {
-            const roundRef = ref(db, `rounds/${state.roundId}`);
-            set(roundRef, {
+            set(ref(db, `rounds/${state.roundId}`), {
                 status: 'waiting',
                 timeRemaining: CONFIG.ROUND_DURATION,
                 players: {},
@@ -1022,16 +967,8 @@
                 window.location.href = '../login.html';
                 return;
             }
-
-            if (state.joined) {
-                alert('You are already in this round!');
-                return;
-            }
-
-            if (state.playerCount >= CONFIG.MAX_PLAYERS) {
-                alert('Round is full!');
-                return;
-            }
+            if (state.joined) { alert('You are already in this round!'); return; }
+            if (state.playerCount >= CONFIG.MAX_PLAYERS) { alert('Round is full!'); return; }
 
             const balance = state.userData.balance || 0;
             if (balance < CONFIG.ENTRY_FEE) {
@@ -1044,12 +981,10 @@
                 dom.joinBtn.disabled = true;
                 dom.joinBtn.textContent = '⏳ Processing...';
 
-                const newBalance = balance - CONFIG.ENTRY_FEE;
-                await update(ref(db, `users/${state.user.uid}`), { balance: newBalance });
-                state.userData.balance = newBalance;
+                await update(ref(db, `users/${state.user.uid}`), { balance: balance - CONFIG.ENTRY_FEE });
+                state.userData.balance = balance - CONFIG.ENTRY_FEE;
 
-                const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                await set(playerRef, {
+                await set(ref(db, `rounds/${state.roundId}/players/${state.user.uid}`), {
                     uid: state.user.uid,
                     username: state.userData.username || 'Player',
                     joinedAt: Date.now(),
@@ -1063,10 +998,9 @@
                 dom.joinBtn.textContent = '✅ Joined!';
                 dom.joinBtn.disabled = true;
 
-                const prizeRef = ref(db, `rounds/${state.roundId}/prizePool`);
-                const snapshot = await get(prizeRef);
+                const snapshot = await get(ref(db, `rounds/${state.roundId}/prizePool`));
                 const currentPrize = snapshot.val() || 0;
-                await set(prizeRef, currentPrize + CONFIG.ENTRY_FEE);
+                await set(ref(db, `rounds/${state.roundId}/prizePool`), currentPrize + CONFIG.ENTRY_FEE);
 
                 console.log('✅ Joined round!');
             } catch (e) {
@@ -1079,11 +1013,9 @@
 
         function startRound() {
             if (state.roundState !== 'waiting') return;
-            const players = getPlayersArray();
-            if (players.length < CONFIG.MIN_PLAYERS) return;
+            if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
 
-            const roundRef = ref(db, `rounds/${state.roundId}`);
-            update(roundRef, {
+            update(ref(db, `rounds/${state.roundId}`), {
                 status: 'playing',
                 startTime: Date.now(),
                 timeRemaining: CONFIG.ROUND_DURATION
@@ -1118,10 +1050,9 @@
             if (winner && winner.uid) {
                 const prizePool = players.length * CONFIG.ENTRY_FEE;
                 const winnings = Math.floor(prizePool * 0.7);
-                const winnerRef = ref(db, `users/${winner.uid}`);
-                get(winnerRef).then((snap) => {
+                get(ref(db, `users/${winner.uid}`)).then((snap) => {
                     if (snap.exists()) {
-                        update(winnerRef, {
+                        update(ref(db, `users/${winner.uid}`), {
                             balance: (snap.val().balance || 0) + winnings
                         }).catch(e => console.error('❌ Error updating winner balance:', e));
                     }
@@ -1135,8 +1066,7 @@
                     state.timeRemaining--;
                     updateTimerDisplay();
                     if (state.timeRemaining <= 0) {
-                        const results = getGameResults();
-                        endRound(results);
+                        endRound(getGameResults());
                     }
                 }
             }, 1000);
@@ -1210,9 +1140,7 @@
             const players = getPlayersArray();
 
             if (players.length === 0) {
-                dom.playersContainer.innerHTML = `
-                    <div class="player-item" style="color:var(--muted);">No players yet...</div>
-                `;
+                dom.playersContainer.innerHTML = `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
                 return;
             }
 
@@ -1234,17 +1162,14 @@
         }
 
         function simulatePlayers() {
-            setTimeout(() => {
-                if (!state.joined && state.userData) joinRound();
-            }, 1500);
+            setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
 
             const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
             botNames.forEach((name, index) => {
                 setTimeout(() => {
                     if (state.playerCount < 8) {
-                        const fakeUid = `bot_${Date.now()}_${index}`;
                         state.players.push({
-                            uid: fakeUid,
+                            uid: `bot_${Date.now()}_${index}`,
                             username: name,
                             joinedAt: Date.now(),
                             score: Math.floor(Math.random() * 500),
