@@ -1,0 +1,67 @@
+{
+  "headers": [
+    {
+      "source": "/games/**/*.js",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "application/javascript"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.m4a",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "audio/mp4"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.ogg",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "audio/ogg"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.png",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/png"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.jpg",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "image/jpeg"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.manifest",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/cache-manifest"
+        }
+      ]
+    },
+    {
+      "source": "/games/**/*.appcache",
+      "headers": [
+        {
+          "key": "Content-Type",
+          "value": "text/cache-manifest"
+        }
+      ]
+    }
+  ]
+}
