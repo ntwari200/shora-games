@@ -896,7 +896,7 @@
             try {
                 // Load Construct 2 runtime - FROM SAME FOLDER
                 const script = document.createElement('script');
-                script.src = 'c2runtime.js';  // ← FIXED: same folder
+                script.src = '/games/ninja run/c2runtime.js';  // ← FIXED: same folder
                 script.onload = () => {
                     console.log('✅ Runtime loaded');
                     const runtime = new cr.createRuntime('c2canvas');
