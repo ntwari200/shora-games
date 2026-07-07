@@ -737,7 +737,9 @@
             scoreInterval: null,
             currentScore: 0,
             currentCoins: 0,
-            currentDistance: 0
+            currentDistance: 0,
+            _forceStartAttempts: 0,
+            _gameStarted: false
         };
 
         const dom = {
@@ -885,10 +887,16 @@
                 .then(dataText => {
                     console.log('✅ data.js fetched');
 
+                    // Fix both image and audio paths
                     const fixedData = dataText
                         .replace(/images\//g, '/games/ninja%20run/images/')
                         .replace(/media\//g, '/games/ninja%20run/media/');
                     console.log('✅ Image and audio paths fixed');
+
+                    // ============================================================
+                    // IMPORTANT: DO NOT change the first layout!
+                    // Keep "Loading" as the first layout so everything initializes properly
+                    // ============================================================
 
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
@@ -961,8 +969,8 @@
                     startLobby();
                     startScoreTracking();
 
-                    // Verify event sheet after 5 seconds
-                    setTimeout(verifyGameEvents, 5000);
+                    // Monitor layout changes to know when game is ready
+                    monitorLayoutChanges(runtime);
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -981,39 +989,25 @@
         }
 
         // ============================================================
-        // EVENT SHEET VERIFICATION
+        // MONITOR LAYOUT CHANGES
         // ============================================================
-        function verifyGameEvents() {
-            console.log('🔍 ===== VERIFYING GAME EVENT SHEET =====');
-
-            const runtime = window.gameRuntime;
-            if (!runtime) {
-                console.log('❌ Runtime not found');
-                return;
-            }
-
-            const layout = runtime.running_layout;
-            if (!layout) {
-                console.log('❌ No running layout');
-                return;
-            }
-            console.log('✅ Layout:', layout.name);
-
-            if (layout.event_sheet) {
-                console.log('✅ Event sheet:', layout.event_sheet.name);
-                console.log('   Events:', layout.event_sheet.events.length);
-                console.log('   Triggers:', Object.keys(layout.event_sheet.triggers || {}).length);
-            } else {
-                console.log('❌ No event sheet attached to layout');
-            }
-
-            const vars = runtime.all_global_vars || [];
-            console.log('📊 Global Variables:', vars.length);
-            vars.forEach(v => {
-                console.log(`   ${v.name} = ${v.data}`);
-            });
-
-            console.log('🔍 ===== VERIFICATION COMPLETE =====');
+        function monitorLayoutChanges(runtime) {
+            // Check every second for layout changes
+            setInterval(() => {
+                try {
+                    const layout = runtime.running_layout;
+                    if (layout && layout.name) {
+                        console.log('📐 Current layout:', layout.name);
+                        // If we're on Menu or Game, we can force start
+                        if ((layout.name === 'Menu' || layout.name === 'Game') && !state._gameStarted) {
+                            console.log('🎯 Layout ready, forcing game start...');
+                            forceGameStart();
+                        }
+                    }
+                } catch (e) {
+                    // Silent fail
+                }
+            }, 2000);
         }
 
         // ============================================================
@@ -1287,6 +1281,162 @@
         }
 
         // ============================================================
+        // START GAME - FORCES THE GAME TO BEGIN
+        // ============================================================
+        function startGame() {
+            state.gameStarted = true;
+            console.log('🎮 Game is now live!');
+            dom.lobbyOverlay.classList.add('hidden');
+            dom.statusMessage.classList.remove('show');
+            dom.scoreOverlay.classList.add('show');
+
+            // Force the game to start
+            forceGameStart();
+        }
+
+        // ============================================================
+        // GO TO GAME LAYOUT
+        // ============================================================
+        function goToGameLayout(runtime) {
+            try {
+                const gameLayout = runtime.layouts['Game'];
+                if (gameLayout) {
+                    console.log('🔄 Switching to Game layout...');
+                    runtime.changelayout = gameLayout;
+                    runtime.doChangeLayout(gameLayout);
+                    console.log('✅ Switched to Game layout');
+
+                    // Wait and then unpause
+                    setTimeout(() => {
+                        unpauseGame(runtime);
+                    }, 500);
+                    state._forceStartAttempts = 0;
+                    state._gameStarted = true;
+                    return true;
+                } else {
+                    console.log('❌ Game layout not found!');
+                    return false;
+                }
+            } catch (e) {
+                console.error('❌ Error switching to Game layout:', e);
+                return false;
+            }
+        }
+
+        // ============================================================
+        // UNPAUSE GAME
+        // ============================================================
+        function unpauseGame(runtime) {
+            try {
+                const vars = runtime.all_global_vars || [];
+                let unpaused = false;
+                vars.forEach(v => {
+                    if (v.name === 'Pause') {
+                        v.data = 0;
+                        unpaused = true;
+                        console.log('✅ Pause set to 0');
+                    }
+                    if (v.name === 'GameState') {
+                        v.data = 1;
+                        console.log('✅ GameState set to 1');
+                    }
+                });
+                // Force a tick
+                if (runtime.tick) {
+                    runtime.tick(false);
+                }
+                if (!unpaused) {
+                    console.log('⚠️ Pause variable not found, but continuing...');
+                }
+                state._gameStarted = true;
+            } catch (e) {
+                console.warn('⚠️ Could not unpause game:', e);
+            }
+        }
+
+        // ============================================================
+        // FORCE GAME START - BYPASSES INTERNAL BUTTONS
+        // ============================================================
+        function forceGameStart() {
+            const runtime = window.gameRuntime;
+            if (!runtime) {
+                console.log('⏳ Runtime not ready, retrying...');
+                if (state._forceStartAttempts < 10) {
+                    state._forceStartAttempts++;
+                    setTimeout(forceGameStart, 500);
+                }
+                return;
+            }
+
+            console.log('🎮 Force starting game... (Attempt ' + (state._forceStartAttempts + 1) + ')');
+
+            try {
+                const currentLayout = runtime.running_layout;
+                console.log('📐 Current layout:', currentLayout ? currentLayout.name : 'None');
+
+                // ============================================================
+                // METHOD 1: If on Loading, wait for it to finish
+                // ============================================================
+                if (currentLayout && currentLayout.name === 'Loading') {
+                    console.log('🔄 On Loading layout, waiting for it to finish...');
+                    setTimeout(() => {
+                        const layout = runtime.running_layout;
+                        if (layout && layout.name === 'Loading') {
+                            console.log('⏳ Loading still in progress, retrying...');
+                            state._forceStartAttempts++;
+                            setTimeout(forceGameStart, 1000);
+                            return;
+                        }
+                        goToGameLayout(runtime);
+                    }, 2000);
+                    return;
+                }
+
+                // ============================================================
+                // METHOD 2: If on Menu, switch to Game
+                // ============================================================
+                if (currentLayout && currentLayout.name === 'Menu') {
+                    console.log('🔄 On Menu layout, switching to Game...');
+                    goToGameLayout(runtime);
+                    return;
+                }
+
+                // ============================================================
+                // METHOD 3: If on Game, unpause
+                // ============================================================
+                if (currentLayout && currentLayout.name === 'Game') {
+                    console.log('✅ Already on Game layout, unpausing...');
+                    unpauseGame(runtime);
+                    return;
+                }
+
+                // ============================================================
+                // METHOD 4: Try to find the Game layout and switch
+                // ============================================================
+                console.log('🔍 Looking for Game layout...');
+                if (!goToGameLayout(runtime)) {
+                    // If we can't find Game layout, try to unpause anyway
+                    unpauseGame(runtime);
+                }
+
+            } catch (e) {
+                console.error('❌ Error forcing game start:', e);
+            }
+
+            state._forceStartAttempts++;
+            if (state._forceStartAttempts < 10 && !state._gameStarted) {
+                console.log('⏳ Retrying force start in 1 second...');
+                setTimeout(forceGameStart, 1000);
+            } else if (state._gameStarted) {
+                console.log('✅ Game successfully started!');
+                state._forceStartAttempts = 0;
+            } else {
+                console.log('⚠️ Max attempts reached, but game may still start');
+                state._forceStartAttempts = 0;
+            }
+        }
+
+        // ============================================================
         // ROUND MANAGEMENT
         // ============================================================
         function startRound() {
@@ -1305,143 +1455,12 @@
             dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
 
-            // ============================================================
-            // FIX: Force the game to start (bypass internal buttons)
-            // ============================================================
+            // Reset force start attempts
+            state._forceStartAttempts = 0;
+            state._gameStarted = false;
+
+            // Force the game to start after a short delay
             setTimeout(forceGameStart, 1500);
-        }
-
-        // ============================================================
-        // FIX: Force Game Start (bypasses non-working internal buttons)
-        // ============================================================
-        function forceGameStart() {
-            const runtime = window.gameRuntime;
-            if (!runtime) {
-                console.log('⏳ Runtime not ready, retrying...');
-                setTimeout(forceGameStart, 500);
-                return;
-            }
-
-            console.log('🎮 Force starting game...');
-
-            try {
-                const currentLayout = runtime.running_layout;
-
-                // Method 1: Switch from Menu to Game layout
-                if (currentLayout && currentLayout.name === 'Menu') {
-                    const gameLayout = runtime.layouts['Game'];
-                    if (gameLayout) {
-                        console.log('🔄 Switching from Menu to Game layout...');
-                        runtime.changelayout = gameLayout;
-                        runtime.doChangeLayout(gameLayout);
-                        console.log('✅ Switched to Game layout');
-                        // Unpause after switching
-                        setTimeout(() => {
-                            const vars = runtime.all_global_vars || [];
-                            vars.forEach(v => {
-                                if (v.name === 'Pause') {
-                                    v.data = 0;
-                                    console.log('✅ Pause set to 0');
-                                }
-                            });
-                        }, 500);
-                        return;
-                    }
-                }
-
-                // Method 2: If on Game layout, unpause
-                if (currentLayout && currentLayout.name === 'Game') {
-                    console.log('✅ Already on Game layout');
-                    const vars = runtime.all_global_vars || [];
-                    vars.forEach(v => {
-                        if (v.name === 'Pause') {
-                            v.data = 0;
-                            console.log('✅ Pause set to 0');
-                        }
-                    });
-                    return;
-                }
-
-                // Method 3: Try clicking the Play button
-                console.log('🔍 Looking for Play button...');
-                const types = runtime.types_by_index || [];
-                let foundPlayButton = false;
-                types.forEach(type => {
-                    if (type.name && type.name.toLowerCase().includes('play')) {
-                        type.instances.forEach(inst => {
-                            console.log('🎯 Simulating click on Play button:', type.name);
-                            const cnds = Object.getPrototypeOf(type.plugin).cnds;
-                            if (cnds && cnds.OnClick) {
-                                runtime.trigger(cnds.OnClick, inst);
-                                foundPlayButton = true;
-                            }
-                        });
-                    }
-                });
-
-                if (!foundPlayButton) {
-                    console.log('⚠️ Play button not found, checking for other buttons...');
-                    types.forEach(type => {
-                        if (type.name && (
-                            type.name.toLowerCase().includes('btn') ||
-                            type.name.toLowerCase().includes('button') ||
-                            type.name.toLowerCase().includes('start')
-                        )) {
-                            type.instances.forEach(inst => {
-                                console.log('🎯 Trying button:', type.name);
-                                const cnds = Object.getPrototypeOf(type.plugin).cnds;
-                                if (cnds && cnds.OnClick) {
-                                    runtime.trigger(cnds.OnClick, inst);
-                                }
-                            });
-                        }
-                    });
-                }
-
-                // Method 4: Unpause game directly
-                try {
-                    const vars = runtime.all_global_vars || [];
-                    vars.forEach(v => {
-                        if (v.name === 'Pause') {
-                            v.data = 0;
-                            console.log('✅ Pause set to 0');
-                        }
-                        if (v.name === 'GameState') {
-                            v.data = 1;
-                            console.log('✅ GameState set to 1');
-                        }
-                    });
-                } catch (e) {
-                    console.warn('⚠️ Could not set game state:', e);
-                }
-
-                // Method 5: Force the layout to start running
-                if (currentLayout && currentLayout.startRunning) {
-                    console.log('🔄 Re-starting layout...');
-                    currentLayout.startRunning();
-                }
-
-            } catch (e) {
-                console.error('❌ Error forcing game start:', e);
-            }
-
-            // Force the game loop to run
-            try {
-                if (runtime.tick) {
-                    runtime.tick(false);
-                    console.log('✅ Forced game tick');
-                }
-            } catch (e) {
-                console.warn('⚠️ Could not force tick:', e);
-            }
-        }
-
-        function startGame() {
-            state.gameStarted = true;
-            console.log('🎮 Game is now live!');
-            dom.lobbyOverlay.classList.add('hidden');
-            dom.statusMessage.classList.remove('show');
-            dom.scoreOverlay.classList.add('show');
         }
 
         // ============================================================
@@ -1503,6 +1522,8 @@
                 state.joined = false;
                 state.gameStarted = false;
                 state.results = null;
+                state._forceStartAttempts = 0;
+                state._gameStarted = false;
                 dom.joinBtn.disabled = false;
                 dom.joinBtn.textContent = '🚀 Join Round';
                 dom.lobbyOverlay.classList.remove('hidden');
