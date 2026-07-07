@@ -2,268 +2,961 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>NinjaRun - Shora Games</title>
     <link rel="icon" type="image/png" href="/assets/icons/shora-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body {
-            font-family: 'Inter', sans-serif;
-            background: #06111F;
-            color: #F5F7FA;
-            min-height: 100vh;
+        /* ============================================================
+               RESET & BASE
+            ============================================================ */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --bg: #06111F;
+            --bg2: #0B1F36;
+            --primary: #00BFFF;
+            --secondary: #6C63FF;
+            --success: #00E676;
+            --danger: #FF4D6D;
+            --gold: #FFD700;
+            --text: #F5F7FA;
+            --muted: #A7B5C5;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        html, body {
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            background: var(--bg);
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            color: var(--text);
+            touch-action: none;
+            user-select: none;
+            -webkit-user-select: none;
+            -webkit-touch-callout: none;
+        }
+
+        /* ============================================================
+               GAME WRAPPER - FULL SCREEN
+            ============================================================ */
+        #gameWrapper {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            height: 100dvh; /* Dynamic viewport height for mobile */
+            overflow: hidden;
+            background: #000;
             display: flex;
             justify-content: center;
             align-items: center;
         }
 
-        .bg-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
+        /* ============================================================
+               GAME CONTAINER - SCALED CANVAS
+            ============================================================ */
+        #gameContainer {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #gameContainer canvas {
+            display: block;
+            width: 100% !important;
+            height: 100% !important;
+            max-width: 100vw;
+            max-height: 100vh;
+            max-height: 100dvh;
+            object-fit: contain;
+            image-rendering: auto;
+            background: #000;
+            touch-action: none;
+        }
+
+        /* ============================================================
+               TOUCH CONTROLS - MOBILE OVERLAY
+            ============================================================ */
+        #touchControls {
+            position: absolute;
+            bottom: 30px;
+            left: 0;
+            right: 0;
+            display: none;
+            justify-content: space-between;
+            padding: 0 20px;
+            pointer-events: none;
+            z-index: 20;
+        }
+
+        /* Show touch controls only on touch devices */
+        @media (hover: none) and (pointer: coarse) {
+            #touchControls {
+                display: flex !important;
+            }
+        }
+
+        /* Also show on small screens */
+        @media (max-width: 1024px) {
+            #touchControls {
+                display: flex !important;
+            }
+        }
+
+        .touch-btn {
+            pointer-events: auto;
+            width: 70px;
+            height: 70px;
+            border-radius: 50%;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            background: rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(8px);
+            color: #fff;
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.15s;
+            touch-action: none;
+            -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+        }
+
+        .touch-btn:active {
+            transform: scale(0.88);
+            background: rgba(255, 255, 255, 0.2);
+            border-color: var(--primary);
+        }
+
+        .touch-btn.left {
+            margin-right: auto;
+        }
+
+        .touch-btn.right {
+            margin-left: auto;
+        }
+
+        .touch-btn.jump {
+            width: 90px;
+            height: 90px;
+            font-size: 2.4rem;
+            background: rgba(0, 191, 255, 0.15);
+            border-color: rgba(0, 191, 255, 0.3);
+            margin: 0 auto;
+        }
+
+        .touch-btn.jump:active {
+            background: rgba(0, 191, 255, 0.4);
+            border-color: var(--primary);
+        }
+
+        .touch-controls-group {
+            display: flex;
+            gap: 15px;
+            align-items: center;
             pointer-events: none;
         }
 
-        .bg-layer::before {
-            content: '';
+        .touch-controls-group .touch-btn {
+            pointer-events: auto;
+        }
+
+        /* ============================================================
+               LOBBY OVERLAY
+            ============================================================ */
+        #lobbyOverlay {
             position: absolute;
             inset: 0;
-            background: linear-gradient(135deg, #06111F 0%, #0B1F36 50%, #0D1B2A 100%);
+            z-index: 15;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(12px);
+            padding: 20px;
+            transition: opacity 0.5s ease;
         }
 
-        .bg-layer::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: glowPulse 8s ease-in-out infinite;
+        #lobbyOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
         }
 
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .entry-screen {
-            text-align: center;
-            padding: 40px;
-            background: rgba(255,255,255,0.03);
+        .lobby-box {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
             border-radius: 24px;
-            border: 1px solid rgba(0,191,255,0.15);
-            max-width: 420px;
-            width: 90%;
-            position: relative;
-            z-index: 1;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px 50px;
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .entry-screen .game-icon { font-size: 4rem; margin-bottom: 8px; }
-        .entry-screen h1 { font-family: 'Orbitron', monospace; font-size: 1.8rem; color: #F5F7FA; }
-        .entry-screen .subtitle { color: #A7B5C5; font-size: 0.9rem; margin: 4px 0 16px; }
-
-        .fee-box {
-            background: rgba(255,215,0,0.05);
-            border: 1px solid rgba(255,215,0,0.15);
-            border-radius: 12px;
-            padding: 14px;
-            margin: 12px 0;
+        .lobby-box .game-icon {
+            font-size: 4rem;
+            margin-bottom: 10px;
         }
 
-        .fee-box .fee { color: #FFD700; font-size: 1.4rem; font-weight: 700; font-family: 'Orbitron', monospace; }
-        .fee-box .win { color: #00E676; font-size: 1.4rem; font-weight: 700; font-family: 'Orbitron', monospace; }
-        .fee-box .label { color: #A7B5C5; font-size: 0.7rem; text-transform: uppercase; letter-spacing: 1px; }
-
-        .balance-display {
-            margin: 12px 0;
-            font-size: 0.9rem;
-            color: #A7B5C5;
-        }
-
-        .balance-display .amount {
-            color: #00E676;
-            font-weight: 700;
+        .lobby-box h2 {
             font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
         }
 
-        .btn-play {
+        .lobby-box h2 span {
+            color: var(--primary);
+        }
+
+        .lobby-box .subtitle {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+        }
+
+        .lobby-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .lobby-stat {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 12px;
+            padding: 12px 8px;
+            border: 1px solid rgba(255, 255, 255, 0.04);
+        }
+
+        .lobby-stat .number {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .lobby-stat .label {
+            font-size: 0.6rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-top: 2px;
+        }
+
+        .lobby-stat .number.gold {
+            color: var(--gold);
+        }
+
+        .lobby-stat .number.green {
+            color: var(--success);
+        }
+
+        .lobby-stat .number.red {
+            color: var(--danger);
+        }
+
+        .lobby-box .prize-pool {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 16px;
+        }
+
+        .lobby-box .prize-pool small {
+            font-size: 0.7rem;
+            color: var(--muted);
+            font-weight: 400;
+        }
+
+        .lobby-box .entry-fee {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-bottom: 16px;
+        }
+
+        .lobby-box .entry-fee strong {
+            color: var(--gold);
+        }
+
+        .btn-join {
             padding: 14px 40px;
-            background: linear-gradient(135deg, #00BFFF, #6C63FF);
             border: none;
             border-radius: 12px;
-            color: #000;
+            font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: 1.1rem;
             cursor: pointer;
-            margin-top: 16px;
-            transition: all 0.3s ease;
-            font-family: 'Orbitron', monospace;
+            transition: all 0.3s;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: #fff;
             width: 100%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+            touch-action: manipulation;
         }
 
-        .btn-play:hover:not(:disabled) {
+        .btn-join:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0,191,255,0.3);
+            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3);
         }
 
-        .btn-play:disabled {
-            opacity: 0.5;
+        .btn-join:active {
+            transform: scale(0.97);
+        }
+
+        .btn-join:disabled {
+            opacity: 0.4;
             cursor: not-allowed;
             transform: none !important;
         }
 
-        .btn-play .spinner {
-            display: none;
-            width: 18px;
-            height: 18px;
-            border: 2px solid rgba(0,0,0,0.15);
-            border-top: 2px solid #000;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
+        .btn-join.joined {
+            background: var(--success);
         }
 
-        .btn-play.loading .btn-text { display: none; }
-        .btn-play.loading .spinner { display: inline-block; }
-        .btn-play.loading i { display: none; }
+        .btn-join.playing {
+            background: var(--danger);
+        }
+
+        /* ============================================================
+               PLAYER LIST - MOBILE FRIENDLY
+            ============================================================ */
+        #playerList {
+            position: absolute;
+            top: 80px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border-radius: 12px;
+            padding: 12px 14px;
+            min-width: 140px;
+            max-width: 200px;
+            max-height: 50vh;
+            overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            z-index: 12;
+            font-size: 0.75rem;
+        }
+
+        #playerList .title {
+            color: var(--muted);
+            font-size: 0.6rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .player-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 3px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+            color: var(--text);
+            font-size: 0.7rem;
+        }
+
+        .player-item .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            display: inline-block;
+            margin-right: 6px;
+        }
+
+        .player-item .status-dot.ready {
+            background: var(--success);
+        }
+
+        .player-item .status-dot.waiting {
+            background: var(--gold);
+        }
+
+        .player-item .player-name {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        /* ============================================================
+               TOP BAR - MOBILE FRIENDLY
+            ============================================================ */
+        #topBar {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 12;
+            padding: 10px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .top-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .top-right {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .top-stat {
+            font-size: 0.7rem;
+            color: var(--muted);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+        }
+
+        .top-stat .value {
+            color: #fff;
+            font-weight: 600;
+        }
+
+        .top-stat .value.gold {
+            color: var(--gold);
+        }
+
+        .top-stat .value.green {
+            color: var(--success);
+        }
+
+        .top-stat .value.red {
+            color: var(--danger);
+        }
+
+        .top-stat .value.primary {
+            color: var(--primary);
+        }
+
+        .back-btn {
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.85rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: var(--transition);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.02);
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .back-btn:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        /* ============================================================
+               STATUS MESSAGE
+            ============================================================ */
+        #statusMessage {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 13;
+            text-align: center;
+            pointer-events: none;
+            display: none;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 20px 30px;
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        #statusMessage.show {
+            display: block;
+        }
+
+        #statusMessage .main {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        #statusMessage .sub {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin-top: 6px;
+        }
+
+        /* ============================================================
+               RESPONSIVE BREAKPOINTS
+            ============================================================ */
+
+        /* Tablets and smaller laptops */
+        @media (max-width: 1024px) {
+            .lobby-box {
+                padding: 30px 35px;
+                max-width: 420px;
+            }
+            .lobby-box .game-icon {
+                font-size: 3rem;
+            }
+            .lobby-box h2 {
+                font-size: 1.2rem;
+            }
+            #playerList {
+                top: 70px;
+                right: 12px;
+                min-width: 120px;
+                font-size: 0.7rem;
+                padding: 10px 12px;
+            }
+            .touch-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.6rem;
+            }
+            .touch-btn.jump {
+                width: 75px;
+                height: 75px;
+                font-size: 2rem;
+            }
+        }
+
+        /* Phones */
+        @media (max-width: 768px) {
+            #topBar {
+                padding: 8px 12px;
+                font-size: 0.65rem;
+            }
+            .top-stat {
+                font-size: 0.6rem;
+            }
+            .back-btn {
+                font-size: 0.7rem;
+                padding: 4px 10px;
+            }
+            .lobby-box {
+                padding: 24px 20px;
+                max-width: 340px;
+                border-radius: 18px;
+            }
+            .lobby-box .game-icon {
+                font-size: 2.5rem;
+            }
+            .lobby-box h2 {
+                font-size: 1rem;
+            }
+            .lobby-box .subtitle {
+                font-size: 0.75rem;
+            }
+            .lobby-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 8px;
+            }
+            .lobby-stat {
+                padding: 8px 4px;
+            }
+            .lobby-stat .number {
+                font-size: 1.2rem;
+            }
+            .lobby-stat .label {
+                font-size: 0.5rem;
+            }
+            .lobby-box .prize-pool {
+                font-size: 1rem;
+            }
+            .lobby-box .entry-fee {
+                font-size: 0.75rem;
+            }
+            .btn-join {
+                padding: 12px 20px;
+                font-size: 0.95rem;
+            }
+            #playerList {
+                top: 60px;
+                right: 8px;
+                min-width: 100px;
+                max-width: 150px;
+                padding: 8px 10px;
+                font-size: 0.6rem;
+                border-radius: 8px;
+                max-height: 40vh;
+            }
+            #playerList .title {
+                font-size: 0.5rem;
+            }
+            .player-item {
+                font-size: 0.6rem;
+                padding: 2px 0;
+            }
+            .touch-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            .touch-btn.jump {
+                width: 65px;
+                height: 65px;
+                font-size: 1.6rem;
+            }
+            #touchControls {
+                bottom: 20px;
+                padding: 0 12px;
+            }
+            .touch-controls-group {
+                gap: 10px;
+            }
+            #statusMessage {
+                padding: 14px 20px;
+            }
+            #statusMessage .main {
+                font-size: 1.1rem;
+            }
+            #statusMessage .sub {
+                font-size: 0.7rem;
+            }
+        }
+
+        /* Small phones */
+        @media (max-width: 400px) {
+            .lobby-box {
+                padding: 18px 14px;
+                max-width: 280px;
+            }
+            .lobby-box .game-icon {
+                font-size: 2rem;
+            }
+            .lobby-box h2 {
+                font-size: 0.85rem;
+            }
+            .lobby-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+            .lobby-stat .number {
+                font-size: 1rem;
+            }
+            .btn-join {
+                padding: 10px 16px;
+                font-size: 0.85rem;
+            }
+            .touch-btn {
+                width: 42px;
+                height: 42px;
+                font-size: 1rem;
+            }
+            .touch-btn.jump {
+                width: 55px;
+                height: 55px;
+                font-size: 1.4rem;
+            }
+            #touchControls {
+                bottom: 14px;
+                padding: 0 8px;
+            }
+            .touch-controls-group {
+                gap: 6px;
+            }
+            #playerList {
+                top: 55px;
+                right: 6px;
+                min-width: 80px;
+                max-width: 120px;
+                padding: 6px 8px;
+                font-size: 0.5rem;
+            }
+            #topBar {
+                padding: 6px 8px;
+            }
+            .top-stat {
+                font-size: 0.5rem;
+            }
+            .back-btn {
+                font-size: 0.6rem;
+                padding: 3px 8px;
+            }
+        }
+
+        /* Landscape phones - controls adjust */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #touchControls {
+                bottom: 8px;
+                padding: 0 8px;
+            }
+            .touch-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            .touch-btn.jump {
+                width: 50px;
+                height: 50px;
+                font-size: 1.2rem;
+            }
+            .lobby-box {
+                padding: 16px 20px;
+                max-width: 320px;
+            }
+            .lobby-box .game-icon {
+                font-size: 2rem;
+            }
+            .lobby-box h2 {
+                font-size: 0.9rem;
+            }
+            .lobby-stats {
+                grid-template-columns: 1fr 1fr 1fr;
+                gap: 4px;
+            }
+            .lobby-stat {
+                padding: 4px 4px;
+            }
+            .lobby-stat .number {
+                font-size: 0.9rem;
+            }
+            .btn-join {
+                padding: 8px 16px;
+                font-size: 0.8rem;
+            }
+            #playerList {
+                top: 45px;
+                right: 6px;
+                min-width: 70px;
+                max-width: 100px;
+                padding: 4px 6px;
+                font-size: 0.5rem;
+                max-height: 30vh;
+            }
+            #topBar {
+                padding: 4px 8px;
+            }
+            .top-stat {
+                font-size: 0.5rem;
+            }
+        }
+
+        /* Scrollbar */
+        #playerList::-webkit-scrollbar {
+            width: 3px;
+        }
+        #playerList::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #playerList::-webkit-scrollbar-thumb {
+            background: var(--primary);
+            border-radius: 2px;
+        }
+
+        /* ============================================================
+               LOADING
+            ============================================================ */
+        #loadingScreen {
+            position: absolute;
+            inset: 0;
+            z-index: 30;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: var(--bg);
+            transition: opacity 0.6s ease;
+        }
+
+        #loadingScreen.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
 
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
 
-        .back-btn {
-            display: inline-block;
-            margin-top: 14px;
-            color: #A7B5C5;
-            text-decoration: none;
+        .loader-text {
+            margin-top: 16px;
+            color: var(--muted);
             font-size: 0.8rem;
-            transition: all 0.3s ease;
+            font-weight: 500;
         }
 
-        .back-btn:hover { color: #00BFFF; }
-        .back-btn i { margin-right: 4px; }
-
-        .error-msg {
-            background: rgba(255,77,109,0.1);
-            border: 1px solid rgba(255,77,109,0.2);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: #FF4D6D;
-            font-size: 0.8rem;
-            display: none;
-            margin-top: 12px;
+        .loader-progress {
+            margin-top: 8px;
+            width: 150px;
+            height: 3px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 2px;
+            overflow: hidden;
         }
 
-        .error-msg.show { display: block; }
-
-        .success-msg {
-            background: rgba(0,230,118,0.1);
-            border: 1px solid rgba(0,230,118,0.2);
-            border-radius: 8px;
-            padding: 10px 14px;
-            color: #00E676;
-            font-size: 0.8rem;
-            display: none;
-            margin-top: 12px;
-        }
-
-        .success-msg.show { display: block; }
-
-        .loading-spinner {
-            display: inline-block;
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(255,255,255,0.1);
-            border-top: 2px solid #00BFFF;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            vertical-align: middle;
-            margin-right: 8px;
-        }
-
-        @media (max-width: 480px) {
-            .entry-screen { padding: 24px 20px; }
-            .entry-screen h1 { font-size: 1.4rem; }
-            .fee-box .fee, .fee-box .win { font-size: 1.1rem; }
+        .loader-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: width 0.3s ease;
         }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer"></div>
-
-    <div class="entry-screen" id="entryScreen">
-        <div class="game-icon">🏃</div>
-        <h1>NinjaRun</h1>
-        <p class="subtitle">Run, jump and dodge obstacles to win!</p>
-
-        <div class="fee-box">
-            <div>
-                <span class="label">💰 Entry Fee</span>
-                <div class="fee">100 RWF</div>
-            </div>
-            <div style="margin-top:8px;">
-                <span class="label">🏆 Win Prize</span>
-                <div class="win">200 RWF</div>
-            </div>
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loadingScreen">
+        <div class="loader"></div>
+        <div class="loader-text">Loading NinjaRun...</div>
+        <div class="loader-progress">
+            <div class="loader-progress-bar" id="loadProgress"></div>
         </div>
-
-        <div class="balance-display">
-            Your Balance: <span class="amount" id="balanceDisplay">Loading...</span> RWF
-        </div>
-
-        <div class="error-msg" id="errorMsg">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorText">Error message</span>
-        </div>
-
-        <div class="success-msg" id="successMsg">
-            <i class="fas fa-check-circle"></i>
-            <span id="successText">Success!</span>
-        </div>
-
-        <button class="btn-play" id="playBtn" onclick="startGame()">
-            <i class="fas fa-play"></i>
-            <span class="btn-text">PLAY NOW</span>
-            <div class="spinner"></div>
-        </button>
-
-        <a href="/game-lobby.html" class="back-btn">
-            <i class="fas fa-arrow-left"></i> Back to Lobby
-        </a>
     </div>
 
-    <!-- ===== FIREBASE SDK ===== -->
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.10.0/firebase-database-compat.js"></script>
+    <!-- ===== GAME WRAPPER ===== -->
+    <div id="gameWrapper">
 
-    <script>
-        // ========================================
-        // SHORA GAMES - NINJARUN WRAPPER
-        // ========================================
+        <!-- Game Container -->
+        <div id="gameContainer">
+            <!-- The game canvas will be inserted here -->
+        </div>
 
-        const ENTRY_FEE = 100;
-        const WIN_AMOUNT = 200;
-        let userBalance = 0;
-        let userUid = null;
-        let userDataLoaded = false;
-        let currentUser = null;
+        <!-- ===== TOP BAR ===== -->
+        <div id="topBar">
+            <div class="top-left">
+                <a href="game-lobby.html" class="back-btn">
+                    <i class="fas fa-arrow-left"></i> Back
+                </a>
+                <span class="top-stat">
+                    🏆 ROUND <span class="value primary" id="roundNumber">001</span>
+                </span>
+            </div>
+            <div class="top-right">
+                <span class="top-stat">
+                    👥 <span class="value green" id="playerCount">0</span>/50
+                </span>
+                <span class="top-stat">
+                    ⏱️ <span class="value red" id="roundTimer">5:00</span>
+                </span>
+                <span class="top-stat">
+                    💰 <span class="value gold" id="prizeDisplay">0</span> RWF
+                </span>
+            </div>
+        </div>
 
-        // ========================================
+        <!-- ===== PLAYER LIST ===== -->
+        <div id="playerList">
+            <div class="title">👥 Players</div>
+            <div id="playersContainer">
+                <div class="player-item" style="color:var(--muted);">Waiting for players...</div>
+            </div>
+        </div>
+
+        <!-- ===== STATUS MESSAGE ===== -->
+        <div id="statusMessage">
+            <div class="main" id="statusMain">⏳ Waiting for players...</div>
+            <div class="sub" id="statusSub">Need 2 more players to start</div>
+        </div>
+
+        <!-- ===== LOBBY OVERLAY ===== -->
+        <div id="lobbyOverlay">
+            <div class="lobby-box">
+                <div class="game-icon">🏃</div>
+                <h2>Ninja<span>Run</span></h2>
+                <div class="subtitle">🏆 Tournament Mode</div>
+
+                <div class="lobby-stats">
+                    <div class="lobby-stat">
+                        <div class="number" id="lobbyPlayers">0</div>
+                        <div class="label">Players</div>
+                    </div>
+                    <div class="lobby-stat">
+                        <div class="number gold" id="lobbyPrize">0</div>
+                        <div class="label">Prize Pool</div>
+                    </div>
+                    <div class="lobby-stat">
+                        <div class="number green" id="lobbyTimer">5:00</div>
+                        <div class="label">Time Left</div>
+                    </div>
+                </div>
+
+                <div class="prize-pool">
+                    🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF
+                </div>
+
+                <div class="entry-fee">
+                    Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF
+                </div>
+
+                <button class="btn-join" id="joinBtn">
+                    <i class="fas fa-gamepad"></i> Join Round
+                </button>
+            </div>
+        </div>
+
+        <!-- ===== TOUCH CONTROLS ===== -->
+        <div id="touchControls">
+            <div class="touch-controls-group">
+                <button class="touch-btn left" id="touchLeft">
+                    <i class="fas fa-chevron-left"></i>
+                </button>
+                <button class="touch-btn right" id="touchRight">
+                    <i class="fas fa-chevron-right"></i>
+                </button>
+            </div>
+            <button class="touch-btn jump" id="touchJump">
+                <i class="fas fa-arrow-up"></i>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- ================================================================
+    FIREBASE + GAME INTEGRATION
+    ================================================================ -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+            }
+        }
+    </script>
+
+    <script type="module">
+        // ============================================================
+        // IMPORTS
+        // ============================================================
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, onValue, set, update, push, get, child } from "firebase/database";
+        import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+        // ============================================================
         // FIREBASE CONFIG
-        // ========================================
-
+        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -271,216 +964,654 @@
             databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
         };
 
-        firebase.initializeApp(firebaseConfig);
-        const db = firebase.database();
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
 
-        // ========================================
-        // LOAD USER DATA FROM FIREBASE
-        // ========================================
+        // ============================================================
+        // CONFIGURATION
+        // ============================================================
+        const CONFIG = {
+            ENTRY_FEE: 100, // RWF
+            MAX_PLAYERS: 50,
+            MIN_PLAYERS: 2,
+            ROUND_DURATION: 300, // 5 minutes (in seconds)
+            GAME_WIDTH: 1280,
+            GAME_HEIGHT: 720,
+            PRIZE_DISTRIBUTION: {
+                // Winner takes 70%, 2nd 20%, 3rd 10%
+                // (can be adjusted)
+            }
+        };
 
-        function loadUserData() {
-            console.log('🔄 Loading user data...');
-            
-            try {
-                // Try to get from localStorage first
-                const session = localStorage.getItem('shora_user');
-                console.log('📦 Session from localStorage:', session);
-                
-                if (!session) {
-                    console.log('❌ No session found, redirecting to login...');
-                    window.location.href = '/login.html';
-                    return;
+        // ============================================================
+        // STATE
+        // ============================================================
+        const state = {
+            roundId: '001',
+            roundState: 'waiting', // waiting | playing | ended
+            players: [],
+            playerCount: 0,
+            timeRemaining: CONFIG.ROUND_DURATION,
+            user: null,
+            userData: null,
+            joined: false,
+            gameStarted: false,
+            results: null
+        };
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const dom = {
+            // Game
+            container: document.getElementById('gameContainer'),
+            canvas: null,
+
+            // Top bar
+            roundNumber: document.getElementById('roundNumber'),
+            playerCount: document.getElementById('playerCount'),
+            roundTimer: document.getElementById('roundTimer'),
+            prizeDisplay: document.getElementById('prizeDisplay'),
+
+            // Lobby
+            lobbyOverlay: document.getElementById('lobbyOverlay'),
+            lobbyPlayers: document.getElementById('lobbyPlayers'),
+            lobbyPrize: document.getElementById('lobbyPrize'),
+            lobbyTimer: document.getElementById('lobbyTimer'),
+            lobbyPrizePool: document.getElementById('lobbyPrizePool'),
+            entryFeeDisplay: document.getElementById('entryFeeDisplay'),
+            joinBtn: document.getElementById('joinBtn'),
+
+            // Player list
+            playersContainer: document.getElementById('playersContainer'),
+
+            // Status
+            statusMessage: document.getElementById('statusMessage'),
+            statusMain: document.getElementById('statusMain'),
+            statusSub: document.getElementById('statusSub'),
+
+            // Loading
+            loadingScreen: document.getElementById('loadingScreen'),
+            loadProgress: document.getElementById('loadProgress'),
+
+            // Touch controls
+            touchLeft: document.getElementById('touchLeft'),
+            touchRight: document.getElementById('touchRight'),
+            touchJump: document.getElementById('touchJump')
+        };
+
+        // ============================================================
+        // ENTRY FEE DISPLAY
+        // ============================================================
+        dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
+
+        // ============================================================
+        // AUTH CHECK
+        // ============================================================
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                state.user = user;
+                const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                if (snapshot.exists()) {
+                    state.userData = snapshot.val();
+                    console.log('✅ User loaded:', state.userData.username);
                 }
-
-                const parsed = JSON.parse(session);
-                console.log('👤 Parsed user data:', parsed);
-                
-                if (!parsed.uid) {
-                    console.log('❌ No UID found, redirecting to login...');
-                    window.location.href = '/login.html';
-                    return;
-                }
-
-                userUid = parsed.uid;
-                currentUser = parsed;
-
-                // Show loading state
-                document.getElementById('balanceDisplay').innerHTML = '<span class="loading-spinner"></span> Loading...';
-
-                // Try to get balance from localStorage first (faster)
-                if (parsed.balance !== undefined) {
-                    userBalance = parsed.balance;
-                    document.getElementById('balanceDisplay').textContent = userBalance.toLocaleString();
-                    console.log('💰 Balance from localStorage:', userBalance);
-                }
-
-                // Then verify from Firebase
-                const userRef = db.ref('users/' + userUid);
-                console.log('🔥 Reading from Firebase path: users/' + userUid);
-                
-                userRef.once('value').then((snapshot) => {
-                    console.log('📊 Firebase snapshot exists:', snapshot.exists());
-                    
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        console.log('📊 Firebase user data:', data);
-                        
-                        // Update balance from Firebase
-                        const firebaseBalance = data.balance || 0;
-                        userBalance = firebaseBalance;
-                        document.getElementById('balanceDisplay').textContent = userBalance.toLocaleString();
-                        console.log('💰 Balance from Firebase:', userBalance);
-                        
-                        // Update localStorage with latest balance
-                        const updatedSession = JSON.parse(localStorage.getItem('shora_user'));
-                        updatedSession.balance = userBalance;
-                        localStorage.setItem('shora_user', JSON.stringify(updatedSession));
-                        
-                        userDataLoaded = true;
-                        console.log('✅ User data loaded successfully!');
-                    } else {
-                        console.log('⚠️ No user data found in Firebase, creating default...');
-                        // Create default user data
-                        const defaultData = {
-                            username: currentUser.username || 'Player',
-                            email: currentUser.email || 'No email',
-                            phone: currentUser.phone || 'Not provided',
-                            balance: 5000,
-                            totalWinnings: 0,
-                            gamesPlayed: 0,
-                            wins: 0,
-                            losses: 0,
-                            status: 'active',
-                            createdAt: new Date().toISOString()
-                        };
-                        
-                        db.ref('users/' + userUid).set(defaultData);
-                        userBalance = 5000;
-                        document.getElementById('balanceDisplay').textContent = '5,000';
-                        localStorage.setItem('shora_user', JSON.stringify({...currentUser, balance: 5000}));
-                        userDataLoaded = true;
-                        console.log('✅ Default user data created!');
-                    }
-                }).catch((error) => {
-                    console.error('❌ Error loading user data:', error);
-                    // Show error but keep using localStorage data
-                    if (userBalance === 0) {
-                        userBalance = 5000;
-                        document.getElementById('balanceDisplay').textContent = '5,000';
-                    }
-                    userDataLoaded = true;
-                });
-
-            } catch (error) {
-                console.error('❌ Error loading user data:', error);
-                // Redirect to login as fallback
-                window.location.href = '/login.html';
-            }
-        }
-
-        // ========================================
-        // START GAME
-        // ========================================
-
-        function startGame() {
-            const btn = document.getElementById('playBtn');
-            const errorMsg = document.getElementById('errorMsg');
-            const errorText = document.getElementById('errorText');
-            const successMsg = document.getElementById('successMsg');
-            const successText = document.getElementById('successText');
-
-            // Reset messages
-            errorMsg.classList.remove('show');
-            successMsg.classList.remove('show');
-
-            // Check if user data is loaded
-            if (!userDataLoaded) {
-                errorText.textContent = '⏳ Loading user data... Please wait.';
-                errorMsg.classList.add('show');
-                return;
-            }
-
-            console.log('💰 Current balance:', userBalance);
-            console.log('💰 Entry fee:', ENTRY_FEE);
-
-            // Check balance
-            if (userBalance < ENTRY_FEE) {
-                errorText.textContent = `❌ Insufficient balance! You need ${ENTRY_FEE} RWF to play. Your balance: ${userBalance} RWF. Please deposit first.`;
-                errorMsg.classList.add('show');
-                return;
-            }
-
-            // Show loading
-            btn.disabled = true;
-            btn.classList.add('loading');
-
-            // Deduct entry fee
-            const newBalance = userBalance - ENTRY_FEE;
-
-            // Update Firebase and localStorage
-            const session = JSON.parse(localStorage.getItem('shora_user'));
-            const userRef = db.ref('users/' + session.uid);
-
-            userRef.update({ balance: newBalance }).then(() => {
-                console.log('✅ Balance updated in Firebase:', newBalance);
-                
-                // Update local storage
-                const updatedSession = JSON.parse(localStorage.getItem('shora_user'));
-                updatedSession.balance = newBalance;
-                localStorage.setItem('shora_user', JSON.stringify(updatedSession));
-                
-                userBalance = newBalance;
-
-                // Show success
-                successText.textContent = '✅ Entry fee paid! Loading game...';
-                successMsg.classList.add('show');
-
-                // Redirect to game
-                setTimeout(() => {
-                    window.location.href = 'ninja%20run/index.html';
-                }, 1000);
-            }).catch((error) => {
-                console.error('❌ Error updating balance:', error);
-                errorText.textContent = '❌ Error processing payment. Please try again.';
-                errorMsg.classList.add('show');
-                btn.disabled = false;
-                btn.classList.remove('loading');
-            });
-        }
-
-        // ========================================
-        // UPDATE BALANCE DISPLAY
-        // ========================================
-
-        function updateBalanceDisplay() {
-            const balanceEl = document.getElementById('balanceDisplay');
-            if (balanceEl) {
-                balanceEl.textContent = userBalance.toLocaleString();
-            }
-        }
-
-        // ========================================
-        // INITIALIZATION
-        // ========================================
-
-        console.log('%c🏃 NINJARUN - SHORA GAMES', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c💰 Entry Fee: 100 RWF | 🏆 Win: 200 RWF', 'color: #FFC857;');
-
-        // Load user data when page loads
-        loadUserData();
-
-        // Also try to load when page is fully loaded
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('📄 Page loaded, checking user data...');
-            // If balance is still "Loading...", try again
-            const balanceEl = document.getElementById('balanceDisplay');
-            if (balanceEl && balanceEl.textContent === 'Loading...') {
-                loadUserData();
+            } else {
+                // Redirect to login
+                window.location.href = 'login.html';
             }
         });
 
-        // Make startGame available globally
-        window.startGame = startGame;
+        // ============================================================
+        // GAME LOADER
+        // ============================================================
+        function loadGame() {
+            console.log('🎮 Loading NinjaRun game...');
+
+            // Create canvas
+            const canvas = document.createElement('canvas');
+            canvas.id = 'c2canvas';
+            canvas.width = CONFIG.GAME_WIDTH;
+            canvas.height = CONFIG.GAME_HEIGHT;
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+            dom.container.appendChild(canvas);
+            dom.canvas = canvas;
+
+            // Simulate loading progress
+            let progress = 0;
+            const loadInterval = setInterval(() => {
+                progress += Math.random() * 15;
+                if (progress > 100) progress = 100;
+                dom.loadProgress.style.width = progress + '%';
+                if (progress === 100) {
+                    clearInterval(loadInterval);
+                    setTimeout(() => {
+                        dom.loadingScreen.classList.add('hidden');
+                        initGame();
+                    }, 300);
+                }
+            }, 200);
+        }
+
+        // ============================================================
+        // INIT GAME
+        // ============================================================
+        function initGame() {
+            console.log('🏃 Starting NinjaRun...');
+
+            try {
+                // Load Construct 2 runtime
+                const script = document.createElement('script');
+                script.src = '/assets/games/ninjarun/c2runtime.js';
+                script.onload = () => {
+                    console.log('✅ Runtime loaded');
+                    const runtime = new cr.createRuntime('c2canvas');
+                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                    window.gameRuntime = runtime;
+
+                    // Connect touch controls
+                    setupTouchControls(runtime);
+
+                    // Start the lobby
+                    startLobby();
+                };
+                script.onerror = () => {
+                    console.error('❌ Failed to load c2runtime.js');
+                    dom.statusMain.textContent = '⚠️ Game failed to load';
+                    dom.statusSub.textContent = 'Please refresh and try again';
+                    dom.statusMessage.classList.add('show');
+                };
+                document.head.appendChild(script);
+
+            } catch (e) {
+                console.error('❌ Error initializing game:', e);
+            }
+        }
+
+        // ============================================================
+        // TOUCH CONTROLS
+        // ============================================================
+        function setupTouchControls(runtime) {
+            // Left button - hold to move left
+            let leftPressed = false;
+            let rightPressed = false;
+            let jumpPressed = false;
+
+            dom.touchLeft.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                leftPressed = true;
+                // Simulate keydown for left arrow
+                const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', keyCode: 37 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchLeft.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                leftPressed = false;
+                const event = new KeyboardEvent('keyup', { key: 'ArrowLeft', keyCode: 37 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchRight.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                rightPressed = true;
+                const event = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchRight.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                rightPressed = false;
+                const event = new KeyboardEvent('keyup', { key: 'ArrowRight', keyCode: 39 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchJump.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                jumpPressed = true;
+                const event = new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchJump.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                jumpPressed = false;
+                const event = new KeyboardEvent('keyup', { key: 'ArrowUp', keyCode: 38 });
+                document.dispatchEvent(event);
+            });
+
+            // Mouse fallback for desktop
+            dom.touchLeft.addEventListener('mousedown', () => {
+                const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', keyCode: 37 });
+                document.dispatchEvent(event);
+            });
+            dom.touchLeft.addEventListener('mouseup', () => {
+                const event = new KeyboardEvent('keyup', { key: 'ArrowLeft', keyCode: 37 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchRight.addEventListener('mousedown', () => {
+                const event = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39 });
+                document.dispatchEvent(event);
+            });
+            dom.touchRight.addEventListener('mouseup', () => {
+                const event = new KeyboardEvent('keyup', { key: 'ArrowRight', keyCode: 39 });
+                document.dispatchEvent(event);
+            });
+
+            dom.touchJump.addEventListener('mousedown', () => {
+                const event = new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38 });
+                document.dispatchEvent(event);
+            });
+            dom.touchJump.addEventListener('mouseup', () => {
+                const event = new KeyboardEvent('keyup', { key: 'ArrowUp', keyCode: 38 });
+                document.dispatchEvent(event);
+            });
+        }
+
+        // ============================================================
+        // LOBBY SYSTEM
+        // ============================================================
+        function startLobby() {
+            console.log('🔄 Starting lobby...');
+
+            // Show lobby overlay
+            dom.lobbyOverlay.classList.remove('hidden');
+
+            // Update lobby stats
+            updateLobbyUI();
+
+            // Listen for round updates from Firebase
+            listenForRoundUpdates();
+
+            // Listen for player updates
+            listenForPlayerUpdates();
+
+            // Join button
+            dom.joinBtn.addEventListener('click', joinRound);
+
+            // Start timer
+            startRoundTimer();
+
+            // Simulate some players for demo
+            simulatePlayers();
+        }
+
+        // ============================================================
+        // FIREBASE LISTENERS
+        // ============================================================
+        function listenForRoundUpdates() {
+            const roundRef = ref(db, `rounds/${state.roundId}`);
+            onValue(roundRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    state.roundState = data.status || 'waiting';
+                    state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
+                    state.players = data.players || [];
+                    state.playerCount = state.players.length;
+
+                    updateUI();
+
+                    if (state.roundState === 'playing' && !state.gameStarted) {
+                        startGame();
+                    }
+
+                    if (state.roundState === 'ended') {
+                        endRound(data.results);
+                    }
+                } else {
+                    // Create new round if none exists
+                    createNewRound();
+                }
+            });
+        }
+
+        function listenForPlayerUpdates() {
+            const playersRef = ref(db, `rounds/${state.roundId}/players`);
+            onValue(playersRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    state.players = Object.values(data);
+                    state.playerCount = state.players.length;
+                    updateUI();
+                }
+            });
+        }
+
+        // ============================================================
+        // CREATE NEW ROUND
+        // ============================================================
+        function createNewRound() {
+            const roundRef = ref(db, `rounds/${state.roundId}`);
+            set(roundRef, {
+                status: 'waiting',
+                timeRemaining: CONFIG.ROUND_DURATION,
+                players: [],
+                prizePool: 0,
+                startTime: Date.now(),
+                createdAt: Date.now()
+            });
+        }
+
+        // ============================================================
+        // JOIN ROUND
+        // ============================================================
+        async function joinRound() {
+            if (!state.user || !state.userData) {
+                alert('Please login first');
+                window.location.href = 'login.html';
+                return;
+            }
+
+            if (state.joined) {
+                alert('You are already in this round!');
+                return;
+            }
+
+            if (state.playerCount >= CONFIG.MAX_PLAYERS) {
+                alert('Round is full!');
+                return;
+            }
+
+            // Check balance
+            if (state.userData.balance < CONFIG.ENTRY_FEE) {
+                alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`);
+                window.location.href = 'deposit.html';
+                return;
+            }
+
+            // Deduct entry fee
+            const newBalance = state.userData.balance - CONFIG.ENTRY_FEE;
+            await update(ref(db, `users/${state.user.uid}`), {
+                balance: newBalance
+            });
+
+            // Add player to round
+            const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
+            await set(playerRef, {
+                uid: state.user.uid,
+                username: state.userData.username || 'Player',
+                joinedAt: Date.now(),
+                score: 0,
+                coins: 0,
+                distance: 0,
+                status: 'ready'
+            });
+
+            state.joined = true;
+            dom.joinBtn.textContent = '✅ Joined!';
+            dom.joinBtn.disabled = true;
+
+            // Update prize pool
+            const prizeRef = ref(db, `rounds/${state.roundId}/prizePool`);
+            const snapshot = await get(prizeRef);
+            const currentPrize = snapshot.val() || 0;
+            await set(prizeRef, currentPrize + CONFIG.ENTRY_FEE);
+
+            console.log('✅ Joined round!');
+        }
+
+        // ============================================================
+        // START ROUND
+        // ============================================================
+        function startRound() {
+            if (state.roundState !== 'waiting') return;
+
+            // Only start if min players met
+            if (state.playerCount < CONFIG.MIN_PLAYERS) return;
+
+            // Update round status
+            const roundRef = ref(db, `rounds/${state.roundId}`);
+            update(roundRef, {
+                status: 'playing',
+                startTime: Date.now(),
+                timeRemaining: CONFIG.ROUND_DURATION
+            });
+
+            state.roundState = 'playing';
+            dom.lobbyOverlay.classList.add('hidden');
+
+            console.log('🏁 Round started!');
+        }
+
+        // ============================================================
+        // START GAME
+        // ============================================================
+        function startGame() {
+            state.gameStarted = true;
+            console.log('🎮 Game is now live!');
+
+            // Tell the game to start
+            const runtime = window.gameRuntime;
+            if (runtime) {
+                // Trigger game start (if you add custom triggers)
+                // You can also just let the game run naturally
+            }
+
+            // Hide lobby, show game
+            dom.lobbyOverlay.classList.add('hidden');
+            dom.statusMessage.classList.remove('show');
+        }
+
+        // ============================================================
+        // END ROUND
+        // ============================================================
+        function endRound(results) {
+            state.roundState = 'ended';
+            state.results = results;
+
+            console.log('🏁 Round ended!');
+
+            // Calculate winners
+            const sorted = [...state.players].sort((a, b) => (b.score || 0) - (a.score || 0));
+            const winner = sorted[0];
+
+            // Show results
+            dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
+            dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
+            dom.statusMessage.classList.add('show');
+
+            // Update winner balance
+            if (winner) {
+                const prizePool = state.players.length * CONFIG.ENTRY_FEE;
+                const winnings = Math.floor(prizePool * 0.7); // 70% to winner
+                const winnerRef = ref(db, `users/${winner.uid}`);
+                get(winnerRef).then((snap) => {
+                    if (snap.exists()) {
+                        const data = snap.val();
+                        update(winnerRef, {
+                            balance: (data.balance || 0) + winnings
+                        });
+                    }
+                });
+            }
+        }
+
+        // ============================================================
+        // TIMER
+        // ============================================================
+        function startRoundTimer() {
+            setInterval(() => {
+                if (state.roundState === 'playing') {
+                    state.timeRemaining--;
+                    updateTimerDisplay();
+
+                    if (state.timeRemaining <= 0) {
+                        // Auto-end round
+                        const results = getGameResults();
+                        endRound(results);
+                    }
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const mins = Math.floor(state.timeRemaining / 60);
+            const secs = state.timeRemaining % 60;
+            const display = `${mins}:${secs.toString().padStart(2, '0')}`;
+
+            dom.roundTimer.textContent = display;
+            dom.lobbyTimer.textContent = display;
+
+            // Color change
+            const color = state.timeRemaining < 30 ? 'red' :
+                          state.timeRemaining < 60 ? 'orange' : 'red';
+            dom.roundTimer.style.color = `var(--${color})`;
+        }
+
+        // ============================================================
+        // GET GAME RESULTS
+        // ============================================================
+        function getGameResults() {
+            const runtime = window.gameRuntime;
+            let score = 0,
+                coins = 0,
+                distance = 0;
+
+            if (runtime) {
+                try {
+                    // Read from Construct 2 global variables
+                    const vars = runtime.all_global_vars || [];
+                    for (let v of vars) {
+                        if (v.name === 'Score') score = v.data || 0;
+                        if (v.name === 'Coins') coins = v.data || 0;
+                        if (v.name === 'Distances') distance = v.data || 0;
+                    }
+                } catch (e) {
+                    console.warn('Could not read game vars:', e);
+                }
+            }
+
+            return { score, coins, distance };
+        }
+
+        // ============================================================
+        // UPDATE UI
+        // ============================================================
+        function updateUI() {
+            // Player count
+            dom.playerCount.textContent = state.playerCount;
+            dom.lobbyPlayers.textContent = state.playerCount;
+
+            // Prize pool
+            const prizePool = state.playerCount * CONFIG.ENTRY_FEE;
+            dom.prizeDisplay.textContent = prizePool.toLocaleString();
+            dom.lobbyPrize.textContent = prizePool.toLocaleString();
+            dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
+
+            // Round number
+            dom.roundNumber.textContent = state.roundId;
+
+            // Player list
+            renderPlayerList();
+
+            // Check start conditions
+            if (state.roundState === 'waiting') {
+                if (state.playerCount >= CONFIG.MIN_PLAYERS) {
+                    dom.statusMain.textContent = '✅ Ready to start!';
+                    dom.statusSub.textContent = `⏳ Starting in 5 seconds...`;
+                    dom.statusMessage.classList.add('show');
+
+                    // Auto-start after 5 seconds
+                    setTimeout(() => {
+                        if (state.roundState === 'waiting') {
+                            startRound();
+                        }
+                    }, 5000);
+                } else {
+                    const needed = CONFIG.MIN_PLAYERS - state.playerCount;
+                    dom.statusMain.textContent = '⏳ Waiting for players...';
+                    dom.statusSub.textContent = `Need ${needed} more player${needed > 1 ? 's' : ''} to start`;
+                    dom.statusMessage.classList.add('show');
+                }
+            }
+        }
+
+        function updateLobbyUI() {
+            // Same as updateUI but for lobby
+            updateUI();
+        }
+
+        // ============================================================
+        // RENDER PLAYER LIST
+        // ============================================================
+        function renderPlayerList() {
+            if (state.players.length === 0) {
+                dom.playersContainer.innerHTML = `
+                    <div class="player-item" style="color:var(--muted);">
+                        No players yet...
+                    </div>
+                `;
+                return;
+            }
+
+            let html = '';
+            state.players.forEach((p, i) => {
+                const isMe = p.uid === state.user?.uid;
+                const statusColor = p.status === 'ready' ? 'ready' : 'waiting';
+                html += `
+                    <div class="player-item" style="${isMe ? 'color:var(--gold);' : ''}">
+                        <span class="player-name">
+                            <span class="status-dot ${statusColor}"></span>
+                            ${isMe ? '⭐ ' : ''}${p.username || 'Player'}
+                        </span>
+                        <span>${p.score || 0}</span>
+                    </div>
+                `;
+            });
+
+            dom.playersContainer.innerHTML = html;
+        }
+
+        // ============================================================
+        // SIMULATE PLAYERS FOR TESTING
+        // ============================================================
+        function simulatePlayers() {
+            // Auto-join the current user after a delay
+            setTimeout(() => {
+                if (!state.joined && state.userData) {
+                    joinRound();
+                }
+            }, 1500);
+
+            // Simulate bot players joining (for demo)
+            const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
+            botNames.forEach((name, index) => {
+                setTimeout(() => {
+                    if (state.playerCount < 8) {
+                        const fakeUid = `bot_${Date.now()}_${index}`;
+                        state.players.push({
+                            uid: fakeUid,
+                            username: name,
+                            joinedAt: Date.now(),
+                            score: Math.floor(Math.random() * 500),
+                            coins: Math.floor(Math.random() * 20),
+                            distance: Math.floor(Math.random() * 500),
+                            status: 'ready'
+                        });
+                        state.playerCount = state.players.length;
+                        updateUI();
+                    }
+                }, 2000 + (index * 1500));
+            });
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        console.log('%c🏃 NINJARUN - TOURNAMENT MODE', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
+        console.log('%c📱 Fully responsive on all devices', 'color: #00E676;');
+        console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #FFD700;');
+
+        // Start loading the game
+        loadGame();
+
+        // Expose for debugging
+        window.state = state;
+        window.db = db;
+
     </script>
 
 </body>
