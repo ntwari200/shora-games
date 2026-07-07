@@ -99,11 +99,7 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
-        #startOverlay .content .icon {
-            font-size: 4rem;
-            margin-bottom: 16px;
-        }
-
+        #startOverlay .content .icon { font-size: 4rem; margin-bottom: 16px; }
         #startOverlay .content .title {
             font-family: 'Orbitron', monospace;
             font-size: 1.8rem;
@@ -112,19 +108,14 @@
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
         }
-
-        #startOverlay .content .sub {
-            color: var(--muted);
-            font-size: 0.9rem;
-            margin-top: 8px;
-        }
+        #startOverlay .content .sub { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
 
         @keyframes pulse {
             0%, 100% { transform: scale(1); }
             50% { transform: scale(1.02); }
         }
 
-        /* ===== TOUCH CONTROLS - Now pointer-events: none when hidden ===== */
+        /* ===== TOUCH CONTROLS ===== */
         #touchControls {
             position: absolute;
             bottom: 30px;
@@ -189,7 +180,7 @@
         }
         .touch-controls-group .touch-btn { pointer-events: auto; }
 
-        /* ===== LOBBY OVERLAY - pointer-events: none when hidden ===== */
+        /* ===== LOBBY OVERLAY ===== */
         #lobbyOverlay {
             position: absolute;
             inset: 0;
@@ -408,6 +399,7 @@
         #statusMessage .main { font-size: 1.4rem; font-weight: 700; color: #fff; }
         #statusMessage .sub { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
 
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
             .lobby-box { padding: 30px 35px; max-width: 420px; }
             .lobby-box .game-icon { font-size: 3rem; }
@@ -893,7 +885,6 @@
                 .then(dataText => {
                     console.log('✅ data.js fetched');
 
-                    // Fix both image and audio paths
                     const fixedData = dataText
                         .replace(/images\//g, '/games/ninja%20run/images/')
                         .replace(/media\//g, '/games/ninja%20run/media/');
@@ -919,7 +910,6 @@
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
 
-            // Fix AudioListener
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
                     const originalSetPosition = AudioListener.prototype.setPosition;
@@ -941,7 +931,6 @@
                 console.log('✅ Runtime loaded');
 
                 try {
-                    // Override requestProjectData
                     if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
                         const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
                         cr.runtime.prototype.requestProjectData = function() {
@@ -960,10 +949,8 @@
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
-                    // Handle click-to-start
                     dom.startOverlay.addEventListener('click', () => {
                         dom.startOverlay.classList.add('hidden');
-                        // Resume audio context
                         if (runtime.audioInstance && runtime.audioInstance.context) {
                             runtime.audioInstance.context.resume();
                         }
@@ -972,9 +959,10 @@
 
                     setupTouchControls(runtime);
                     startLobby();
-
-                    // Start score tracking
                     startScoreTracking();
+
+                    // Verify event sheet after 5 seconds
+                    setTimeout(verifyGameEvents, 5000);
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -993,6 +981,42 @@
         }
 
         // ============================================================
+        // EVENT SHEET VERIFICATION
+        // ============================================================
+        function verifyGameEvents() {
+            console.log('🔍 ===== VERIFYING GAME EVENT SHEET =====');
+
+            const runtime = window.gameRuntime;
+            if (!runtime) {
+                console.log('❌ Runtime not found');
+                return;
+            }
+
+            const layout = runtime.running_layout;
+            if (!layout) {
+                console.log('❌ No running layout');
+                return;
+            }
+            console.log('✅ Layout:', layout.name);
+
+            if (layout.event_sheet) {
+                console.log('✅ Event sheet:', layout.event_sheet.name);
+                console.log('   Events:', layout.event_sheet.events.length);
+                console.log('   Triggers:', Object.keys(layout.event_sheet.triggers || {}).length);
+            } else {
+                console.log('❌ No event sheet attached to layout');
+            }
+
+            const vars = runtime.all_global_vars || [];
+            console.log('📊 Global Variables:', vars.length);
+            vars.forEach(v => {
+                console.log(`   ${v.name} = ${v.data}`);
+            });
+
+            console.log('🔍 ===== VERIFICATION COMPLETE =====');
+        }
+
+        // ============================================================
         // SCORE TRACKING
         // ============================================================
         function startScoreTracking() {
@@ -1005,9 +1029,7 @@
                     const runtime = window.gameRuntime;
                     const vars = runtime.all_global_vars || [];
 
-                    let score = 0,
-                        coins = 0,
-                        distance = 0;
+                    let score = 0, coins = 0, distance = 0;
 
                     for (let v of vars) {
                         if (v.name === 'Score') score = v.data || 0;
@@ -1019,12 +1041,10 @@
                     state.currentCoins = coins;
                     state.currentDistance = distance;
 
-                    // Update UI
                     dom.liveScore.textContent = score;
                     dom.liveCoins.textContent = coins;
                     dom.liveDistance.textContent = distance;
 
-                    // Update player in Firebase with live score
                     if (state.joined && state.user) {
                         const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
                         update(playerRef, {
@@ -1035,16 +1055,13 @@
                         }).catch(e => console.warn('⚠️ Could not update score:', e));
                     }
 
-                    // Show score overlay when game is playing
                     if (state.roundState === 'playing') {
                         dom.scoreOverlay.classList.add('show');
                     } else {
                         dom.scoreOverlay.classList.remove('show');
                     }
 
-                } catch (e) {
-                    // Silent fail
-                }
+                } catch (e) { /* Silent fail */ }
             }, 500);
 
             console.log('✅ Score tracking started');
@@ -1054,9 +1071,7 @@
         // TOUCH CONTROLS
         // ============================================================
         function setupTouchControls(runtime) {
-            let leftPressed = false,
-                rightPressed = false,
-                jumpPressed = false;
+            let leftPressed = false, rightPressed = false, jumpPressed = false;
 
             function dispatchKeyEvent(type, key, keyCode) {
                 const event = new KeyboardEvent(type, {
@@ -1289,6 +1304,136 @@
             dom.statusMessage.classList.remove('show');
             dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
+
+            // ============================================================
+            // FIX: Force the game to start (bypass internal buttons)
+            // ============================================================
+            setTimeout(forceGameStart, 1500);
+        }
+
+        // ============================================================
+        // FIX: Force Game Start (bypasses non-working internal buttons)
+        // ============================================================
+        function forceGameStart() {
+            const runtime = window.gameRuntime;
+            if (!runtime) {
+                console.log('⏳ Runtime not ready, retrying...');
+                setTimeout(forceGameStart, 500);
+                return;
+            }
+
+            console.log('🎮 Force starting game...');
+
+            try {
+                const currentLayout = runtime.running_layout;
+
+                // Method 1: Switch from Menu to Game layout
+                if (currentLayout && currentLayout.name === 'Menu') {
+                    const gameLayout = runtime.layouts['Game'];
+                    if (gameLayout) {
+                        console.log('🔄 Switching from Menu to Game layout...');
+                        runtime.changelayout = gameLayout;
+                        runtime.doChangeLayout(gameLayout);
+                        console.log('✅ Switched to Game layout');
+                        // Unpause after switching
+                        setTimeout(() => {
+                            const vars = runtime.all_global_vars || [];
+                            vars.forEach(v => {
+                                if (v.name === 'Pause') {
+                                    v.data = 0;
+                                    console.log('✅ Pause set to 0');
+                                }
+                            });
+                        }, 500);
+                        return;
+                    }
+                }
+
+                // Method 2: If on Game layout, unpause
+                if (currentLayout && currentLayout.name === 'Game') {
+                    console.log('✅ Already on Game layout');
+                    const vars = runtime.all_global_vars || [];
+                    vars.forEach(v => {
+                        if (v.name === 'Pause') {
+                            v.data = 0;
+                            console.log('✅ Pause set to 0');
+                        }
+                    });
+                    return;
+                }
+
+                // Method 3: Try clicking the Play button
+                console.log('🔍 Looking for Play button...');
+                const types = runtime.types_by_index || [];
+                let foundPlayButton = false;
+                types.forEach(type => {
+                    if (type.name && type.name.toLowerCase().includes('play')) {
+                        type.instances.forEach(inst => {
+                            console.log('🎯 Simulating click on Play button:', type.name);
+                            const cnds = Object.getPrototypeOf(type.plugin).cnds;
+                            if (cnds && cnds.OnClick) {
+                                runtime.trigger(cnds.OnClick, inst);
+                                foundPlayButton = true;
+                            }
+                        });
+                    }
+                });
+
+                if (!foundPlayButton) {
+                    console.log('⚠️ Play button not found, checking for other buttons...');
+                    types.forEach(type => {
+                        if (type.name && (
+                            type.name.toLowerCase().includes('btn') ||
+                            type.name.toLowerCase().includes('button') ||
+                            type.name.toLowerCase().includes('start')
+                        )) {
+                            type.instances.forEach(inst => {
+                                console.log('🎯 Trying button:', type.name);
+                                const cnds = Object.getPrototypeOf(type.plugin).cnds;
+                                if (cnds && cnds.OnClick) {
+                                    runtime.trigger(cnds.OnClick, inst);
+                                }
+                            });
+                        }
+                    });
+                }
+
+                // Method 4: Unpause game directly
+                try {
+                    const vars = runtime.all_global_vars || [];
+                    vars.forEach(v => {
+                        if (v.name === 'Pause') {
+                            v.data = 0;
+                            console.log('✅ Pause set to 0');
+                        }
+                        if (v.name === 'GameState') {
+                            v.data = 1;
+                            console.log('✅ GameState set to 1');
+                        }
+                    });
+                } catch (e) {
+                    console.warn('⚠️ Could not set game state:', e);
+                }
+
+                // Method 5: Force the layout to start running
+                if (currentLayout && currentLayout.startRunning) {
+                    console.log('🔄 Re-starting layout...');
+                    currentLayout.startRunning();
+                }
+
+            } catch (e) {
+                console.error('❌ Error forcing game start:', e);
+            }
+
+            // Force the game loop to run
+            try {
+                if (runtime.tick) {
+                    runtime.tick(false);
+                    console.log('✅ Forced game tick');
+                }
+            } catch (e) {
+                console.warn('⚠️ Could not force tick:', e);
+            }
         }
 
         function startGame() {
@@ -1346,6 +1491,25 @@
                     }
                 }).catch(e => console.error('❌ Error getting winner data:', e));
             }
+
+            // Reset for next round after 10 seconds
+            setTimeout(() => {
+                dom.statusMessage.classList.remove('show');
+                state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
+                state.roundState = 'waiting';
+                state.timeRemaining = CONFIG.ROUND_DURATION;
+                state.players = [];
+                state.playerCount = 0;
+                state.joined = false;
+                state.gameStarted = false;
+                state.results = null;
+                dom.joinBtn.disabled = false;
+                dom.joinBtn.textContent = '🚀 Join Round';
+                dom.lobbyOverlay.classList.remove('hidden');
+                updateUI();
+                // Re-simulate players
+                setTimeout(simulatePlayers, 1000);
+            }, 10000);
         }
 
         // ============================================================
@@ -1376,9 +1540,7 @@
         // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
-            let score = 0,
-                coins = 0,
-                distance = 0;
+            let score = 0, coins = 0, distance = 0;
             if (runtime) {
                 try {
                     const vars = runtime.all_global_vars || [];
@@ -1443,7 +1605,7 @@
 
             if (players.length === 0) {
                 dom.playersContainer.innerHTML =
-                `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
+                    `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
                 return;
             }
 
