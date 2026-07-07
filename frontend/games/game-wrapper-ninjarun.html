@@ -697,7 +697,7 @@
         }
 
         // ============================================================
-        // FIXED: AudioListener patch + jQuery loading
+        // FIXED: AudioListener patch + Image path fix + jQuery
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
@@ -745,7 +745,7 @@
             console.log('🔄 Loading game engine...');
 
             // ============================================================
-            // FIX: Override AudioListener to prevent NaN errors
+            // FIX 1: Override AudioListener to prevent NaN errors
             // ============================================================
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
@@ -768,9 +768,58 @@
                         return originalSetSize.call(this, w, h, force);
                     };
                     console.log('✅ Runtime setSize patched');
+
+                    // ============================================================
+                    // FIX 2: Fix image paths in loadProject
+                    // ============================================================
+                    const originalLoadProject = cr.runtime.prototype.loadProject;
+                    cr.runtime.prototype.loadProject = function(data) {
+                        console.log('🔄 Fixing image paths in project data...');
+                        try {
+                            if (data && data.project) {
+                                const types = data.project[2];
+                                for (let i = 0; i < types.length; i++) {
+                                    const type = types[i];
+                                    // Fix texture file paths
+                                    if (type && type[6] && type[6][0]) {
+                                        const imgPath = type[6][0];
+                                        if (imgPath && !imgPath.startsWith('/games/ninja%20run/')) {
+                                            const filename = imgPath.split('/').pop();
+                                            type[6][0] = '/games/ninja%20run/images/' + filename;
+                                            console.log('  📁 Fixed texture path:', imgPath, '→', type[6][0]);
+                                        }
+                                    }
+                                    // Fix animation frame image paths
+                                    if (type && type[7]) {
+                                        const animations = type[7];
+                                        for (let a = 0; a < animations.length; a++) {
+                                            const frames = animations[a][7];
+                                            if (frames) {
+                                                for (let f = 0; f < frames.length; f++) {
+                                                    const frame = frames[f];
+                                                    if (frame && frame[0]) {
+                                                        const imgPath = frame[0];
+                                                        if (imgPath && !imgPath.startsWith('/games/ninja%20run/')) {
+                                                            const filename = imgPath.split('/').pop();
+                                                            frames[f][0] = '/games/ninja%20run/images/' + filename;
+                                                            console.log('  📁 Fixed frame path:', imgPath, '→', frames[f][0]);
+                                                        }
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e) {
+                            console.warn('⚠️ Error fixing image paths:', e);
+                        }
+                        return originalLoadProject.call(this, data);
+                    };
+                    console.log('✅ Image path fix applied');
                 }
             } catch (e) {
-                console.warn('⚠️ Could not patch AudioListener:', e);
+                console.warn('⚠️ Could not patch:', e);
             }
 
             // Load c2runtime.js
