@@ -690,7 +690,7 @@
         }
 
         // ============================================================
-        // FIXED: Load data.js and inject as global, then override Runtime
+        // FIXED: Load data.js and inject BEFORE loading c2runtime.js
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
@@ -752,17 +752,7 @@
                     window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored in window._c2projectData');
 
-                    // STEP 4: Override the Runtime.requestProjectData method
-                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                        cr.runtime.prototype.requestProjectData = function() {
-                            console.log('🔄 Using cached project data instead of loading data.js');
-                            this.loadProject(window._c2projectData);
-                        };
-                        console.log('✅ Runtime.requestProjectData overridden');
-                    }
-
-                    // STEP 5: Now load c2runtime.js
+                    // STEP 4: Load c2runtime.js
                     loadGameEngine();
                 })
                 .catch(err => {
@@ -792,7 +782,31 @@
                 console.warn('⚠️ Could not patch AudioListener:', e);
             }
 
-            // Load c2runtime.js
+            // Inject a script that will override the Runtime BEFORE it's loaded
+            const overrideScript = document.createElement('script');
+            overrideScript.textContent = `
+                // Override the Runtime prototype BEFORE c2runtime.js loads
+                if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                    const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+                    cr.runtime.prototype.requestProjectData = function() {
+                        console.log('🔄 Using cached project data instead of loading data.js');
+                        // Use the data we already loaded
+                        if (window._c2projectData) {
+                            this.loadProject(window._c2projectData);
+                        } else {
+                            console.error('❌ No cached project data found!');
+                            originalRequestProjectData.call(this);
+                        }
+                    };
+                    console.log('✅ Runtime.requestProjectData overridden');
+                } else {
+                    console.warn('⚠️ cr.runtime not available yet, will try again');
+                }
+            `;
+            document.head.appendChild(overrideScript);
+            console.log('✅ Runtime override script injected');
+
+            // Now load c2runtime.js
             const script = document.createElement('script');
             script.src = '/games/ninja%20run/c2runtime.js';
             script.onload = () => {
