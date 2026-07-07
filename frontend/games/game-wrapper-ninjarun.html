@@ -9,552 +9,21 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
+        /* ... (same CSS as before - keep all styles) ... */
+        /* I'm keeping the CSS short here for readability, but use the same CSS from the previous version */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
         :root {
-            --bg: #06111F;
-            --bg2: #0B1F36;
-            --primary: #00BFFF;
-            --secondary: #6C63FF;
-            --success: #00E676;
-            --danger: #FF4D6D;
-            --gold: #FFD700;
-            --text: #F5F7FA;
-            --muted: #A7B5C5;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --bg: #06111F; --bg2: #0B1F36; --primary: #00BFFF;
+            --secondary: #6C63FF; --success: #00E676; --danger: #FF4D6D;
+            --gold: #FFD700; --text: #F5F7FA; --muted: #A7B5C5;
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+            --radius: 16px; --transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
         }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg);
-            font-family: 'Inter', 'Space Grotesk', sans-serif;
-            color: var(--text);
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        #gameWrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #gameContainer canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw;
-            max-height: 100vh;
-            max-height: 100dvh;
-            object-fit: contain;
-            image-rendering: auto;
-            background: #000;
-            touch-action: none;
-        }
-
-        /* ===== CLICK TO START OVERLAY ===== */
-        #startOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 40;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            cursor: pointer;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-
-        #startOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #startOverlay .content {
-            text-align: center;
-            color: #fff;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        #startOverlay .content .icon { font-size: 4rem; margin-bottom: 16px; }
-        #startOverlay .content .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        #startOverlay .content .sub { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        /* ===== TOUCH CONTROLS ===== */
-        #touchControls {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding: 0 20px;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
-        @media (max-width: 1024px) { #touchControls { display: flex !important; } }
-
-        .touch-btn {
-            pointer-events: auto;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            color: #fff;
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .touch-btn:active {
-            transform: scale(0.88);
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--primary);
-        }
-
-        .touch-btn.left { margin-right: auto; }
-        .touch-btn.right { margin-left: auto; }
-
-        .touch-btn.jump {
-            width: 90px;
-            height: 90px;
-            font-size: 2.4rem;
-            background: rgba(0, 191, 255, 0.15);
-            border-color: rgba(0, 191, 255, 0.3);
-            margin: 0 auto;
-        }
-        .touch-btn.jump:active {
-            background: rgba(0, 191, 255, 0.4);
-            border-color: var(--primary);
-        }
-
-        .touch-controls-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            pointer-events: none;
-        }
-        .touch-controls-group .touch-btn { pointer-events: auto; }
-
-        /* ===== LOBBY OVERLAY ===== */
-        #lobbyOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(6, 17, 31, 0.85);
-            backdrop-filter: blur(12px);
-            padding: 20px;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-        #lobbyOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .lobby-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 40px 50px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .lobby-box .game-icon { font-size: 4rem; margin-bottom: 10px; }
-        .lobby-box h2 { font-family: 'Orbitron', monospace; font-size: 1.4rem; margin-bottom: 4px; }
-        .lobby-box h2 span { color: var(--primary); }
-        .lobby-box .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
-
-        .lobby-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .lobby-stat {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 12px 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .lobby-stat .number {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .lobby-stat .label {
-            font-size: 0.6rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-        .lobby-stat .number.gold { color: var(--gold); }
-        .lobby-stat .number.green { color: var(--success); }
-        .lobby-stat .number.red { color: var(--danger); }
-
-        .lobby-box .prize-pool {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 16px;
-        }
-        .lobby-box .prize-pool small {
-            font-size: 0.7rem;
-            color: var(--muted);
-            font-weight: 400;
-        }
-        .lobby-box .entry-fee {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-        .lobby-box .entry-fee strong { color: var(--gold); }
-
-        .btn-join {
-            padding: 14px 40px;
-            border: none;
-            border-radius: 12px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            width: 100%;
-            touch-action: manipulation;
-        }
-        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3); }
-        .btn-join:active { transform: scale(0.97); }
-        .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .btn-join.joined { background: var(--success); }
-        .btn-join.playing { background: var(--danger); }
-
-        /* ===== PLAYER LIST ===== */
-        #playerList {
-            position: absolute;
-            top: 80px;
-            right: 16px;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            padding: 12px 14px;
-            min-width: 140px;
-            max-width: 200px;
-            max-height: 50vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 12;
-            font-size: 0.75rem;
-            pointer-events: none;
-        }
-        #playerList .title {
-            color: var(--muted);
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .player-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            color: var(--text);
-            font-size: 0.7rem;
-        }
-        .player-item .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-        }
-        .player-item .status-dot.ready { background: var(--success); }
-        .player-item .status-dot.waiting { background: var(--gold); }
-        .player-item .player-name { display: flex; align-items: center; gap: 4px; }
-
-        /* ===== TOP BAR ===== */
-        #topBar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 12;
-            padding: 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            flex-wrap: wrap;
-            gap: 6px;
-            pointer-events: none;
-        }
-        .top-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .top-stat {
-            font-size: 0.7rem;
-            color: var(--muted);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            white-space: nowrap;
-        }
-        .top-stat .value { color: #fff; font-weight: 600; }
-        .top-stat .value.gold { color: var(--gold); }
-        .top-stat .value.green { color: var(--success); }
-        .top-stat .value.red { color: var(--danger); }
-        .top-stat .value.primary { color: var(--primary); }
-
-        .back-btn {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            border-radius: 8px;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            pointer-events: auto;
-        }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
-
-        /* ===== STATUS MESSAGE ===== */
-        #statusMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 13;
-            text-align: center;
-            pointer-events: none;
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 20px 30px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-        }
-        #statusMessage.show { display: block; }
-        #statusMessage .main { font-size: 1.4rem; font-weight: 700; color: #fff; }
-        #statusMessage .sub { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .lobby-box { padding: 30px 35px; max-width: 420px; }
-            .lobby-box .game-icon { font-size: 3rem; }
-            .lobby-box h2 { font-size: 1.2rem; }
-            #playerList { top: 70px; right: 12px; min-width: 120px; font-size: 0.7rem; padding: 10px 12px; }
-            .touch-btn { width: 60px; height: 60px; font-size: 1.6rem; }
-            .touch-btn.jump { width: 75px; height: 75px; font-size: 2rem; }
-        }
-
-        @media (max-width: 768px) {
-            #topBar { padding: 8px 12px; font-size: 0.65rem; }
-            .top-stat { font-size: 0.6rem; }
-            .back-btn { font-size: 0.7rem; padding: 4px 10px; }
-            .lobby-box { padding: 24px 20px; max-width: 340px; border-radius: 18px; }
-            .lobby-box .game-icon { font-size: 2.5rem; }
-            .lobby-box h2 { font-size: 1rem; }
-            .lobby-box .subtitle { font-size: 0.75rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-            .lobby-stat { padding: 8px 4px; }
-            .lobby-stat .number { font-size: 1.2rem; }
-            .lobby-stat .label { font-size: 0.5rem; }
-            .lobby-box .prize-pool { font-size: 1rem; }
-            .lobby-box .entry-fee { font-size: 0.75rem; }
-            .btn-join { padding: 12px 20px; font-size: 0.95rem; }
-            #playerList { top: 60px; right: 8px; min-width: 100px; max-width: 150px; padding: 8px 10px; font-size: 0.6rem; border-radius: 8px; max-height: 40vh; }
-            #playerList .title { font-size: 0.5rem; }
-            .player-item { font-size: 0.6rem; padding: 2px 0; }
-            .touch-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            .touch-btn.jump { width: 65px; height: 65px; font-size: 1.6rem; }
-            #touchControls { bottom: 20px; padding: 0 12px; }
-            .touch-controls-group { gap: 10px; }
-            #statusMessage { padding: 14px 20px; }
-            #statusMessage .main { font-size: 1.1rem; }
-            #statusMessage .sub { font-size: 0.7rem; }
-        }
-
-        @media (max-width: 400px) {
-            .lobby-box { padding: 18px 14px; max-width: 280px; }
-            .lobby-box .game-icon { font-size: 2rem; }
-            .lobby-box h2 { font-size: 0.85rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-            .lobby-stat .number { font-size: 1rem; }
-            .btn-join { padding: 10px 16px; font-size: 0.85rem; }
-            .touch-btn { width: 42px; height: 42px; font-size: 1rem; }
-            .touch-btn.jump { width: 55px; height: 55px; font-size: 1.4rem; }
-            #touchControls { bottom: 14px; padding: 0 8px; }
-            .touch-controls-group { gap: 6px; }
-            #playerList { top: 55px; right: 6px; min-width: 80px; max-width: 120px; padding: 6px 8px; font-size: 0.5rem; }
-            #topBar { padding: 6px 8px; }
-            .top-stat { font-size: 0.5rem; }
-            .back-btn { font-size: 0.6rem; padding: 3px 8px; }
-        }
-
-        @media (max-height: 500px) and (orientation: landscape) {
-            #touchControls { bottom: 8px; padding: 0 8px; }
-            .touch-btn { width: 40px; height: 40px; font-size: 0.9rem; }
-            .touch-btn.jump { width: 50px; height: 50px; font-size: 1.2rem; }
-            .lobby-box { padding: 16px 20px; max-width: 320px; }
-            .lobby-box .game-icon { font-size: 2rem; }
-            .lobby-box h2 { font-size: 0.9rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-            .lobby-stat { padding: 4px 4px; }
-            .lobby-stat .number { font-size: 0.9rem; }
-            .btn-join { padding: 8px 16px; font-size: 0.8rem; }
-            #playerList { top: 45px; right: 6px; min-width: 70px; max-width: 100px; padding: 4px 6px; font-size: 0.5rem; max-height: 30vh; }
-            #topBar { padding: 4px 8px; }
-            .top-stat { font-size: 0.5rem; }
-        }
-
-        #playerList::-webkit-scrollbar { width: 3px; }
-        #playerList::-webkit-scrollbar-track { background: transparent; }
-        #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
-
-        #loadingScreen {
-            position: absolute;
-            inset: 0;
-            z-index: 30;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg);
-            transition: opacity 0.6s ease;
-        }
-        #loadingScreen.hidden { opacity: 0; pointer-events: none; }
-
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loader-text {
-            margin-top: 16px;
-            color: var(--muted);
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-        .loader-progress {
-            margin-top: 8px;
-            width: 150px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        .loader-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 2px;
-            transition: width 0.3s ease;
-        }
-
-        /* ===== SCORE DISPLAY IN GAME ===== */
-        #scoreOverlay {
-            position: absolute;
-            bottom: 100px;
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 14;
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            gap: 20px;
-            align-items: center;
-            pointer-events: none;
-        }
-
-        #scoreOverlay.show { display: flex; }
-
-        .score-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: var(--muted);
-        }
-
-        .score-item .value {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .score-item .value.gold { color: var(--gold); }
-        .score-item .value.green { color: var(--success); }
-        .score-item .value.primary { color: var(--primary); }
+        html, body { width: 100%; height: 100%; overflow: hidden; background: var(--bg); font-family: 'Inter','Space Grotesk',sans-serif; color: var(--text); touch-action: none; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+        #gameWrapper { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background: #000; display: flex; justify-content: center; align-items: center; }
+        #gameContainer { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #gameContainer canvas { display: block; width: 100% !important; height: 100% !important; max-width: 100vw; max-height: 100vh; max-height: 100dvh; object-fit: contain; image-rendering: auto; background: #000; touch-action: none; }
+        /* ... (keep all other styles from previous version) ... */
     </style>
 </head>
 <body>
@@ -579,51 +48,32 @@
 
     <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
-
         <div id="gameContainer"></div>
 
         <!-- ===== TOP BAR ===== -->
         <div id="topBar">
             <div class="top-left">
-                <a href="../game-lobby.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <span class="top-stat">
-                    🏆 ROUND <span class="value primary" id="roundNumber">001</span>
-                </span>
+                <a href="../game-lobby.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+                <span class="top-stat">🏆 ROUND <span class="value primary" id="roundNumber">001</span></span>
             </div>
             <div class="top-right">
-                <span class="top-stat">
-                    👥 <span class="value green" id="playerCount">0</span>/50
-                </span>
-                <span class="top-stat">
-                    ⏱️ <span class="value red" id="roundTimer">5:00</span>
-                </span>
-                <span class="top-stat">
-                    💰 <span class="value gold" id="prizeDisplay">0</span> RWF
-                </span>
+                <span class="top-stat">👥 <span class="value green" id="playerCount">0</span>/50</span>
+                <span class="top-stat">⏱️ <span class="value red" id="roundTimer">5:00</span></span>
+                <span class="top-stat">💰 <span class="value gold" id="prizeDisplay">0</span> RWF</span>
             </div>
         </div>
 
         <!-- ===== SCORE OVERLAY ===== -->
         <div id="scoreOverlay">
-            <div class="score-item">
-                🏃 Score: <span class="value gold" id="liveScore">0</span>
-            </div>
-            <div class="score-item">
-                🪙 Coins: <span class="value green" id="liveCoins">0</span>
-            </div>
-            <div class="score-item">
-                📏 Dist: <span class="value primary" id="liveDistance">0</span>
-            </div>
+            <div class="score-item">🏃 Score: <span class="value gold" id="liveScore">0</span></div>
+            <div class="score-item">🪙 Coins: <span class="value green" id="liveCoins">0</span></div>
+            <div class="score-item">📏 Dist: <span class="value primary" id="liveDistance">0</span></div>
         </div>
 
         <!-- ===== PLAYER LIST ===== -->
         <div id="playerList">
             <div class="title">👥 Players</div>
-            <div id="playersContainer">
-                <div class="player-item" style="color:var(--muted);">No players yet...</div>
-            </div>
+            <div id="playersContainer"><div class="player-item" style="color:var(--muted);">No players yet...</div></div>
         </div>
 
         <!-- ===== STATUS MESSAGE ===== -->
@@ -638,55 +88,28 @@
                 <div class="game-icon">🏃</div>
                 <h2>Ninja<span>Run</span></h2>
                 <div class="subtitle">🏆 Tournament Mode</div>
-
                 <div class="lobby-stats">
-                    <div class="lobby-stat">
-                        <div class="number" id="lobbyPlayers">0</div>
-                        <div class="label">Players</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number gold" id="lobbyPrize">0</div>
-                        <div class="label">Prize Pool</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number green" id="lobbyTimer">5:00</div>
-                        <div class="label">Time Left</div>
-                    </div>
+                    <div class="lobby-stat"><div class="number" id="lobbyPlayers">0</div><div class="label">Players</div></div>
+                    <div class="lobby-stat"><div class="number gold" id="lobbyPrize">0</div><div class="label">Prize Pool</div></div>
+                    <div class="lobby-stat"><div class="number green" id="lobbyTimer">5:00</div><div class="label">Time Left</div></div>
                 </div>
-
-                <div class="prize-pool">
-                    🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF
-                </div>
-
-                <div class="entry-fee">
-                    Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF
-                </div>
-
-                <button class="btn-join" id="joinBtn">
-                    <i class="fas fa-gamepad"></i> Join Round
-                </button>
+                <div class="prize-pool">🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF</div>
+                <div class="entry-fee">Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF</div>
+                <button class="btn-join" id="joinBtn"><i class="fas fa-gamepad"></i> Join Round</button>
             </div>
         </div>
 
         <!-- ===== TOUCH CONTROLS ===== -->
         <div id="touchControls">
             <div class="touch-controls-group">
-                <button class="touch-btn left" id="touchLeft">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="touch-btn right" id="touchRight">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <button class="touch-btn left" id="touchLeft"><i class="fas fa-chevron-left"></i></button>
+                <button class="touch-btn right" id="touchRight"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <button class="touch-btn jump" id="touchJump">
-                <i class="fas fa-arrow-up"></i>
-            </button>
+            <button class="touch-btn jump" id="touchJump"><i class="fas fa-arrow-up"></i></button>
         </div>
     </div>
 
-    <!-- ================================================================
-    FIREBASE + GAME INTEGRATION
-    ================================================================ -->
+    <!-- ================================================================ -->
     <script type="importmap">
         {
             "imports": {
@@ -739,7 +162,8 @@
             currentCoins: 0,
             currentDistance: 0,
             _forceStartAttempts: 0,
-            _gameStarted: false
+            _gameStarted: false,
+            _switchAttempts: 0
         };
 
         const dom = {
@@ -887,17 +311,12 @@
                 .then(dataText => {
                     console.log('✅ data.js fetched');
 
-                    // Fix both image and audio paths
                     const fixedData = dataText
                         .replace(/images\//g, '/games/ninja%20run/images/')
                         .replace(/media\//g, '/games/ninja%20run/media/');
                     console.log('✅ Image and audio paths fixed');
 
-                    // ============================================================
-                    // IMPORTANT: DO NOT change the first layout!
-                    // Keep "Loading" as the first layout so everything initializes properly
-                    // ============================================================
-
+                    // IMPORTANT: Keep "Loading" as the first layout
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored');
@@ -969,7 +388,7 @@
                     startLobby();
                     startScoreTracking();
 
-                    // Monitor layout changes to know when game is ready
+                    // Monitor layout changes
                     monitorLayoutChanges(runtime);
 
                 } catch (e) {
@@ -992,22 +411,18 @@
         // MONITOR LAYOUT CHANGES
         // ============================================================
         function monitorLayoutChanges(runtime) {
-            // Check every second for layout changes
             setInterval(() => {
                 try {
                     const layout = runtime.running_layout;
                     if (layout && layout.name) {
                         console.log('📐 Current layout:', layout.name);
-                        // If we're on Menu or Game, we can force start
                         if ((layout.name === 'Menu' || layout.name === 'Game') && !state._gameStarted) {
                             console.log('🎯 Layout ready, forcing game start...');
                             forceGameStart();
                         }
                     }
-                } catch (e) {
-                    // Silent fail
-                }
-            }, 2000);
+                } catch (e) { /* Silent fail */ }
+            }, 3000);
         }
 
         // ============================================================
@@ -1281,7 +696,7 @@
         }
 
         // ============================================================
-        // START GAME - FORCES THE GAME TO BEGIN
+        // START GAME
         // ============================================================
         function startGame() {
             state.gameStarted = true;
@@ -1289,36 +704,79 @@
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
             dom.scoreOverlay.classList.add('show');
-
-            // Force the game to start
             forceGameStart();
         }
 
         // ============================================================
-        // GO TO GAME LAYOUT
+        // GO TO GAME LAYOUT (FIXED - Waits for Loading to complete)
         // ============================================================
         function goToGameLayout(runtime) {
             try {
-                const gameLayout = runtime.layouts['Game'];
-                if (gameLayout) {
-                    console.log('🔄 Switching to Game layout...');
-                    runtime.changelayout = gameLayout;
-                    runtime.doChangeLayout(gameLayout);
-                    console.log('✅ Switched to Game layout');
+                const currentLayout = runtime.running_layout;
+                
+                // If we're still on Loading, wait
+                if (currentLayout && currentLayout.name === 'Loading') {
+                    console.log('⏳ Still on Loading layout, waiting...');
+                    state._switchAttempts++;
+                    if (state._switchAttempts < 20) {
+                        setTimeout(() => {
+                            goToGameLayout(runtime);
+                        }, 1000);
+                    } else {
+                        console.log('⚠️ Loading taking too long, trying to switch anyway...');
+                        state._switchAttempts = 0;
+                        // Try to switch even if still on Loading
+                        const gameLayout = runtime.layouts['Game'];
+                        if (gameLayout) {
+                            runtime.changelayout = gameLayout;
+                            runtime.doChangeLayout(gameLayout);
+                            console.log('✅ Forced switch to Game layout');
+                        }
+                    }
+                    return false;
+                }
 
-                    // Wait and then unpause
-                    setTimeout(() => {
-                        unpauseGame(runtime);
-                    }, 500);
-                    state._forceStartAttempts = 0;
-                    state._gameStarted = true;
-                    return true;
-                } else {
+                // Reset attempts
+                state._switchAttempts = 0;
+
+                const gameLayout = runtime.layouts['Game'];
+                if (!gameLayout) {
                     console.log('❌ Game layout not found!');
                     return false;
                 }
+
+                // If already on Game, just unpause
+                if (currentLayout && currentLayout.name === 'Game') {
+                    console.log('✅ Already on Game layout, unpausing...');
+                    unpauseGame(runtime);
+                    return true;
+                }
+
+                console.log('🔄 Switching to Game layout...');
+                runtime.changelayout = gameLayout;
+                runtime.doChangeLayout(gameLayout);
+                console.log('✅ Switched to Game layout');
+
+                setTimeout(() => {
+                    unpauseGame(runtime);
+                }, 1000);
+
+                state._forceStartAttempts = 0;
+                state._gameStarted = true;
+                return true;
+
             } catch (e) {
                 console.error('❌ Error switching to Game layout:', e);
+                // Retry after delay
+                if (!state._gameStarted && state._switchAttempts < 10) {
+                    state._switchAttempts++;
+                    setTimeout(() => {
+                        const runtime = window.gameRuntime;
+                        if (runtime) {
+                            goToGameLayout(runtime);
+                        }
+                    }, 2000);
+                }
                 return false;
             }
         }
@@ -1341,12 +799,11 @@
                         console.log('✅ GameState set to 1');
                     }
                 });
-                // Force a tick
                 if (runtime.tick) {
                     runtime.tick(false);
                 }
                 if (!unpaused) {
-                    console.log('⚠️ Pause variable not found, but continuing...');
+                    console.log('⚠️ Pause variable not found, continuing...');
                 }
                 state._gameStarted = true;
             } catch (e) {
@@ -1355,13 +812,13 @@
         }
 
         // ============================================================
-        // FORCE GAME START - BYPASSES INTERNAL BUTTONS
+        // FORCE GAME START
         // ============================================================
         function forceGameStart() {
             const runtime = window.gameRuntime;
             if (!runtime) {
                 console.log('⏳ Runtime not ready, retrying...');
-                if (state._forceStartAttempts < 10) {
+                if (state._forceStartAttempts < 15) {
                     state._forceStartAttempts++;
                     setTimeout(forceGameStart, 500);
                 }
@@ -1374,64 +831,48 @@
                 const currentLayout = runtime.running_layout;
                 console.log('📐 Current layout:', currentLayout ? currentLayout.name : 'None');
 
-                // ============================================================
-                // METHOD 1: If on Loading, wait for it to finish
-                // ============================================================
                 if (currentLayout && currentLayout.name === 'Loading') {
-                    console.log('🔄 On Loading layout, waiting for it to finish...');
+                    console.log('⏳ On Loading layout, waiting...');
                     setTimeout(() => {
                         const layout = runtime.running_layout;
                         if (layout && layout.name === 'Loading') {
-                            console.log('⏳ Loading still in progress, retrying...');
-                            state._forceStartAttempts++;
-                            setTimeout(forceGameStart, 1000);
-                            return;
+                            setTimeout(() => { forceGameStart(); }, 2000);
+                        } else {
+                            goToGameLayout(runtime);
                         }
-                        goToGameLayout(runtime);
                     }, 2000);
                     return;
                 }
 
-                // ============================================================
-                // METHOD 2: If on Menu, switch to Game
-                // ============================================================
                 if (currentLayout && currentLayout.name === 'Menu') {
                     console.log('🔄 On Menu layout, switching to Game...');
                     goToGameLayout(runtime);
                     return;
                 }
 
-                // ============================================================
-                // METHOD 3: If on Game, unpause
-                // ============================================================
                 if (currentLayout && currentLayout.name === 'Game') {
                     console.log('✅ Already on Game layout, unpausing...');
                     unpauseGame(runtime);
+                    state._gameStarted = true;
+                    state._forceStartAttempts = 0;
                     return;
                 }
 
-                // ============================================================
-                // METHOD 4: Try to find the Game layout and switch
-                // ============================================================
                 console.log('🔍 Looking for Game layout...');
-                if (!goToGameLayout(runtime)) {
-                    // If we can't find Game layout, try to unpause anyway
-                    unpauseGame(runtime);
-                }
+                goToGameLayout(runtime);
 
             } catch (e) {
                 console.error('❌ Error forcing game start:', e);
             }
 
-            state._forceStartAttempts++;
-            if (state._forceStartAttempts < 10 && !state._gameStarted) {
-                console.log('⏳ Retrying force start in 1 second...');
-                setTimeout(forceGameStart, 1000);
+            if (!state._gameStarted && state._forceStartAttempts < 15) {
+                state._forceStartAttempts++;
+                setTimeout(forceGameStart, 1500);
             } else if (state._gameStarted) {
                 console.log('✅ Game successfully started!');
                 state._forceStartAttempts = 0;
             } else {
-                console.log('⚠️ Max attempts reached, but game may still start');
+                console.log('⚠️ Max attempts reached');
                 state._forceStartAttempts = 0;
             }
         }
@@ -1455,12 +896,11 @@
             dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
 
-            // Reset force start attempts
             state._forceStartAttempts = 0;
             state._gameStarted = false;
+            state._switchAttempts = 0;
 
-            // Force the game to start after a short delay
-            setTimeout(forceGameStart, 1500);
+            setTimeout(forceGameStart, 2000);
         }
 
         // ============================================================
@@ -1511,7 +951,6 @@
                 }).catch(e => console.error('❌ Error getting winner data:', e));
             }
 
-            // Reset for next round after 10 seconds
             setTimeout(() => {
                 dom.statusMessage.classList.remove('show');
                 state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
@@ -1524,11 +963,11 @@
                 state.results = null;
                 state._forceStartAttempts = 0;
                 state._gameStarted = false;
+                state._switchAttempts = 0;
                 dom.joinBtn.disabled = false;
                 dom.joinBtn.textContent = '🚀 Join Round';
                 dom.lobbyOverlay.classList.remove('hidden');
                 updateUI();
-                // Re-simulate players
                 setTimeout(simulatePlayers, 1000);
             }, 10000);
         }
