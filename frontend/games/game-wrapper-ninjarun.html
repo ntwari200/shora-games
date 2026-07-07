@@ -85,6 +85,7 @@
             backdrop-filter: blur(8px);
             cursor: pointer;
             transition: opacity 0.5s ease;
+            pointer-events: auto;
         }
 
         #startOverlay.hidden {
@@ -123,7 +124,7 @@
             50% { transform: scale(1.02); }
         }
 
-        /* ===== TOUCH CONTROLS ===== */
+        /* ===== TOUCH CONTROLS - Now pointer-events: none when hidden ===== */
         #touchControls {
             position: absolute;
             bottom: 30px;
@@ -188,7 +189,7 @@
         }
         .touch-controls-group .touch-btn { pointer-events: auto; }
 
-        /* ===== LOBBY OVERLAY ===== */
+        /* ===== LOBBY OVERLAY - pointer-events: none when hidden ===== */
         #lobbyOverlay {
             position: absolute;
             inset: 0;
@@ -201,8 +202,12 @@
             backdrop-filter: blur(12px);
             padding: 20px;
             transition: opacity 0.5s ease;
+            pointer-events: auto;
         }
-        #lobbyOverlay.hidden { opacity: 0; pointer-events: none; }
+        #lobbyOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
 
         .lobby-box {
             background: rgba(255, 255, 255, 0.03);
@@ -305,6 +310,7 @@
             border: 1px solid rgba(255, 255, 255, 0.06);
             z-index: 12;
             font-size: 0.75rem;
+            pointer-events: none;
         }
         #playerList .title {
             color: var(--muted);
@@ -348,6 +354,7 @@
             border-bottom: 1px solid rgba(255, 255, 255, 0.05);
             flex-wrap: wrap;
             gap: 6px;
+            pointer-events: none;
         }
         .top-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
         .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
@@ -377,6 +384,7 @@
             display: flex;
             align-items: center;
             gap: 4px;
+            pointer-events: auto;
         }
         .back-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
 
@@ -951,9 +959,6 @@
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
-
-                    // Get the canvas reference
-                    const canvas = dom.canvas;
 
                     // Handle click-to-start
                     dom.startOverlay.addEventListener('click', () => {
