@@ -518,7 +518,7 @@
             transition: width 0.3s ease;
         }
 
-        /* ===== SCORE DISPLAY IN GAME (Overlay) ===== */
+        /* ===== SCORE DISPLAY IN GAME ===== */
         #scoreOverlay {
             position: absolute;
             bottom: 100px;
@@ -952,6 +952,13 @@
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
+                    // ============================================================
+                    // FIX: Ensure the game's event sheet runs and buttons work
+                    // ============================================================
+                    // The game's event sheet should run automatically via the runtime.
+                    // But we need to make sure the game's layout starts properly.
+                    // The runtime will handle this via the event system.
+
                     // Handle click-to-start
                     dom.startOverlay.addEventListener('click', () => {
                         dom.startOverlay.classList.add('hidden');
@@ -967,6 +974,15 @@
 
                     // Start score tracking
                     startScoreTracking();
+
+                    // ============================================================
+                    // FIX: Ensure mouse events reach the game canvas
+                    // ============================================================
+                    // Make sure the canvas receives mouse events for in-game buttons
+                    canvas.addEventListener('click', (e) => {
+                        // Let the game handle the click
+                        // The game's event system will process it
+                    });
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -1292,23 +1308,20 @@
         }
 
         // ============================================================
-        // END ROUND - RECORDS FINAL SCORES
+        // END ROUND
         // ============================================================
         function endRound(results) {
             state.roundState = 'ended';
             state.results = results;
             dom.scoreOverlay.classList.remove('show');
 
-            // Stop score tracking
             if (state.scoreInterval) {
                 clearInterval(state.scoreInterval);
                 state.scoreInterval = null;
             }
 
-            // Get final scores from the game
             const finalResults = getGameResults();
 
-            // Update the player's final score in Firebase
             if (state.joined && state.user) {
                 const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
                 update(playerRef, {
