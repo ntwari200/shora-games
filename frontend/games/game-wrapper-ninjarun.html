@@ -9,9 +9,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ============================================================
-               RESET & BASE
-            ============================================================ */
         * {
             margin: 0;
             padding: 0;
@@ -46,9 +43,6 @@
             -webkit-touch-callout: none;
         }
 
-        /* ============================================================
-               GAME WRAPPER - FULL SCREEN
-            ============================================================ */
         #gameWrapper {
             position: relative;
             width: 100vw;
@@ -61,9 +55,6 @@
             align-items: center;
         }
 
-        /* ============================================================
-               GAME CONTAINER - SCALED CANVAS
-            ============================================================ */
         #gameContainer {
             position: relative;
             width: 100%;
@@ -86,9 +77,6 @@
             touch-action: none;
         }
 
-        /* ============================================================
-               TOUCH CONTROLS - MOBILE OVERLAY
-            ============================================================ */
         #touchControls {
             position: absolute;
             bottom: 30px;
@@ -102,15 +90,10 @@
         }
 
         @media (hover: none) and (pointer: coarse) {
-            #touchControls {
-                display: flex !important;
-            }
+            #touchControls { display: flex !important; }
         }
-
         @media (max-width: 1024px) {
-            #touchControls {
-                display: flex !important;
-            }
+            #touchControls { display: flex !important; }
         }
 
         .touch-btn {
@@ -138,13 +121,8 @@
             border-color: var(--primary);
         }
 
-        .touch-btn.left {
-            margin-right: auto;
-        }
-
-        .touch-btn.right {
-            margin-left: auto;
-        }
+        .touch-btn.left { margin-right: auto; }
+        .touch-btn.right { margin-left: auto; }
 
         .touch-btn.jump {
             width: 90px;
@@ -167,13 +145,8 @@
             pointer-events: none;
         }
 
-        .touch-controls-group .touch-btn {
-            pointer-events: auto;
-        }
+        .touch-controls-group .touch-btn { pointer-events: auto; }
 
-        /* ============================================================
-               LOBBY OVERLAY
-            ============================================================ */
         #lobbyOverlay {
             position: absolute;
             inset: 0;
@@ -204,26 +177,10 @@
             box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
         }
 
-        .lobby-box .game-icon {
-            font-size: 4rem;
-            margin-bottom: 10px;
-        }
-
-        .lobby-box h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-        }
-
-        .lobby-box h2 span {
-            color: var(--primary);
-        }
-
-        .lobby-box .subtitle {
-            color: var(--muted);
-            font-size: 0.85rem;
-            margin-bottom: 20px;
-        }
+        .lobby-box .game-icon { font-size: 4rem; margin-bottom: 10px; }
+        .lobby-box h2 { font-family: 'Orbitron', monospace; font-size: 1.4rem; margin-bottom: 4px; }
+        .lobby-box h2 span { color: var(--primary); }
+        .lobby-box .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
 
         .lobby-stats {
             display: grid;
@@ -254,17 +211,9 @@
             margin-top: 2px;
         }
 
-        .lobby-stat .number.gold {
-            color: var(--gold);
-        }
-
-        .lobby-stat .number.green {
-            color: var(--success);
-        }
-
-        .lobby-stat .number.red {
-            color: var(--danger);
-        }
+        .lobby-stat .number.gold { color: var(--gold); }
+        .lobby-stat .number.green { color: var(--success); }
+        .lobby-stat .number.red { color: var(--danger); }
 
         .lobby-box .prize-pool {
             font-size: 1.2rem;
@@ -285,9 +234,7 @@
             margin-bottom: 16px;
         }
 
-        .lobby-box .entry-fee strong {
-            color: var(--gold);
-        }
+        .lobby-box .entry-fee strong { color: var(--gold); }
 
         .btn-join {
             padding: 14px 40px;
@@ -309,27 +256,16 @@
             box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3);
         }
 
-        .btn-join:active {
-            transform: scale(0.97);
-        }
-
+        .btn-join:active { transform: scale(0.97); }
         .btn-join:disabled {
             opacity: 0.4;
             cursor: not-allowed;
             transform: none !important;
         }
 
-        .btn-join.joined {
-            background: var(--success);
-        }
+        .btn-join.joined { background: var(--success); }
+        .btn-join.playing { background: var(--danger); }
 
-        .btn-join.playing {
-            background: var(--danger);
-        }
-
-        /* ============================================================
-               PLAYER LIST - MOBILE FRIENDLY
-            ============================================================ */
         #playerList {
             position: absolute;
             top: 80px;
@@ -372,13 +308,8 @@
             margin-right: 6px;
         }
 
-        .player-item .status-dot.ready {
-            background: var(--success);
-        }
-
-        .player-item .status-dot.waiting {
-            background: var(--gold);
-        }
+        .player-item .status-dot.ready { background: var(--success); }
+        .player-item .status-dot.waiting { background: var(--gold); }
 
         .player-item .player-name {
             display: flex;
@@ -386,9 +317,6 @@
             gap: 4px;
         }
 
-        /* ============================================================
-               TOP BAR - MOBILE FRIENDLY
-            ============================================================ */
         #topBar {
             position: absolute;
             top: 0;
@@ -429,26 +357,11 @@
             white-space: nowrap;
         }
 
-        .top-stat .value {
-            color: #fff;
-            font-weight: 600;
-        }
-
-        .top-stat .value.gold {
-            color: var(--gold);
-        }
-
-        .top-stat .value.green {
-            color: var(--success);
-        }
-
-        .top-stat .value.red {
-            color: var(--danger);
-        }
-
-        .top-stat .value.primary {
-            color: var(--primary);
-        }
+        .top-stat .value { color: #fff; font-weight: 600; }
+        .top-stat .value.gold { color: var(--gold); }
+        .top-stat .value.green { color: var(--success); }
+        .top-stat .value.red { color: var(--danger); }
+        .top-stat .value.primary { color: var(--primary); }
 
         .back-btn {
             color: var(--muted);
@@ -469,9 +382,6 @@
             color: #fff;
         }
 
-        /* ============================================================
-               STATUS MESSAGE
-            ============================================================ */
         #statusMessage {
             position: absolute;
             top: 50%;
@@ -488,9 +398,7 @@
             border: 1px solid rgba(255, 255, 255, 0.05);
         }
 
-        #statusMessage.show {
-            display: block;
-        }
+        #statusMessage.show { display: block; }
 
         #statusMessage .main {
             font-size: 1.4rem;
@@ -504,9 +412,6 @@
             margin-top: 6px;
         }
 
-        /* ============================================================
-               RESPONSIVE BREAKPOINTS
-            ============================================================ */
         @media (max-width: 1024px) {
             .lobby-box { padding: 30px 35px; max-width: 420px; }
             .lobby-box .game-icon { font-size: 3rem; }
@@ -580,9 +485,6 @@
         #playerList::-webkit-scrollbar-track { background: transparent; }
         #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
 
-        /* ============================================================
-               LOADING
-            ============================================================ */
         #loadingScreen {
             position: absolute;
             inset: 0;
@@ -640,7 +542,6 @@
 </head>
 <body>
 
-    <!-- ===== LOADING SCREEN ===== -->
     <div id="loadingScreen">
         <div class="loader"></div>
         <div class="loader-text">Loading NinjaRun...</div>
@@ -649,15 +550,9 @@
         </div>
     </div>
 
-    <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
+        <div id="gameContainer"></div>
 
-        <!-- Game Container -->
-        <div id="gameContainer">
-            <!-- The game canvas will be inserted here -->
-        </div>
-
-        <!-- ===== TOP BAR ===== -->
         <div id="topBar">
             <div class="top-left">
                 <a href="../game-lobby.html" class="back-btn">
@@ -680,7 +575,6 @@
             </div>
         </div>
 
-        <!-- ===== PLAYER LIST ===== -->
         <div id="playerList">
             <div class="title">👥 Players</div>
             <div id="playersContainer">
@@ -688,13 +582,11 @@
             </div>
         </div>
 
-        <!-- ===== STATUS MESSAGE ===== -->
         <div id="statusMessage">
             <div class="main" id="statusMain">⏳ Waiting for players...</div>
             <div class="sub" id="statusSub">Need 2 more players to start</div>
         </div>
 
-        <!-- ===== LOBBY OVERLAY ===== -->
         <div id="lobbyOverlay">
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
@@ -730,7 +622,6 @@
             </div>
         </div>
 
-        <!-- ===== TOUCH CONTROLS ===== -->
         <div id="touchControls">
             <div class="touch-controls-group">
                 <button class="touch-btn left" id="touchLeft">
@@ -744,12 +635,8 @@
                 <i class="fas fa-arrow-up"></i>
             </button>
         </div>
-
     </div>
 
-    <!-- ================================================================
-    FIREBASE + GAME INTEGRATION
-    ================================================================ -->
     <script type="importmap">
         {
             "imports": {
@@ -761,16 +648,10 @@
     </script>
 
     <script type="module">
-        // ============================================================
-        // IMPORTS
-        // ============================================================
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-        // ============================================================
-        // FIREBASE CONFIG
-        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -782,9 +663,6 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // ============================================================
-        // CONFIGURATION
-        // ============================================================
         const CONFIG = {
             ENTRY_FEE: 100,
             MAX_PLAYERS: 50,
@@ -794,9 +672,6 @@
             GAME_HEIGHT: 720
         };
 
-        // ============================================================
-        // STATE
-        // ============================================================
         const state = {
             roundId: '001',
             roundState: 'waiting',
@@ -811,9 +686,6 @@
             _startTimeout: null
         };
 
-        // ============================================================
-        // DOM REFS
-        // ============================================================
         const dom = {
             container: document.getElementById('gameContainer'),
             canvas: null,
@@ -841,9 +713,6 @@
 
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
-        // ============================================================
-        // HELPER - Ensure players is always an array
-        // ============================================================
         function getPlayersArray() {
             if (Array.isArray(state.players)) {
                 return state.players;
@@ -853,9 +722,6 @@
             return [];
         }
 
-        // ============================================================
-        // AUTH CHECK
-        // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 state.user = user;
@@ -865,22 +731,16 @@
                         state.userData = snapshot.val();
                         console.log('✅ User loaded:', state.userData.username);
                     } else {
-                        console.warn('⚠️ User data not found in database');
                         state.userData = { username: 'Player', balance: 0 };
                     }
                 } catch (e) {
-                    console.error('❌ Error loading user data:', e);
                     state.userData = { username: 'Player', balance: 0 };
                 }
             } else {
-                console.log('🔒 No user logged in, redirecting to login...');
                 window.location.href = '../login.html';
             }
         });
 
-        // ============================================================
-        // GAME LOADER
-        // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
 
@@ -909,7 +769,7 @@
         }
 
         // ============================================================
-        // INIT GAME - FIXED: Load jQuery first
+        // FIXED: Load jQuery properly before game engine
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
@@ -920,50 +780,24 @@
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
                 jqueryScript.onload = () => {
                     console.log('✅ jQuery loaded');
-
-                    // STEP 2: Load c2runtime.js
-                    const script = document.createElement('script');
-                    script.src = '/games/ninja%20run/c2runtime.js';
-                    script.onload = () => {
-                        console.log('✅ Runtime loaded');
-
-                        try {
-                            // STEP 3: Override the data.js path
-                            const originalOpen = XMLHttpRequest.prototype.open;
-                            
-                            XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                                if (url && url.includes('data.js')) {
-                                    console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
-                                    url = '/games/ninja%20run/data.js';
-                                }
-                                originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
-                            };
-
-                            // STEP 4: Create the runtime
-                            const runtime = new cr.createRuntime('c2canvas');
-                            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                            window.gameRuntime = runtime;
-
-                            // STEP 5: Restore XMLHttpRequest
-                            XMLHttpRequest.prototype.open = originalOpen;
-
-                            setupTouchControls(runtime);
-                            startLobby();
-
-                        } catch (e) {
-                            console.error('❌ Error creating runtime:', e);
-                            dom.statusMain.textContent = '⚠️ Game engine error';
-                            dom.statusSub.textContent = 'Please refresh and try again';
-                            dom.statusMessage.classList.add('show');
-                        }
-                    };
-                    script.onerror = (e) => {
-                        console.error('❌ Failed to load c2runtime.js:', e);
-                        dom.statusMain.textContent = '⚠️ Game engine not found';
-                        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-                        dom.statusMessage.classList.add('show');
-                    };
-                    document.head.appendChild(script);
+                    // Check if jQuery is ready
+                    if (typeof jQuery !== 'undefined') {
+                        console.log('✅ jQuery is ready!');
+                        loadGameEngine();
+                    } else {
+                        // Fallback delay
+                        setTimeout(() => {
+                            if (typeof jQuery !== 'undefined') {
+                                console.log('✅ jQuery is ready (after delay)!');
+                                loadGameEngine();
+                            } else {
+                                console.error('❌ jQuery still not available');
+                                dom.statusMain.textContent = '⚠️ jQuery failed to load';
+                                dom.statusSub.textContent = 'Please refresh and try again';
+                                dom.statusMessage.classList.add('show');
+                            }
+                        }, 500);
+                    }
                 };
                 jqueryScript.onerror = (e) => {
                     console.error('❌ Failed to load jQuery:', e);
@@ -981,13 +815,52 @@
             }
         }
 
-        // ============================================================
-        // TOUCH CONTROLS
-        // ============================================================
+        function loadGameEngine() {
+            console.log('🔄 Loading game engine...');
+            
+            const script = document.createElement('script');
+            script.src = '/games/ninja%20run/c2runtime.js';
+            script.onload = () => {
+                console.log('✅ Runtime loaded');
+
+                try {
+                    const originalOpen = XMLHttpRequest.prototype.open;
+                    
+                    XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+                        if (url && url.includes('data.js')) {
+                            console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
+                            url = '/games/ninja%20run/data.js';
+                        }
+                        originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
+                    };
+
+                    const runtime = new cr.createRuntime('c2canvas');
+                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                    window.gameRuntime = runtime;
+
+                    XMLHttpRequest.prototype.open = originalOpen;
+
+                    setupTouchControls(runtime);
+                    startLobby();
+
+                } catch (e) {
+                    console.error('❌ Error creating runtime:', e);
+                    dom.statusMain.textContent = '⚠️ Game engine error';
+                    dom.statusSub.textContent = 'Please refresh and try again';
+                    dom.statusMessage.classList.add('show');
+                }
+            };
+            script.onerror = (e) => {
+                console.error('❌ Failed to load c2runtime.js:', e);
+                dom.statusMain.textContent = '⚠️ Game engine not found';
+                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
+                dom.statusMessage.classList.add('show');
+            };
+            document.head.appendChild(script);
+        }
+
         function setupTouchControls(runtime) {
-            let leftPressed = false;
-            let rightPressed = false;
-            let jumpPressed = false;
+            let leftPressed = false, rightPressed = false, jumpPressed = false;
 
             function dispatchKeyEvent(type, key, keyCode) {
                 const event = new KeyboardEvent(type, {
@@ -1002,138 +875,75 @@
 
             dom.touchLeft.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!leftPressed) {
-                    leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37);
-                }
+                if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
             });
-
             dom.touchLeft.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (leftPressed) {
-                    leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
-                }
+                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
-
             dom.touchLeft.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (leftPressed) {
-                    leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
-                }
+                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
 
             dom.touchRight.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!rightPressed) {
-                    rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39);
-                }
+                if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); }
             });
-
             dom.touchRight.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (rightPressed) {
-                    rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
-                }
+                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
-
             dom.touchRight.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (rightPressed) {
-                    rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
-                }
+                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
 
             dom.touchJump.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!jumpPressed) {
-                    jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38);
-                }
+                if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); }
             });
-
             dom.touchJump.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (jumpPressed) {
-                    jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
-                }
+                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
-
             dom.touchJump.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (jumpPressed) {
-                    jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
-                }
+                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
 
             // Mouse fallback
             dom.touchLeft.addEventListener('mousedown', () => {
-                if (!leftPressed) {
-                    leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37);
-                }
+                if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('mouseup', () => {
-                if (leftPressed) {
-                    leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
-                }
+                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('mouseleave', () => {
-                if (leftPressed) {
-                    leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
-                }
+                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
 
             dom.touchRight.addEventListener('mousedown', () => {
-                if (!rightPressed) {
-                    rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39);
-                }
+                if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('mouseup', () => {
-                if (rightPressed) {
-                    rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
-                }
+                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('mouseleave', () => {
-                if (rightPressed) {
-                    rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
-                }
+                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
 
             dom.touchJump.addEventListener('mousedown', () => {
-                if (!jumpPressed) {
-                    jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38);
-                }
+                if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('mouseup', () => {
-                if (jumpPressed) {
-                    jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
-                }
+                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('mouseleave', () => {
-                if (jumpPressed) {
-                    jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
-                }
+                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
         }
 
-        // ============================================================
-        // LOBBY SYSTEM
-        // ============================================================
         function startLobby() {
             console.log('🔄 Starting lobby...');
             dom.lobbyOverlay.classList.remove('hidden');
@@ -1145,9 +955,6 @@
             simulatePlayers();
         }
 
-        // ============================================================
-        // FIREBASE LISTENERS
-        // ============================================================
         function listenForRoundUpdates() {
             const roundRef = ref(db, `rounds/${state.roundId}`);
             onValue(roundRef, (snapshot) => {
@@ -1158,11 +965,7 @@
                         state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
                         
                         if (data.players) {
-                            if (Array.isArray(data.players)) {
-                                state.players = data.players;
-                            } else {
-                                state.players = Object.values(data.players);
-                            }
+                            state.players = Array.isArray(data.players) ? data.players : Object.values(data.players);
                         } else {
                             state.players = [];
                         }
@@ -1191,11 +994,7 @@
                 try {
                     if (snapshot.exists()) {
                         const data = snapshot.val();
-                        if (Array.isArray(data)) {
-                            state.players = data;
-                        } else {
-                            state.players = Object.values(data);
-                        }
+                        state.players = Array.isArray(data) ? data : Object.values(data);
                         state.playerCount = state.players.length;
                         updateUI();
                     }
@@ -1205,9 +1004,6 @@
             });
         }
 
-        // ============================================================
-        // CREATE NEW ROUND
-        // ============================================================
         function createNewRound() {
             const roundRef = ref(db, `rounds/${state.roundId}`);
             set(roundRef, {
@@ -1220,9 +1016,6 @@
             }).catch(e => console.error('❌ Error creating round:', e));
         }
 
-        // ============================================================
-        // JOIN ROUND
-        // ============================================================
         async function joinRound() {
             if (!state.user || !state.userData) {
                 alert('Please login first');
@@ -1252,9 +1045,7 @@
                 dom.joinBtn.textContent = '⏳ Processing...';
 
                 const newBalance = balance - CONFIG.ENTRY_FEE;
-                await update(ref(db, `users/${state.user.uid}`), {
-                    balance: newBalance
-                });
+                await update(ref(db, `users/${state.user.uid}`), { balance: newBalance });
                 state.userData.balance = newBalance;
 
                 const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
@@ -1286,9 +1077,6 @@
             }
         }
 
-        // ============================================================
-        // START ROUND
-        // ============================================================
         function startRound() {
             if (state.roundState !== 'waiting') return;
             const players = getPlayersArray();
@@ -1307,9 +1095,6 @@
             console.log('🏁 Round started!');
         }
 
-        // ============================================================
-        // START GAME
-        // ============================================================
         function startGame() {
             state.gameStarted = true;
             console.log('🎮 Game is now live!');
@@ -1317,9 +1102,6 @@
             dom.statusMessage.classList.remove('show');
         }
 
-        // ============================================================
-        // END ROUND
-        // ============================================================
         function endRound(results) {
             state.roundState = 'ended';
             state.results = results;
@@ -1339,18 +1121,14 @@
                 const winnerRef = ref(db, `users/${winner.uid}`);
                 get(winnerRef).then((snap) => {
                     if (snap.exists()) {
-                        const data = snap.val();
                         update(winnerRef, {
-                            balance: (data.balance || 0) + winnings
+                            balance: (snap.val().balance || 0) + winnings
                         }).catch(e => console.error('❌ Error updating winner balance:', e));
                     }
                 }).catch(e => console.error('❌ Error getting winner data:', e));
             }
         }
 
-        // ============================================================
-        // TIMER
-        // ============================================================
         function startRoundTimer() {
             setInterval(() => {
                 if (state.roundState === 'playing') {
@@ -1372,9 +1150,6 @@
             dom.lobbyTimer.textContent = display;
         }
 
-        // ============================================================
-        // GET GAME RESULTS
-        // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
             let score = 0, coins = 0, distance = 0;
@@ -1386,16 +1161,11 @@
                         if (v.name === 'Coins') coins = v.data || 0;
                         if (v.name === 'Distances') distance = v.data || 0;
                     }
-                } catch (e) {
-                    console.warn('Could not read game vars:', e);
-                }
+                } catch (e) {}
             }
             return { score, coins, distance };
         }
 
-        // ============================================================
-        // UPDATE UI
-        // ============================================================
         function updateUI() {
             const players = getPlayersArray();
             state.playerCount = players.length;
@@ -1416,14 +1186,9 @@
                     dom.statusMain.textContent = '✅ Ready to start!';
                     dom.statusSub.textContent = `⏳ Starting in 5 seconds...`;
                     dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) {
-                        clearTimeout(state._startTimeout);
-                        state._startTimeout = null;
-                    }
+                    if (state._startTimeout) clearTimeout(state._startTimeout);
                     state._startTimeout = setTimeout(() => {
-                        if (state.roundState === 'waiting') {
-                            startRound();
-                        }
+                        if (state.roundState === 'waiting') startRound();
                         state._startTimeout = null;
                     }, 5000);
                 } else {
@@ -1439,21 +1204,14 @@
             }
         }
 
-        function updateLobbyUI() {
-            updateUI();
-        }
+        function updateLobbyUI() { updateUI(); }
 
-        // ============================================================
-        // RENDER PLAYER LIST
-        // ============================================================
         function renderPlayerList() {
             const players = getPlayersArray();
 
             if (players.length === 0) {
                 dom.playersContainer.innerHTML = `
-                    <div class="player-item" style="color:var(--muted);">
-                        No players yet...
-                    </div>
+                    <div class="player-item" style="color:var(--muted);">No players yet...</div>
                 `;
                 return;
             }
@@ -1475,14 +1233,9 @@
             dom.playersContainer.innerHTML = html;
         }
 
-        // ============================================================
-        // SIMULATE PLAYERS FOR TESTING
-        // ============================================================
         function simulatePlayers() {
             setTimeout(() => {
-                if (!state.joined && state.userData) {
-                    joinRound();
-                }
+                if (!state.joined && state.userData) joinRound();
             }, 1500);
 
             const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
@@ -1506,9 +1259,6 @@
             });
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
         console.log('%c🏃 NINJARUN - TOURNAMENT MODE', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
         console.log('%c📱 Fully responsive on all devices', 'color: #00E676;');
         console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #FFD700;');
@@ -1517,8 +1267,6 @@
 
         window.state = state;
         window.db = db;
-
     </script>
-
 </body>
 </html>
