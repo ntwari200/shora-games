@@ -808,7 +808,8 @@
             userData: null,
             joined: false,
             gameStarted: false,
-            results: null
+            results: null,
+            _startTimeout: null
         };
 
         // ============================================================
@@ -842,23 +843,44 @@
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
         // ============================================================
+        // HELPER - Ensure players is always an array
+        // ============================================================
+        function getPlayersArray() {
+            if (Array.isArray(state.players)) {
+                return state.players;
+            } else if (typeof state.players === 'object' && state.players !== null) {
+                return Object.values(state.players);
+            }
+            return [];
+        }
+
+        // ============================================================
         // AUTH CHECK
         // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 state.user = user;
-                const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                if (snapshot.exists()) {
-                    state.userData = snapshot.val();
-                    console.log('✅ User loaded:', state.userData.username);
+                try {
+                    const snapshot = await get(child(ref(db), `users/${user.uid}`));
+                    if (snapshot.exists()) {
+                        state.userData = snapshot.val();
+                        console.log('✅ User loaded:', state.userData.username);
+                    } else {
+                        console.warn('⚠️ User data not found in database');
+                        state.userData = { username: 'Player', balance: 0 };
+                    }
+                } catch (e) {
+                    console.error('❌ Error loading user data:', e);
+                    state.userData = { username: 'Player', balance: 0 };
                 }
             } else {
+                console.log('🔒 No user logged in, redirecting to login...');
                 window.location.href = '../login.html';
             }
         });
 
         // ============================================================
-        // GAME LOADER - FIXED PATH
+        // GAME LOADER
         // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
@@ -888,34 +910,42 @@
         }
 
         // ============================================================
-        // INIT GAME - FIXED PATH
+        // INIT GAME
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                // Load Construct 2 runtime - FROM SAME FOLDER
                 const script = document.createElement('script');
-                script.src = '/games/ninja run/c2runtime.js';  // ← FIXED: same folder
+                script.src = '/games/ninja%20run/c2runtime.js';
                 script.onload = () => {
                     console.log('✅ Runtime loaded');
-                    const runtime = new cr.createRuntime('c2canvas');
-                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                    window.gameRuntime = runtime;
-
-                    setupTouchControls(runtime);
-                    startLobby();
+                    try {
+                        const runtime = new cr.createRuntime('c2canvas');
+                        runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                        window.gameRuntime = runtime;
+                        setupTouchControls(runtime);
+                        startLobby();
+                    } catch (e) {
+                        console.error('❌ Error creating runtime:', e);
+                        dom.statusMain.textContent = '⚠️ Game engine error';
+                        dom.statusSub.textContent = 'Please refresh and try again';
+                        dom.statusMessage.classList.add('show');
+                    }
                 };
                 script.onerror = (e) => {
                     console.error('❌ Failed to load c2runtime.js:', e);
                     dom.statusMain.textContent = '⚠️ Game failed to load';
-                    dom.statusSub.textContent = 'Please refresh and try again';
+                    dom.statusSub.textContent = 'Make sure the game files are in the correct folder';
                     dom.statusMessage.classList.add('show');
                 };
                 document.head.appendChild(script);
 
             } catch (e) {
                 console.error('❌ Error initializing game:', e);
+                dom.statusMain.textContent = '⚠️ Game initialization error';
+                dom.statusSub.textContent = 'Please refresh and try again';
+                dom.statusMessage.classList.add('show');
             }
         }
 
@@ -927,74 +957,146 @@
             let rightPressed = false;
             let jumpPressed = false;
 
+            function dispatchKeyEvent(type, key, keyCode) {
+                const event = new KeyboardEvent(type, {
+                    key: key,
+                    keyCode: keyCode,
+                    code: key,
+                    bubbles: true,
+                    cancelable: true
+                });
+                document.dispatchEvent(event);
+            }
+
+            // Touch events
             dom.touchLeft.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                leftPressed = true;
-                const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', keyCode: 37 });
-                document.dispatchEvent(event);
+                if (!leftPressed) {
+                    leftPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowLeft', 37);
+                }
             });
 
             dom.touchLeft.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                leftPressed = false;
-                const event = new KeyboardEvent('keyup', { key: 'ArrowLeft', keyCode: 37 });
-                document.dispatchEvent(event);
+                if (leftPressed) {
+                    leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
+                }
+            });
+
+            dom.touchLeft.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                if (leftPressed) {
+                    leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
+                }
             });
 
             dom.touchRight.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                rightPressed = true;
-                const event = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39 });
-                document.dispatchEvent(event);
+                if (!rightPressed) {
+                    rightPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowRight', 39);
+                }
             });
 
             dom.touchRight.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                rightPressed = false;
-                const event = new KeyboardEvent('keyup', { key: 'ArrowRight', keyCode: 39 });
-                document.dispatchEvent(event);
+                if (rightPressed) {
+                    rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
+                }
+            });
+
+            dom.touchRight.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                if (rightPressed) {
+                    rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
+                }
             });
 
             dom.touchJump.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                jumpPressed = true;
-                const event = new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38 });
-                document.dispatchEvent(event);
+                if (!jumpPressed) {
+                    jumpPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowUp', 38);
+                }
             });
 
             dom.touchJump.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                jumpPressed = false;
-                const event = new KeyboardEvent('keyup', { key: 'ArrowUp', keyCode: 38 });
-                document.dispatchEvent(event);
+                if (jumpPressed) {
+                    jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
+                }
             });
 
-            // Mouse fallback
+            dom.touchJump.addEventListener('touchcancel', (e) => {
+                e.preventDefault();
+                if (jumpPressed) {
+                    jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
+                }
+            });
+
+            // Mouse fallback for desktop
             dom.touchLeft.addEventListener('mousedown', () => {
-                const event = new KeyboardEvent('keydown', { key: 'ArrowLeft', keyCode: 37 });
-                document.dispatchEvent(event);
+                if (!leftPressed) {
+                    leftPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowLeft', 37);
+                }
             });
             dom.touchLeft.addEventListener('mouseup', () => {
-                const event = new KeyboardEvent('keyup', { key: 'ArrowLeft', keyCode: 37 });
-                document.dispatchEvent(event);
+                if (leftPressed) {
+                    leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
+                }
+            });
+            dom.touchLeft.addEventListener('mouseleave', () => {
+                if (leftPressed) {
+                    leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37);
+                }
             });
 
             dom.touchRight.addEventListener('mousedown', () => {
-                const event = new KeyboardEvent('keydown', { key: 'ArrowRight', keyCode: 39 });
-                document.dispatchEvent(event);
+                if (!rightPressed) {
+                    rightPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowRight', 39);
+                }
             });
             dom.touchRight.addEventListener('mouseup', () => {
-                const event = new KeyboardEvent('keyup', { key: 'ArrowRight', keyCode: 39 });
-                document.dispatchEvent(event);
+                if (rightPressed) {
+                    rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
+                }
+            });
+            dom.touchRight.addEventListener('mouseleave', () => {
+                if (rightPressed) {
+                    rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39);
+                }
             });
 
             dom.touchJump.addEventListener('mousedown', () => {
-                const event = new KeyboardEvent('keydown', { key: 'ArrowUp', keyCode: 38 });
-                document.dispatchEvent(event);
+                if (!jumpPressed) {
+                    jumpPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowUp', 38);
+                }
             });
             dom.touchJump.addEventListener('mouseup', () => {
-                const event = new KeyboardEvent('keyup', { key: 'ArrowUp', keyCode: 38 });
-                document.dispatchEvent(event);
+                if (jumpPressed) {
+                    jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
+                }
+            });
+            dom.touchJump.addEventListener('mouseleave', () => {
+                if (jumpPressed) {
+                    jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38);
+                }
             });
         }
 
@@ -1018,21 +1120,36 @@
         function listenForRoundUpdates() {
             const roundRef = ref(db, `rounds/${state.roundId}`);
             onValue(roundRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    state.roundState = data.status || 'waiting';
-                    state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                    state.players = data.players || [];
-                    state.playerCount = state.players.length;
-                    updateUI();
-                    if (state.roundState === 'playing' && !state.gameStarted) {
-                        startGame();
+                try {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        state.roundState = data.status || 'waiting';
+                        state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
+                        
+                        if (data.players) {
+                            if (Array.isArray(data.players)) {
+                                state.players = data.players;
+                            } else {
+                                state.players = Object.values(data.players);
+                            }
+                        } else {
+                            state.players = [];
+                        }
+                        
+                        state.playerCount = state.players.length;
+                        updateUI();
+                        
+                        if (state.roundState === 'playing' && !state.gameStarted) {
+                            startGame();
+                        }
+                        if (state.roundState === 'ended') {
+                            endRound(data.results);
+                        }
+                    } else {
+                        createNewRound();
                     }
-                    if (state.roundState === 'ended') {
-                        endRound(data.results);
-                    }
-                } else {
-                    createNewRound();
+                } catch (e) {
+                    console.error('❌ Error in round listener:', e);
                 }
             });
         }
@@ -1040,11 +1157,19 @@
         function listenForPlayerUpdates() {
             const playersRef = ref(db, `rounds/${state.roundId}/players`);
             onValue(playersRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    state.players = Object.values(data);
-                    state.playerCount = state.players.length;
-                    updateUI();
+                try {
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        if (Array.isArray(data)) {
+                            state.players = data;
+                        } else {
+                            state.players = Object.values(data);
+                        }
+                        state.playerCount = state.players.length;
+                        updateUI();
+                    }
+                } catch (e) {
+                    console.error('❌ Error in player listener:', e);
                 }
             });
         }
@@ -1057,11 +1182,11 @@
             set(roundRef, {
                 status: 'waiting',
                 timeRemaining: CONFIG.ROUND_DURATION,
-                players: [],
+                players: {},
                 prizePool: 0,
                 startTime: Date.now(),
                 createdAt: Date.now()
-            });
+            }).catch(e => console.error('❌ Error creating round:', e));
         }
 
         // ============================================================
@@ -1084,40 +1209,53 @@
                 return;
             }
 
-            if (state.userData.balance < CONFIG.ENTRY_FEE) {
+            const balance = state.userData.balance || 0;
+            if (balance < CONFIG.ENTRY_FEE) {
                 alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`);
                 window.location.href = '../deposit.html';
                 return;
             }
 
-            // Deduct entry fee
-            const newBalance = state.userData.balance - CONFIG.ENTRY_FEE;
-            await update(ref(db, `users/${state.user.uid}`), {
-                balance: newBalance
-            });
+            try {
+                dom.joinBtn.disabled = true;
+                dom.joinBtn.textContent = '⏳ Processing...';
 
-            // Add player to round
-            const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-            await set(playerRef, {
-                uid: state.user.uid,
-                username: state.userData.username || 'Player',
-                joinedAt: Date.now(),
-                score: 0,
-                coins: 0,
-                distance: 0,
-                status: 'ready'
-            });
+                // Deduct entry fee
+                const newBalance = balance - CONFIG.ENTRY_FEE;
+                await update(ref(db, `users/${state.user.uid}`), {
+                    balance: newBalance
+                });
+                state.userData.balance = newBalance;
 
-            state.joined = true;
-            dom.joinBtn.textContent = '✅ Joined!';
-            dom.joinBtn.disabled = true;
+                // Add player to round
+                const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
+                await set(playerRef, {
+                    uid: state.user.uid,
+                    username: state.userData.username || 'Player',
+                    joinedAt: Date.now(),
+                    score: 0,
+                    coins: 0,
+                    distance: 0,
+                    status: 'ready'
+                });
 
-            const prizeRef = ref(db, `rounds/${state.roundId}/prizePool`);
-            const snapshot = await get(prizeRef);
-            const currentPrize = snapshot.val() || 0;
-            await set(prizeRef, currentPrize + CONFIG.ENTRY_FEE);
+                state.joined = true;
+                dom.joinBtn.textContent = '✅ Joined!';
+                dom.joinBtn.disabled = true;
 
-            console.log('✅ Joined round!');
+                // Update prize pool
+                const prizeRef = ref(db, `rounds/${state.roundId}/prizePool`);
+                const snapshot = await get(prizeRef);
+                const currentPrize = snapshot.val() || 0;
+                await set(prizeRef, currentPrize + CONFIG.ENTRY_FEE);
+
+                console.log('✅ Joined round!');
+            } catch (e) {
+                console.error('❌ Error joining round:', e);
+                alert('Error joining round. Please try again.');
+                dom.joinBtn.disabled = false;
+                dom.joinBtn.textContent = '🔄 Try Again';
+            }
         }
 
         // ============================================================
@@ -1125,17 +1263,19 @@
         // ============================================================
         function startRound() {
             if (state.roundState !== 'waiting') return;
-            if (state.playerCount < CONFIG.MIN_PLAYERS) return;
+            const players = getPlayersArray();
+            if (players.length < CONFIG.MIN_PLAYERS) return;
 
             const roundRef = ref(db, `rounds/${state.roundId}`);
             update(roundRef, {
                 status: 'playing',
                 startTime: Date.now(),
                 timeRemaining: CONFIG.ROUND_DURATION
-            });
+            }).catch(e => console.error('❌ Error starting round:', e));
 
             state.roundState = 'playing';
             dom.lobbyOverlay.classList.add('hidden');
+            dom.statusMessage.classList.remove('show');
             console.log('🏁 Round started!');
         }
 
@@ -1157,15 +1297,16 @@
             state.results = results;
             console.log('🏁 Round ended!');
 
-            const sorted = [...state.players].sort((a, b) => (b.score || 0) - (a.score || 0));
+            const players = getPlayersArray();
+            const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
             const winner = sorted[0];
 
             dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
             dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
             dom.statusMessage.classList.add('show');
 
-            if (winner) {
-                const prizePool = state.players.length * CONFIG.ENTRY_FEE;
+            if (winner && winner.uid) {
+                const prizePool = players.length * CONFIG.ENTRY_FEE;
                 const winnings = Math.floor(prizePool * 0.7);
                 const winnerRef = ref(db, `users/${winner.uid}`);
                 get(winnerRef).then((snap) => {
@@ -1173,9 +1314,9 @@
                         const data = snap.val();
                         update(winnerRef, {
                             balance: (data.balance || 0) + winnings
-                        });
+                        }).catch(e => console.error('❌ Error updating winner balance:', e));
                     }
-                });
+                }).catch(e => console.error('❌ Error getting winner data:', e));
             }
         }
 
@@ -1196,8 +1337,8 @@
         }
 
         function updateTimerDisplay() {
-            const mins = Math.floor(state.timeRemaining / 60);
-            const secs = state.timeRemaining % 60;
+            const mins = Math.floor(Math.max(0, state.timeRemaining) / 60);
+            const secs = Math.floor(Math.max(0, state.timeRemaining) % 60);
             const display = `${mins}:${secs.toString().padStart(2, '0')}`;
             dom.roundTimer.textContent = display;
             dom.lobbyTimer.textContent = display;
@@ -1228,6 +1369,9 @@
         // UPDATE UI
         // ============================================================
         function updateUI() {
+            const players = getPlayersArray();
+            state.playerCount = players.length;
+            
             dom.playerCount.textContent = state.playerCount;
             dom.lobbyPlayers.textContent = state.playerCount;
 
@@ -1244,16 +1388,25 @@
                     dom.statusMain.textContent = '✅ Ready to start!';
                     dom.statusSub.textContent = `⏳ Starting in 5 seconds...`;
                     dom.statusMessage.classList.add('show');
-                    setTimeout(() => {
+                    if (state._startTimeout) {
+                        clearTimeout(state._startTimeout);
+                        state._startTimeout = null;
+                    }
+                    state._startTimeout = setTimeout(() => {
                         if (state.roundState === 'waiting') {
                             startRound();
                         }
+                        state._startTimeout = null;
                     }, 5000);
                 } else {
                     const needed = CONFIG.MIN_PLAYERS - state.playerCount;
                     dom.statusMain.textContent = '⏳ Waiting for players...';
                     dom.statusSub.textContent = `Need ${needed} more player${needed > 1 ? 's' : ''} to start`;
                     dom.statusMessage.classList.add('show');
+                    if (state._startTimeout) {
+                        clearTimeout(state._startTimeout);
+                        state._startTimeout = null;
+                    }
                 }
             }
         }
@@ -1266,7 +1419,9 @@
         // RENDER PLAYER LIST
         // ============================================================
         function renderPlayerList() {
-            if (state.players.length === 0) {
+            const players = getPlayersArray();
+
+            if (players.length === 0) {
                 dom.playersContainer.innerHTML = `
                     <div class="player-item" style="color:var(--muted);">
                         No players yet...
@@ -1276,7 +1431,7 @@
             }
 
             let html = '';
-            state.players.forEach((p) => {
+            players.forEach((p) => {
                 const isMe = p.uid === state.user?.uid;
                 const statusColor = p.status === 'ready' ? 'ready' : 'waiting';
                 html += `
