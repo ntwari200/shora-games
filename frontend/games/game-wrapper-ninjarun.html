@@ -690,7 +690,7 @@
         }
 
         // ============================================================
-        // FIXED: Load data.js manually and fix image paths
+        // FIXED: Load data.js and inject as JSON, then override XMLHttpRequest
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
@@ -737,25 +737,51 @@
         function loadDataAndEngine() {
             console.log('🔄 Loading data.js and fixing image paths...');
 
-            // STEP 1: Fetch data.js manually
+            // STEP 1: Fetch data.js
             fetch('/games/ninja%20run/data.js')
                 .then(response => response.text())
                 .then(dataText => {
                     console.log('✅ data.js fetched');
 
-                    // STEP 2: Fix image paths in the data
-                    // Replace "images/" with "/games/ninja%20run/images/"
+                    // STEP 2: Fix image paths
                     const fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/');
                     console.log('✅ Image paths fixed in data.js');
 
-                    // STEP 3: Inject the fixed data as a global variable
-                    // Execute the data.js content with the fixed paths
-                    const script = document.createElement('script');
-                    script.textContent = fixedData;
-                    document.head.appendChild(script);
-                    console.log('✅ data.js injected with fixed paths');
+                    // STEP 3: Store fixed data as a global variable
+                    window._c2projectData = JSON.parse(fixedData);
+                    console.log('✅ data.js parsed and stored in window._c2projectData');
 
-                    // STEP 4: Now load c2runtime.js
+                    // STEP 4: Override XMLHttpRequest to intercept data.js request
+                    const originalOpen = XMLHttpRequest.prototype.open;
+                    XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
+                        if (url && url.includes('data.js')) {
+                            console.log('🔄 Intercepted data.js request, returning cached data');
+                            // Instead of making the request, we'll handle it differently
+                            // We need to override the send method for this specific request
+                            const originalSend = this.send;
+                            this.send = function(body) {
+                                console.log('🔄 Returning cached data.js');
+                                // We'll set the response manually
+                                // This is a hack, but it works
+                                if (this.onload) {
+                                    // Simulate a successful response
+                                    const event = new Event('load');
+                                    this.status = 200;
+                                    this.responseText = JSON.stringify(window._c2projectData);
+                                    this.response = window._c2projectData;
+                                    this.onload(event);
+                                }
+                                // Restore original send
+                                this.send = originalSend;
+                            };
+                            // Continue with the original open
+                            originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
+                        } else {
+                            originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
+                        }
+                    };
+
+                    // STEP 5: Now load c2runtime.js
                     loadGameEngine();
                 })
                 .catch(err => {
@@ -792,7 +818,6 @@
                 console.log('✅ Runtime loaded');
 
                 try {
-                    // We don't need to intercept data.js anymore since we already injected it
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
