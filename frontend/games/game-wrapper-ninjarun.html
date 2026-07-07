@@ -7,7 +7,7 @@
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -73,6 +73,57 @@
             touch-action: none;
         }
 
+        /* ===== CLICK TO START OVERLAY ===== */
+        #startOverlay {
+            position: absolute;
+            inset: 0;
+            z-index: 40;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(8px);
+            cursor: pointer;
+            transition: opacity 0.5s ease;
+        }
+
+        #startOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        #startOverlay .content {
+            text-align: center;
+            color: #fff;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        #startOverlay .content .icon {
+            font-size: 4rem;
+            margin-bottom: 16px;
+        }
+
+        #startOverlay .content .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.8rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        #startOverlay .content .sub {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-top: 8px;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+        }
+
+        /* ===== TOUCH CONTROLS ===== */
         #touchControls {
             position: absolute;
             bottom: 30px;
@@ -137,6 +188,7 @@
         }
         .touch-controls-group .touch-btn { pointer-events: auto; }
 
+        /* ===== LOBBY OVERLAY ===== */
         #lobbyOverlay {
             position: absolute;
             inset: 0;
@@ -237,6 +289,7 @@
         .btn-join.joined { background: var(--success); }
         .btn-join.playing { background: var(--danger); }
 
+        /* ===== PLAYER LIST ===== */
         #playerList {
             position: absolute;
             top: 80px;
@@ -279,6 +332,7 @@
         .player-item .status-dot.waiting { background: var(--gold); }
         .player-item .player-name { display: flex; align-items: center; gap: 4px; }
 
+        /* ===== TOP BAR ===== */
         #topBar {
             position: absolute;
             top: 0;
@@ -326,6 +380,7 @@
         }
         .back-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
 
+        /* ===== STATUS MESSAGE ===== */
         #statusMessage {
             position: absolute;
             top: 50%;
@@ -462,10 +517,49 @@
             border-radius: 2px;
             transition: width 0.3s ease;
         }
+
+        /* ===== SCORE DISPLAY IN GAME (Overlay) ===== */
+        #scoreOverlay {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 14;
+            display: none;
+            background: rgba(0, 0, 0, 0.6);
+            backdrop-filter: blur(8px);
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            gap: 20px;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        #scoreOverlay.show { display: flex; }
+
+        .score-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .score-item .value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: #fff;
+        }
+
+        .score-item .value.gold { color: var(--gold); }
+        .score-item .value.green { color: var(--success); }
+        .score-item .value.primary { color: var(--primary); }
     </style>
 </head>
 <body>
 
+    <!-- ===== LOADING SCREEN ===== -->
     <div id="loadingScreen">
         <div class="loader"></div>
         <div class="loader-text">Loading NinjaRun...</div>
@@ -474,9 +568,21 @@
         </div>
     </div>
 
+    <!-- ===== CLICK TO START OVERLAY ===== -->
+    <div id="startOverlay">
+        <div class="content">
+            <div class="icon">🎮</div>
+            <div class="title">NinjaRun</div>
+            <div class="sub">👆 Tap anywhere to start<br><span style="font-size:0.7rem;color:#666;">(Audio will be enabled)</span></div>
+        </div>
+    </div>
+
+    <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
+
         <div id="gameContainer"></div>
 
+        <!-- ===== TOP BAR ===== -->
         <div id="topBar">
             <div class="top-left">
                 <a href="../game-lobby.html" class="back-btn">
@@ -499,18 +605,34 @@
             </div>
         </div>
 
-        <div id="playerList">
-            <div class="title">👥 Players</div>
-            <div id="playersContainer">
-                <div class="player-item" style="color:var(--muted);">Waiting for players...</div>
+        <!-- ===== SCORE OVERLAY ===== -->
+        <div id="scoreOverlay">
+            <div class="score-item">
+                🏃 Score: <span class="value gold" id="liveScore">0</span>
+            </div>
+            <div class="score-item">
+                🪙 Coins: <span class="value green" id="liveCoins">0</span>
+            </div>
+            <div class="score-item">
+                📏 Dist: <span class="value primary" id="liveDistance">0</span>
             </div>
         </div>
 
+        <!-- ===== PLAYER LIST ===== -->
+        <div id="playerList">
+            <div class="title">👥 Players</div>
+            <div id="playersContainer">
+                <div class="player-item" style="color:var(--muted);">No players yet...</div>
+            </div>
+        </div>
+
+        <!-- ===== STATUS MESSAGE ===== -->
         <div id="statusMessage">
             <div class="main" id="statusMain">⏳ Waiting for players...</div>
             <div class="sub" id="statusSub">Need 2 more players to start</div>
         </div>
 
+        <!-- ===== LOBBY OVERLAY ===== -->
         <div id="lobbyOverlay">
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
@@ -546,6 +668,7 @@
             </div>
         </div>
 
+        <!-- ===== TOUCH CONTROLS ===== -->
         <div id="touchControls">
             <div class="touch-controls-group">
                 <button class="touch-btn left" id="touchLeft">
@@ -561,6 +684,9 @@
         </div>
     </div>
 
+    <!-- ================================================================
+    FIREBASE + GAME INTEGRATION
+    ================================================================ -->
     <script type="importmap">
         {
             "imports": {
@@ -607,7 +733,11 @@
             joined: false,
             gameStarted: false,
             results: null,
-            _startTimeout: null
+            _startTimeout: null,
+            scoreInterval: null,
+            currentScore: 0,
+            currentCoins: 0,
+            currentDistance: 0
         };
 
         const dom = {
@@ -632,7 +762,12 @@
             loadProgress: document.getElementById('loadProgress'),
             touchLeft: document.getElementById('touchLeft'),
             touchRight: document.getElementById('touchRight'),
-            touchJump: document.getElementById('touchJump')
+            touchJump: document.getElementById('touchJump'),
+            startOverlay: document.getElementById('startOverlay'),
+            liveScore: document.getElementById('liveScore'),
+            liveCoins: document.getElementById('liveCoins'),
+            liveDistance: document.getElementById('liveDistance'),
+            scoreOverlay: document.getElementById('scoreOverlay')
         };
 
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
@@ -643,6 +778,9 @@
             return [];
         }
 
+        // ============================================================
+        // AUTH
+        // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 state.user = user;
@@ -662,6 +800,9 @@
             }
         });
 
+        // ============================================================
+        // GAME LOADER
+        // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
 
@@ -690,14 +831,12 @@
         }
 
         // ============================================================
-        // FIXED: Load data.js, then load c2runtime.js, then override,
-        // then create runtime
+        // INIT GAME
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                // Load jQuery first
                 const jqueryScript = document.createElement('script');
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
                 jqueryScript.onload = () => {
@@ -735,25 +874,27 @@
             }
         }
 
+        // ============================================================
+        // LOAD DATA.JS AND FIX PATHS
+        // ============================================================
         function loadDataAndEngine() {
-            console.log('🔄 Loading data.js and fixing image paths...');
+            console.log('🔄 Loading data.js and fixing paths...');
 
-            // STEP 1: Fetch data.js
             fetch('/games/ninja%20run/data.js')
                 .then(response => response.text())
                 .then(dataText => {
                     console.log('✅ data.js fetched');
 
-                    // STEP 2: Fix image paths
-                    const fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/');
-                    console.log('✅ Image paths fixed in data.js');
+                    // Fix both image and audio paths
+                    const fixedData = dataText
+                        .replace(/images\//g, '/games/ninja%20run/images/')
+                        .replace(/media\//g, '/games/ninja%20run/media/');
+                    console.log('✅ Image and audio paths fixed');
 
-                    // STEP 3: Parse and store as global
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
-                    console.log('✅ data.js parsed and stored in window._c2projectData');
+                    console.log('✅ data.js parsed and stored');
 
-                    // STEP 4: Load c2runtime.js
                     loadGameEngine();
                 })
                 .catch(err => {
@@ -764,6 +905,9 @@
                 });
         }
 
+        // ============================================================
+        // LOAD GAME ENGINE
+        // ============================================================
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
 
@@ -783,18 +927,17 @@
                 console.warn('⚠️ Could not patch AudioListener:', e);
             }
 
-            // Load c2runtime.js
             const script = document.createElement('script');
             script.src = '/games/ninja%20run/c2runtime.js';
             script.onload = () => {
                 console.log('✅ Runtime loaded');
 
-                // STEP 5: Override requestProjectData AFTER c2runtime.js is loaded
                 try {
+                    // Override requestProjectData
                     if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
                         const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
                         cr.runtime.prototype.requestProjectData = function() {
-                            console.log('🔄 Using cached project data instead of loading data.js');
+                            console.log('🔄 Using cached project data');
                             if (window._c2projectData) {
                                 this.loadProject(window._c2projectData);
                             } else {
@@ -803,21 +946,27 @@
                             }
                         };
                         console.log('✅ Runtime.requestProjectData overridden');
-                    } else {
-                        console.error('❌ cr.runtime not available!');
                     }
-                } catch (e) {
-                    console.error('❌ Error overriding requestProjectData:', e);
-                }
 
-                // STEP 6: Create the runtime
-                try {
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
+                    // Handle click-to-start
+                    dom.startOverlay.addEventListener('click', () => {
+                        dom.startOverlay.classList.add('hidden');
+                        // Resume audio context
+                        if (runtime.audioInstance && runtime.audioInstance.context) {
+                            runtime.audioInstance.context.resume();
+                        }
+                        console.log('🎵 Audio context resumed');
+                    });
+
                     setupTouchControls(runtime);
                     startLobby();
+
+                    // Start score tracking
+                    startScoreTracking();
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -836,10 +985,70 @@
         }
 
         // ============================================================
+        // SCORE TRACKING
+        // ============================================================
+        function startScoreTracking() {
+            if (state.scoreInterval) clearInterval(state.scoreInterval);
+
+            state.scoreInterval = setInterval(() => {
+                if (!window.gameRuntime) return;
+
+                try {
+                    const runtime = window.gameRuntime;
+                    const vars = runtime.all_global_vars || [];
+
+                    let score = 0,
+                        coins = 0,
+                        distance = 0;
+
+                    for (let v of vars) {
+                        if (v.name === 'Score') score = v.data || 0;
+                        if (v.name === 'Coins') coins = v.data || 0;
+                        if (v.name === 'Distances') distance = v.data || 0;
+                    }
+
+                    state.currentScore = score;
+                    state.currentCoins = coins;
+                    state.currentDistance = distance;
+
+                    // Update UI
+                    dom.liveScore.textContent = score;
+                    dom.liveCoins.textContent = coins;
+                    dom.liveDistance.textContent = distance;
+
+                    // Update player in Firebase with live score
+                    if (state.joined && state.user) {
+                        const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
+                        update(playerRef, {
+                            score: score,
+                            coins: coins,
+                            distance: distance,
+                            lastUpdate: Date.now()
+                        }).catch(e => console.warn('⚠️ Could not update score:', e));
+                    }
+
+                    // Show score overlay when game is playing
+                    if (state.roundState === 'playing') {
+                        dom.scoreOverlay.classList.add('show');
+                    } else {
+                        dom.scoreOverlay.classList.remove('show');
+                    }
+
+                } catch (e) {
+                    // Silent fail
+                }
+            }, 500);
+
+            console.log('✅ Score tracking started');
+        }
+
+        // ============================================================
         // TOUCH CONTROLS
         // ============================================================
         function setupTouchControls(runtime) {
-            let leftPressed = false, rightPressed = false, jumpPressed = false;
+            let leftPressed = false,
+                rightPressed = false,
+                jumpPressed = false;
 
             function dispatchKeyEvent(type, key, keyCode) {
                 const event = new KeyboardEvent(type, {
@@ -854,72 +1063,90 @@
 
             dom.touchLeft.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
+                if (!leftPressed) { leftPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
+                if (leftPressed) { leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
+                if (leftPressed) { leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
 
             dom.touchRight.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); }
+                if (!rightPressed) { rightPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
+                if (rightPressed) { rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
+                if (rightPressed) { rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
 
             dom.touchJump.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); }
+                if (!jumpPressed) { jumpPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('touchend', (e) => {
                 e.preventDefault();
-                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
+                if (jumpPressed) { jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('touchcancel', (e) => {
                 e.preventDefault();
-                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
+                if (jumpPressed) { jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
 
             // Mouse fallback
             dom.touchLeft.addEventListener('mousedown', () => {
-                if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
+                if (!leftPressed) { leftPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('mouseup', () => {
-                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
+                if (leftPressed) { leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
             dom.touchLeft.addEventListener('mouseleave', () => {
-                if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
+                if (leftPressed) { leftPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
             });
 
             dom.touchRight.addEventListener('mousedown', () => {
-                if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); }
+                if (!rightPressed) { rightPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('mouseup', () => {
-                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
+                if (rightPressed) { rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
             dom.touchRight.addEventListener('mouseleave', () => {
-                if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); }
+                if (rightPressed) { rightPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
             });
 
             dom.touchJump.addEventListener('mousedown', () => {
-                if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); }
+                if (!jumpPressed) { jumpPressed = true;
+                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('mouseup', () => {
-                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
+                if (jumpPressed) { jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
             dom.touchJump.addEventListener('mouseleave', () => {
-                if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); }
+                if (jumpPressed) { jumpPressed = false;
+                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
             });
         }
 
@@ -945,7 +1172,8 @@
                         const data = snapshot.val();
                         state.roundState = data.status || 'waiting';
                         state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data.players)) : [];
+                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data
+                            .players)) : [];
                         state.playerCount = state.players.length;
                         updateUI();
                         if (state.roundState === 'playing' && !state.gameStarted) startGame();
@@ -982,6 +1210,9 @@
             }).catch(e => console.error('❌ Error creating round:', e));
         }
 
+        // ============================================================
+        // JOIN ROUND
+        // ============================================================
         async function joinRound() {
             if (!state.user || !state.userData) {
                 alert('Please login first');
@@ -1032,6 +1263,9 @@
             }
         }
 
+        // ============================================================
+        // ROUND MANAGEMENT
+        // ============================================================
         function startRound() {
             if (state.roundState !== 'waiting') return;
             if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
@@ -1045,6 +1279,7 @@
             state.roundState = 'playing';
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
+            dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
         }
 
@@ -1053,19 +1288,46 @@
             console.log('🎮 Game is now live!');
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
+            dom.scoreOverlay.classList.add('show');
         }
 
+        // ============================================================
+        // END ROUND - RECORDS FINAL SCORES
+        // ============================================================
         function endRound(results) {
             state.roundState = 'ended';
             state.results = results;
-            console.log('🏁 Round ended!');
+            dom.scoreOverlay.classList.remove('show');
+
+            // Stop score tracking
+            if (state.scoreInterval) {
+                clearInterval(state.scoreInterval);
+                state.scoreInterval = null;
+            }
+
+            // Get final scores from the game
+            const finalResults = getGameResults();
+
+            // Update the player's final score in Firebase
+            if (state.joined && state.user) {
+                const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
+                update(playerRef, {
+                    score: finalResults.score || state.currentScore || 0,
+                    coins: finalResults.coins || state.currentCoins || 0,
+                    distance: finalResults.distance || state.currentDistance || 0,
+                    status: 'finished'
+                }).catch(e => console.error('❌ Error updating final score:', e));
+            }
+
+            console.log('🏁 Round ended! Final scores:', finalResults);
 
             const players = getPlayersArray();
             const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
             const winner = sorted[0];
 
             dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
-            dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
+            dom.statusSub.textContent =
+                `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
             dom.statusMessage.classList.add('show');
 
             if (winner && winner.uid) {
@@ -1081,6 +1343,9 @@
             }
         }
 
+        // ============================================================
+        // TIMER
+        // ============================================================
         function startRoundTimer() {
             setInterval(() => {
                 if (state.roundState === 'playing') {
@@ -1101,9 +1366,14 @@
             dom.lobbyTimer.textContent = display;
         }
 
+        // ============================================================
+        // GET GAME RESULTS
+        // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
-            let score = 0, coins = 0, distance = 0;
+            let score = 0,
+                coins = 0,
+                distance = 0;
             if (runtime) {
                 try {
                     const vars = runtime.all_global_vars || [];
@@ -1117,10 +1387,13 @@
             return { score, coins, distance };
         }
 
+        // ============================================================
+        // UPDATE UI
+        // ============================================================
         function updateUI() {
             const players = getPlayersArray();
             state.playerCount = players.length;
-            
+
             dom.playerCount.textContent = state.playerCount;
             dom.lobbyPlayers.textContent = state.playerCount;
 
@@ -1157,11 +1430,15 @@
 
         function updateLobbyUI() { updateUI(); }
 
+        // ============================================================
+        // RENDER PLAYER LIST
+        // ============================================================
         function renderPlayerList() {
             const players = getPlayersArray();
 
             if (players.length === 0) {
-                dom.playersContainer.innerHTML = `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
+                dom.playersContainer.innerHTML =
+                `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
                 return;
             }
 
@@ -1182,6 +1459,9 @@
             dom.playersContainer.innerHTML = html;
         }
 
+        // ============================================================
+        // SIMULATE PLAYERS FOR TESTING
+        // ============================================================
         function simulatePlayers() {
             setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
 
@@ -1189,8 +1469,9 @@
             botNames.forEach((name, index) => {
                 setTimeout(() => {
                     if (state.playerCount < 8) {
+                        const fakeUid = `bot_${Date.now()}_${index}`;
                         state.players.push({
-                            uid: `bot_${Date.now()}_${index}`,
+                            uid: fakeUid,
                             username: name,
                             joinedAt: Date.now(),
                             score: Math.floor(Math.random() * 500),
@@ -1205,9 +1486,13 @@
             });
         }
 
+        // ============================================================
+        // INIT
+        // ============================================================
         console.log('%c🏃 NINJARUN - TOURNAMENT MODE', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
         console.log('%c📱 Fully responsive on all devices', 'color: #00E676;');
         console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #FFD700;');
+        console.log('%c📊 Scores are being recorded in real-time!', 'color: #FF6B6B;');
 
         loadGame();
 
