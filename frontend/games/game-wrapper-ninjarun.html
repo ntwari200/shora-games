@@ -9,11 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         :root {
             --bg: #06111F;
@@ -154,10 +150,7 @@
             padding: 20px;
             transition: opacity 0.5s ease;
         }
-        #lobbyOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
+        #lobbyOverlay.hidden { opacity: 0; pointer-events: none; }
 
         .lobby-box {
             background: rgba(255, 255, 255, 0.03);
@@ -697,25 +690,25 @@
         }
 
         // ============================================================
-        // FIXED: AudioListener patch + Image path fix + jQuery
+        // FIXED: Load data.js manually and fix image paths
         // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
 
             try {
-                // Load jQuery
+                // Load jQuery first
                 const jqueryScript = document.createElement('script');
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
                 jqueryScript.onload = () => {
                     console.log('✅ jQuery loaded');
                     if (typeof jQuery !== 'undefined') {
                         console.log('✅ jQuery is ready!');
-                        loadGameEngine();
+                        loadDataAndEngine();
                     } else {
                         setTimeout(() => {
                             if (typeof jQuery !== 'undefined') {
                                 console.log('✅ jQuery is ready (after delay)!');
-                                loadGameEngine();
+                                loadDataAndEngine();
                             } else {
                                 console.error('❌ jQuery still not available');
                                 dom.statusMain.textContent = '⚠️ jQuery failed to load';
@@ -741,12 +734,42 @@
             }
         }
 
+        function loadDataAndEngine() {
+            console.log('🔄 Loading data.js and fixing image paths...');
+
+            // STEP 1: Fetch data.js manually
+            fetch('/games/ninja%20run/data.js')
+                .then(response => response.text())
+                .then(dataText => {
+                    console.log('✅ data.js fetched');
+
+                    // STEP 2: Fix image paths in the data
+                    // Replace "images/" with "/games/ninja%20run/images/"
+                    const fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/');
+                    console.log('✅ Image paths fixed in data.js');
+
+                    // STEP 3: Inject the fixed data as a global variable
+                    // Execute the data.js content with the fixed paths
+                    const script = document.createElement('script');
+                    script.textContent = fixedData;
+                    document.head.appendChild(script);
+                    console.log('✅ data.js injected with fixed paths');
+
+                    // STEP 4: Now load c2runtime.js
+                    loadGameEngine();
+                })
+                .catch(err => {
+                    console.error('❌ Failed to fetch data.js:', err);
+                    dom.statusMain.textContent = '⚠️ data.js not found';
+                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
+                    dom.statusMessage.classList.add('show');
+                });
+        }
+
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
 
-            // ============================================================
-            // FIX 1: Override AudioListener to prevent NaN errors
-            // ============================================================
+            // Fix AudioListener
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
                     const originalSetPosition = AudioListener.prototype.setPosition;
@@ -758,68 +781,8 @@
                     };
                     console.log('✅ AudioListener patched');
                 }
-
-                // Fix cr.runtime setSize
-                if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                    const originalSetSize = cr.runtime.prototype.setSize;
-                    cr.runtime.prototype.setSize = function(w, h, force) {
-                        if (isNaN(w) || w === undefined || w === null) w = 1280;
-                        if (isNaN(h) || h === undefined || h === null) h = 720;
-                        return originalSetSize.call(this, w, h, force);
-                    };
-                    console.log('✅ Runtime setSize patched');
-
-                    // ============================================================
-                    // FIX 2: Fix image paths in loadProject
-                    // ============================================================
-                    const originalLoadProject = cr.runtime.prototype.loadProject;
-                    cr.runtime.prototype.loadProject = function(data) {
-                        console.log('🔄 Fixing image paths in project data...');
-                        try {
-                            if (data && data.project) {
-                                const types = data.project[2];
-                                for (let i = 0; i < types.length; i++) {
-                                    const type = types[i];
-                                    // Fix texture file paths
-                                    if (type && type[6] && type[6][0]) {
-                                        const imgPath = type[6][0];
-                                        if (imgPath && !imgPath.startsWith('/games/ninja%20run/')) {
-                                            const filename = imgPath.split('/').pop();
-                                            type[6][0] = '/games/ninja%20run/images/' + filename;
-                                            console.log('  📁 Fixed texture path:', imgPath, '→', type[6][0]);
-                                        }
-                                    }
-                                    // Fix animation frame image paths
-                                    if (type && type[7]) {
-                                        const animations = type[7];
-                                        for (let a = 0; a < animations.length; a++) {
-                                            const frames = animations[a][7];
-                                            if (frames) {
-                                                for (let f = 0; f < frames.length; f++) {
-                                                    const frame = frames[f];
-                                                    if (frame && frame[0]) {
-                                                        const imgPath = frame[0];
-                                                        if (imgPath && !imgPath.startsWith('/games/ninja%20run/')) {
-                                                            const filename = imgPath.split('/').pop();
-                                                            frames[f][0] = '/games/ninja%20run/images/' + filename;
-                                                            console.log('  📁 Fixed frame path:', imgPath, '→', frames[f][0]);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        } catch (e) {
-                            console.warn('⚠️ Error fixing image paths:', e);
-                        }
-                        return originalLoadProject.call(this, data);
-                    };
-                    console.log('✅ Image path fix applied');
-                }
             } catch (e) {
-                console.warn('⚠️ Could not patch:', e);
+                console.warn('⚠️ Could not patch AudioListener:', e);
             }
 
             // Load c2runtime.js
@@ -829,20 +792,10 @@
                 console.log('✅ Runtime loaded');
 
                 try {
-                    const originalOpen = XMLHttpRequest.prototype.open;
-                    XMLHttpRequest.prototype.open = function(method, url, async, user, password) {
-                        if (url && url.includes('data.js')) {
-                            console.log('🔄 Redirecting data.js request to:', '/games/ninja%20run/data.js');
-                            url = '/games/ninja%20run/data.js';
-                        }
-                        originalOpen.call(this, method, url, async !== undefined ? async : true, user, password);
-                    };
-
+                    // We don't need to intercept data.js anymore since we already injected it
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
-
-                    XMLHttpRequest.prototype.open = originalOpen;
 
                     setupTouchControls(runtime);
                     startLobby();
