@@ -1359,7 +1359,7 @@ function loadDataAndEngine() {
         // ============================================================
         // LOAD GAME ENGINE
         // ============================================================
-     function loadGameEngine() {
+   function loadGameEngine() {
     console.log('🔄 Loading game engine...');
     
     // Patch AudioListener to handle NaN values
@@ -1545,108 +1545,6 @@ function loadDataAndEngine() {
     };
     document.head.appendChild(script);
 }
-
-            const script = document.createElement('script');
-            script.src = '/games/ninja%20run/c2runtime.js';
-            script.onload = () => {
-                console.log('✅ Runtime loaded');
-                
-                // Override requestProjectData to use cached data
-                try {
-                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                        cr.runtime.prototype.requestProjectData = function() {
-                            console.log('🔄 Using cached project data');
-                            if (window._c2projectData) {
-                                this.loadProject(window._c2projectData);
-                            } else {
-                                console.error('❌ No cached project data found!');
-                                originalRequestProjectData.call(this);
-                            }
-                        };
-                        console.log('✅ Runtime.requestProjectData overridden');
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not override requestProjectData:', e);
-                }
-
-                try {
-                    const runtime = new cr.createRuntime('c2canvas');
-                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                    window.gameRuntime = runtime;
-                    dom.startOverlay.classList.remove('hidden');
-
-                    // ============================================================
-                    // 🔥 CRITICAL FIX: Sync canvas size with display
-                    // ============================================================
-                    function syncCanvasSize() {
-                        if (!window.gameRuntime || !dom.canvas) return;
-                        try {
-                            const rect = dom.canvas.getBoundingClientRect();
-                            if (rect.width > 0 && rect.height > 0) {
-                                window.gameRuntime.setSize(rect.width, rect.height, true);
-                                console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
-                            }
-                        } catch (e) {
-                            // Silent fail
-                        }
-                    }
-
-                    // Sync after DOM layout settles
-                    requestAnimationFrame(() => {
-                        setTimeout(syncCanvasSize, 50);
-                    });
-
-                    // Sync on resize with debounce
-                    let resizeTimeout;
-                    window.addEventListener('resize', () => {
-                        clearTimeout(resizeTimeout);
-                        resizeTimeout = setTimeout(syncCanvasSize, 100);
-                    });
-
-                    // Sync on orientation change
-                    window.addEventListener('orientationchange', () => {
-                        setTimeout(syncCanvasSize, 300);
-                    });
-
-                    // Override runtime.setSize to always force
-                    const originalSetSize = runtime.setSize.bind(runtime);
-                    runtime.setSize = function(w, h, force) {
-                        if (w > 0 && h > 0) {
-                            return originalSetSize(w, h, true);
-                        }
-                        return originalSetSize(w, h, force);
-                    };
-
-                    // Patch input coordinates
-                    patchInputCoordinates();
-
-                    // Initialize responsive manager
-                    ResponsiveManager.init();
-
-                    waitForGameReady(runtime);
-                    setupTouchControls(runtime);
-                    startLobby();
-                    startScoreTracking();
-
-                    console.log('✅ Game engine initialized with coordinate fixes');
-
-                } catch (e) {
-                    console.error('❌ Error creating runtime:', e);
-                    dom.statusMain.textContent = '⚠️ Game engine error';
-                    dom.statusSub.textContent = 'Please refresh and try again';
-                    dom.statusMessage.classList.add('show');
-                }
-            };
-            script.onerror = (e) => {
-                console.error('❌ Failed to load c2runtime.js:', e);
-                dom.statusMain.textContent = '⚠️ Game engine not found';
-                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-                dom.statusMessage.classList.add('show');
-            };
-            document.head.appendChild(script);
-        }
-
         // ============================================================
         // WAIT FOR GAME TO BE READY
         // ============================================================
