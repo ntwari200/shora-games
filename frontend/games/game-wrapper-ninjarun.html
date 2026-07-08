@@ -1291,6 +1291,9 @@ detectDevice();
       // ============================================================
 // LOAD DATA.JS AND FIX PATHS - UPDATED
 // ============================================================
+// ============================================================
+// LOAD DATA.JS AND FIX PATHS - ULTIMATE FIX
+// ============================================================
 function loadDataAndEngine() {
     console.log('🔄 Loading data.js and fixing paths...');
     fetch('/games/ninja%20run/data.js')
@@ -1303,49 +1306,65 @@ function loadDataAndEngine() {
                 .replace(/images\//g, '/games/ninja%20run/images/')
                 .replace(/media\//g, '/games/ninja%20run/media/');
             
-            // 🔥 IMPROVED FIX: Handle the Loading layout properly
+            // 🔥 ULTIMATE FIX: Completely remove all references to Loading layout
             try {
-                const projectData = JSON.parse(fixedData);
+                let projectData = JSON.parse(fixedData);
                 
-                // Change first layout from "Loading" to "Menu"
+                // 1. Change first layout from "Loading" to "Menu"
                 if (projectData.project && projectData.project[1] === 'Loading') {
                     projectData.project[1] = 'Menu';
                     console.log('✅ Changed first layout from Loading to Menu');
                 }
                 
-                // 🔥 CRITICAL FIX: Remove Loading layout entirely from layouts array
-                // The Loading layout is at index 2 in the layouts array
+                // 2. Remove Loading layout from layouts array
                 if (projectData.project && projectData.project[5]) {
                     const layouts = projectData.project[5];
-                    // Remove the Loading layout (index 2)
-                    if (layouts[2] && layouts[2][0] === 'Loading') {
-                        layouts.splice(2, 1);
-                        console.log('✅ Removed Loading layout from layouts array');
+                    // Find and remove the Loading layout
+                    for (let i = 0; i < layouts.length; i++) {
+                        if (layouts[i] && layouts[i][0] === 'Loading') {
+                            layouts.splice(i, 1);
+                            console.log('✅ Removed Loading layout from layouts array');
+                            break;
+                        }
                     }
                 }
                 
-                // 🔥 FIX: Update any references to Loading layout in event sheets
-                // Find and replace any "Loading" references with "Menu"
+                // 3. 🔥 CRITICAL: Fix any references to Loading layout in the project
+                // Convert to string and do a global replace
                 fixedData = JSON.stringify(projectData);
                 
-                // Also do a string replacement for safety
+                // Replace ALL occurrences of "Loading" with "Menu"
                 fixedData = fixedData
                     .replace(/"Loading"/g, '"Menu"')
-                    .replace(/LoadingSet/g, 'MenuSet');
+                    .replace(/LoadingSet/g, 'MenuSet')
+                    .replace(/Loading,/g, 'Menu,')
+                    .replace(/,Loading,/g, ',Menu,')
+                    .replace(/,Loading\]/g, ',Menu]')
+                    .replace(/\["Loading"/g, '["Menu"');
                 
-                console.log('✅ Layout references fixed');
+                console.log('✅ All Loading references replaced with Menu');
                 
             } catch (e) {
-                console.warn('⚠️ Could not parse data.js, using string replacement');
+                console.warn('⚠️ Could not parse data.js, using aggressive string replacement');
+                // Aggressive string replacement
                 fixedData = fixedData
                     .replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"')
                     .replace(/"Loading"/g, '"Menu"')
-                    .replace(/LoadingSet/g, 'MenuSet');
+                    .replace(/LoadingSet/g, 'MenuSet')
+                    .replace(/Loading,/g, 'Menu,')
+                    .replace(/,Loading,/g, ',Menu,')
+                    .replace(/,Loading\]/g, ',Menu]')
+                    .replace(/\["Loading"/g, '["Menu"');
             }
             
+            // Parse and store the fixed data
             const projectData = JSON.parse(fixedData);
             window._c2projectData = projectData;
             console.log('✅ data.js parsed and stored');
+            
+            // 🔥 NEW: Also override the runtime's layout loading directly
+            window._c2forceMenu = true;
+            
             loadGameEngine();
         })
         .catch(err => {
@@ -1355,11 +1374,7 @@ function loadDataAndEngine() {
             dom.statusMessage.classList.add('show');
         });
 }
-
-        // ============================================================
-        // LOAD GAME ENGINE
-        // ============================================================
-   function loadGameEngine() {
+ function loadGameEngine() {
     console.log('🔄 Loading game engine...');
     
     // Patch AudioListener to handle NaN values
@@ -1387,7 +1402,6 @@ function loadDataAndEngine() {
             return;
         }
 
-        // Patch Mouse plugin
         if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
             const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
             if (mouseProto.onMouseMove) {
@@ -1406,7 +1420,6 @@ function loadDataAndEngine() {
             }
         }
 
-        // Patch Touch plugin
         if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
             const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
             if (touchProto.onTouchStart) {
@@ -1439,7 +1452,6 @@ function loadDataAndEngine() {
     script.onload = () => {
         console.log('✅ Runtime loaded');
         
-        // Override requestProjectData to use cached data
         try {
             if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
                 const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
@@ -1463,9 +1475,46 @@ function loadDataAndEngine() {
             runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
             window.gameRuntime = runtime;
             
-            // 🔥 NEW: Handle runtime errors gracefully
+            // ============================================================
+            // 🔥 ULTIMATE FIX: Remove Loading layout from runtime
+            // ============================================================
+            try {
+                // Check if Loading layout exists and remove it
+                if (runtime.layouts && runtime.layouts['Loading']) {
+                    console.log('⚠️ Loading layout found in runtime, removing...');
+                    delete runtime.layouts['Loading'];
+                    
+                    // Also remove from layouts_by_index
+                    if (runtime.layouts_by_index) {
+                        const loadingIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Loading');
+                        if (loadingIdx !== -1) {
+                            runtime.layouts_by_index.splice(loadingIdx, 1);
+                            console.log('✅ Removed Loading layout from layouts_by_index');
+                        }
+                    }
+                }
+                
+                // Ensure Menu layout exists
+                if (runtime.layouts && runtime.layouts['Menu']) {
+                    console.log('✅ Menu layout found in runtime');
+                    // Set first layout to Menu
+                    if (runtime.layouts_by_index && runtime.layouts_by_index.length > 0) {
+                        // Find Menu layout index
+                        const menuIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Menu');
+                        if (menuIdx !== -1 && menuIdx !== 0) {
+                            // Move Menu to first position
+                            const menuLayout = runtime.layouts_by_index.splice(menuIdx, 1)[0];
+                            runtime.layouts_by_index.unshift(menuLayout);
+                            console.log('✅ Moved Menu layout to first position');
+                        }
+                    }
+                }
+            } catch (e) {
+                console.warn('⚠️ Could not modify runtime layouts:', e);
+            }
+            
+            // Handle runtime errors gracefully
             runtime.addDestroyCallback(function(inst) {
-                // Catch any instance creation errors
                 if (inst && inst.type === null) {
                     console.warn('⚠️ Skipping null instance creation');
                     return;
@@ -1490,24 +1539,20 @@ function loadDataAndEngine() {
                 }
             }
 
-            // Sync after DOM layout settles
             requestAnimationFrame(() => {
                 setTimeout(syncCanvasSize, 50);
             });
 
-            // Sync on resize with debounce
             let resizeTimeout;
             window.addEventListener('resize', () => {
                 clearTimeout(resizeTimeout);
                 resizeTimeout = setTimeout(syncCanvasSize, 100);
             });
 
-            // Sync on orientation change
             window.addEventListener('orientationchange', () => {
                 setTimeout(syncCanvasSize, 300);
             });
 
-            // Override runtime.setSize to always force
             const originalSetSize = runtime.setSize.bind(runtime);
             runtime.setSize = function(w, h, force) {
                 if (w > 0 && h > 0) {
@@ -1516,13 +1561,8 @@ function loadDataAndEngine() {
                 return originalSetSize(w, h, force);
             };
 
-            // Patch input coordinates
             patchInputCoordinates();
-
-            // Initialize responsive manager
             ResponsiveManager.init();
-
-            // 🔥 NEW: Wait for game with better error handling
             waitForGameReady(runtime);
             setupTouchControls(runtime);
             startLobby();
@@ -1545,12 +1585,6 @@ function loadDataAndEngine() {
     };
     document.head.appendChild(script);
 }
-        // ============================================================
-        // WAIT FOR GAME TO BE READY
-        // ============================================================
-    // ============================================================
-// WAIT FOR GAME TO BE READY - UPDATED
-// ============================================================
 function waitForGameReady(runtime) {
     let checks = 0;
     const maxChecks = 30;
