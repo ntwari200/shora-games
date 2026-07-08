@@ -54,6 +54,7 @@
             user-select: none;
             -webkit-user-select: none;
             -webkit-touch-callout: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
         /* ============================================================
@@ -125,8 +126,8 @@
             position: fixed;
             inset: 0;
             background-image:
-                linear-gradient(rgba(0, 212, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.02) 1px, transparent 1px);
+                linear-gradient(rgba(0, 212, 255, 0.015) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 212, 255, 0.015) 1px, transparent 1px);
             background-size: 50px 50px;
             pointer-events: none;
             z-index: 1;
@@ -184,6 +185,7 @@
             align-items: center;
             background: var(--bg-primary);
             transition: opacity 0.8s ease, visibility 0.8s ease;
+            padding: 20px;
         }
 
         #loadingScreen.hidden {
@@ -195,27 +197,29 @@
         .loading-content {
             text-align: center;
             position: relative;
+            max-width: 400px;
+            width: 100%;
         }
 
         .loading-logo {
             font-family: 'Orbitron', monospace;
-            font-size: 2.5rem;
+            font-size: clamp(2rem, 5vw, 3.5rem);
             font-weight: 900;
             background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             letter-spacing: 4px;
             animation: logoPulse 2s ease-in-out infinite;
         }
 
         .loading-logo-sub {
-            font-size: 0.8rem;
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
             color: var(--text-secondary);
             letter-spacing: 8px;
             text-transform: uppercase;
-            margin-bottom: 40px;
+            margin-bottom: clamp(24px, 5vh, 40px);
         }
 
         @keyframes logoPulse {
@@ -231,9 +235,9 @@
         }
 
         .loading-spinner {
-            width: 60px;
-            height: 60px;
-            margin: 0 auto 24px;
+            width: clamp(40px, 8vw, 60px);
+            height: clamp(40px, 8vw, 60px);
+            margin: 0 auto clamp(16px, 3vh, 24px);
             position: relative;
         }
 
@@ -266,12 +270,13 @@
         }
 
         .loading-progress-wrap {
-            width: 280px;
+            width: 100%;
+            max-width: 280px;
             height: 4px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 4px;
             overflow: hidden;
-            margin: 0 auto 16px;
+            margin: 0 auto clamp(12px, 2vh, 16px);
             position: relative;
         }
 
@@ -303,20 +308,23 @@
         }
 
         .loading-text {
-            font-size: 0.75rem;
+            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
             color: var(--text-secondary);
             letter-spacing: 2px;
             font-weight: 500;
+            min-height: 1.5em;
         }
 
         .loading-tips {
-            margin-top: 20px;
-            font-size: 0.7rem;
+            margin-top: clamp(12px, 2vh, 20px);
+            font-size: clamp(0.55rem, 1.2vw, 0.75rem);
             color: var(--text-muted);
             letter-spacing: 1px;
             max-width: 300px;
             opacity: 0.6;
             animation: tipFade 3s ease-in-out infinite;
+            min-height: 2em;
+            padding: 0 10px;
         }
 
         @keyframes tipFade {
@@ -330,7 +338,7 @@
         }
 
         /* ============================================================
-           CLICK TO START OVERLAY (Professional)
+           CLICK TO START OVERLAY
            ============================================================ */
         #startOverlay {
             position: absolute;
@@ -341,9 +349,11 @@
             align-items: center;
             background: rgba(10, 14, 23, 0.85);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             cursor: pointer;
             transition: opacity 0.6s ease;
             pointer-events: auto;
+            padding: 20px;
         }
 
         #startOverlay.hidden {
@@ -354,6 +364,8 @@
         .start-content {
             text-align: center;
             animation: fadeInUp 0.8s ease;
+            max-width: 500px;
+            width: 100%;
         }
 
         @keyframes fadeInUp {
@@ -368,27 +380,27 @@
         }
 
         .start-content .icon {
-            font-size: 5rem;
-            margin-bottom: 16px;
+            font-size: clamp(3rem, 10vw, 5rem);
+            margin-bottom: 12px;
             display: inline-block;
             animation: pulse 2s ease-in-out infinite;
         }
 
         .start-content .title {
             font-family: 'Orbitron', monospace;
-            font-size: 2.5rem;
+            font-size: clamp(1.8rem, 6vw, 3rem);
             font-weight: 900;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin-bottom: 8px;
+            margin-bottom: 4px;
             letter-spacing: 4px;
         }
 
         .start-content .sub {
             color: var(--text-secondary);
-            font-size: 0.95rem;
+            font-size: clamp(0.8rem, 2vw, 1.1rem);
             letter-spacing: 2px;
         }
 
@@ -398,20 +410,23 @@
         }
 
         .start-btn {
-            margin-top: 24px;
-            padding: 14px 48px;
+            margin-top: clamp(16px, 3vh, 24px);
+            padding: clamp(12px, 2vh, 16px) clamp(24px, 4vw, 48px);
             border: none;
             border-radius: 50px;
             background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: #fff;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: clamp(0.85rem, 2vw, 1.1rem);
             cursor: pointer;
             transition: var(--transition);
             letter-spacing: 2px;
             text-transform: uppercase;
             box-shadow: 0 0 40px var(--primary-glow);
+            width: 100%;
+            max-width: 280px;
+            touch-action: manipulation;
         }
 
         .start-btn:hover {
@@ -434,7 +449,7 @@
         }
 
         /* ============================================================
-           TOP BAR - Professional
+           TOP BAR - Mobile First
            ============================================================ */
         #topBar {
             position: absolute;
@@ -442,46 +457,48 @@
             left: 0;
             right: 0;
             z-index: 12;
-            padding: 14px 24px;
+            padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2vw, 24px);
             display: flex;
             justify-content: space-between;
             align-items: center;
             background: rgba(10, 14, 23, 0.7);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             flex-wrap: wrap;
-            gap: 8px;
+            gap: 6px;
             pointer-events: none;
         }
 
         .top-left {
             display: flex;
             align-items: center;
-            gap: 16px;
+            gap: clamp(6px, 1.5vw, 16px);
             flex-wrap: wrap;
         }
 
         .top-right {
             display: flex;
             align-items: center;
-            gap: 14px;
+            gap: clamp(4px, 1vw, 14px);
             flex-wrap: wrap;
         }
 
         .back-btn {
             color: var(--text-secondary);
             text-decoration: none;
-            font-size: 0.8rem;
-            padding: 8px 16px;
+            font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+            padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1.5vw, 16px);
             border-radius: 30px;
             transition: var(--transition);
             border: 1px solid rgba(255, 255, 255, 0.05);
             background: rgba(255, 255, 255, 0.02);
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
             pointer-events: auto;
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .back-btn:hover {
@@ -491,21 +508,22 @@
         }
 
         .back-btn i {
-            font-size: 0.7rem;
+            font-size: clamp(0.5rem, 1vw, 0.7rem);
         }
 
         .top-stat {
-            font-size: 0.7rem;
+            font-size: clamp(0.5rem, 1vw, 0.7rem);
             color: var(--text-secondary);
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             font-weight: 500;
             letter-spacing: 0.5px;
-            padding: 6px 14px;
+            padding: clamp(3px, 0.5vh, 6px) clamp(6px, 1vw, 14px);
             border-radius: 30px;
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.03);
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.02);
+            white-space: nowrap;
         }
 
         .top-stat .value {
@@ -528,29 +546,32 @@
         }
 
         .top-stat .icon {
-            font-size: 0.7rem;
+            font-size: clamp(0.5rem, 0.8vw, 0.7rem);
             opacity: 0.6;
         }
 
         /* ============================================================
-           SCORE OVERLAY - Professional
+           SCORE OVERLAY
            ============================================================ */
         #scoreOverlay {
             position: absolute;
-            bottom: 100px;
+            bottom: clamp(70px, 12vh, 100px);
             left: 50%;
             transform: translateX(-50%);
             z-index: 14;
             display: none;
             background: rgba(10, 14, 23, 0.8);
             backdrop-filter: blur(12px);
-            padding: 12px 24px;
+            -webkit-backdrop-filter: blur(12px);
+            padding: clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px);
             border-radius: 50px;
             border: 1px solid rgba(255, 255, 255, 0.05);
-            gap: 24px;
+            gap: clamp(10px, 2vw, 24px);
             align-items: center;
             pointer-events: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+            flex-wrap: wrap;
+            justify-content: center;
         }
 
         #scoreOverlay.show {
@@ -561,17 +582,18 @@
         .score-item {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.75rem;
+            gap: 4px;
+            font-size: clamp(0.55rem, 1.2vw, 0.75rem);
             color: var(--text-secondary);
             font-weight: 500;
+            white-space: nowrap;
         }
 
         .score-item .value {
             font-family: 'Orbitron', monospace;
             font-weight: 700;
             color: #fff;
-            font-size: 0.9rem;
+            font-size: clamp(0.65rem, 1.4vw, 0.9rem);
         }
 
         .score-item .value.gold {
@@ -584,53 +606,60 @@
             color: var(--primary);
         }
 
+        .score-item i {
+            font-size: clamp(0.5rem, 1vw, 0.7rem);
+        }
+
         /* ============================================================
-           PLAYER LIST - Professional
+           PLAYER LIST
            ============================================================ */
         #playerList {
             position: absolute;
-            top: 80px;
-            right: 16px;
+            top: clamp(60px, 10vh, 80px);
+            right: clamp(8px, 1.5vw, 16px);
             background: rgba(10, 14, 23, 0.8);
             backdrop-filter: blur(12px);
-            border-radius: var(--radius);
-            padding: 14px 16px;
-            min-width: 150px;
-            max-width: 200px;
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: var(--radius-sm);
+            padding: clamp(8px, 1.5vh, 14px) clamp(10px, 1.5vw, 16px);
+            min-width: clamp(80px, 15vw, 150px);
+            max-width: clamp(120px, 20vw, 200px);
             max-height: 50vh;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.03);
             z-index: 12;
-            font-size: 0.7rem;
+            font-size: clamp(0.5rem, 1vw, 0.7rem);
             pointer-events: none;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
         }
 
         #playerList .title {
             color: var(--text-secondary);
-            font-size: 0.55rem;
+            font-size: clamp(0.45rem, 0.8vw, 0.6rem);
             text-transform: uppercase;
             letter-spacing: 2px;
-            margin-bottom: 10px;
+            margin-bottom: clamp(6px, 1vh, 10px);
             font-weight: 600;
         }
 
         .player-item {
             display: flex;
             justify-content: space-between;
-            padding: 4px 0;
+            padding: clamp(2px, 0.3vh, 4px) 0;
             border-bottom: 1px solid rgba(255, 255, 255, 0.03);
             color: var(--text-primary);
-            font-size: 0.65rem;
+            font-size: clamp(0.5rem, 0.9vw, 0.65rem);
             align-items: center;
+            gap: 4px;
         }
 
         .player-item .status-dot {
-            width: 6px;
-            height: 6px;
+            width: clamp(4px, 0.8vw, 6px);
+            height: clamp(4px, 0.8vw, 6px);
             border-radius: 50%;
             display: inline-block;
-            margin-right: 6px;
+            margin-right: 4px;
+            flex-shrink: 0;
         }
 
         .player-item .status-dot.ready {
@@ -648,15 +677,19 @@
             align-items: center;
             gap: 4px;
             font-weight: 500;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            flex: 1;
         }
 
         .player-item .player-score {
             color: var(--text-secondary);
             font-family: 'Orbitron', monospace;
-            font-size: 0.6rem;
+            font-size: clamp(0.45rem, 0.8vw, 0.6rem);
+            flex-shrink: 0;
         }
 
-        /* Scrollbar */
         #playerList::-webkit-scrollbar {
             width: 3px;
         }
@@ -669,7 +702,7 @@
         }
 
         /* ============================================================
-           LOBBY OVERLAY - Professional
+           LOBBY OVERLAY
            ============================================================ */
         #lobbyOverlay {
             position: absolute;
@@ -681,6 +714,7 @@
             align-items: center;
             background: rgba(10, 14, 23, 0.85);
             backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
             padding: 20px;
             transition: opacity 0.6s ease;
             pointer-events: auto;
@@ -695,24 +729,25 @@
             background: rgba(255, 255, 255, 0.02);
             border: 1px solid rgba(255, 255, 255, 0.04);
             border-radius: var(--radius);
-            padding: 40px 50px;
-            max-width: 480px;
+            padding: clamp(20px, 4vh, 40px) clamp(16px, 3vw, 50px);
+            max-width: clamp(320px, 80vw, 480px);
             width: 100%;
             text-align: center;
             box-shadow: var(--shadow);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             animation: fadeInUp 0.6s ease;
         }
 
         .lobby-box .game-icon {
-            font-size: 3.5rem;
-            margin-bottom: 12px;
+            font-size: clamp(2.5rem, 8vw, 3.5rem);
+            margin-bottom: clamp(8px, 1.5vh, 12px);
             display: inline-block;
         }
 
         .lobby-box h2 {
             font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
+            font-size: clamp(1rem, 3vw, 1.4rem);
             font-weight: 700;
             margin-bottom: 2px;
             letter-spacing: 2px;
@@ -724,22 +759,22 @@
 
         .lobby-box .subtitle {
             color: var(--text-secondary);
-            font-size: 0.8rem;
-            margin-bottom: 24px;
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
+            margin-bottom: clamp(16px, 3vh, 24px);
             letter-spacing: 1px;
         }
 
         .lobby-stats {
             display: grid;
             grid-template-columns: 1fr 1fr 1fr;
-            gap: 10px;
-            margin-bottom: 24px;
+            gap: clamp(4px, 1vw, 10px);
+            margin-bottom: clamp(16px, 3vh, 24px);
         }
 
         .lobby-stat {
             background: rgba(255, 255, 255, 0.02);
             border-radius: var(--radius-sm);
-            padding: 14px 8px;
+            padding: clamp(8px, 1.5vh, 14px) clamp(4px, 0.8vw, 8px);
             border: 1px solid rgba(255, 255, 255, 0.03);
             transition: var(--transition);
         }
@@ -751,7 +786,7 @@
 
         .lobby-stat .number {
             font-family: 'Orbitron', monospace;
-            font-size: 1.6rem;
+            font-size: clamp(1.2rem, 4vw, 1.6rem);
             font-weight: 700;
             color: var(--primary);
         }
@@ -769,7 +804,7 @@
         }
 
         .lobby-stat .label {
-            font-size: 0.55rem;
+            font-size: clamp(0.45rem, 1vw, 0.55rem);
             color: var(--text-muted);
             text-transform: uppercase;
             letter-spacing: 1.5px;
@@ -778,23 +813,23 @@
         }
 
         .lobby-box .prize-pool {
-            font-size: 1.2rem;
+            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
             font-weight: 700;
             color: var(--gold);
-            margin-bottom: 12px;
+            margin-bottom: clamp(8px, 1.5vh, 12px);
             letter-spacing: 1px;
         }
 
         .lobby-box .prize-pool small {
-            font-size: 0.7rem;
+            font-size: clamp(0.5rem, 1vw, 0.7rem);
             color: var(--text-muted);
             font-weight: 400;
         }
 
         .lobby-box .entry-fee {
-            font-size: 0.8rem;
+            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
             color: var(--text-secondary);
-            margin-bottom: 20px;
+            margin-bottom: clamp(12px, 2vh, 20px);
         }
 
         .lobby-box .entry-fee strong {
@@ -802,12 +837,12 @@
         }
 
         .btn-join {
-            padding: 14px 40px;
+            padding: clamp(10px, 2vh, 14px) clamp(16px, 3vw, 40px);
             border: none;
             border-radius: 50px;
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
-            font-size: 1rem;
+            font-size: clamp(0.8rem, 2vw, 1rem);
             cursor: pointer;
             transition: var(--transition);
             background: linear-gradient(135deg, var(--primary), var(--secondary));
@@ -846,7 +881,7 @@
         }
 
         /* ============================================================
-           STATUS MESSAGE - Professional
+           STATUS MESSAGE
            ============================================================ */
         #statusMessage {
             position: absolute;
@@ -859,11 +894,13 @@
             display: none;
             background: rgba(10, 14, 23, 0.8);
             backdrop-filter: blur(12px);
-            padding: 24px 32px;
+            -webkit-backdrop-filter: blur(12px);
+            padding: clamp(16px, 3vh, 24px) clamp(20px, 4vw, 32px);
             border-radius: var(--radius);
             border: 1px solid rgba(255, 255, 255, 0.04);
             box-shadow: var(--shadow);
             animation: fadeInUp 0.4s ease;
+            max-width: 90vw;
         }
 
         #statusMessage.show {
@@ -871,7 +908,7 @@
         }
 
         #statusMessage .main {
-            font-size: 1.4rem;
+            font-size: clamp(1rem, 3vw, 1.4rem);
             font-weight: 700;
             color: #fff;
             font-family: 'Orbitron', monospace;
@@ -879,22 +916,22 @@
         }
 
         #statusMessage .sub {
-            font-size: 0.85rem;
+            font-size: clamp(0.65rem, 1.5vw, 0.85rem);
             color: var(--text-secondary);
             margin-top: 6px;
         }
 
         /* ============================================================
-           TOUCH CONTROLS - Professional
+           TOUCH CONTROLS - Mobile Optimized
            ============================================================ */
         #touchControls {
             position: absolute;
-            bottom: 30px;
+            bottom: clamp(16px, 3vh, 30px);
             left: 0;
             right: 0;
             display: none;
             justify-content: space-between;
-            padding: 0 24px;
+            padding: 0 clamp(12px, 2vw, 24px);
             pointer-events: none;
             z-index: 20;
         }
@@ -912,14 +949,15 @@
 
         .touch-btn {
             pointer-events: auto;
-            width: 65px;
-            height: 65px;
+            width: clamp(50px, 10vw, 65px);
+            height: clamp(50px, 10vw, 65px);
             border-radius: 50%;
             border: 2px solid rgba(255, 255, 255, 0.08);
             background: rgba(255, 255, 255, 0.04);
             backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
             color: #fff;
-            font-size: 1.8rem;
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -927,6 +965,7 @@
             touch-action: none;
             -webkit-tap-highlight-color: transparent;
             box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+            -webkit-touch-callout: none;
         }
 
         .touch-btn:active {
@@ -945,9 +984,9 @@
         }
 
         .touch-btn.jump {
-            width: 80px;
-            height: 80px;
-            font-size: 2.2rem;
+            width: clamp(60px, 12vw, 80px);
+            height: clamp(60px, 12vw, 80px);
+            font-size: clamp(1.6rem, 4vw, 2.2rem);
             background: rgba(0, 212, 255, 0.08);
             border-color: rgba(0, 212, 255, 0.15);
             margin: 0 auto;
@@ -961,7 +1000,7 @@
 
         .touch-controls-group {
             display: flex;
-            gap: 12px;
+            gap: clamp(8px, 2vw, 15px);
             align-items: center;
             pointer-events: none;
         }
@@ -971,72 +1010,58 @@
         }
 
         /* ============================================================
-           RESPONSIVE
+           RESPONSIVE BREAKPOINTS
            ============================================================ */
+
+        /* Large Tablets & Small Laptops */
         @media (max-width: 1024px) {
-            .lobby-box {
-                padding: 30px 35px;
-                max-width: 400px;
-            }
-            .lobby-box .game-icon {
-                font-size: 3rem;
-            }
-            .lobby-box h2 {
-                font-size: 1.2rem;
-            }
-            #playerList {
-                top: 70px;
-                right: 12px;
-                min-width: 120px;
-                padding: 10px 12px;
+            #scoreOverlay {
+                bottom: clamp(80px, 14vh, 100px);
+                padding: 8px 16px;
+                gap: 14px;
+                border-radius: 40px;
             }
             .touch-btn {
                 width: 55px;
                 height: 55px;
-                font-size: 1.5rem;
+                font-size: 1.4rem;
             }
             .touch-btn.jump {
-                width: 70px;
-                height: 70px;
+                width: 65px;
+                height: 65px;
                 font-size: 1.8rem;
             }
-            .top-stat {
-                font-size: 0.6rem;
-                padding: 4px 10px;
-            }
-            #scoreOverlay {
-                padding: 10px 18px;
-                gap: 16px;
-                bottom: 80px;
-            }
-            .score-item {
-                font-size: 0.65rem;
+            .lobby-box {
+                padding: 28px 30px;
+                max-width: 420px;
             }
         }
 
+        /* Tablets */
         @media (max-width: 768px) {
             #topBar {
-                padding: 10px 14px;
-            }
-            .top-stat {
-                font-size: 0.55rem;
-                padding: 4px 8px;
+                padding: 8px 12px;
                 gap: 4px;
             }
+            .top-stat {
+                font-size: 0.5rem;
+                padding: 3px 8px;
+                gap: 3px;
+            }
             .back-btn {
-                font-size: 0.7rem;
-                padding: 6px 12px;
+                font-size: 0.6rem;
+                padding: 4px 10px;
             }
             .lobby-box {
                 padding: 24px 20px;
-                max-width: 340px;
+                max-width: 360px;
                 border-radius: var(--radius-sm);
             }
             .lobby-box .game-icon {
-                font-size: 2.5rem;
+                font-size: 2.8rem;
             }
             .lobby-box h2 {
-                font-size: 1rem;
+                font-size: 1.1rem;
             }
             .lobby-box .subtitle {
                 font-size: 0.7rem;
@@ -1056,24 +1081,36 @@
                 font-size: 0.5rem;
             }
             .lobby-box .prize-pool {
-                font-size: 1rem;
+                font-size: 0.95rem;
             }
             .lobby-box .entry-fee {
                 font-size: 0.7rem;
-                margin-bottom: 16px;
+                margin-bottom: 14px;
             }
             .btn-join {
-                padding: 12px 20px;
+                padding: 10px 16px;
                 font-size: 0.85rem;
             }
             #playerList {
-                top: 60px;
+                top: 55px;
                 right: 8px;
-                min-width: 100px;
-                max-width: 140px;
+                min-width: 90px;
+                max-width: 130px;
                 padding: 8px 10px;
-                font-size: 0.6rem;
+                font-size: 0.55rem;
                 max-height: 35vh;
+            }
+            #scoreOverlay {
+                bottom: clamp(70px, 12vh, 90px);
+                padding: 6px 12px;
+                gap: 10px;
+                border-radius: 30px;
+            }
+            .score-item {
+                font-size: 0.55rem;
+            }
+            .score-item .value {
+                font-size: 0.7rem;
             }
             .touch-btn {
                 width: 50px;
@@ -1081,77 +1118,138 @@
                 font-size: 1.2rem;
             }
             .touch-btn.jump {
-                width: 60px;
-                height: 60px;
+                width: 58px;
+                height: 58px;
                 font-size: 1.5rem;
             }
             #touchControls {
-                bottom: 16px;
+                bottom: 14px;
                 padding: 0 12px;
             }
             .touch-controls-group {
                 gap: 8px;
             }
             #statusMessage {
-                padding: 16px 20px;
+                padding: 14px 18px;
+                max-width: 85vw;
             }
             #statusMessage .main {
-                font-size: 1.1rem;
+                font-size: 1rem;
             }
             #statusMessage .sub {
-                font-size: 0.7rem;
-            }
-            #scoreOverlay {
-                padding: 8px 14px;
-                gap: 12px;
-                bottom: 70px;
-                border-radius: 30px;
-            }
-            .score-item {
-                font-size: 0.6rem;
-            }
-            .score-item .value {
-                font-size: 0.75rem;
+                font-size: 0.65rem;
             }
             .loading-logo {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             .loading-progress-wrap {
-                width: 200px;
+                max-width: 200px;
             }
             .start-content .title {
-                font-size: 1.8rem;
+                font-size: 2rem;
             }
             .start-content .icon {
                 font-size: 3.5rem;
             }
             .start-btn {
-                padding: 12px 32px;
+                padding: 10px 24px;
                 font-size: 0.85rem;
+                max-width: 220px;
             }
         }
 
-        @media (max-width: 400px) {
+        /* Small Phones */
+        @media (max-width: 480px) {
+            #topBar {
+                padding: 6px 10px;
+            }
+            .top-stat {
+                font-size: 0.45rem;
+                padding: 2px 6px;
+                gap: 2px;
+            }
+            .back-btn {
+                font-size: 0.5rem;
+                padding: 3px 8px;
+                gap: 4px;
+            }
             .lobby-box {
                 padding: 18px 14px;
                 max-width: 290px;
+                border-radius: 12px;
             }
             .lobby-box .game-icon {
-                font-size: 2rem;
+                font-size: 2.2rem;
             }
             .lobby-box h2 {
-                font-size: 0.85rem;
+                font-size: 0.9rem;
+            }
+            .lobby-box .subtitle {
+                font-size: 0.6rem;
+                margin-bottom: 12px;
             }
             .lobby-stats {
-                grid-template-columns: 1fr 1fr 1fr;
                 gap: 4px;
+                margin-bottom: 12px;
+            }
+            .lobby-stat {
+                padding: 6px 2px;
             }
             .lobby-stat .number {
                 font-size: 1rem;
             }
-            .btn-join {
-                padding: 10px 16px;
+            .lobby-stat .label {
+                font-size: 0.4rem;
+                letter-spacing: 1px;
+            }
+            .lobby-box .prize-pool {
                 font-size: 0.8rem;
+            }
+            .lobby-box .entry-fee {
+                font-size: 0.6rem;
+                margin-bottom: 10px;
+            }
+            .btn-join {
+                padding: 8px 12px;
+                font-size: 0.75rem;
+                border-radius: 30px;
+            }
+            #playerList {
+                top: 48px;
+                right: 6px;
+                min-width: 70px;
+                max-width: 100px;
+                padding: 6px 8px;
+                font-size: 0.45rem;
+                max-height: 30vh;
+                border-radius: 8px;
+            }
+            #playerList .title {
+                font-size: 0.4rem;
+                margin-bottom: 4px;
+            }
+            .player-item {
+                font-size: 0.45rem;
+                padding: 2px 0;
+            }
+            .player-item .player-score {
+                font-size: 0.4rem;
+            }
+            #scoreOverlay {
+                bottom: clamp(55px, 10vh, 70px);
+                padding: 4px 10px;
+                gap: 6px;
+                border-radius: 20px;
+            }
+            .score-item {
+                font-size: 0.5rem;
+                gap: 3px;
+            }
+            .score-item .value {
+                font-size: 0.6rem;
+            }
+            .score-item i {
+                font-size: 0.45rem;
             }
             .touch-btn {
                 width: 42px;
@@ -1159,8 +1257,8 @@
                 font-size: 1rem;
             }
             .touch-btn.jump {
-                width: 52px;
-                height: 52px;
+                width: 50px;
+                height: 50px;
                 font-size: 1.2rem;
             }
             #touchControls {
@@ -1170,77 +1268,150 @@
             .touch-controls-group {
                 gap: 6px;
             }
-            #playerList {
-                top: 55px;
-                right: 6px;
-                min-width: 80px;
-                max-width: 110px;
-                padding: 6px 8px;
-                font-size: 0.5rem;
-                max-height: 30vh;
-            }
-            #topBar {
-                padding: 6px 10px;
-            }
-            .top-stat {
-                font-size: 0.5rem;
-                padding: 3px 6px;
-            }
-            .back-btn {
-                font-size: 0.6rem;
-                padding: 4px 10px;
-            }
             #statusMessage {
-                padding: 12px 16px;
+                padding: 10px 14px;
+                max-width: 80vw;
             }
             #statusMessage .main {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
             }
             #statusMessage .sub {
-                font-size: 0.65rem;
-            }
-            #scoreOverlay {
-                padding: 6px 12px;
-                gap: 8px;
-                bottom: 60px;
-                border-radius: 20px;
-            }
-            .score-item {
                 font-size: 0.55rem;
             }
-            .score-item .value {
-                font-size: 0.65rem;
+            .loading-logo {
+                font-size: 1.6rem;
+                letter-spacing: 2px;
+            }
+            .loading-logo-sub {
+                font-size: 0.5rem;
+                letter-spacing: 4px;
+                margin-bottom: 16px;
+            }
+            .loading-progress-wrap {
+                max-width: 160px;
+                height: 3px;
+            }
+            .loading-text {
+                font-size: 0.55rem;
+            }
+            .loading-tips {
+                font-size: 0.5rem;
+                max-width: 200px;
+            }
+            .loading-spinner {
+                width: 35px;
+                height: 35px;
+            }
+            .start-content .title {
+                font-size: 1.5rem;
+                letter-spacing: 2px;
+            }
+            .start-content .icon {
+                font-size: 3rem;
+            }
+            .start-content .sub {
+                font-size: 0.7rem;
+            }
+            .start-btn {
+                padding: 8px 20px;
+                font-size: 0.75rem;
+                max-width: 180px;
             }
         }
 
-        @media (max-height: 500px) and (orientation: landscape) {
-            #touchControls {
-                bottom: 8px;
-                padding: 0 12px;
+        /* Extra Small Phones */
+        @media (max-width: 360px) {
+            .lobby-box {
+                padding: 14px 10px;
+                max-width: 250px;
+            }
+            .lobby-box .game-icon {
+                font-size: 1.8rem;
+            }
+            .lobby-box h2 {
+                font-size: 0.75rem;
+            }
+            .lobby-stat .number {
+                font-size: 0.85rem;
+            }
+            .btn-join {
+                padding: 6px 10px;
+                font-size: 0.65rem;
             }
             .touch-btn {
-                width: 40px;
-                height: 40px;
+                width: 36px;
+                height: 36px;
+                font-size: 0.85rem;
+            }
+            .touch-btn.jump {
+                width: 44px;
+                height: 44px;
+                font-size: 1rem;
+            }
+            #scoreOverlay {
+                padding: 3px 8px;
+                gap: 4px;
+            }
+            .score-item {
+                font-size: 0.4rem;
+            }
+            .score-item .value {
+                font-size: 0.5rem;
+            }
+            #topBar {
+                padding: 4px 8px;
+            }
+            .top-stat {
+                font-size: 0.4rem;
+                padding: 2px 4px;
+            }
+            .back-btn {
+                font-size: 0.45rem;
+                padding: 2px 6px;
+            }
+            #playerList {
+                top: 42px;
+                right: 4px;
+                min-width: 60px;
+                max-width: 85px;
+                padding: 4px 6px;
+            }
+        }
+
+        /* Landscape Phones */
+        @media (max-height: 500px) and (orientation: landscape) {
+            #touchControls {
+                bottom: 6px;
+                padding: 0 8px;
+            }
+            .touch-btn {
+                width: 38px;
+                height: 38px;
                 font-size: 0.9rem;
             }
             .touch-btn.jump {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
+                width: 46px;
+                height: 46px;
+                font-size: 1.1rem;
             }
             .lobby-box {
-                padding: 16px 20px;
-                max-width: 320px;
+                padding: 12px 16px;
+                max-width: 300px;
+                border-radius: 12px;
             }
             .lobby-box .game-icon {
                 font-size: 2rem;
             }
             .lobby-box h2 {
-                font-size: 0.9rem;
+                font-size: 0.85rem;
+            }
+            .lobby-box .subtitle {
+                font-size: 0.6rem;
+                margin-bottom: 10px;
             }
             .lobby-stats {
-                grid-template-columns: 1fr 1fr 1fr;
                 gap: 4px;
+                margin-bottom: 10px;
             }
             .lobby-stat {
                 padding: 4px 4px;
@@ -1248,58 +1419,67 @@
             .lobby-stat .number {
                 font-size: 0.9rem;
             }
+            .lobby-stat .label {
+                font-size: 0.4rem;
+            }
             .btn-join {
-                padding: 8px 16px;
-                font-size: 0.8rem;
+                padding: 6px 12px;
+                font-size: 0.7rem;
             }
             #playerList {
-                top: 45px;
+                top: 40px;
                 right: 6px;
-                min-width: 70px;
-                max-width: 100px;
+                min-width: 60px;
+                max-width: 90px;
                 padding: 4px 6px;
-                font-size: 0.5rem;
-                max-height: 30vh;
-            }
-            #topBar {
-                padding: 4px 10px;
-            }
-            .top-stat {
-                font-size: 0.5rem;
-                padding: 3px 6px;
-            }
-            .back-btn {
-                font-size: 0.6rem;
-                padding: 3px 8px;
+                font-size: 0.4rem;
+                max-height: 25vh;
             }
             #scoreOverlay {
-                padding: 4px 12px;
-                gap: 10px;
-                bottom: 50px;
-                border-radius: 20px;
+                bottom: 40px;
+                padding: 3px 10px;
+                gap: 6px;
             }
             .score-item {
-                font-size: 0.55rem;
+                font-size: 0.45rem;
             }
             .score-item .value {
-                font-size: 0.65rem;
+                font-size: 0.55rem;
             }
-        }
-
-        /* ============================================================
-           UTILITY CLASSES
-           ============================================================ */
-        .text-glow-primary {
-            text-shadow: 0 0 20px var(--primary-glow);
-        }
-
-        .text-glow-gold {
-            text-shadow: 0 0 20px var(--gold-glow);
-        }
-
-        .border-glow {
-            border-color: var(--primary) !important;
-            box-shadow: 0 0 30px var(--primary-glow);
+            #topBar {
+                padding: 4px 8px;
+            }
+            .top-stat {
+                font-size: 0.4rem;
+                padding: 2px 6px;
+            }
+            .back-btn {
+                font-size: 0.5rem;
+                padding: 2px 8px;
+            }
+            #statusMessage {
+                padding: 8px 12px;
+            }
+            #statusMessage .main {
+                font-size: 0.8rem;
+            }
+            #statusMessage .sub {
+                font-size: 0.5rem;
+            }
+            .loading-logo {
+                font-size: 1.5rem;
+            }
+            .loading-logo-sub {
+                font-size: 0.5rem;
+                margin-bottom: 12px;
+            }
+            .loading-progress-wrap {
+                max-width: 150px;
+            }
+            .loading-spinner {
+                width: 30px;
+                height: 30px;
+            }
         }
     </style>
 </head>
@@ -1675,7 +1855,6 @@
                 if (progress > 100) progress = 100;
                 dom.loadProgress.style.width = progress + '%';
 
-                // Update loading text at milestones
                 if (progress > 20 && msgIndex < 1) { msgIndex = 1;
                     dom.loadingText.textContent = loadingMessages[1]; }
                 if (progress > 40 && msgIndex < 2) { msgIndex = 2;
@@ -1816,13 +1995,20 @@
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
 
-                    // Show start overlay
                     dom.startOverlay.classList.remove('hidden');
 
                     setupTouchControls(runtime);
                     startLobby();
                     startScoreTracking();
                     monitorLayoutChanges(runtime);
+
+                    // Safety timer: force start after 20 seconds if not started
+                    setTimeout(() => {
+                        if (!state._gameStarted && state.roundState === 'playing') {
+                            console.log('⏳ Safety timeout: forcing game start...');
+                            forceGameStart();
+                        }
+                    }, 20000);
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -1844,6 +2030,7 @@
         // MONITOR LAYOUT CHANGES
         // ============================================================
         function monitorLayoutChanges(runtime) {
+            let monitorAttempts = 0;
             setInterval(() => {
                 try {
                     const layout = runtime.running_layout;
@@ -1853,6 +2040,11 @@
                             console.log('🎯 Layout ready, forcing game start...');
                             forceGameStart();
                         }
+                        if (layout.name === 'Loading' && monitorAttempts > 10 && !state._gameStarted) {
+                            console.log('⏳ Loading taking too long, forcing game start...');
+                            forceGameStart();
+                        }
+                        monitorAttempts++;
                     }
                 } catch (e) { /* Silent fail */ }
             }, 3000);
@@ -2154,20 +2346,24 @@
                 const currentLayout = runtime.running_layout;
 
                 if (currentLayout && currentLayout.name === 'Loading') {
-                    console.log('⏳ Still on Loading layout, waiting...');
+                    console.log('⏳ Still on Loading layout, waiting for initialization...');
                     state._switchAttempts++;
-                    if (state._switchAttempts < 20) {
+                    if (state._switchAttempts < 30) {
                         setTimeout(() => {
                             goToGameLayout(runtime);
-                        }, 1000);
+                        }, 1500);
                     } else {
-                        console.log('⚠️ Loading taking too long, trying to switch anyway...');
+                        console.log('⚠️ Loading taking too long, forcing switch anyway...');
                         state._switchAttempts = 0;
                         const gameLayout = runtime.layouts['Game'];
                         if (gameLayout) {
-                            runtime.changelayout = gameLayout;
-                            runtime.doChangeLayout(gameLayout);
-                            console.log('✅ Forced switch to Game layout');
+                            try {
+                                runtime.changelayout = gameLayout;
+                                runtime.doChangeLayout(gameLayout);
+                                console.log('✅ Forced switch to Game layout');
+                            } catch (e) {
+                                console.error('❌ Forced switch failed:', e);
+                            }
                         }
                     }
                     return false;
@@ -2184,20 +2380,35 @@
                 if (currentLayout && currentLayout.name === 'Game') {
                     console.log('✅ Already on Game layout, unpausing...');
                     unpauseGame(runtime);
+                    state._gameStarted = true;
                     return true;
                 }
 
                 console.log('🔄 Switching to Game layout...');
+
                 runtime.changelayout = gameLayout;
                 runtime.doChangeLayout(gameLayout);
                 console.log('✅ Switched to Game layout');
 
                 setTimeout(() => {
-                    unpauseGame(runtime);
-                }, 1000);
+                    try {
+                        unpauseGame(runtime);
+                        state._gameStarted = true;
+                        console.log('✅ Game layout initialized and unpaused');
+                    } catch (e) {
+                        console.error('❌ Error during layout finalization:', e);
+                        setTimeout(() => {
+                            try {
+                                unpauseGame(runtime);
+                                state._gameStarted = true;
+                            } catch (e2) {
+                                console.error('❌ Failed to unpause after retry:', e2);
+                            }
+                        }, 2000);
+                    }
+                }, 2000);
 
                 state._forceStartAttempts = 0;
-                state._gameStarted = true;
                 return true;
 
             } catch (e) {
@@ -2209,7 +2420,7 @@
                         if (runtime) {
                             goToGameLayout(runtime);
                         }
-                    }, 2000);
+                    }, 3000);
                 }
                 return false;
             }
@@ -2252,7 +2463,7 @@
             const runtime = window.gameRuntime;
             if (!runtime) {
                 console.log('⏳ Runtime not ready, retrying...');
-                if (state._forceStartAttempts < 15) {
+                if (state._forceStartAttempts < 20) {
                     state._forceStartAttempts++;
                     setTimeout(forceGameStart, 500);
                 }
@@ -2266,15 +2477,19 @@
                 console.log('📐 Current layout:', currentLayout ? currentLayout.name : 'None');
 
                 if (currentLayout && currentLayout.name === 'Loading') {
-                    console.log('⏳ On Loading layout, waiting...');
+                    console.log('⏳ On Loading layout, waiting for complete initialization...');
+                    state._forceStartAttempts++;
                     setTimeout(() => {
                         const layout = runtime.running_layout;
                         if (layout && layout.name === 'Loading') {
-                            setTimeout(() => { forceGameStart(); }, 2000);
+                            console.log('⏳ Loading still in progress, waiting longer...');
+                            setTimeout(() => {
+                                forceGameStart();
+                            }, 3000);
                         } else {
                             goToGameLayout(runtime);
                         }
-                    }, 2000);
+                    }, 3000);
                     return;
                 }
 
@@ -2299,15 +2514,38 @@
                 console.error('❌ Error forcing game start:', e);
             }
 
-            if (!state._gameStarted && state._forceStartAttempts < 15) {
+            if (!state._gameStarted && state._forceStartAttempts < 20) {
                 state._forceStartAttempts++;
-                setTimeout(forceGameStart, 1500);
+                console.log('⏳ Retrying force start in 2 seconds...');
+                setTimeout(forceGameStart, 2000);
             } else if (state._gameStarted) {
                 console.log('✅ Game successfully started!');
                 state._forceStartAttempts = 0;
             } else {
-                console.log('⚠️ Max attempts reached');
+                console.log('⚠️ Max attempts reached, trying one more time...');
                 state._forceStartAttempts = 0;
+                setTimeout(() => {
+                    const runtime = window.gameRuntime;
+                    if (runtime) {
+                        const layout = runtime.running_layout;
+                        if (layout && layout.name !== 'Game') {
+                            const gameLayout = runtime.layouts['Game'];
+                            if (gameLayout) {
+                                try {
+                                    runtime.changelayout = gameLayout;
+                                    runtime.doChangeLayout(gameLayout);
+                                    console.log('✅ Final forced switch to Game layout');
+                                    setTimeout(() => {
+                                        unpauseGame(runtime);
+                                        state._gameStarted = true;
+                                    }, 2000);
+                                } catch (e) {
+                                    console.error('❌ Final attempt failed:', e);
+                                }
+                            }
+                        }
+                    }
+                }, 5000);
             }
         }
 
@@ -2338,7 +2576,7 @@
             state._gameStarted = false;
             state._switchAttempts = 0;
 
-            setTimeout(forceGameStart, 2000);
+            setTimeout(forceGameStart, 3000);
         }
 
         // ============================================================
@@ -2561,6 +2799,7 @@
         console.log('%c🎮 Professional Gaming Interface Loaded', 'color: #34d399; font-size: 14px;');
         console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #fbbf24; font-size: 12px;');
         console.log('%c📊 Scores are being recorded in real-time!', 'color: #f87171; font-size: 12px;');
+        console.log('%c📱 Fully optimized for all devices!', 'color: #818cf8; font-size: 12px;');
 
         loadGame();
 
