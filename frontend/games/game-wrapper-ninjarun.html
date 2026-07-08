@@ -418,7 +418,7 @@
                     console.log('✅ jQuery loaded');
                     if (typeof jQuery !== 'undefined') {
                         console.log('✅ jQuery is ready!');
-                        loadGameEngine(); // Skip data.js loading entirely
+                        loadGameEngine();
                     } else {
                         setTimeout(() => {
                             if (typeof jQuery !== 'undefined') {
@@ -449,12 +449,11 @@
         }
 
         // ============================================================
-        // DIRECT GAME ENGINE LOAD - Skip data.js entirely
+        // 🔥 FINAL WORKING SOLUTION
         // ============================================================
         function loadGameEngine() {
-            console.log('🔄 Loading game engine directly...');
+            console.log('🔄 Loading game engine...');
             
-            // Patch AudioListener
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
                     const originalSetPosition = AudioListener.prototype.setPosition;
@@ -500,6 +499,66 @@
                         console.log('✅ Touch coordinates patched');
                     }
                 }
+            }
+
+            // 🔥 FIX: Override the runtime's data.js request BEFORE loading
+            if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+                cr.runtime.prototype.requestProjectData = function() {
+                    console.log('🔄 Loading data.js from: /games/ninja%20run/data.js');
+                    var self = this;
+                    var xhr;
+                    if (this.isWindowsPhone8)
+                        xhr = new ActiveXObject("Microsoft.XMLHTTP");
+                    else
+                        xhr = new XMLHttpRequest();
+                    
+                    xhr.open("GET", "/games/ninja%20run/data.js", true);
+                    
+                    var supportsJsonResponse = false;
+                    if (!this.isDomFree && ("response" in xhr) && ("responseType" in xhr)) {
+                        try {
+                            xhr["responseType"] = "json";
+                            supportsJsonResponse = (xhr["responseType"] === "json");
+                        }
+                        catch (e) {
+                            supportsJsonResponse = false;
+                        }
+                    }
+                    if (!supportsJsonResponse && ("responseType" in xhr)) {
+                        try {
+                            xhr["responseType"] = "text";
+                        }
+                        catch (e) {}
+                    }
+                    if ("overrideMimeType" in xhr) {
+                        try {
+                            xhr["overrideMimeType"]("application/json; charset=utf-8");
+                        }
+                        catch (e) {}
+                    }
+                    xhr.onload = function () {
+                        if (supportsJsonResponse) {
+                            self.loadProject(xhr["response"]);
+                        }
+                        else {
+                            if (self.isEjecta) {
+                                var str = xhr["responseText"];
+                                str = str.substr(str.indexOf("{"));
+                                self.loadProject(JSON.parse(str));
+                            }
+                            else {
+                                self.loadProject(JSON.parse(xhr["responseText"]));
+                            }
+                        }
+                    };
+                    xhr.onerror = function (e) {
+                        cr.logerror("Error requesting data.js:");
+                        cr.logerror(e);
+                    };
+                    xhr.send();
+                };
+                console.log('✅ Runtime.requestProjectData overridden with custom path');
             }
 
             const script = document.createElement('script');
@@ -566,7 +625,6 @@
                     patchInputCoordinates();
                     ResponsiveManager.init();
                     
-                    // Start game after a short delay
                     setTimeout(() => {
                         const rt = window.gameRuntime;
                         if (rt) {
