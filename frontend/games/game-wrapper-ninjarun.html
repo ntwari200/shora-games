@@ -1174,28 +1174,37 @@
         // ============================================================
         // DEVICE DETECTION
         // ============================================================
-        function detectDevice() {
-            const ua = navigator.userAgent;
-            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
-            const isTablet = /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua);
-            const isDesktop = !isMobile && !isTablet;
-            const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            
-            console.log('📱 Device Info:', {
-                isMobile, isTablet, isDesktop, isTouch,
-                screenSize: `${window.screen.width}×${window.screen.height}`,
-                viewportSize: `${window.innerWidth}×${window.innerHeight}`,
-                dpr: window.devicePixelRatio
-            });
-            
-            document.body.classList.add(
-                isMobile ? 'device-mobile' : '',
-                isTablet ? 'device-tablet' : '',
-                isDesktop ? 'device-desktop' : '',
-                isTouch ? 'device-touch' : 'device-mouse'
-            );
-        }
-        detectDevice();
+      // ============================================================
+// DEVICE DETECTION - FIXED
+// ============================================================
+function detectDevice() {
+    const ua = navigator.userAgent;
+    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+    const isTablet = /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua);
+    const isDesktop = !isMobile && !isTablet;
+    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    
+    console.log('📱 Device Info:', {
+        isMobile, isTablet, isDesktop, isTouch,
+        screenSize: `${window.screen.width}×${window.screen.height}`,
+        viewportSize: `${window.innerWidth}×${window.innerHeight}`,
+        dpr: window.devicePixelRatio
+    });
+    
+    // Only add classes that are truthy
+    const classes = [];
+    if (isMobile) classes.push('device-mobile');
+    if (isTablet) classes.push('device-tablet');
+    if (isDesktop) classes.push('device-desktop');
+    if (isTouch) classes.push('device-touch');
+    if (!isTouch) classes.push('device-mouse');
+    
+    // Add all classes at once
+    if (classes.length) {
+        document.body.classList.add(...classes);
+    }
+}
+detectDevice();
 
         // ============================================================
         // GAME LOADER
