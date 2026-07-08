@@ -418,12 +418,12 @@
                     console.log('✅ jQuery loaded');
                     if (typeof jQuery !== 'undefined') {
                         console.log('✅ jQuery is ready!');
-                        loadDataAndEngine();
+                        loadGameEngine(); // Skip data.js loading entirely
                     } else {
                         setTimeout(() => {
                             if (typeof jQuery !== 'undefined') {
                                 console.log('✅ jQuery is ready (after delay)!');
-                                loadDataAndEngine();
+                                loadGameEngine();
                             } else {
                                 console.error('❌ jQuery still not available');
                                 dom.statusMain.textContent = '⚠️ jQuery failed to load';
@@ -448,55 +448,13 @@
             }
         }
 
-        function loadDataAndEngine() {
-            console.log('🔄 Loading data.js and fixing paths...');
-            fetch('/games/ninja%20run/data.js')
-                .then(response => response.text())
-                .then(dataText => {
-                    console.log('✅ data.js fetched');
-                    let fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/').replace(/media\//g, '/games/ninja%20run/media/');
-                    try {
-                        let projectData = JSON.parse(fixedData);
-                        if (projectData.project && projectData.project[1] === 'Loading') {
-                            projectData.project[1] = 'Menu';
-                            console.log('✅ Changed first layout from Loading to Menu');
-                        }
-                        if (projectData.project && projectData.project[5]) {
-                            const layouts = projectData.project[5];
-                            for (let i = 0; i < layouts.length; i++) {
-                                if (layouts[i] && layouts[i][0] === 'Loading') {
-                                    layouts.splice(i, 1);
-                                    console.log('✅ Removed Loading layout from layouts array');
-                                    break;
-                                }
-                            }
-                        }
-                        fixedData = JSON.stringify(projectData);
-                        fixedData = fixedData.replace(/"Loading"/g, '"Menu"').replace(/LoadingSet/g, 'MenuSet');
-                        console.log('✅ All Loading references replaced with Menu');
-                    } catch (e) {
-                        console.warn('⚠️ Could not parse data.js, using string replacement');
-                        fixedData = fixedData.replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"').replace(/"Loading"/g, '"Menu"').replace(/LoadingSet/g, 'MenuSet');
-                    }
-                    const projectData = JSON.parse(fixedData);
-                    window._c2projectData = projectData;
-                    console.log('✅ data.js parsed and stored');
-                    loadGameEngine();
-                })
-                .catch(err => {
-                    console.error('❌ Failed to fetch data.js:', err);
-                    dom.statusMain.textContent = '⚠️ data.js not found';
-                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
-                    dom.statusMessage.classList.add('show');
-                });
-        }
-
         // ============================================================
-        // FINAL WORKING SOLUTION - Completely bypass Loading layout
+        // DIRECT GAME ENGINE LOAD - Skip data.js entirely
         // ============================================================
         function loadGameEngine() {
-            console.log('🔄 Loading game engine...');
+            console.log('🔄 Loading game engine directly...');
             
+            // Patch AudioListener
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
                     const originalSetPosition = AudioListener.prototype.setPosition;
@@ -550,48 +508,22 @@
                 console.log('✅ Runtime loaded');
                 
                 try {
-                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                        cr.runtime.prototype.requestProjectData = function() {
-                            console.log('🔄 Using cached project data');
-                            if (window._c2projectData) {
-                                this.loadProject(window._c2projectData);
-                            } else {
-                                console.error('❌ No cached project data found!');
-                                originalRequestProjectData.call(this);
-                            }
-                        };
-                        console.log('✅ Runtime.requestProjectData overridden');
-                    }
-                } catch (e) { console.warn('⚠️ Could not override requestProjectData:', e); }
-
-                try {
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
                     
-                    // ============================================================
-                    // 🔥 ULTIMATE FIX: Override the layout loading completely
-                    // ============================================================
+                    // Override startRunning to skip Loading layout
                     try {
-                        // Store reference to original startRunning
                         const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
-                        
-                        // Override startRunning to skip Loading layout
                         runtime.startRunning = function() {
                             console.log('🔄 Custom startRunning - skipping Loading layout');
-                            
-                            // Find Menu layout
                             const menuLayout = this.layouts['Menu'];
                             if (menuLayout) {
                                 console.log('✅ Found Menu layout, starting it directly');
-                                // Call original startRunning on Menu layout
                                 menuLayout.startRunning();
                                 this.running_layout = menuLayout;
                                 return;
                             }
-                            
-                            // Fallback: find first non-Loading layout
                             for (let i = 0; i < this.layouts_by_index.length; i++) {
                                 const layout = this.layouts_by_index[i];
                                 if (layout && layout.name !== 'Loading') {
@@ -601,23 +533,10 @@
                                     return;
                                 }
                             }
-                            
-                            // Last resort: call original
                             originalStartRunning.call(this);
                         };
-                        
-                        console.log('✅ Runtime.startRunning overridden successfully');
-                        
-                    } catch (e) {
-                        console.warn('⚠️ Could not override startRunning:', e);
-                    }
-                    
-                    runtime.addDestroyCallback(function(inst) {
-                        if (inst && inst.type === null) {
-                            console.warn('⚠️ Skipping null instance creation');
-                            return;
-                        }
-                    });
+                        console.log('✅ Runtime.startRunning overridden');
+                    } catch (e) { console.warn('⚠️ Could not override startRunning:', e); }
                     
                     dom.startOverlay.classList.remove('hidden');
 
@@ -647,13 +566,10 @@
                     patchInputCoordinates();
                     ResponsiveManager.init();
                     
-                    // ============================================================
-                    // 🔥 START GAME DIRECTLY - Skip Loading completely
-                    // ============================================================
+                    // Start game after a short delay
                     setTimeout(() => {
                         const rt = window.gameRuntime;
                         if (rt) {
-                            // Try to start Menu layout directly
                             const menuLayout = rt.layouts['Menu'];
                             if (menuLayout) {
                                 console.log('🎯 Starting Menu layout directly');
@@ -667,18 +583,15 @@
                                     waitForGameReady(rt);
                                 }
                             } else {
-                                console.warn('⚠️ Menu layout not found, falling back to wait');
                                 waitForGameReady(rt);
                             }
-                            
-                            // Always setup controls and lobby
                             setupTouchControls(rt);
                             startLobby();
                             startScoreTracking();
                         }
                     }, 500);
 
-                    console.log('✅ Game engine initialized with coordinate fixes');
+                    console.log('✅ Game engine initialized');
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -700,19 +613,13 @@
             console.log('⏳ Fallback: Waiting for game to be ready...');
             let checks = 0;
             const maxChecks = 30;
-            
             const checkInterval = setInterval(() => {
                 checks++;
                 try {
-                    if (!runtime) {
-                        if (checks > 5) { clearInterval(checkInterval); console.error('❌ Runtime not available'); }
-                        return;
-                    }
-                    
+                    if (!runtime) { if (checks > 5) { clearInterval(checkInterval); console.error('❌ Runtime not available'); } return; }
                     if (runtime.running_layout) {
                         const layoutName = runtime.running_layout.name;
                         console.log('📐 Game layout:', layoutName);
-
                         if (layoutName === 'Game' || layoutName === 'Menu') {
                             clearInterval(checkInterval);
                             console.log('✅ Game is ready on', layoutName, 'layout!');
@@ -722,7 +629,6 @@
                             return;
                         }
                     }
-
                     if (checks >= maxChecks) {
                         clearInterval(checkInterval);
                         console.warn('⚠️ Game not ready, forcing unpause...');
@@ -741,7 +647,6 @@
             try {
                 const types = runtime.types_by_index || [];
                 let found = false;
-
                 types.forEach(type => {
                     if (type.name && type.name.toLowerCase().includes('btnplay')) {
                         console.log('🎯 Found Play button type:', type.name);
@@ -754,7 +659,6 @@
                                     console.log('✅ Play button triggered via event');
                                 }
                             } catch (e) { console.warn('Could not trigger via event:', e); }
-
                             try {
                                 const canvas = dom.canvas;
                                 if (canvas) {
@@ -774,7 +678,6 @@
                         });
                     }
                 });
-
                 if (!found) {
                     types.forEach(type => {
                         if (type.name && type.name.toLowerCase().includes('play')) {
@@ -792,7 +695,6 @@
                         }
                     });
                 }
-
                 if (!found) {
                     console.log('⚠️ No play button found, trying to unpause instead');
                     unpauseGame(runtime);
