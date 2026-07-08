@@ -8,7 +8,6 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
@@ -52,681 +51,126 @@
             position: fixed;
         }
         .bg-animation { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
-        .bg-animation .orb { 
-            position: absolute; 
-            border-radius: 50%; 
-            filter: blur(80px); 
-            opacity: 0.3; 
-            animation: orbFloat 20s ease-in-out infinite;
-            will-change: transform;
-        }
+        .bg-animation .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; animation: orbFloat 20s ease-in-out infinite; will-change: transform; }
         .bg-animation .orb:nth-child(1) { width: 600px; height: 600px; background: var(--primary); top: -10%; left: -10%; animation-delay: 0s; }
         .bg-animation .orb:nth-child(2) { width: 400px; height: 400px; background: var(--secondary); bottom: -10%; right: -10%; animation-delay: -7s; }
         .bg-animation .orb:nth-child(3) { width: 300px; height: 300px; background: var(--gold); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -14s; opacity: 0.1; }
-        @keyframes orbFloat { 
-            0%,100% { transform: translate(0,0) scale(1); } 
-            25% { transform: translate(100px,-80px) scale(1.1); } 
-            50% { transform: translate(-50px,100px) scale(0.9); } 
-            75% { transform: translate(80px,50px) scale(1.05); } 
-        }
-        .grid-overlay { 
-            position: fixed; inset: 0; 
-            background-image: linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px), 
-                              linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px); 
-            background-size: 50px 50px; 
-            pointer-events: none; 
-            z-index: 1; 
-        }
-        #gameWrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            background: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #000;
-        }
-        #gameContainer canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: contain;
-            image-rendering: auto;
-            background: transparent;
-            touch-action: none;
-        }
-        #loadingScreen {
-            position: absolute;
-            inset: 0;
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-primary);
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-            padding: 20px;
-        }
+        @keyframes orbFloat { 0%,100% { transform: translate(0,0) scale(1); } 25% { transform: translate(100px,-80px) scale(1.1); } 50% { transform: translate(-50px,100px) scale(0.9); } 75% { transform: translate(80px,50px) scale(1.05); } }
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 1; }
+        #gameWrapper { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; z-index: 2; }
+        #gameContainer { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; background: #000; }
+        #gameContainer canvas { display: block; width: 100% !important; height: 100% !important; object-fit: contain; image-rendering: auto; background: transparent; touch-action: none; }
+        #loadingScreen { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-primary); transition: opacity 0.8s ease, visibility 0.8s ease; padding: 20px; }
         #loadingScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
         .loading-content { text-align: center; position: relative; max-width: 400px; width: 100%; }
-        .loading-logo { 
-            font-family: 'Orbitron', monospace; 
-            font-size: clamp(1.5rem, 5vw, 3.5rem); 
-            font-weight: 900; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            background-clip: text; 
-            margin-bottom: 4px; 
-            letter-spacing: 4px; 
-            animation: logoPulse 2s ease-in-out infinite; 
-        }
-        .loading-logo-sub { 
-            font-size: clamp(0.5rem, 1.5vw, 0.9rem); 
-            color: var(--text-secondary); 
-            letter-spacing: 8px; 
-            text-transform: uppercase; 
-            margin-bottom: clamp(16px, 4vh, 40px); 
-        }
-        @keyframes logoPulse { 
-            0%,100% { transform: scale(1); filter: brightness(1); } 
-            50% { transform: scale(1.02); filter: brightness(1.2); } 
-        }
-        .loading-spinner {
-            width: clamp(40px, 8vw, 60px);
-            height: clamp(40px, 8vw, 60px);
-            margin: 0 auto clamp(16px, 3vh, 24px);
-            position: relative;
-        }
-        .loading-spinner::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--primary);
-            border-right-color: var(--secondary);
-            animation: spin 1s linear infinite;
-        }
-        .loading-spinner::after {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-bottom-color: var(--gold);
-            border-left-color: var(--primary);
-            animation: spin 0.6s linear infinite reverse;
-        }
+        .loading-logo { font-family: 'Orbitron', monospace; font-size: clamp(1.5rem, 5vw, 3.5rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; letter-spacing: 4px; animation: logoPulse 2s ease-in-out infinite; }
+        .loading-logo-sub { font-size: clamp(0.5rem, 1.5vw, 0.9rem); color: var(--text-secondary); letter-spacing: 8px; text-transform: uppercase; margin-bottom: clamp(16px, 4vh, 40px); }
+        @keyframes logoPulse { 0%,100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.02); filter: brightness(1.2); } }
+        .loading-spinner { width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px); margin: 0 auto clamp(16px, 3vh, 24px); position: relative; }
+        .loading-spinner::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--primary); border-right-color: var(--secondary); animation: spin 1s linear infinite; }
+        .loading-spinner::after { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 3px solid transparent; border-bottom-color: var(--gold); border-left-color: var(--primary); animation: spin 0.6s linear infinite reverse; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        .loading-progress-wrap {
-            width: 100%;
-            max-width: 280px;
-            height: 4px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 auto clamp(12px, 2vh, 16px);
-            position: relative;
-        }
-        .loading-progress-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
-            animation: shimmer 1.5s ease-in-out infinite;
-        }
+        .loading-progress-wrap { width: 100%; max-width: 280px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin: 0 auto clamp(12px, 2vh, 16px); position: relative; }
+        .loading-progress-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s ease-in-out infinite; }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .loading-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-        .loading-text { 
-            font-size: clamp(0.5rem, 1.5vw, 0.8rem); 
-            color: var(--text-secondary); 
-            letter-spacing: 2px; 
-            font-weight: 500; 
-            min-height: 1.5em; 
-        }
-        .loading-tips { 
-            margin-top: clamp(12px, 2vh, 20px); 
-            font-size: clamp(0.45rem, 1.2vw, 0.75rem); 
-            color: var(--text-muted); 
-            letter-spacing: 1px; 
-            max-width: 300px; 
-            opacity: 0.6; 
-            animation: tipFade 3s ease-in-out infinite; 
-            min-height: 2em; 
-            padding: 0 10px; 
-        }
+        .loading-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold)); border-radius: 4px; transition: width 0.3s ease; position: relative; z-index: 1; }
+        .loading-text { font-size: clamp(0.5rem, 1.5vw, 0.8rem); color: var(--text-secondary); letter-spacing: 2px; font-weight: 500; min-height: 1.5em; }
+        .loading-tips { margin-top: clamp(12px, 2vh, 20px); font-size: clamp(0.45rem, 1.2vw, 0.75rem); color: var(--text-muted); letter-spacing: 1px; max-width: 300px; opacity: 0.6; animation: tipFade 3s ease-in-out infinite; min-height: 2em; padding: 0 10px; }
         @keyframes tipFade { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-        #startOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 40;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(10,14,23,0.85);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            cursor: pointer;
-            transition: opacity 0.6s ease;
-            pointer-events: auto;
-            padding: 20px;
-        }
+        #startOverlay { position: absolute; inset: 0; z-index: 40; display: flex; justify-content: center; align-items: center; background: rgba(10,14,23,0.85); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); cursor: pointer; transition: opacity 0.6s ease; pointer-events: auto; padding: 20px; }
         #startOverlay.hidden { opacity: 0; pointer-events: none; }
-        .start-content { 
-            text-align: center; 
-            animation: fadeInUp 0.8s ease; 
-            max-width: clamp(280px, 80vw, 500px); 
-            width: 100%; 
-            padding: 20px;
-        }
+        .start-content { text-align: center; animation: fadeInUp 0.8s ease; max-width: clamp(280px, 80vw, 500px); width: 100%; padding: 20px; }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
         .start-content .icon { font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 12px; display: inline-block; animation: pulse 2s ease-in-out infinite; }
-        .start-content .title { 
-            font-family: 'Orbitron', monospace; 
-            font-size: clamp(1.5rem, 6vw, 3rem); 
-            font-weight: 900; 
-            background: linear-gradient(135deg, var(--primary), var(--secondary)); 
-            -webkit-background-clip: text; 
-            -webkit-text-fill-color: transparent; 
-            background-clip: text; 
-            margin-bottom: 4px; 
-            letter-spacing: 4px; 
-        }
+        .start-content .title { font-family: 'Orbitron', monospace; font-size: clamp(1.5rem, 6vw, 3rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; letter-spacing: 4px; }
         .start-content .sub { color: var(--text-secondary); font-size: clamp(0.7rem, 2vw, 1.1rem); letter-spacing: 2px; }
         .start-content .sub .highlight { color: var(--gold); font-weight: 600; }
-        .start-btn {
-            margin-top: clamp(16px, 3vh, 24px);
-            padding: clamp(10px, 1.8vh, 16px) clamp(20px, 4vw, 48px);
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: clamp(0.75rem, 2vw, 1.1rem);
-            cursor: pointer;
-            transition: var(--transition);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            box-shadow: 0 0 40px var(--primary-glow);
-            width: 100%;
-            max-width: 280px;
-            touch-action: manipulation;
-        }
+        .start-btn { margin-top: clamp(16px, 3vh, 24px); padding: clamp(10px, 1.8vh, 16px) clamp(20px, 4vw, 48px); border: none; border-radius: 50px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(0.75rem, 2vw, 1.1rem); cursor: pointer; transition: var(--transition); letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 40px var(--primary-glow); width: 100%; max-width: 280px; touch-action: manipulation; }
         .start-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 60px var(--primary-glow); }
         .start-btn:active { transform: scale(0.97); }
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        #topBar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 12;
-            padding: clamp(4px, 1.2vh, 12px) clamp(8px, 1.5vw, 20px);
-            padding-top: max(clamp(4px, 1.2vh, 12px), var(--safe-top));
-            padding-left: max(clamp(8px, 1.5vw, 20px), var(--safe-left));
-            padding-right: max(clamp(8px, 1.5vw, 20px), var(--safe-right));
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10,14,23,0.75);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            flex-wrap: wrap;
-            gap: 4px;
-            pointer-events: none;
-            min-height: clamp(30px, 6vh, 50px);
-        }
+        #topBar { position: absolute; top: 0; left: 0; right: 0; z-index: 12; padding: clamp(4px, 1.2vh, 12px) clamp(8px, 1.5vw, 20px); padding-top: max(clamp(4px, 1.2vh, 12px), var(--safe-top)); padding-left: max(clamp(8px, 1.5vw, 20px), var(--safe-left)); padding-right: max(clamp(8px, 1.5vw, 20px), var(--safe-right)); display: flex; justify-content: space-between; align-items: center; background: rgba(10,14,23,0.75); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.05); flex-wrap: wrap; gap: 4px; pointer-events: none; min-height: clamp(30px, 6vh, 50px); }
         .top-left { display: flex; align-items: center; gap: clamp(4px, 1.5vw, 16px); flex-wrap: wrap; }
         .top-right { display: flex; align-items: center; gap: clamp(4px, 1vw, 14px); flex-wrap: wrap; }
-        .back-btn {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: clamp(0.5rem, 1.2vw, 0.85rem);
-            padding: clamp(3px, 0.6vh, 8px) clamp(6px, 1.2vw, 16px);
-            border-radius: 30px;
-            transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.02);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            pointer-events: auto;
-            font-weight: 500;
-            white-space: nowrap;
-        }
+        .back-btn { color: var(--text-secondary); text-decoration: none; font-size: clamp(0.5rem, 1.2vw, 0.85rem); padding: clamp(3px, 0.6vh, 8px) clamp(6px, 1.2vw, 16px); border-radius: 30px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 6px; pointer-events: auto; font-weight: 500; white-space: nowrap; }
         .back-btn:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1); }
         .back-btn i { font-size: clamp(0.4rem, 1vw, 0.7rem); }
-        .top-stat {
-            font-size: clamp(0.4rem, 1vw, 0.7rem);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: clamp(2px, 0.5vh, 6px) clamp(4px, 0.8vw, 14px);
-            border-radius: 30px;
-            background: rgba(255,255,255,0.02);
-            border: 1px solid rgba(255,255,255,0.02);
-            white-space: nowrap;
-        }
+        .top-stat { font-size: clamp(0.4rem, 1vw, 0.7rem); color: var(--text-secondary); display: flex; align-items: center; gap: 4px; font-weight: 500; letter-spacing: 0.5px; padding: clamp(2px, 0.5vh, 6px) clamp(4px, 0.8vw, 14px); border-radius: 30px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.02); white-space: nowrap; }
         .top-stat .value { color: #fff; font-weight: 700; font-family: 'Orbitron', monospace; }
         .top-stat .value.gold { color: var(--gold); }
         .top-stat .value.green { color: var(--success); }
         .top-stat .value.red { color: var(--danger); }
         .top-stat .value.primary { color: var(--primary); }
         .top-stat .icon { font-size: clamp(0.4rem, 0.8vw, 0.7rem); opacity: 0.6; }
-        #scoreOverlay {
-            position: absolute;
-            bottom: clamp(60px, 10vh, 100px);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 14;
-            display: none;
-            background: rgba(10,14,23,0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: clamp(4px, 0.8vh, 12px) clamp(8px, 1.5vw, 24px);
-            border-radius: 50px;
-            border: 1px solid rgba(255,255,255,0.05);
-            gap: clamp(6px, 1.5vw, 24px);
-            align-items: center;
-            pointer-events: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
+        #scoreOverlay { position: absolute; bottom: clamp(60px, 10vh, 100px); left: 50%; transform: translateX(-50%); z-index: 14; display: none; background: rgba(10,14,23,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: clamp(4px, 0.8vh, 12px) clamp(8px, 1.5vw, 24px); border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); gap: clamp(6px, 1.5vw, 24px); align-items: center; pointer-events: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-wrap: wrap; justify-content: center; }
         #scoreOverlay.show { display: flex; animation: fadeInUp 0.5s ease; }
-        .score-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: clamp(0.4rem, 1.2vw, 0.75rem);
-            color: var(--text-secondary);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-        .score-item .value {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: #fff;
-            font-size: clamp(0.5rem, 1.4vw, 0.9rem);
-        }
+        .score-item { display: flex; align-items: center; gap: 4px; font-size: clamp(0.4rem, 1.2vw, 0.75rem); color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+        .score-item .value { font-family: 'Orbitron', monospace; font-weight: 700; color: #fff; font-size: clamp(0.5rem, 1.4vw, 0.9rem); }
         .score-item .value.gold { color: var(--gold); }
         .score-item .value.green { color: var(--success); }
         .score-item .value.primary { color: var(--primary); }
         .score-item i { font-size: clamp(0.4rem, 1vw, 0.7rem); }
-        #playerList {
-            position: absolute;
-            top: clamp(45px, 8vh, 80px);
-            right: clamp(4px, 1vw, 16px);
-            background: rgba(10,14,23,0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: var(--radius-sm);
-            padding: clamp(6px, 1.2vh, 14px) clamp(8px, 1.2vw, 16px);
-            min-width: clamp(55px, 12vw, 150px);
-            max-width: clamp(90px, 18vw, 200px);
-            max-height: clamp(120px, 40vh, 50vh);
-            overflow-y: auto;
-            border: 1px solid rgba(255,255,255,0.05);
-            z-index: 12;
-            font-size: clamp(0.35rem, 0.8vw, 0.7rem);
-            pointer-events: none;
-            box-shadow: 0 10px 40px rgba(0,0,0,0.5);
-        }
-        #playerList .title {
-            color: var(--text-secondary);
-            font-size: clamp(0.35rem, 0.7vw, 0.6rem);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: clamp(4px, 0.8vh, 10px);
-            font-weight: 600;
-        }
-        .player-item {
-            display: flex;
-            justify-content: space-between;
-            padding: clamp(2px, 0.3vh, 4px) 0;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            color: var(--text-primary);
-            font-size: clamp(0.35rem, 0.8vw, 0.65rem);
-            align-items: center;
-            gap: 4px;
-        }
-        .player-item .status-dot {
-            width: clamp(3px, 0.6vw, 6px);
-            height: clamp(3px, 0.6vw, 6px);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
-            flex-shrink: 0;
-        }
+        #playerList { position: absolute; top: clamp(45px, 8vh, 80px); right: clamp(4px, 1vw, 16px); background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: var(--radius-sm); padding: clamp(6px, 1.2vh, 14px) clamp(8px, 1.2vw, 16px); min-width: clamp(55px, 12vw, 150px); max-width: clamp(90px, 18vw, 200px); max-height: clamp(120px, 40vh, 50vh); overflow-y: auto; border: 1px solid rgba(255,255,255,0.05); z-index: 12; font-size: clamp(0.35rem, 0.8vw, 0.7rem); pointer-events: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5); }
+        #playerList .title { color: var(--text-secondary); font-size: clamp(0.35rem, 0.7vw, 0.6rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: clamp(4px, 0.8vh, 10px); font-weight: 600; }
+        .player-item { display: flex; justify-content: space-between; padding: clamp(2px, 0.3vh, 4px) 0; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--text-primary); font-size: clamp(0.35rem, 0.8vw, 0.65rem); align-items: center; gap: 4px; }
+        .player-item .status-dot { width: clamp(3px, 0.6vw, 6px); height: clamp(3px, 0.6vw, 6px); border-radius: 50%; display: inline-block; margin-right: 4px; flex-shrink: 0; }
         .player-item .status-dot.ready { background: var(--success); box-shadow: 0 0 10px var(--success); }
         .player-item .status-dot.waiting { background: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
-        .player-item .player-name {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-        }
-        .player-item .player-score {
-            color: var(--text-secondary);
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(0.35rem, 0.7vw, 0.6rem);
-            flex-shrink: 0;
-        }
+        .player-item .player-name { display: flex; align-items: center; gap: 4px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .player-item .player-score { color: var(--text-secondary); font-family: 'Orbitron', monospace; font-size: clamp(0.35rem, 0.7vw, 0.6rem); flex-shrink: 0; }
         #playerList::-webkit-scrollbar { width: 3px; }
         #playerList::-webkit-scrollbar-track { background: transparent; }
         #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
-        #lobbyOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(10,14,23,0.88);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            padding: 20px;
-            transition: opacity 0.6s ease;
-            pointer-events: auto;
-        }
+        #lobbyOverlay { position: absolute; inset: 0; z-index: 15; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(10,14,23,0.88); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); padding: 20px; transition: opacity 0.6s ease; pointer-events: auto; }
         #lobbyOverlay.hidden { opacity: 0; pointer-events: none; }
-        .lobby-box {
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.06);
-            border-radius: var(--radius);
-            padding: clamp(16px, 4vh, 40px) clamp(12px, 3vw, 50px);
-            max-width: clamp(280px, 80vw, 480px);
-            width: 100%;
-            text-align: center;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            animation: fadeInUp 0.6s ease;
-            margin: auto;
-        }
+        .lobby-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: var(--radius); padding: clamp(16px, 4vh, 40px) clamp(12px, 3vw, 50px); max-width: clamp(280px, 80vw, 480px); width: 100%; text-align: center; box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: fadeInUp 0.6s ease; margin: auto; }
         .lobby-box .game-icon { font-size: clamp(2rem, 8vw, 3.5rem); margin-bottom: clamp(6px, 1.5vh, 12px); display: inline-block; }
-        .lobby-box h2 { 
-            font-family: 'Orbitron', monospace; 
-            font-size: clamp(0.9rem, 2.5vw, 1.4rem); 
-            font-weight: 700; 
-            margin-bottom: 2px; 
-            letter-spacing: 2px; 
-        }
+        .lobby-box h2 { font-family: 'Orbitron', monospace; font-size: clamp(0.9rem, 2.5vw, 1.4rem); font-weight: 700; margin-bottom: 2px; letter-spacing: 2px; }
         .lobby-box h2 span { color: var(--primary); }
-        .lobby-box .subtitle { 
-            color: var(--text-secondary); 
-            font-size: clamp(0.55rem, 1.5vw, 0.8rem); 
-            margin-bottom: clamp(12px, 2.5vh, 24px); 
-            letter-spacing: 1px; 
-        }
-        .lobby-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: clamp(4px, 1vw, 10px);
-            margin-bottom: clamp(12px, 2.5vh, 24px);
-        }
-        .lobby-stat {
-            background: rgba(255,255,255,0.02);
-            border-radius: var(--radius-sm);
-            padding: clamp(6px, 1.2vh, 14px) clamp(4px, 0.8vw, 8px);
-            border: 1px solid rgba(255,255,255,0.03);
-            transition: var(--transition);
-        }
+        .lobby-box .subtitle { color: var(--text-secondary); font-size: clamp(0.55rem, 1.5vw, 0.8rem); margin-bottom: clamp(12px, 2.5vh, 24px); letter-spacing: 1px; }
+        .lobby-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(4px, 1vw, 10px); margin-bottom: clamp(12px, 2.5vh, 24px); }
+        .lobby-stat { background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); padding: clamp(6px, 1.2vh, 14px) clamp(4px, 0.8vw, 8px); border: 1px solid rgba(255,255,255,0.03); transition: var(--transition); }
         .lobby-stat:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
-        .lobby-stat .number {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1rem, 3.5vw, 1.6rem);
-            font-weight: 700;
-            color: var(--primary);
-        }
+        .lobby-stat .number { font-family: 'Orbitron', monospace; font-size: clamp(1rem, 3.5vw, 1.6rem); font-weight: 700; color: var(--primary); }
         .lobby-stat .number.gold { color: var(--gold); }
         .lobby-stat .number.green { color: var(--success); }
         .lobby-stat .number.red { color: var(--danger); }
-        .lobby-stat .label {
-            font-size: clamp(0.35rem, 0.8vw, 0.55rem);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-        .lobby-box .prize-pool {
-            font-size: clamp(0.75rem, 2.5vw, 1.2rem);
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: clamp(6px, 1.2vh, 12px);
-            letter-spacing: 1px;
-        }
-        .lobby-box .prize-pool small {
-            font-size: clamp(0.4rem, 1vw, 0.7rem);
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-        .lobby-box .entry-fee {
-            font-size: clamp(0.55rem, 1.5vw, 0.8rem);
-            color: var(--text-secondary);
-            margin-bottom: clamp(10px, 1.8vh, 20px);
-        }
+        .lobby-stat .label { font-size: clamp(0.35rem, 0.8vw, 0.55rem); color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; font-weight: 600; }
+        .lobby-box .prize-pool { font-size: clamp(0.75rem, 2.5vw, 1.2rem); font-weight: 700; color: var(--gold); margin-bottom: clamp(6px, 1.2vh, 12px); letter-spacing: 1px; }
+        .lobby-box .prize-pool small { font-size: clamp(0.4rem, 1vw, 0.7rem); color: var(--text-muted); font-weight: 400; }
+        .lobby-box .entry-fee { font-size: clamp(0.55rem, 1.5vw, 0.8rem); color: var(--text-secondary); margin-bottom: clamp(10px, 1.8vh, 20px); }
         .lobby-box .entry-fee strong { color: var(--gold); }
-        .btn-join {
-            padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2.5vw, 40px);
-            border: none;
-            border-radius: 50px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: clamp(0.7rem, 1.8vw, 1rem);
-            cursor: pointer;
-            transition: var(--transition);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            width: 100%;
-            touch-action: manipulation;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 0 30px var(--primary-glow);
-        }
+        .btn-join { padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2.5vw, 40px); border: none; border-radius: 50px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(0.7rem, 1.8vw, 1rem); cursor: pointer; transition: var(--transition); background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; width: 100%; touch-action: manipulation; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 0 30px var(--primary-glow); }
         .btn-join:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--primary-glow); }
         .btn-join:active { transform: scale(0.97); }
         .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none; }
         .btn-join.joined { background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 0 30px rgba(52,211,153,0.3); }
         .btn-join.playing { background: linear-gradient(135deg, var(--danger), #dc2626); box-shadow: 0 0 30px rgba(248,113,113,0.3); }
-        #statusMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%,-50%);
-            z-index: 13;
-            text-align: center;
-            pointer-events: none;
-            display: none;
-            background: rgba(10,14,23,0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: clamp(12px, 2.5vh, 24px) clamp(16px, 3.5vw, 32px);
-            border-radius: var(--radius);
-            border: 1px solid rgba(255,255,255,0.04);
-            box-shadow: var(--shadow);
-            animation: fadeInUp 0.4s ease;
-            max-width: 90vw;
-        }
+        #statusMessage { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 13; text-align: center; pointer-events: none; display: none; background: rgba(10,14,23,0.85); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: clamp(12px, 2.5vh, 24px) clamp(16px, 3.5vw, 32px); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.04); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease; max-width: 90vw; }
         #statusMessage.show { display: block; }
-        #statusMessage .main {
-            font-size: clamp(0.75rem, 2.5vw, 1.4rem);
-            font-weight: 700;
-            color: #fff;
-            font-family: 'Orbitron', monospace;
-            letter-spacing: 1px;
-        }
-        #statusMessage .sub {
-            font-size: clamp(0.5rem, 1.3vw, 0.85rem);
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-        #touchControls {
-            position: absolute;
-            bottom: clamp(8px, 2vh, 30px);
-            padding-bottom: max(clamp(8px, 2vh, 30px), var(--safe-bottom));
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding-left: clamp(8px, 2vw, 24px);
-            padding-right: clamp(8px, 2vw, 24px);
-            pointer-events: none;
-            z-index: 20;
-            gap: 10px;
-        }
+        #statusMessage .main { font-size: clamp(0.75rem, 2.5vw, 1.4rem); font-weight: 700; color: #fff; font-family: 'Orbitron', monospace; letter-spacing: 1px; }
+        #statusMessage .sub { font-size: clamp(0.5rem, 1.3vw, 0.85rem); color: var(--text-secondary); margin-top: 6px; }
+        #touchControls { position: absolute; bottom: clamp(8px, 2vh, 30px); padding-bottom: max(clamp(8px, 2vh, 30px), var(--safe-bottom)); left: 0; right: 0; display: none; justify-content: space-between; padding-left: clamp(8px, 2vw, 24px); padding-right: clamp(8px, 2vw, 24px); pointer-events: none; z-index: 20; gap: 10px; }
         @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
         @media (max-width: 1024px) { #touchControls { display: flex !important; } }
-        .touch-btn {
-            pointer-events: auto;
-            width: clamp(36px, 8vw, 65px);
-            height: clamp(36px, 8vw, 65px);
-            border-radius: 50%;
-            border: 2px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.06);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff;
-            font-size: clamp(0.85rem, 2.5vw, 1.8rem);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.4);
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-        .touch-btn:active {
-            transform: scale(0.85);
-            background: rgba(255,255,255,0.15);
-            border-color: var(--primary);
-            box-shadow: 0 0 30px var(--primary-glow);
-        }
+        .touch-btn { pointer-events: auto; width: clamp(36px, 8vw, 65px); height: clamp(36px, 8vw, 65px); border-radius: 50%; border: 2px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.06); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font-size: clamp(0.85rem, 2.5vw, 1.8rem); display: flex; align-items: center; justify-content: center; transition: all 0.15s; touch-action: none; -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 20px rgba(0,0,0,0.4); user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+        .touch-btn:active { transform: scale(0.85); background: rgba(255,255,255,0.15); border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
         .touch-btn.left { margin-right: auto; }
         .touch-btn.right { margin-left: auto; }
-        .touch-btn.jump {
-            width: clamp(44px, 10vw, 80px);
-            height: clamp(44px, 10vw, 80px);
-            font-size: clamp(1rem, 3vw, 2.2rem);
-            background: rgba(0,212,255,0.1);
-            border-color: rgba(0,212,255,0.2);
-            margin: 0 auto;
-        }
+        .touch-btn.jump { width: clamp(44px, 10vw, 80px); height: clamp(44px, 10vw, 80px); font-size: clamp(1rem, 3vw, 2.2rem); background: rgba(0,212,255,0.1); border-color: rgba(0,212,255,0.2); margin: 0 auto; }
         .touch-controls-group { display: flex; gap: clamp(6px, 2vw, 15px); align-items: center; pointer-events: none; }
         .touch-controls-group .touch-btn { pointer-events: auto; }
-        @media (max-width: 480px) {
-            .lobby-box { padding: 14px 10px; max-width: 250px; border-radius: 12px; }
-            .lobby-box .game-icon { font-size: 1.8rem; }
-            .lobby-box h2 { font-size: 0.75rem; }
-            .lobby-stat .number { font-size: 0.85rem; }
-            .btn-join { padding: 6px 10px; font-size: 0.65rem; }
-            .touch-btn { width: 36px; height: 36px; font-size: 0.85rem; }
-            .touch-btn.jump { width: 44px; height: 44px; font-size: 1rem; }
-            #scoreOverlay { padding: 3px 8px; gap: 4px; border-radius: 20px; }
-            .score-item { font-size: 0.4rem; }
-            .score-item .value { font-size: 0.5rem; }
-            #playerList { top: 40px; right: 4px; min-width: 55px; max-width: 80px; padding: 4px 6px; font-size: 0.35rem; max-height: 30vh; }
-            #topBar { padding: 4px 8px; min-height: 28px; }
-            .top-stat { font-size: 0.35rem; padding: 2px 4px; }
-            .back-btn { font-size: 0.4rem; padding: 2px 6px; }
-            .loading-logo { font-size: 1.6rem; }
-            .loading-progress-wrap { max-width: 160px; }
-            .start-content .title { font-size: 1.5rem; }
-            .start-content .icon { font-size: 3rem; }
-            .start-btn { padding: 8px 20px; font-size: 0.75rem; max-width: 180px; }
-            #statusMessage { padding: 10px 14px; }
-            #statusMessage .main { font-size: 0.85rem; }
-            #statusMessage .sub { font-size: 0.55rem; }
-        }
-        @media (max-height: 500px) and (orientation: landscape) {
-            #touchControls { bottom: 4px; padding: 0 8px; }
-            .touch-btn { width: 32px; height: 32px; font-size: 0.8rem; }
-            .touch-btn.jump { width: 40px; height: 40px; font-size: 0.9rem; }
-            .lobby-box { padding: 10px 12px; max-width: 280px; border-radius: 12px; }
-            .lobby-box .game-icon { font-size: 1.5rem; }
-            .lobby-box h2 { font-size: 0.75rem; }
-            .lobby-stats { gap: 2px; margin-bottom: 6px; }
-            .lobby-stat { padding: 2px 4px; }
-            .lobby-stat .number { font-size: 0.8rem; }
-            .btn-join { padding: 4px 8px; font-size: 0.6rem; }
-            #playerList { top: 35px; right: 4px; min-width: 50px; max-width: 70px; padding: 3px 4px; font-size: 0.35rem; max-height: 30vh; }
-            #topBar { padding: 2px 6px; min-height: 20px; }
-            .top-stat { font-size: 0.35rem; padding: 1px 4px; }
-            .back-btn { font-size: 0.4rem; padding: 1px 6px; }
-            #scoreOverlay { bottom: 30px; padding: 2px 6px; gap: 3px; border-radius: 12px; }
-            .score-item { font-size: 0.35rem; }
-            .score-item .value { font-size: 0.4rem; }
-            #statusMessage { padding: 8px 12px; }
-            #statusMessage .main { font-size: 0.8rem; }
-            #statusMessage .sub { font-size: 0.5rem; }
-        }
-        @media (min-width: 768px) and (max-width: 1024px) {
-            .touch-btn { width: 55px; height: 55px; font-size: 1.4rem; }
-            .touch-btn.jump { width: 65px; height: 65px; font-size: 1.6rem; }
-            .lobby-box { max-width: 400px; padding: 30px 40px; }
-        }
-        @media (min-width: 1600px) {
-            .lobby-box { max-width: 550px; }
-            .touch-btn { width: 70px; height: 70px; font-size: 2rem; }
-            .touch-btn.jump { width: 85px; height: 85px; font-size: 2.4rem; }
-        }
-        @supports (padding: max(0px)) {
-            #topBar {
-                padding-top: max(clamp(4px, 1.2vh, 12px), env(safe-area-inset-top));
-                padding-left: max(clamp(8px, 1.5vw, 20px), env(safe-area-inset-left));
-                padding-right: max(clamp(8px, 1.5vw, 20px), env(safe-area-inset-right));
-            }
-            #touchControls {
-                padding-bottom: max(clamp(8px, 2vh, 30px), env(safe-area-inset-bottom));
-            }
-        }
-        @media (max-width: 768px) {
-            .bg-animation .orb { opacity: 0.15; animation-duration: 30s; }
-            .backdrop-blur, [style*="backdrop-filter"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
-            .touch-btn, .lobby-box, #topBar { transform: translateZ(0); will-change: transform; }
-        }
+        @media (max-width: 480px) { .lobby-box { padding: 14px 10px; max-width: 250px; border-radius: 12px; } .lobby-box .game-icon { font-size: 1.8rem; } .lobby-box h2 { font-size: 0.75rem; } .lobby-stat .number { font-size: 0.85rem; } .btn-join { padding: 6px 10px; font-size: 0.65rem; } .touch-btn { width: 36px; height: 36px; font-size: 0.85rem; } .touch-btn.jump { width: 44px; height: 44px; font-size: 1rem; } #scoreOverlay { padding: 3px 8px; gap: 4px; border-radius: 20px; } .score-item { font-size: 0.4rem; } .score-item .value { font-size: 0.5rem; } #playerList { top: 40px; right: 4px; min-width: 55px; max-width: 80px; padding: 4px 6px; font-size: 0.35rem; max-height: 30vh; } #topBar { padding: 4px 8px; min-height: 28px; } .top-stat { font-size: 0.35rem; padding: 2px 4px; } .back-btn { font-size: 0.4rem; padding: 2px 6px; } .loading-logo { font-size: 1.6rem; } .loading-progress-wrap { max-width: 160px; } .start-content .title { font-size: 1.5rem; } .start-content .icon { font-size: 3rem; } .start-btn { padding: 8px 20px; font-size: 0.75rem; max-width: 180px; } #statusMessage { padding: 10px 14px; } #statusMessage .main { font-size: 0.85rem; } #statusMessage .sub { font-size: 0.55rem; } }
+        @media (max-height: 500px) and (orientation: landscape) { #touchControls { bottom: 4px; padding: 0 8px; } .touch-btn { width: 32px; height: 32px; font-size: 0.8rem; } .touch-btn.jump { width: 40px; height: 40px; font-size: 0.9rem; } .lobby-box { padding: 10px 12px; max-width: 280px; border-radius: 12px; } .lobby-box .game-icon { font-size: 1.5rem; } .lobby-box h2 { font-size: 0.75rem; } .lobby-stats { gap: 2px; margin-bottom: 6px; } .lobby-stat { padding: 2px 4px; } .lobby-stat .number { font-size: 0.8rem; } .btn-join { padding: 4px 8px; font-size: 0.6rem; } #playerList { top: 35px; right: 4px; min-width: 50px; max-width: 70px; padding: 3px 4px; font-size: 0.35rem; max-height: 30vh; } #topBar { padding: 2px 6px; min-height: 20px; } .top-stat { font-size: 0.35rem; padding: 1px 4px; } .back-btn { font-size: 0.4rem; padding: 1px 6px; } #scoreOverlay { bottom: 30px; padding: 2px 6px; gap: 3px; border-radius: 12px; } .score-item { font-size: 0.35rem; } .score-item .value { font-size: 0.4rem; } #statusMessage { padding: 8px 12px; } #statusMessage .main { font-size: 0.8rem; } #statusMessage .sub { font-size: 0.5rem; } }
+        @media (min-width: 768px) and (max-width: 1024px) { .touch-btn { width: 55px; height: 55px; font-size: 1.4rem; } .touch-btn.jump { width: 65px; height: 65px; font-size: 1.6rem; } .lobby-box { max-width: 400px; padding: 30px 40px; } }
+        @media (min-width: 1600px) { .lobby-box { max-width: 550px; } .touch-btn { width: 70px; height: 70px; font-size: 2rem; } .touch-btn.jump { width: 85px; height: 85px; font-size: 2.4rem; } }
+        @supports (padding: max(0px)) { #topBar { padding-top: max(clamp(4px, 1.2vh, 12px), env(safe-area-inset-top)); padding-left: max(clamp(8px, 1.5vw, 20px), env(safe-area-inset-left)); padding-right: max(clamp(8px, 1.5vw, 20px), env(safe-area-inset-right)); } #touchControls { padding-bottom: max(clamp(8px, 2vh, 30px), env(safe-area-inset-bottom)); } }
+        @media (max-width: 768px) { .bg-animation .orb { opacity: 0.15; animation-duration: 30s; } .backdrop-blur, [style*="backdrop-filter"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; } .touch-btn, .lobby-box, #topBar { transform: translateZ(0); will-change: transform; } }
     </style>
 </head>
 <body>
-
     <div class="bg-animation"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
     <div class="grid-overlay"></div>
-
     <div id="loadingScreen">
         <div class="loading-content">
             <div class="loading-logo">NINJARUN</div>
@@ -737,7 +181,6 @@
             <div class="loading-tips" id="loadingTip">💡 Tip: Collect coins to increase your score!</div>
         </div>
     </div>
-
     <div id="startOverlay">
         <div class="start-content">
             <div class="icon">🎮</div>
@@ -746,10 +189,8 @@
             <button class="start-btn" id="startBtn"><i class="fas fa-play"></i> Click to Start</button>
         </div>
     </div>
-
     <div id="gameWrapper">
         <div id="gameContainer"></div>
-
         <div id="topBar">
             <div class="top-left">
                 <a href="../game-lobby.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
@@ -761,23 +202,13 @@
                 <span class="top-stat"><i class="fas fa-coins icon"></i> <span class="value gold" id="prizeDisplay">0</span> RWF</span>
             </div>
         </div>
-
         <div id="scoreOverlay">
             <div class="score-item"><i class="fas fa-running" style="color:var(--gold);"></i> Score: <span class="value gold" id="liveScore">0</span></div>
             <div class="score-item"><i class="fas fa-coins" style="color:var(--success);"></i> Coins: <span class="value green" id="liveCoins">0</span></div>
             <div class="score-item"><i class="fas fa-route" style="color:var(--primary);"></i> Dist: <span class="value primary" id="liveDistance">0</span></div>
         </div>
-
-        <div id="playerList">
-            <div class="title"><i class="fas fa-users"></i> Players</div>
-            <div id="playersContainer"><div class="player-item" style="color:var(--text-muted);">No players yet...</div></div>
-        </div>
-
-        <div id="statusMessage">
-            <div class="main" id="statusMain">⏳ Waiting for players...</div>
-            <div class="sub" id="statusSub">Need 2 more players to start</div>
-        </div>
-
+        <div id="playerList"><div class="title"><i class="fas fa-users"></i> Players</div><div id="playersContainer"><div class="player-item" style="color:var(--text-muted);">No players yet...</div></div></div>
+        <div id="statusMessage"><div class="main" id="statusMain">⏳ Waiting for players...</div><div class="sub" id="statusSub">Need 2 more players to start</div></div>
         <div id="lobbyOverlay">
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
@@ -793,7 +224,6 @@
                 <button class="btn-join" id="joinBtn"><i class="fas fa-gamepad"></i> Join Round</button>
             </div>
         </div>
-
         <div id="touchControls">
             <div class="touch-controls-group">
                 <button class="touch-btn left" id="touchLeft"><i class="fas fa-chevron-left"></i></button>
@@ -802,17 +232,9 @@
             <button class="touch-btn jump" id="touchJump"><i class="fas fa-arrow-up"></i></button>
         </div>
     </div>
-
     <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
-                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
-            }
-        }
+        { "imports": { "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js", "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js", "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js" } }
     </script>
-
     <script type="module">
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
@@ -824,82 +246,36 @@
             projectId: "shora-games",
             databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
         };
-
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        const CONFIG = {
-            ENTRY_FEE: 100,
-            MAX_PLAYERS: 50,
-            MIN_PLAYERS: 2,
-            ROUND_DURATION: 300,
-            GAME_WIDTH: 1280,
-            GAME_HEIGHT: 720,
-            GAME_ASPECT_RATIO: 1280 / 720
-        };
+        const CONFIG = { ENTRY_FEE: 100, MAX_PLAYERS: 50, MIN_PLAYERS: 2, ROUND_DURATION: 300, GAME_WIDTH: 1280, GAME_HEIGHT: 720, GAME_ASPECT_RATIO: 1280 / 720 };
 
         const state = {
-            roundId: '001',
-            roundState: 'waiting',
-            players: [],
-            playerCount: 0,
-            timeRemaining: CONFIG.ROUND_DURATION,
-            user: null,
-            userData: null,
-            joined: false,
-            gameStarted: false,
-            results: null,
-            _startTimeout: null,
-            scoreInterval: null,
-            currentScore: 0,
-            currentCoins: 0,
-            currentDistance: 0,
-            _gameReady: false,
-            loadingTips: [
-                '💡 Collect coins to increase your score!',
-                '🎯 Avoid bombs to stay alive!',
-                '🏃 Run as far as possible for distance points!',
-                '🎮 Use arrow keys or touch controls to play!',
-                '🏆 The player with the highest score wins!',
-                '💰 Entry fee: 100 RWF • Prize pool grows with players!',
-                '🔥 Double jump by pressing jump twice!'
-            ]
+            roundId: '001', roundState: 'waiting', players: [], playerCount: 0, timeRemaining: CONFIG.ROUND_DURATION,
+            user: null, userData: null, joined: false, gameStarted: false, results: null,
+            _startTimeout: null, scoreInterval: null, currentScore: 0, currentCoins: 0, currentDistance: 0,
+            _gameReady: false, loadingTips: ['💡 Collect coins to increase your score!', '🎯 Avoid bombs to stay alive!', '🏃 Run as far as possible for distance points!', '🎮 Use arrow keys or touch controls to play!', '🏆 The player with the highest score wins!', '💰 Entry fee: 100 RWF • Prize pool grows with players!', '🔥 Double jump by pressing jump twice!']
         };
 
         const dom = {
-            container: document.getElementById('gameContainer'),
-            canvas: null,
-            roundNumber: document.getElementById('roundNumber'),
-            playerCount: document.getElementById('playerCount'),
-            roundTimer: document.getElementById('roundTimer'),
-            prizeDisplay: document.getElementById('prizeDisplay'),
-            lobbyOverlay: document.getElementById('lobbyOverlay'),
-            lobbyPlayers: document.getElementById('lobbyPlayers'),
-            lobbyPrize: document.getElementById('lobbyPrize'),
-            lobbyTimer: document.getElementById('lobbyTimer'),
-            lobbyPrizePool: document.getElementById('lobbyPrizePool'),
-            entryFeeDisplay: document.getElementById('entryFeeDisplay'),
-            joinBtn: document.getElementById('joinBtn'),
-            playersContainer: document.getElementById('playersContainer'),
-            statusMessage: document.getElementById('statusMessage'),
-            statusMain: document.getElementById('statusMain'),
-            statusSub: document.getElementById('statusSub'),
-            loadingScreen: document.getElementById('loadingScreen'),
-            loadProgress: document.getElementById('loadProgress'),
-            loadingText: document.getElementById('loadingText'),
-            loadingTip: document.getElementById('loadingTip'),
-            touchLeft: document.getElementById('touchLeft'),
-            touchRight: document.getElementById('touchRight'),
-            touchJump: document.getElementById('touchJump'),
-            startOverlay: document.getElementById('startOverlay'),
-            startBtn: document.getElementById('startBtn'),
-            liveScore: document.getElementById('liveScore'),
-            liveCoins: document.getElementById('liveCoins'),
-            liveDistance: document.getElementById('liveDistance'),
-            scoreOverlay: document.getElementById('scoreOverlay')
+            container: document.getElementById('gameContainer'), canvas: null,
+            roundNumber: document.getElementById('roundNumber'), playerCount: document.getElementById('playerCount'),
+            roundTimer: document.getElementById('roundTimer'), prizeDisplay: document.getElementById('prizeDisplay'),
+            lobbyOverlay: document.getElementById('lobbyOverlay'), lobbyPlayers: document.getElementById('lobbyPlayers'),
+            lobbyPrize: document.getElementById('lobbyPrize'), lobbyTimer: document.getElementById('lobbyTimer'),
+            lobbyPrizePool: document.getElementById('lobbyPrizePool'), entryFeeDisplay: document.getElementById('entryFeeDisplay'),
+            joinBtn: document.getElementById('joinBtn'), playersContainer: document.getElementById('playersContainer'),
+            statusMessage: document.getElementById('statusMessage'), statusMain: document.getElementById('statusMain'),
+            statusSub: document.getElementById('statusSub'), loadingScreen: document.getElementById('loadingScreen'),
+            loadProgress: document.getElementById('loadProgress'), loadingText: document.getElementById('loadingText'),
+            loadingTip: document.getElementById('loadingTip'), touchLeft: document.getElementById('touchLeft'),
+            touchRight: document.getElementById('touchRight'), touchJump: document.getElementById('touchJump'),
+            startOverlay: document.getElementById('startOverlay'), startBtn: document.getElementById('startBtn'),
+            liveScore: document.getElementById('liveScore'), liveCoins: document.getElementById('liveCoins'),
+            liveDistance: document.getElementById('liveDistance'), scoreOverlay: document.getElementById('scoreOverlay')
         };
-
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
         function getPlayersArray() {
@@ -908,16 +284,9 @@
             return [];
         }
 
-        function shuffleArray(arr) {
-            for (let i = arr.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [arr[i], arr[j]] = [arr[j], arr[i]];
-            }
-            return arr;
-        }
+        function shuffleArray(arr) { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; }
 
         let tipInterval = null;
-
         function startTipRotation() {
             const tips = shuffleArray([...state.loadingTips]);
             let tipIndex = 0;
@@ -926,10 +295,7 @@
             tipInterval = setInterval(() => {
                 tipIndex = (tipIndex + 1) % tips.length;
                 dom.loadingTip.style.opacity = '0';
-                setTimeout(() => {
-                    dom.loadingTip.textContent = tips[tipIndex] || '💡 Good luck!';
-                    dom.loadingTip.style.opacity = '0.6';
-                }, 300);
+                setTimeout(() => { dom.loadingTip.textContent = tips[tipIndex] || '💡 Good luck!'; dom.loadingTip.style.opacity = '0.6'; }, 300);
             }, 4000);
         }
         startTipRotation();
@@ -939,15 +305,9 @@
                 state.user = user;
                 try {
                     const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                    if (snapshot.exists()) {
-                        state.userData = snapshot.val();
-                        console.log('✅ User loaded:', state.userData.username);
-                    } else {
-                        state.userData = { username: 'Player', balance: 0 };
-                    }
-                } catch (e) {
-                    state.userData = { username: 'Player', balance: 0 };
-                }
+                    if (snapshot.exists()) { state.userData = snapshot.val(); console.log('✅ User loaded:', state.userData.username); } 
+                    else { state.userData = { username: 'Player', balance: 0 }; }
+                } catch (e) { state.userData = { username: 'Player', balance: 0 }; }
             }
         });
 
@@ -960,109 +320,46 @@
         });
 
         const ResponsiveManager = {
-            aspectRatio: CONFIG.GAME_ASPECT_RATIO,
-            currentWidth: 0,
-            currentHeight: 0,
-            scale: 1,
-            offsetX: 0,
-            offsetY: 0,
-            _timeout: null,
-
+            aspectRatio: CONFIG.GAME_ASPECT_RATIO, currentWidth: 0, currentHeight: 0, scale: 1, offsetX: 0, offsetY: 0, _timeout: null,
             init() {
                 this.updateSize();
                 window.addEventListener('resize', () => this.debouncedUpdate());
-                window.addEventListener('orientationchange', () => {
-                    setTimeout(() => this.updateSize(), 300);
-                });
-                if (window.ResizeObserver) {
-                    const observer = new ResizeObserver(() => this.debouncedUpdate());
-                    observer.observe(document.body);
-                }
+                window.addEventListener('orientationchange', () => { setTimeout(() => this.updateSize(), 300); });
+                if (window.ResizeObserver) { const observer = new ResizeObserver(() => this.debouncedUpdate()); observer.observe(document.body); }
                 setTimeout(() => this.updateSize(), 500);
             },
-
-            debouncedUpdate() {
-                if (this._timeout) clearTimeout(this._timeout);
-                this._timeout = setTimeout(() => {
-                    this.updateSize();
-                    this._timeout = null;
-                }, 100);
-            },
-
+            debouncedUpdate() { if (this._timeout) clearTimeout(this._timeout); this._timeout = setTimeout(() => { this.updateSize(); this._timeout = null; }, 100); },
             updateSize() {
                 const container = dom.container;
                 if (!container) return;
-
                 const containerWidth = window.innerWidth;
                 const containerHeight = window.innerHeight;
-
                 const containerAspect = containerWidth / containerHeight;
                 let width, height, offsetX = 0, offsetY = 0;
-
-                if (containerAspect > this.aspectRatio) {
-                    height = containerHeight;
-                    width = height * this.aspectRatio;
-                    offsetX = (containerWidth - width) / 2;
-                } else {
-                    width = containerWidth;
-                    height = width / this.aspectRatio;
-                    offsetY = (containerHeight - height) / 2;
-                }
-
-                this.currentWidth = width;
-                this.currentHeight = height;
-                this.scale = height / CONFIG.GAME_HEIGHT;
-                this.offsetX = offsetX;
-                this.offsetY = offsetY;
-
+                if (containerAspect > this.aspectRatio) { height = containerHeight; width = height * this.aspectRatio; offsetX = (containerWidth - width) / 2; } 
+                else { width = containerWidth; height = width / this.aspectRatio; offsetY = (containerHeight - height) / 2; }
+                this.currentWidth = width; this.currentHeight = height; this.scale = height / CONFIG.GAME_HEIGHT; this.offsetX = offsetX; this.offsetY = offsetY;
                 const canvas = dom.canvas;
-                if (canvas) {
-                    canvas.style.width = width + 'px';
-                    canvas.style.height = height + 'px';
-                    canvas.style.marginLeft = offsetX + 'px';
-                    canvas.style.marginTop = offsetY + 'px';
-                    this.syncRuntime(width, height);
-                }
-
+                if (canvas) { canvas.style.width = width + 'px'; canvas.style.height = height + 'px'; canvas.style.marginLeft = offsetX + 'px'; canvas.style.marginTop = offsetY + 'px'; this.syncRuntime(width, height); }
                 this.updateUIElements();
             },
-
             syncRuntime(width, height) {
                 const runtime = window.gameRuntime;
-                if (runtime) {
-                    try {
-                        const dpr = window.devicePixelRatio || 1;
-                        runtime.setSize(width * dpr, height * dpr, true);
-                    } catch (e) {}
-                }
+                if (runtime) { try { const dpr = window.devicePixelRatio || 1; runtime.setSize(width * dpr, height * dpr, true); } catch (e) {} }
             },
-
             updateUIElements() {
                 const scoreOverlay = dom.scoreOverlay;
-                if (scoreOverlay) {
-                    scoreOverlay.style.bottom = Math.max(60, this.currentHeight * 0.08) + 'px';
-                }
-
+                if (scoreOverlay) { scoreOverlay.style.bottom = Math.max(60, this.currentHeight * 0.08) + 'px'; }
                 const touchControls = document.getElementById('touchControls');
-                if (touchControls) {
-                    touchControls.style.bottom = Math.max(10, this.currentHeight * 0.03) + 'px';
-                }
-
+                if (touchControls) { touchControls.style.bottom = Math.max(10, this.currentHeight * 0.03) + 'px'; }
                 const playerList = document.getElementById('playerList');
-                if (playerList) {
-                    const topOffset = Math.max(45, this.currentHeight * 0.07);
-                    playerList.style.top = topOffset + 'px';
-                }
+                if (playerList) { const topOffset = Math.max(45, this.currentHeight * 0.07); playerList.style.top = topOffset + 'px'; }
             },
-
             getCanvasCoords(clientX, clientY) {
                 const canvas = dom.canvas;
                 if (!canvas) return { x: 0, y: 0 };
                 const rect = canvas.getBoundingClientRect();
-                return {
-                    x: (clientX - rect.left) * (CONFIG.GAME_WIDTH / rect.width),
-                    y: (clientY - rect.top) * (CONFIG.GAME_HEIGHT / rect.height)
-                };
+                return { x: (clientX - rect.left) * (CONFIG.GAME_WIDTH / rect.width), y: (clientY - rect.top) * (CONFIG.GAME_HEIGHT / rect.height) };
             }
         };
 
@@ -1072,14 +369,7 @@
             const isTablet = /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua);
             const isDesktop = !isMobile && !isTablet;
             const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            
-            console.log('📱 Device Info:', {
-                isMobile, isTablet, isDesktop, isTouch,
-                screenSize: `${window.screen.width}×${window.screen.height}`,
-                viewportSize: `${window.innerWidth}×${window.innerHeight}`,
-                dpr: window.devicePixelRatio
-            });
-            
+            console.log('📱 Device Info:', { isMobile, isTablet, isDesktop, isTouch, screenSize: `${window.screen.width}×${window.screen.height}`, viewportSize: `${window.innerWidth}×${window.innerHeight}`, dpr: window.devicePixelRatio });
             const classes = [];
             if (isMobile) classes.push('device-mobile');
             if (isTablet) classes.push('device-tablet');
@@ -1102,8 +392,7 @@
             dom.canvas = canvas;
 
             const loadingMessages = ['Loading Game Engine...', 'Loading Assets...', 'Preparing Game World...', 'Almost Ready...', 'Starting Game...'];
-            let msgIndex = 0;
-            let progress = 0;
+            let msgIndex = 0, progress = 0;
             const loadInterval = setInterval(() => {
                 progress += Math.random() * 12 + 3;
                 if (progress > 100) progress = 100;
@@ -1115,11 +404,7 @@
                 if (progress === 100) {
                     clearInterval(loadInterval);
                     dom.loadingText.textContent = '✅ Ready!';
-                    setTimeout(() => {
-                        dom.loadingScreen.classList.add('hidden');
-                        if (tipInterval) clearInterval(tipInterval);
-                        initGame();
-                    }, 500);
+                    setTimeout(() => { dom.loadingScreen.classList.add('hidden'); if (tipInterval) clearInterval(tipInterval); initGame(); }, 500);
                 }
             }, 200);
         }
@@ -1169,19 +454,13 @@
                 .then(response => response.text())
                 .then(dataText => {
                     console.log('✅ data.js fetched');
-                    
-                    let fixedData = dataText
-                        .replace(/images\//g, '/games/ninja%20run/images/')
-                        .replace(/media\//g, '/games/ninja%20run/media/');
-                    
+                    let fixedData = dataText.replace(/images\//g, '/games/ninja%20run/images/').replace(/media\//g, '/games/ninja%20run/media/');
                     try {
                         let projectData = JSON.parse(fixedData);
-                        
                         if (projectData.project && projectData.project[1] === 'Loading') {
                             projectData.project[1] = 'Menu';
                             console.log('✅ Changed first layout from Loading to Menu');
                         }
-                        
                         if (projectData.project && projectData.project[5]) {
                             const layouts = projectData.project[5];
                             for (let i = 0; i < layouts.length; i++) {
@@ -1192,21 +471,13 @@
                                 }
                             }
                         }
-                        
                         fixedData = JSON.stringify(projectData);
-                        fixedData = fixedData
-                            .replace(/"Loading"/g, '"Menu"')
-                            .replace(/LoadingSet/g, 'MenuSet');
-                        
+                        fixedData = fixedData.replace(/"Loading"/g, '"Menu"').replace(/LoadingSet/g, 'MenuSet');
                         console.log('✅ All Loading references replaced with Menu');
                     } catch (e) {
                         console.warn('⚠️ Could not parse data.js, using string replacement');
-                        fixedData = fixedData
-                            .replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"')
-                            .replace(/"Loading"/g, '"Menu"')
-                            .replace(/LoadingSet/g, 'MenuSet');
+                        fixedData = fixedData.replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"').replace(/"Loading"/g, '"Menu"').replace(/LoadingSet/g, 'MenuSet');
                     }
-                    
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored');
@@ -1220,6 +491,9 @@
                 });
         }
 
+        // ============================================================
+        // FINAL WORKING SOLUTION - Completely bypass Loading layout
+        // ============================================================
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
             
@@ -1234,24 +508,16 @@
                     };
                     console.log('✅ AudioListener patched');
                 }
-            } catch (e) {
-                console.warn('⚠️ Could not patch AudioListener:', e);
-            }
+            } catch (e) { console.warn('⚠️ Could not patch AudioListener:', e); }
 
             function patchInputCoordinates() {
-                if (typeof cr === 'undefined' || !cr.plugins_) {
-                    setTimeout(patchInputCoordinates, 100);
-                    return;
-                }
-
+                if (typeof cr === 'undefined' || !cr.plugins_) { setTimeout(patchInputCoordinates, 100); return; }
                 if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
                     const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
                     if (mouseProto.onMouseMove) {
                         const originalOnMouseMove = mouseProto.onMouseMove;
                         mouseProto.onMouseMove = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) {
-                                return originalOnMouseMove.call(this, info);
-                            }
+                            if (!this.runtime || !this.runtime.canvas) { return originalOnMouseMove.call(this, info); }
                             const rect = this.runtime.canvas.getBoundingClientRect();
                             const scaleX = this.runtime.canvas.width / rect.width;
                             const scaleY = this.runtime.canvas.height / rect.height;
@@ -1261,27 +527,16 @@
                         console.log('✅ Mouse coordinates patched');
                     }
                 }
-
                 if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
                     const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
                     if (touchProto.onTouchStart) {
                         const originalOnTouchStart = touchProto.onTouchStart;
                         touchProto.onTouchStart = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) {
-                                return originalOnTouchStart.call(this, info);
-                            }
+                            if (!this.runtime || !this.runtime.canvas) { return originalOnTouchStart.call(this, info); }
                             const rect = this.runtime.canvas.getBoundingClientRect();
                             const scaleX = this.runtime.canvas.width / rect.width;
                             const scaleY = this.runtime.canvas.height / rect.height;
-                            
-                            const adjustedInfo = {
-                                ...info,
-                                changedTouches: info.changedTouches.map(t => ({
-                                    ...t,
-                                    pageX: (t.pageX - rect.left) * scaleX,
-                                    pageY: (t.pageY - rect.top) * scaleY
-                                }))
-                            };
+                            const adjustedInfo = { ...info, changedTouches: info.changedTouches.map(t => ({ ...t, pageX: (t.pageX - rect.left) * scaleX, pageY: (t.pageY - rect.top) * scaleY })) };
                             return originalOnTouchStart.call(this, adjustedInfo);
                         };
                         console.log('✅ Touch coordinates patched');
@@ -1308,43 +563,53 @@
                         };
                         console.log('✅ Runtime.requestProjectData overridden');
                     }
-                } catch (e) {
-                    console.warn('⚠️ Could not override requestProjectData:', e);
-                }
+                } catch (e) { console.warn('⚠️ Could not override requestProjectData:', e); }
 
                 try {
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
                     
-                    // CRITICAL FIX: Remove Loading layout from runtime
+                    // ============================================================
+                    // 🔥 ULTIMATE FIX: Override the layout loading completely
+                    // ============================================================
                     try {
-                        if (runtime.layouts && runtime.layouts['Loading']) {
-                            console.log('⚠️ Loading layout found in runtime, removing...');
-                            delete runtime.layouts['Loading'];
-                            
-                            if (runtime.layouts_by_index) {
-                                const loadingIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Loading');
-                                if (loadingIdx !== -1) {
-                                    runtime.layouts_by_index.splice(loadingIdx, 1);
-                                    console.log('✅ Removed Loading layout from layouts_by_index');
-                                }
-                            }
-                        }
+                        // Store reference to original startRunning
+                        const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
                         
-                        if (runtime.layouts && runtime.layouts['Menu']) {
-                            console.log('✅ Menu layout found in runtime');
-                            if (runtime.layouts_by_index && runtime.layouts_by_index.length > 0) {
-                                const menuIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Menu');
-                                if (menuIdx !== -1 && menuIdx !== 0) {
-                                    const menuLayout = runtime.layouts_by_index.splice(menuIdx, 1)[0];
-                                    runtime.layouts_by_index.unshift(menuLayout);
-                                    console.log('✅ Moved Menu layout to first position');
+                        // Override startRunning to skip Loading layout
+                        runtime.startRunning = function() {
+                            console.log('🔄 Custom startRunning - skipping Loading layout');
+                            
+                            // Find Menu layout
+                            const menuLayout = this.layouts['Menu'];
+                            if (menuLayout) {
+                                console.log('✅ Found Menu layout, starting it directly');
+                                // Call original startRunning on Menu layout
+                                menuLayout.startRunning();
+                                this.running_layout = menuLayout;
+                                return;
+                            }
+                            
+                            // Fallback: find first non-Loading layout
+                            for (let i = 0; i < this.layouts_by_index.length; i++) {
+                                const layout = this.layouts_by_index[i];
+                                if (layout && layout.name !== 'Loading') {
+                                    console.log('✅ Starting layout:', layout.name);
+                                    layout.startRunning();
+                                    this.running_layout = layout;
+                                    return;
                                 }
                             }
-                        }
+                            
+                            // Last resort: call original
+                            originalStartRunning.call(this);
+                        };
+                        
+                        console.log('✅ Runtime.startRunning overridden successfully');
+                        
                     } catch (e) {
-                        console.warn('⚠️ Could not modify runtime layouts:', e);
+                        console.warn('⚠️ Could not override startRunning:', e);
                     }
                     
                     runtime.addDestroyCallback(function(inst) {
@@ -1367,34 +632,51 @@
                         } catch (e) {}
                     }
 
-                    requestAnimationFrame(() => {
-                        setTimeout(syncCanvasSize, 50);
-                    });
+                    requestAnimationFrame(() => { setTimeout(syncCanvasSize, 50); });
 
                     let resizeTimeout;
-                    window.addEventListener('resize', () => {
-                        clearTimeout(resizeTimeout);
-                        resizeTimeout = setTimeout(syncCanvasSize, 100);
-                    });
-
-                    window.addEventListener('orientationchange', () => {
-                        setTimeout(syncCanvasSize, 300);
-                    });
+                    window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(syncCanvasSize, 100); });
+                    window.addEventListener('orientationchange', () => { setTimeout(syncCanvasSize, 300); });
 
                     const originalSetSize = runtime.setSize.bind(runtime);
                     runtime.setSize = function(w, h, force) {
-                        if (w > 0 && h > 0) {
-                            return originalSetSize(w, h, true);
-                        }
+                        if (w > 0 && h > 0) { return originalSetSize(w, h, true); }
                         return originalSetSize(w, h, force);
                     };
 
                     patchInputCoordinates();
                     ResponsiveManager.init();
-                    waitForGameReady(runtime);
-                    setupTouchControls(runtime);
-                    startLobby();
-                    startScoreTracking();
+                    
+                    // ============================================================
+                    // 🔥 START GAME DIRECTLY - Skip Loading completely
+                    // ============================================================
+                    setTimeout(() => {
+                        const rt = window.gameRuntime;
+                        if (rt) {
+                            // Try to start Menu layout directly
+                            const menuLayout = rt.layouts['Menu'];
+                            if (menuLayout) {
+                                console.log('🎯 Starting Menu layout directly');
+                                try {
+                                    menuLayout.startRunning();
+                                    rt.running_layout = menuLayout;
+                                    rt.isloading = false;
+                                    console.log('✅ Game started directly on Menu layout');
+                                } catch (e) {
+                                    console.warn('⚠️ Could not start Menu directly:', e);
+                                    waitForGameReady(rt);
+                                }
+                            } else {
+                                console.warn('⚠️ Menu layout not found, falling back to wait');
+                                waitForGameReady(rt);
+                            }
+                            
+                            // Always setup controls and lobby
+                            setupTouchControls(rt);
+                            startLobby();
+                            startScoreTracking();
+                        }
+                    }, 500);
 
                     console.log('✅ Game engine initialized with coordinate fixes');
 
@@ -1415,90 +697,43 @@
         }
 
         function waitForGameReady(runtime) {
+            console.log('⏳ Fallback: Waiting for game to be ready...');
             let checks = 0;
             const maxChecks = 30;
-            
-            function forceMenuLayout() {
-                try {
-                    if (runtime && runtime.running_layout) {
-                        const currentLayout = runtime.running_layout.name;
-                        if (currentLayout === 'Loading' || currentLayout === undefined) {
-                            console.log('🔄 Forcing navigation to Menu layout...');
-                            const menuLayout = runtime.layouts['Menu'];
-                            if (menuLayout) {
-                                runtime.goToLayout(menuLayout);
-                                console.log('✅ Forced navigation to Menu');
-                                return true;
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Could not force menu layout:', e);
-                }
-                return false;
-            }
             
             const checkInterval = setInterval(() => {
                 checks++;
                 try {
                     if (!runtime) {
-                        if (checks > 5) {
-                            clearInterval(checkInterval);
-                            console.error('❌ Runtime not available');
-                        }
+                        if (checks > 5) { clearInterval(checkInterval); console.error('❌ Runtime not available'); }
                         return;
                     }
                     
-                    if (runtime.isloading === false && runtime.running_layout) {
+                    if (runtime.running_layout) {
                         const layoutName = runtime.running_layout.name;
                         console.log('📐 Game layout:', layoutName);
 
-                        if (layoutName === 'Game') {
+                        if (layoutName === 'Game' || layoutName === 'Menu') {
                             clearInterval(checkInterval);
-                            console.log('✅ Game is ready on Game layout!');
+                            console.log('✅ Game is ready on', layoutName, 'layout!');
                             state._gameReady = true;
-                            unpauseGame(runtime);
+                            if (layoutName === 'Menu') { clickPlayButton(runtime); } 
+                            else { unpauseGame(runtime); }
                             return;
-                        }
-
-                        if (layoutName === 'Menu') {
-                            clearInterval(checkInterval);
-                            console.log('✅ Game is ready on Menu layout!');
-                            state._gameReady = true;
-                            clickPlayButton(runtime);
-                            return;
-                        }
-
-                        if (layoutName === 'Loading') {
-                            console.log('⏳ Still on Loading layout, forcing menu...');
-                            forceMenuLayout();
-                            if (checks < maxChecks) return;
                         }
                     }
 
                     if (checks >= maxChecks) {
                         clearInterval(checkInterval);
-                        console.warn('⚠️ Game not ready after ' + maxChecks + ' checks, forcing...');
-                        state._gameReady = true;
-                        
-                        if (!forceMenuLayout()) {
-                            const layout = runtime.running_layout;
-                            if (layout && layout.name === 'Menu') {
-                                clickPlayButton(runtime);
-                            } else {
-                                unpauseGame(runtime);
-                            }
-                        }
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Error in waitForGameReady:', e);
-                    if (checks >= maxChecks) {
-                        clearInterval(checkInterval);
+                        console.warn('⚠️ Game not ready, forcing unpause...');
                         state._gameReady = true;
                         unpauseGame(runtime);
                     }
+                } catch (e) {
+                    console.warn('⚠️ Error in waitForGameReady:', e);
+                    if (checks >= maxChecks) { clearInterval(checkInterval); state._gameReady = true; unpauseGame(runtime); }
                 }
-            }, 1000);
+            }, 500);
         }
 
         function clickPlayButton(runtime) {
@@ -1518,9 +753,7 @@
                                     found = true;
                                     console.log('✅ Play button triggered via event');
                                 }
-                            } catch (e) {
-                                console.warn('Could not trigger via event:', e);
-                            }
+                            } catch (e) { console.warn('Could not trigger via event:', e); }
 
                             try {
                                 const canvas = dom.canvas;
@@ -1537,9 +770,7 @@
                                     found = true;
                                     console.log('✅ Play button clicked via mouse event');
                                 }
-                            } catch (e) {
-                                console.warn('Could not click via mouse event:', e);
-                            }
+                            } catch (e) { console.warn('Could not click via mouse event:', e); }
                         });
                     }
                 });
@@ -1577,23 +808,14 @@
                 const vars = runtime.all_global_vars || [];
                 let unpaused = false;
                 vars.forEach(v => {
-                    if (v.name === 'Pause') {
-                        v.data = 0;
-                        unpaused = true;
-                        console.log('✅ Pause set to 0');
-                    }
-                    if (v.name === 'GameState') {
-                        v.data = 1;
-                        console.log('✅ GameState set to 1');
-                    }
+                    if (v.name === 'Pause') { v.data = 0; unpaused = true; console.log('✅ Pause set to 0'); }
+                    if (v.name === 'GameState') { v.data = 1; console.log('✅ GameState set to 1'); }
                 });
                 if (runtime.tick) runtime.tick(false);
                 if (!unpaused) console.log('⚠️ Pause variable not found, continuing...');
                 state._gameStarted = true;
                 console.log('✅ Game unpaused successfully!');
-            } catch (e) {
-                console.warn('⚠️ Could not unpause game:', e);
-            }
+            } catch (e) { console.warn('⚠️ Could not unpause game:', e); }
         }
 
         function startScoreTracking() {
@@ -1609,28 +831,14 @@
                         if (v.name === 'Coins') coins = v.data || 0;
                         if (v.name === 'Distances') distance = v.data || 0;
                     }
-                    state.currentScore = score;
-                    state.currentCoins = coins;
-                    state.currentDistance = distance;
-                    dom.liveScore.textContent = score;
-                    dom.liveCoins.textContent = coins;
-                    dom.liveDistance.textContent = distance;
-                    
+                    state.currentScore = score; state.currentCoins = coins; state.currentDistance = distance;
+                    dom.liveScore.textContent = score; dom.liveCoins.textContent = coins; dom.liveDistance.textContent = distance;
                     if (state.joined && state.user) {
                         const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                        update(playerRef, { 
-                            score: score, 
-                            coins: coins, 
-                            distance: distance, 
-                            lastUpdate: Date.now() 
-                        }).catch(e => console.warn('⚠️ Could not update score:', e));
+                        update(playerRef, { score: score, coins: coins, distance: distance, lastUpdate: Date.now() }).catch(e => console.warn('⚠️ Could not update score:', e));
                     }
-                    
-                    if (state.roundState === 'playing') {
-                        dom.scoreOverlay.classList.add('show');
-                    } else {
-                        dom.scoreOverlay.classList.remove('show');
-                    }
+                    if (state.roundState === 'playing') { dom.scoreOverlay.classList.add('show'); } 
+                    else { dom.scoreOverlay.classList.remove('show'); }
                 } catch (e) {}
             }, 500);
             console.log('✅ Score tracking started');
@@ -1638,64 +846,22 @@
 
         function setupTouchControls(runtime) {
             function dispatchKeyEvent(type, key, keyCode) {
-                const event = new KeyboardEvent(type, { 
-                    key: key, 
-                    keyCode: keyCode, 
-                    code: key, 
-                    bubbles: true,
-                    cancelable: true 
-                });
+                const event = new KeyboardEvent(type, { key: key, keyCode: keyCode, code: key, bubbles: true, cancelable: true });
                 document.dispatchEvent(event);
             }
-
             const touchEvents = [
                 { element: dom.touchLeft, key: 'ArrowLeft', code: 37 },
                 { element: dom.touchRight, key: 'ArrowRight', code: 39 },
                 { element: dom.touchJump, key: 'ArrowUp', code: 38 }
             ];
-
             touchEvents.forEach(({ element, key, code }) => {
                 let pressed = false;
-                
-                element.addEventListener('touchstart', (e) => { 
-                    e.preventDefault(); 
-                    if (!pressed) { 
-                        pressed = true; 
-                        dispatchKeyEvent('keydown', key, code); 
-                    } 
-                });
-                element.addEventListener('touchend', (e) => { 
-                    e.preventDefault(); 
-                    if (pressed) { 
-                        pressed = false; 
-                        dispatchKeyEvent('keyup', key, code); 
-                    } 
-                });
-                element.addEventListener('touchcancel', (e) => { 
-                    e.preventDefault(); 
-                    if (pressed) { 
-                        pressed = false; 
-                        dispatchKeyEvent('keyup', key, code); 
-                    } 
-                });
-                element.addEventListener('mousedown', () => { 
-                    if (!pressed) { 
-                        pressed = true; 
-                        dispatchKeyEvent('keydown', key, code); 
-                    } 
-                });
-                element.addEventListener('mouseup', () => { 
-                    if (pressed) { 
-                        pressed = false; 
-                        dispatchKeyEvent('keyup', key, code); 
-                    } 
-                });
-                element.addEventListener('mouseleave', () => { 
-                    if (pressed) { 
-                        pressed = false; 
-                        dispatchKeyEvent('keyup', key, code); 
-                    } 
-                });
+                element.addEventListener('touchstart', (e) => { e.preventDefault(); if (!pressed) { pressed = true; dispatchKeyEvent('keydown', key, code); } });
+                element.addEventListener('touchend', (e) => { e.preventDefault(); if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
+                element.addEventListener('touchcancel', (e) => { e.preventDefault(); if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
+                element.addEventListener('mousedown', () => { if (!pressed) { pressed = true; dispatchKeyEvent('keydown', key, code); } });
+                element.addEventListener('mouseup', () => { if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
+                element.addEventListener('mouseleave', () => { if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
             });
         }
 
@@ -1723,9 +889,7 @@
                         updateUI();
                         if (state.roundState === 'playing' && !state.gameStarted) startGame();
                         if (state.roundState === 'ended') endRound(data.results);
-                    } else {
-                        createNewRound();
-                    }
+                    } else { createNewRound(); }
                 } catch (e) { console.error('❌ Error in round listener:', e); }
             });
         }
@@ -1746,44 +910,25 @@
 
         function createNewRound() {
             set(ref(db, `rounds/${state.roundId}`), {
-                status: 'waiting',
-                timeRemaining: CONFIG.ROUND_DURATION,
-                players: {},
-                prizePool: 0,
-                startTime: Date.now(),
-                createdAt: Date.now()
+                status: 'waiting', timeRemaining: CONFIG.ROUND_DURATION, players: {}, prizePool: 0,
+                startTime: Date.now(), createdAt: Date.now()
             }).catch(e => console.error('❌ Error creating round:', e));
         }
 
         async function joinRound() {
-            if (!state.user || !state.userData) {
-                alert('Please login first');
-                window.location.href = '../login.html';
-                return;
-            }
+            if (!state.user || !state.userData) { alert('Please login first'); window.location.href = '../login.html'; return; }
             if (state.joined) { alert('You are already in this round!'); return; }
             if (state.playerCount >= CONFIG.MAX_PLAYERS) { alert('Round is full!'); return; }
-
             const balance = state.userData.balance || 0;
-            if (balance < CONFIG.ENTRY_FEE) {
-                alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`);
-                window.location.href = '../deposit.html';
-                return;
-            }
-
+            if (balance < CONFIG.ENTRY_FEE) { alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`); window.location.href = '../deposit.html'; return; }
             try {
                 dom.joinBtn.disabled = true;
                 dom.joinBtn.textContent = '⏳ Processing...';
                 await update(ref(db, `users/${state.user.uid}`), { balance: balance - CONFIG.ENTRY_FEE });
                 state.userData.balance = balance - CONFIG.ENTRY_FEE;
                 await set(ref(db, `rounds/${state.roundId}/players/${state.user.uid}`), {
-                    uid: state.user.uid,
-                    username: state.userData.username || 'Player',
-                    joinedAt: Date.now(),
-                    score: 0,
-                    coins: 0,
-                    distance: 0,
-                    status: 'ready'
+                    uid: state.user.uid, username: state.userData.username || 'Player', joinedAt: Date.now(),
+                    score: 0, coins: 0, distance: 0, status: 'ready'
                 });
                 state.joined = true;
                 dom.joinBtn.textContent = '✅ Joined!';
@@ -1808,16 +953,12 @@
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
             dom.scoreOverlay.classList.add('show');
-
             setTimeout(() => {
                 const runtime = window.gameRuntime;
                 if (runtime) {
                     const layout = runtime.running_layout;
-                    if (layout && layout.name === 'Menu') {
-                        clickPlayButton(runtime);
-                    } else {
-                        unpauseGame(runtime);
-                    }
+                    if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
+                    else { unpauseGame(runtime); }
                 }
             }, 2000);
         }
@@ -1825,32 +966,21 @@
         function startRound() {
             if (state.roundState !== 'waiting') return;
             if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
-
-            update(ref(db, `rounds/${state.roundId}`), {
-                status: 'playing',
-                startTime: Date.now(),
-                timeRemaining: CONFIG.ROUND_DURATION
-            }).catch(e => console.error('❌ Error starting round:', e));
-
+            update(ref(db, `rounds/${state.roundId}`), { status: 'playing', startTime: Date.now(), timeRemaining: CONFIG.ROUND_DURATION }).catch(e => console.error('❌ Error starting round:', e));
             state.roundState = 'playing';
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
             dom.scoreOverlay.classList.add('show');
             console.log('🏁 Round started!');
-
             dom.joinBtn.textContent = '🎮 Playing...';
             dom.joinBtn.classList.add('playing');
             dom.joinBtn.disabled = true;
-
             setTimeout(() => {
                 const runtime = window.gameRuntime;
                 if (runtime) {
                     const layout = runtime.running_layout;
-                    if (layout && layout.name === 'Menu') {
-                        clickPlayButton(runtime);
-                    } else {
-                        unpauseGame(runtime);
-                    }
+                    if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
+                    else { unpauseGame(runtime); }
                 }
             }, 3000);
         }
@@ -1860,40 +990,27 @@
             state.results = results;
             dom.scoreOverlay.classList.remove('show');
             if (state.scoreInterval) { clearInterval(state.scoreInterval); state.scoreInterval = null; }
-
             const finalResults = getGameResults();
             if (state.joined && state.user) {
                 const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                update(playerRef, {
-                    score: finalResults.score || state.currentScore || 0,
-                    coins: finalResults.coins || state.currentCoins || 0,
-                    distance: finalResults.distance || state.currentDistance || 0,
-                    status: 'finished'
-                }).catch(e => console.error('❌ Error updating final score:', e));
+                update(playerRef, { score: finalResults.score || state.currentScore || 0, coins: finalResults.coins || state.currentCoins || 0, distance: finalResults.distance || state.currentDistance || 0, status: 'finished' }).catch(e => console.error('❌ Error updating final score:', e));
             }
-
             console.log('🏁 Round ended! Final scores:', finalResults);
-
             const players = getPlayersArray();
             const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
             const winner = sorted[0];
-
             dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
             dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
             dom.statusMessage.classList.add('show');
-
             if (winner && winner.uid) {
                 const prizePool = players.length * CONFIG.ENTRY_FEE;
                 const winnings = Math.floor(prizePool * 0.7);
                 get(ref(db, `users/${winner.uid}`)).then((snap) => {
                     if (snap.exists()) {
-                        update(ref(db, `users/${winner.uid}`), {
-                            balance: (snap.val().balance || 0) + winnings
-                        }).catch(e => console.error('❌ Error updating winner balance:', e));
+                        update(ref(db, `users/${winner.uid}`), { balance: (snap.val().balance || 0) + winnings }).catch(e => console.error('❌ Error updating winner balance:', e));
                     }
                 }).catch(e => console.error('❌ Error getting winner data:', e));
             }
-
             setTimeout(() => {
                 dom.statusMessage.classList.remove('show');
                 state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
@@ -1918,9 +1035,7 @@
                 if (state.roundState === 'playing') {
                     state.timeRemaining--;
                     updateTimerDisplay();
-                    if (state.timeRemaining <= 0) {
-                        endRound(getGameResults());
-                    }
+                    if (state.timeRemaining <= 0) { endRound(getGameResults()); }
                 }
             }, 1000);
         }
@@ -1960,7 +1075,6 @@
             dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
             dom.roundNumber.textContent = state.roundId;
             renderPlayerList();
-
             if (state.roundState === 'waiting') {
                 if (state.playerCount >= CONFIG.MIN_PLAYERS) {
                     dom.statusMain.textContent = '✅ Ready to start!';
@@ -1976,10 +1090,7 @@
                     dom.statusMain.textContent = '⏳ Waiting for players...';
                     dom.statusSub.textContent = `Need ${needed} more player${needed > 1 ? 's' : ''} to start`;
                     dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) {
-                        clearTimeout(state._startTimeout);
-                        state._startTimeout = null;
-                    }
+                    if (state._startTimeout) { clearTimeout(state._startTimeout); state._startTimeout = null; }
                 }
             }
         }
@@ -1996,15 +1107,10 @@
             players.forEach((p) => {
                 const isMe = p.uid === state.user?.uid;
                 const statusColor = p.status === 'ready' ? 'ready' : 'waiting';
-                html += `
-                    <div class="player-item" style="${isMe ? 'color:var(--gold);' : ''}">
-                        <span class="player-name">
-                            <span class="status-dot ${statusColor}"></span>
-                            ${isMe ? '⭐ ' : ''}${p.username || 'Player'}
-                        </span>
-                        <span class="player-score">${p.score || 0}</span>
-                    </div>
-                `;
+                html += `<div class="player-item" style="${isMe ? 'color:var(--gold);' : ''}">
+                            <span class="player-name"><span class="status-dot ${statusColor}"></span>${isMe ? '⭐ ' : ''}${p.username || 'Player'}</span>
+                            <span class="player-score">${p.score || 0}</span>
+                        </div>`;
             });
             dom.playersContainer.innerHTML = html;
         }
@@ -2016,15 +1122,7 @@
                 setTimeout(() => {
                     if (state.playerCount < 8) {
                         const fakeUid = `bot_${Date.now()}_${index}`;
-                        state.players.push({
-                            uid: fakeUid,
-                            username: name,
-                            joinedAt: Date.now(),
-                            score: Math.floor(Math.random() * 500),
-                            coins: Math.floor(Math.random() * 20),
-                            distance: Math.floor(Math.random() * 500),
-                            status: 'ready'
-                        });
+                        state.players.push({ uid: fakeUid, username: name, joinedAt: Date.now(), score: Math.floor(Math.random() * 500), coins: Math.floor(Math.random() * 20), distance: Math.floor(Math.random() * 500), status: 'ready' });
                         state.playerCount = state.players.length;
                         updateUI();
                     }
