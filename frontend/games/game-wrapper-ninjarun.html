@@ -10,13 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ============================================================
-           COMPLETE CSS - Fully Responsive
-           ============================================================ */
-        
-        /* ----- RESET & BASE ----- */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-        
         :root {
             --bg-primary: #0a0e17;
             --bg-secondary: #111927;
@@ -43,7 +37,6 @@
             --safe-left: env(safe-area-inset-left, 0px);
             --safe-right: env(safe-area-inset-right, 0px);
         }
-        
         html, body {
             width: 100%;
             height: 100%;
@@ -58,8 +51,6 @@
             -webkit-tap-highlight-color: transparent;
             position: fixed;
         }
-        
-        /* ----- ANIMATED BACKGROUND ----- */
         .bg-animation { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
         .bg-animation .orb { 
             position: absolute; 
@@ -72,14 +63,12 @@
         .bg-animation .orb:nth-child(1) { width: 600px; height: 600px; background: var(--primary); top: -10%; left: -10%; animation-delay: 0s; }
         .bg-animation .orb:nth-child(2) { width: 400px; height: 400px; background: var(--secondary); bottom: -10%; right: -10%; animation-delay: -7s; }
         .bg-animation .orb:nth-child(3) { width: 300px; height: 300px; background: var(--gold); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -14s; opacity: 0.1; }
-        
         @keyframes orbFloat { 
             0%,100% { transform: translate(0,0) scale(1); } 
             25% { transform: translate(100px,-80px) scale(1.1); } 
             50% { transform: translate(-50px,100px) scale(0.9); } 
             75% { transform: translate(80px,50px) scale(1.05); } 
         }
-        
         .grid-overlay { 
             position: fixed; inset: 0; 
             background-image: linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px), 
@@ -88,8 +77,6 @@
             pointer-events: none; 
             z-index: 1; 
         }
-        
-        /* ----- GAME WRAPPER ----- */
         #gameWrapper {
             position: relative;
             width: 100vw;
@@ -102,7 +89,6 @@
             align-items: center;
             z-index: 2;
         }
-        
         #gameContainer {
             position: relative;
             width: 100%;
@@ -112,7 +98,6 @@
             align-items: center;
             background: #000;
         }
-        
         #gameContainer canvas {
             display: block;
             width: 100% !important;
@@ -122,8 +107,6 @@
             background: transparent;
             touch-action: none;
         }
-        
-        /* ----- LOADING SCREEN ----- */
         #loadingScreen {
             position: absolute;
             inset: 0;
@@ -137,7 +120,6 @@
             padding: 20px;
         }
         #loadingScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-        
         .loading-content { text-align: center; position: relative; max-width: 400px; width: 100%; }
         .loading-logo { 
             font-family: 'Orbitron', monospace; 
@@ -158,12 +140,10 @@
             text-transform: uppercase; 
             margin-bottom: clamp(16px, 4vh, 40px); 
         }
-        
         @keyframes logoPulse { 
             0%,100% { transform: scale(1); filter: brightness(1); } 
             50% { transform: scale(1.02); filter: brightness(1.2); } 
         }
-        
         .loading-spinner {
             width: clamp(40px, 8vw, 60px);
             height: clamp(40px, 8vw, 60px);
@@ -191,7 +171,6 @@
             animation: spin 0.6s linear infinite reverse;
         }
         @keyframes spin { to { transform: rotate(360deg); } }
-        
         .loading-progress-wrap {
             width: 100%;
             max-width: 280px;
@@ -210,7 +189,6 @@
             animation: shimmer 1.5s ease-in-out infinite;
         }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        
         .loading-progress-bar {
             height: 100%;
             width: 0%;
@@ -239,8 +217,6 @@
             padding: 0 10px; 
         }
         @keyframes tipFade { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
-        
-        /* ----- START OVERLAY ----- */
         #startOverlay {
             position: absolute;
             inset: 0;
@@ -257,7 +233,6 @@
             padding: 20px;
         }
         #startOverlay.hidden { opacity: 0; pointer-events: none; }
-        
         .start-content { 
             text-align: center; 
             animation: fadeInUp 0.8s ease; 
@@ -266,7 +241,6 @@
             padding: 20px;
         }
         @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        
         .start-content .icon { font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 12px; display: inline-block; animation: pulse 2s ease-in-out infinite; }
         .start-content .title { 
             font-family: 'Orbitron', monospace; 
@@ -281,7 +255,6 @@
         }
         .start-content .sub { color: var(--text-secondary); font-size: clamp(0.7rem, 2vw, 1.1rem); letter-spacing: 2px; }
         .start-content .sub .highlight { color: var(--gold); font-weight: 600; }
-        
         .start-btn {
             margin-top: clamp(16px, 3vh, 24px);
             padding: clamp(10px, 1.8vh, 16px) clamp(20px, 4vw, 48px);
@@ -304,8 +277,6 @@
         .start-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 60px var(--primary-glow); }
         .start-btn:active { transform: scale(0.97); }
         @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
-        
-        /* ----- TOP BAR ----- */
         #topBar {
             position: absolute;
             top: 0;
@@ -328,10 +299,8 @@
             pointer-events: none;
             min-height: clamp(30px, 6vh, 50px);
         }
-        
         .top-left { display: flex; align-items: center; gap: clamp(4px, 1.5vw, 16px); flex-wrap: wrap; }
         .top-right { display: flex; align-items: center; gap: clamp(4px, 1vw, 14px); flex-wrap: wrap; }
-        
         .back-btn {
             color: var(--text-secondary);
             text-decoration: none;
@@ -350,7 +319,6 @@
         }
         .back-btn:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1); }
         .back-btn i { font-size: clamp(0.4rem, 1vw, 0.7rem); }
-        
         .top-stat {
             font-size: clamp(0.4rem, 1vw, 0.7rem);
             color: var(--text-secondary);
@@ -371,8 +339,6 @@
         .top-stat .value.red { color: var(--danger); }
         .top-stat .value.primary { color: var(--primary); }
         .top-stat .icon { font-size: clamp(0.4rem, 0.8vw, 0.7rem); opacity: 0.6; }
-        
-        /* ----- SCORE OVERLAY ----- */
         #scoreOverlay {
             position: absolute;
             bottom: clamp(60px, 10vh, 100px);
@@ -394,7 +360,6 @@
             justify-content: center;
         }
         #scoreOverlay.show { display: flex; animation: fadeInUp 0.5s ease; }
-        
         .score-item {
             display: flex;
             align-items: center;
@@ -414,8 +379,6 @@
         .score-item .value.green { color: var(--success); }
         .score-item .value.primary { color: var(--primary); }
         .score-item i { font-size: clamp(0.4rem, 1vw, 0.7rem); }
-        
-        /* ----- PLAYER LIST ----- */
         #playerList {
             position: absolute;
             top: clamp(45px, 8vh, 80px);
@@ -482,8 +445,6 @@
         #playerList::-webkit-scrollbar { width: 3px; }
         #playerList::-webkit-scrollbar-track { background: transparent; }
         #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
-        
-        /* ----- LOBBY ----- */
         #lobbyOverlay {
             position: absolute;
             inset: 0;
@@ -500,7 +461,6 @@
             pointer-events: auto;
         }
         #lobbyOverlay.hidden { opacity: 0; pointer-events: none; }
-        
         .lobby-box {
             background: rgba(255,255,255,0.03);
             border: 1px solid rgba(255,255,255,0.06);
@@ -579,7 +539,6 @@
             margin-bottom: clamp(10px, 1.8vh, 20px);
         }
         .lobby-box .entry-fee strong { color: var(--gold); }
-        
         .btn-join {
             padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2.5vw, 40px);
             border: none;
@@ -602,8 +561,6 @@
         .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none; }
         .btn-join.joined { background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 0 30px rgba(52,211,153,0.3); }
         .btn-join.playing { background: linear-gradient(135deg, var(--danger), #dc2626); box-shadow: 0 0 30px rgba(248,113,113,0.3); }
-        
-        /* ----- STATUS MESSAGE ----- */
         #statusMessage {
             position: absolute;
             top: 50%;
@@ -636,8 +593,6 @@
             color: var(--text-secondary);
             margin-top: 6px;
         }
-        
-        /* ----- TOUCH CONTROLS ----- */
         #touchControls {
             position: absolute;
             bottom: clamp(8px, 2vh, 30px);
@@ -654,7 +609,6 @@
         }
         @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
         @media (max-width: 1024px) { #touchControls { display: flex !important; } }
-        
         .touch-btn {
             pointer-events: auto;
             width: clamp(36px, 8vw, 65px);
@@ -695,12 +649,6 @@
         }
         .touch-controls-group { display: flex; gap: clamp(6px, 2vw, 15px); align-items: center; pointer-events: none; }
         .touch-controls-group .touch-btn { pointer-events: auto; }
-        
-        /* ============================================================
-           RESPONSIVE BREAKPOINTS
-           ============================================================ */
-        
-        /* Small phones */
         @media (max-width: 480px) {
             .lobby-box { padding: 14px 10px; max-width: 250px; border-radius: 12px; }
             .lobby-box .game-icon { font-size: 1.8rem; }
@@ -725,8 +673,6 @@
             #statusMessage .main { font-size: 0.85rem; }
             #statusMessage .sub { font-size: 0.55rem; }
         }
-        
-        /* Landscape phones */
         @media (max-height: 500px) and (orientation: landscape) {
             #touchControls { bottom: 4px; padding: 0 8px; }
             .touch-btn { width: 32px; height: 32px; font-size: 0.8rem; }
@@ -749,22 +695,16 @@
             #statusMessage .main { font-size: 0.8rem; }
             #statusMessage .sub { font-size: 0.5rem; }
         }
-        
-        /* Tablets */
         @media (min-width: 768px) and (max-width: 1024px) {
             .touch-btn { width: 55px; height: 55px; font-size: 1.4rem; }
             .touch-btn.jump { width: 65px; height: 65px; font-size: 1.6rem; }
             .lobby-box { max-width: 400px; padding: 30px 40px; }
         }
-        
-        /* Large screens */
         @media (min-width: 1600px) {
             .lobby-box { max-width: 550px; }
             .touch-btn { width: 70px; height: 70px; font-size: 2rem; }
             .touch-btn.jump { width: 85px; height: 85px; font-size: 2.4rem; }
         }
-        
-        /* Safe area support for notched phones */
         @supports (padding: max(0px)) {
             #topBar {
                 padding-top: max(clamp(4px, 1.2vh, 12px), env(safe-area-inset-top));
@@ -775,8 +715,6 @@
                 padding-bottom: max(clamp(8px, 2vh, 30px), env(safe-area-inset-bottom));
             }
         }
-        
-        /* Performance optimization for mobile */
         @media (max-width: 768px) {
             .bg-animation .orb { opacity: 0.15; animation-duration: 30s; }
             .backdrop-blur, [style*="backdrop-filter"] { backdrop-filter: none !important; -webkit-backdrop-filter: none !important; }
@@ -786,11 +724,9 @@
 </head>
 <body>
 
-    <!-- ===== ANIMATED BACKGROUND ===== -->
     <div class="bg-animation"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
     <div class="grid-overlay"></div>
 
-    <!-- ===== LOADING SCREEN ===== -->
     <div id="loadingScreen">
         <div class="loading-content">
             <div class="loading-logo">NINJARUN</div>
@@ -802,7 +738,6 @@
         </div>
     </div>
 
-    <!-- ===== CLICK TO START OVERLAY ===== -->
     <div id="startOverlay">
         <div class="start-content">
             <div class="icon">🎮</div>
@@ -812,11 +747,9 @@
         </div>
     </div>
 
-    <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
         <div id="gameContainer"></div>
 
-        <!-- TOP BAR -->
         <div id="topBar">
             <div class="top-left">
                 <a href="../game-lobby.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
@@ -829,26 +762,22 @@
             </div>
         </div>
 
-        <!-- SCORE OVERLAY -->
         <div id="scoreOverlay">
             <div class="score-item"><i class="fas fa-running" style="color:var(--gold);"></i> Score: <span class="value gold" id="liveScore">0</span></div>
             <div class="score-item"><i class="fas fa-coins" style="color:var(--success);"></i> Coins: <span class="value green" id="liveCoins">0</span></div>
             <div class="score-item"><i class="fas fa-route" style="color:var(--primary);"></i> Dist: <span class="value primary" id="liveDistance">0</span></div>
         </div>
 
-        <!-- PLAYER LIST -->
         <div id="playerList">
             <div class="title"><i class="fas fa-users"></i> Players</div>
             <div id="playersContainer"><div class="player-item" style="color:var(--text-muted);">No players yet...</div></div>
         </div>
 
-        <!-- STATUS MESSAGE -->
         <div id="statusMessage">
             <div class="main" id="statusMain">⏳ Waiting for players...</div>
             <div class="sub" id="statusSub">Need 2 more players to start</div>
         </div>
 
-        <!-- LOBBY OVERLAY -->
         <div id="lobbyOverlay">
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
@@ -865,7 +794,6 @@
             </div>
         </div>
 
-        <!-- TOUCH CONTROLS -->
         <div id="touchControls">
             <div class="touch-controls-group">
                 <button class="touch-btn left" id="touchLeft"><i class="fas fa-chevron-left"></i></button>
@@ -875,10 +803,6 @@
         </div>
     </div>
 
-    <!-- ================================================================ -->
-    <!-- SCRIPTS -->
-    <!-- ================================================================ -->
-    
     <script type="importmap">
         {
             "imports": {
@@ -890,9 +814,6 @@
     </script>
 
     <script type="module">
-        // ============================================================
-        // IMPORTS
-        // ============================================================
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
@@ -908,9 +829,6 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // ============================================================
-        // CONFIGURATION
-        // ============================================================
         const CONFIG = {
             ENTRY_FEE: 100,
             MAX_PLAYERS: 50,
@@ -921,9 +839,6 @@
             GAME_ASPECT_RATIO: 1280 / 720
         };
 
-        // ============================================================
-        // STATE
-        // ============================================================
         const state = {
             roundId: '001',
             roundState: 'waiting',
@@ -940,7 +855,6 @@
             currentScore: 0,
             currentCoins: 0,
             currentDistance: 0,
-            _forceStartAttempts: 0,
             _gameReady: false,
             loadingTips: [
                 '💡 Collect coins to increase your score!',
@@ -953,9 +867,6 @@
             ]
         };
 
-        // ============================================================
-        // DOM REFERENCES
-        // ============================================================
         const dom = {
             container: document.getElementById('gameContainer'),
             canvas: null,
@@ -991,9 +902,6 @@
 
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
-        // ============================================================
-        // HELPER FUNCTIONS
-        // ============================================================
         function getPlayersArray() {
             if (Array.isArray(state.players)) return state.players;
             if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
@@ -1026,9 +934,6 @@
         }
         startTipRotation();
 
-        // ============================================================
-        // AUTH
-        // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 state.user = user;
@@ -1043,9 +948,6 @@
                 } catch (e) {
                     state.userData = { username: 'Player', balance: 0 };
                 }
-            } else {
-                // Redirect to login if needed
-                // window.location.href = '../login.html';
             }
         });
 
@@ -1057,9 +959,6 @@
             console.log('🎵 Audio context resumed');
         });
 
-        // ============================================================
-        // RESPONSIVE MANAGER
-        // ============================================================
         const ResponsiveManager = {
             aspectRatio: CONFIG.GAME_ASPECT_RATIO,
             currentWidth: 0,
@@ -1079,7 +978,6 @@
                     const observer = new ResizeObserver(() => this.debouncedUpdate());
                     observer.observe(document.body);
                 }
-                // Also update when game loads
                 setTimeout(() => this.updateSize(), 500);
             },
 
@@ -1117,7 +1015,6 @@
                 this.offsetX = offsetX;
                 this.offsetY = offsetY;
 
-                // Update canvas
                 const canvas = dom.canvas;
                 if (canvas) {
                     canvas.style.width = width + 'px';
@@ -1136,9 +1033,7 @@
                     try {
                         const dpr = window.devicePixelRatio || 1;
                         runtime.setSize(width * dpr, height * dpr, true);
-                    } catch (e) {
-                        // Silent fail
-                    }
+                    } catch (e) {}
                 }
             },
 
@@ -1171,44 +1066,30 @@
             }
         };
 
-        // ============================================================
-        // DEVICE DETECTION
-        // ============================================================
-      // ============================================================
-// DEVICE DETECTION - FIXED
-// ============================================================
-function detectDevice() {
-    const ua = navigator.userAgent;
-    const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
-    const isTablet = /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua);
-    const isDesktop = !isMobile && !isTablet;
-    const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    
-    console.log('📱 Device Info:', {
-        isMobile, isTablet, isDesktop, isTouch,
-        screenSize: `${window.screen.width}×${window.screen.height}`,
-        viewportSize: `${window.innerWidth}×${window.innerHeight}`,
-        dpr: window.devicePixelRatio
-    });
-    
-    // Only add classes that are truthy
-    const classes = [];
-    if (isMobile) classes.push('device-mobile');
-    if (isTablet) classes.push('device-tablet');
-    if (isDesktop) classes.push('device-desktop');
-    if (isTouch) classes.push('device-touch');
-    if (!isTouch) classes.push('device-mouse');
-    
-    // Add all classes at once
-    if (classes.length) {
-        document.body.classList.add(...classes);
-    }
-}
-detectDevice();
+        function detectDevice() {
+            const ua = navigator.userAgent;
+            const isMobile = /android|webos|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+            const isTablet = /(ipad|tablet|playbook|silk)|(android(?!.*mobile))/i.test(ua);
+            const isDesktop = !isMobile && !isTablet;
+            const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+            
+            console.log('📱 Device Info:', {
+                isMobile, isTablet, isDesktop, isTouch,
+                screenSize: `${window.screen.width}×${window.screen.height}`,
+                viewportSize: `${window.innerWidth}×${window.innerHeight}`,
+                dpr: window.devicePixelRatio
+            });
+            
+            const classes = [];
+            if (isMobile) classes.push('device-mobile');
+            if (isTablet) classes.push('device-tablet');
+            if (isDesktop) classes.push('device-desktop');
+            if (isTouch) classes.push('device-touch');
+            if (!isTouch) classes.push('device-mouse');
+            if (classes.length) document.body.classList.add(...classes);
+        }
+        detectDevice();
 
-        // ============================================================
-        // GAME LOADER
-        // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
             const canvas = document.createElement('canvas');
@@ -1243,9 +1124,6 @@ detectDevice();
             }, 200);
         }
 
-        // ============================================================
-        // INIT GAME
-        // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
             try {
@@ -1285,397 +1163,344 @@ detectDevice();
             }
         }
 
-        // ============================================================
-        // LOAD DATA.JS AND FIX PATHS
-        // ============================================================
-      // ============================================================
-// LOAD DATA.JS AND FIX PATHS - UPDATED
-// ============================================================
-// ============================================================
-// LOAD DATA.JS AND FIX PATHS - ULTIMATE FIX
-// ============================================================
-function loadDataAndEngine() {
-    console.log('🔄 Loading data.js and fixing paths...');
-    fetch('/games/ninja%20run/data.js')
-        .then(response => response.text())
-        .then(dataText => {
-            console.log('✅ data.js fetched');
-            
-            // Fix paths
-            let fixedData = dataText
-                .replace(/images\//g, '/games/ninja%20run/images/')
-                .replace(/media\//g, '/games/ninja%20run/media/');
-            
-            // 🔥 ULTIMATE FIX: Completely remove all references to Loading layout
-            try {
-                let projectData = JSON.parse(fixedData);
-                
-                // 1. Change first layout from "Loading" to "Menu"
-                if (projectData.project && projectData.project[1] === 'Loading') {
-                    projectData.project[1] = 'Menu';
-                    console.log('✅ Changed first layout from Loading to Menu');
-                }
-                
-                // 2. Remove Loading layout from layouts array
-                if (projectData.project && projectData.project[5]) {
-                    const layouts = projectData.project[5];
-                    // Find and remove the Loading layout
-                    for (let i = 0; i < layouts.length; i++) {
-                        if (layouts[i] && layouts[i][0] === 'Loading') {
-                            layouts.splice(i, 1);
-                            console.log('✅ Removed Loading layout from layouts array');
-                            break;
-                        }
-                    }
-                }
-                
-                // 3. 🔥 CRITICAL: Fix any references to Loading layout in the project
-                // Convert to string and do a global replace
-                fixedData = JSON.stringify(projectData);
-                
-                // Replace ALL occurrences of "Loading" with "Menu"
-                fixedData = fixedData
-                    .replace(/"Loading"/g, '"Menu"')
-                    .replace(/LoadingSet/g, 'MenuSet')
-                    .replace(/Loading,/g, 'Menu,')
-                    .replace(/,Loading,/g, ',Menu,')
-                    .replace(/,Loading\]/g, ',Menu]')
-                    .replace(/\["Loading"/g, '["Menu"');
-                
-                console.log('✅ All Loading references replaced with Menu');
-                
-            } catch (e) {
-                console.warn('⚠️ Could not parse data.js, using aggressive string replacement');
-                // Aggressive string replacement
-                fixedData = fixedData
-                    .replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"')
-                    .replace(/"Loading"/g, '"Menu"')
-                    .replace(/LoadingSet/g, 'MenuSet')
-                    .replace(/Loading,/g, 'Menu,')
-                    .replace(/,Loading,/g, ',Menu,')
-                    .replace(/,Loading\]/g, ',Menu]')
-                    .replace(/\["Loading"/g, '["Menu"');
-            }
-            
-            // Parse and store the fixed data
-            const projectData = JSON.parse(fixedData);
-            window._c2projectData = projectData;
-            console.log('✅ data.js parsed and stored');
-            
-            // 🔥 NEW: Also override the runtime's layout loading directly
-            window._c2forceMenu = true;
-            
-            loadGameEngine();
-        })
-        .catch(err => {
-            console.error('❌ Failed to fetch data.js:', err);
-            dom.statusMain.textContent = '⚠️ data.js not found';
-            dom.statusSub.textContent = 'Make sure data.js is in the game folder';
-            dom.statusMessage.classList.add('show');
-        });
-}
- function loadGameEngine() {
-    console.log('🔄 Loading game engine...');
-    
-    // Patch AudioListener to handle NaN values
-    try {
-        if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
-            const originalSetPosition = AudioListener.prototype.setPosition;
-            AudioListener.prototype.setPosition = function(x, y, z) {
-                if (isNaN(x) || x === undefined || x === null) x = 0;
-                if (isNaN(y) || y === undefined || y === null) y = 0;
-                if (isNaN(z) || z === undefined || z === null) z = -600;
-                return originalSetPosition.call(this, x, y, z);
-            };
-            console.log('✅ AudioListener patched');
-        }
-    } catch (e) {
-        console.warn('⚠️ Could not patch AudioListener:', e);
-    }
-
-    // ============================================================
-    // 🔥 FIX: Patch input coordinate calculations
-    // ============================================================
-    function patchInputCoordinates() {
-        if (typeof cr === 'undefined' || !cr.plugins_) {
-            setTimeout(patchInputCoordinates, 100);
-            return;
-        }
-
-        if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
-            const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
-            if (mouseProto.onMouseMove) {
-                const originalOnMouseMove = mouseProto.onMouseMove;
-                mouseProto.onMouseMove = function(info) {
-                    if (!this.runtime || !this.runtime.canvas) {
-                        return originalOnMouseMove.call(this, info);
-                    }
-                    const rect = this.runtime.canvas.getBoundingClientRect();
-                    const scaleX = this.runtime.canvas.width / rect.width;
-                    const scaleY = this.runtime.canvas.height / rect.height;
-                    this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
-                    this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
-                };
-                console.log('✅ Mouse coordinates patched');
-            }
-        }
-
-        if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-            const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-            if (touchProto.onTouchStart) {
-                const originalOnTouchStart = touchProto.onTouchStart;
-                touchProto.onTouchStart = function(info) {
-                    if (!this.runtime || !this.runtime.canvas) {
-                        return originalOnTouchStart.call(this, info);
-                    }
-                    const rect = this.runtime.canvas.getBoundingClientRect();
-                    const scaleX = this.runtime.canvas.width / rect.width;
-                    const scaleY = this.runtime.canvas.height / rect.height;
+        function loadDataAndEngine() {
+            console.log('🔄 Loading data.js and fixing paths...');
+            fetch('/games/ninja%20run/data.js')
+                .then(response => response.text())
+                .then(dataText => {
+                    console.log('✅ data.js fetched');
                     
-                    const adjustedInfo = {
-                        ...info,
-                        changedTouches: info.changedTouches.map(t => ({
-                            ...t,
-                            pageX: (t.pageX - rect.left) * scaleX,
-                            pageY: (t.pageY - rect.top) * scaleY
-                        }))
+                    let fixedData = dataText
+                        .replace(/images\//g, '/games/ninja%20run/images/')
+                        .replace(/media\//g, '/games/ninja%20run/media/');
+                    
+                    try {
+                        let projectData = JSON.parse(fixedData);
+                        
+                        if (projectData.project && projectData.project[1] === 'Loading') {
+                            projectData.project[1] = 'Menu';
+                            console.log('✅ Changed first layout from Loading to Menu');
+                        }
+                        
+                        if (projectData.project && projectData.project[5]) {
+                            const layouts = projectData.project[5];
+                            for (let i = 0; i < layouts.length; i++) {
+                                if (layouts[i] && layouts[i][0] === 'Loading') {
+                                    layouts.splice(i, 1);
+                                    console.log('✅ Removed Loading layout from layouts array');
+                                    break;
+                                }
+                            }
+                        }
+                        
+                        fixedData = JSON.stringify(projectData);
+                        fixedData = fixedData
+                            .replace(/"Loading"/g, '"Menu"')
+                            .replace(/LoadingSet/g, 'MenuSet');
+                        
+                        console.log('✅ All Loading references replaced with Menu');
+                    } catch (e) {
+                        console.warn('⚠️ Could not parse data.js, using string replacement');
+                        fixedData = fixedData
+                            .replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"')
+                            .replace(/"Loading"/g, '"Menu"')
+                            .replace(/LoadingSet/g, 'MenuSet');
+                    }
+                    
+                    const projectData = JSON.parse(fixedData);
+                    window._c2projectData = projectData;
+                    console.log('✅ data.js parsed and stored');
+                    loadGameEngine();
+                })
+                .catch(err => {
+                    console.error('❌ Failed to fetch data.js:', err);
+                    dom.statusMain.textContent = '⚠️ data.js not found';
+                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
+                    dom.statusMessage.classList.add('show');
+                });
+        }
+
+        function loadGameEngine() {
+            console.log('🔄 Loading game engine...');
+            
+            try {
+                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
+                    const originalSetPosition = AudioListener.prototype.setPosition;
+                    AudioListener.prototype.setPosition = function(x, y, z) {
+                        if (isNaN(x) || x === undefined || x === null) x = 0;
+                        if (isNaN(y) || y === undefined || y === null) y = 0;
+                        if (isNaN(z) || z === undefined || z === null) z = -600;
+                        return originalSetPosition.call(this, x, y, z);
                     };
-                    return originalOnTouchStart.call(this, adjustedInfo);
-                };
-                console.log('✅ Touch coordinates patched');
-            }
-        }
-    }
-
-    const script = document.createElement('script');
-    script.src = '/games/ninja%20run/c2runtime.js';
-    script.onload = () => {
-        console.log('✅ Runtime loaded');
-        
-        try {
-            if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                cr.runtime.prototype.requestProjectData = function() {
-                    console.log('🔄 Using cached project data');
-                    if (window._c2projectData) {
-                        this.loadProject(window._c2projectData);
-                    } else {
-                        console.error('❌ No cached project data found!');
-                        originalRequestProjectData.call(this);
-                    }
-                };
-                console.log('✅ Runtime.requestProjectData overridden');
-            }
-        } catch (e) {
-            console.warn('⚠️ Could not override requestProjectData:', e);
-        }
-
-        try {
-            const runtime = new cr.createRuntime('c2canvas');
-            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-            window.gameRuntime = runtime;
-            
-            // ============================================================
-            // 🔥 ULTIMATE FIX: Remove Loading layout from runtime
-            // ============================================================
-            try {
-                // Check if Loading layout exists and remove it
-                if (runtime.layouts && runtime.layouts['Loading']) {
-                    console.log('⚠️ Loading layout found in runtime, removing...');
-                    delete runtime.layouts['Loading'];
-                    
-                    // Also remove from layouts_by_index
-                    if (runtime.layouts_by_index) {
-                        const loadingIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Loading');
-                        if (loadingIdx !== -1) {
-                            runtime.layouts_by_index.splice(loadingIdx, 1);
-                            console.log('✅ Removed Loading layout from layouts_by_index');
-                        }
-                    }
-                }
-                
-                // Ensure Menu layout exists
-                if (runtime.layouts && runtime.layouts['Menu']) {
-                    console.log('✅ Menu layout found in runtime');
-                    // Set first layout to Menu
-                    if (runtime.layouts_by_index && runtime.layouts_by_index.length > 0) {
-                        // Find Menu layout index
-                        const menuIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Menu');
-                        if (menuIdx !== -1 && menuIdx !== 0) {
-                            // Move Menu to first position
-                            const menuLayout = runtime.layouts_by_index.splice(menuIdx, 1)[0];
-                            runtime.layouts_by_index.unshift(menuLayout);
-                            console.log('✅ Moved Menu layout to first position');
-                        }
-                    }
+                    console.log('✅ AudioListener patched');
                 }
             } catch (e) {
-                console.warn('⚠️ Could not modify runtime layouts:', e);
+                console.warn('⚠️ Could not patch AudioListener:', e);
             }
-            
-            // Handle runtime errors gracefully
-            runtime.addDestroyCallback(function(inst) {
-                if (inst && inst.type === null) {
-                    console.warn('⚠️ Skipping null instance creation');
+
+            function patchInputCoordinates() {
+                if (typeof cr === 'undefined' || !cr.plugins_) {
+                    setTimeout(patchInputCoordinates, 100);
                     return;
                 }
-            });
-            
-            dom.startOverlay.classList.remove('hidden');
 
-            // ============================================================
-            // 🔥 CRITICAL FIX: Sync canvas size with display
-            // ============================================================
-            function syncCanvasSize() {
-                if (!window.gameRuntime || !dom.canvas) return;
+                if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
+                    const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
+                    if (mouseProto.onMouseMove) {
+                        const originalOnMouseMove = mouseProto.onMouseMove;
+                        mouseProto.onMouseMove = function(info) {
+                            if (!this.runtime || !this.runtime.canvas) {
+                                return originalOnMouseMove.call(this, info);
+                            }
+                            const rect = this.runtime.canvas.getBoundingClientRect();
+                            const scaleX = this.runtime.canvas.width / rect.width;
+                            const scaleY = this.runtime.canvas.height / rect.height;
+                            this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
+                            this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
+                        };
+                        console.log('✅ Mouse coordinates patched');
+                    }
+                }
+
+                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
+                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
+                    if (touchProto.onTouchStart) {
+                        const originalOnTouchStart = touchProto.onTouchStart;
+                        touchProto.onTouchStart = function(info) {
+                            if (!this.runtime || !this.runtime.canvas) {
+                                return originalOnTouchStart.call(this, info);
+                            }
+                            const rect = this.runtime.canvas.getBoundingClientRect();
+                            const scaleX = this.runtime.canvas.width / rect.width;
+                            const scaleY = this.runtime.canvas.height / rect.height;
+                            
+                            const adjustedInfo = {
+                                ...info,
+                                changedTouches: info.changedTouches.map(t => ({
+                                    ...t,
+                                    pageX: (t.pageX - rect.left) * scaleX,
+                                    pageY: (t.pageY - rect.top) * scaleY
+                                }))
+                            };
+                            return originalOnTouchStart.call(this, adjustedInfo);
+                        };
+                        console.log('✅ Touch coordinates patched');
+                    }
+                }
+            }
+
+            const script = document.createElement('script');
+            script.src = '/games/ninja%20run/c2runtime.js';
+            script.onload = () => {
+                console.log('✅ Runtime loaded');
+                
                 try {
-                    const rect = dom.canvas.getBoundingClientRect();
-                    if (rect.width > 0 && rect.height > 0) {
-                        window.gameRuntime.setSize(rect.width, rect.height, true);
-                        console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
+                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+                        cr.runtime.prototype.requestProjectData = function() {
+                            console.log('🔄 Using cached project data');
+                            if (window._c2projectData) {
+                                this.loadProject(window._c2projectData);
+                            } else {
+                                console.error('❌ No cached project data found!');
+                                originalRequestProjectData.call(this);
+                            }
+                        };
+                        console.log('✅ Runtime.requestProjectData overridden');
                     }
                 } catch (e) {
-                    // Silent fail
+                    console.warn('⚠️ Could not override requestProjectData:', e);
                 }
-            }
 
-            requestAnimationFrame(() => {
-                setTimeout(syncCanvasSize, 50);
-            });
-
-            let resizeTimeout;
-            window.addEventListener('resize', () => {
-                clearTimeout(resizeTimeout);
-                resizeTimeout = setTimeout(syncCanvasSize, 100);
-            });
-
-            window.addEventListener('orientationchange', () => {
-                setTimeout(syncCanvasSize, 300);
-            });
-
-            const originalSetSize = runtime.setSize.bind(runtime);
-            runtime.setSize = function(w, h, force) {
-                if (w > 0 && h > 0) {
-                    return originalSetSize(w, h, true);
-                }
-                return originalSetSize(w, h, force);
-            };
-
-            patchInputCoordinates();
-            ResponsiveManager.init();
-            waitForGameReady(runtime);
-            setupTouchControls(runtime);
-            startLobby();
-            startScoreTracking();
-
-            console.log('✅ Game engine initialized with coordinate fixes');
-
-        } catch (e) {
-            console.error('❌ Error creating runtime:', e);
-            dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
-            dom.statusSub.textContent = 'Please refresh and try again';
-            dom.statusMessage.classList.add('show');
-        }
-    };
-    script.onerror = (e) => {
-        console.error('❌ Failed to load c2runtime.js:', e);
-        dom.statusMain.textContent = '⚠️ Game engine not found';
-        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-        dom.statusMessage.classList.add('show');
-    };
-    document.head.appendChild(script);
-}
-function waitForGameReady(runtime) {
-    let checks = 0;
-    const maxChecks = 30;
-    
-    // 🔥 NEW: Force navigation to Menu layout
-    function forceMenuLayout() {
-        try {
-            if (runtime && runtime.running_layout) {
-                const currentLayout = runtime.running_layout.name;
-                if (currentLayout === 'Loading' || currentLayout === undefined) {
-                    console.log('🔄 Forcing navigation to Menu layout...');
-                    const menuLayout = runtime.layouts['Menu'];
-                    if (menuLayout) {
-                        runtime.goToLayout(menuLayout);
-                        console.log('✅ Forced navigation to Menu');
-                        return true;
+                try {
+                    const runtime = new cr.createRuntime('c2canvas');
+                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+                    window.gameRuntime = runtime;
+                    
+                    // CRITICAL FIX: Remove Loading layout from runtime
+                    try {
+                        if (runtime.layouts && runtime.layouts['Loading']) {
+                            console.log('⚠️ Loading layout found in runtime, removing...');
+                            delete runtime.layouts['Loading'];
+                            
+                            if (runtime.layouts_by_index) {
+                                const loadingIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Loading');
+                                if (loadingIdx !== -1) {
+                                    runtime.layouts_by_index.splice(loadingIdx, 1);
+                                    console.log('✅ Removed Loading layout from layouts_by_index');
+                                }
+                            }
+                        }
+                        
+                        if (runtime.layouts && runtime.layouts['Menu']) {
+                            console.log('✅ Menu layout found in runtime');
+                            if (runtime.layouts_by_index && runtime.layouts_by_index.length > 0) {
+                                const menuIdx = runtime.layouts_by_index.findIndex(l => l && l.name === 'Menu');
+                                if (menuIdx !== -1 && menuIdx !== 0) {
+                                    const menuLayout = runtime.layouts_by_index.splice(menuIdx, 1)[0];
+                                    runtime.layouts_by_index.unshift(menuLayout);
+                                    console.log('✅ Moved Menu layout to first position');
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn('⚠️ Could not modify runtime layouts:', e);
                     }
+                    
+                    runtime.addDestroyCallback(function(inst) {
+                        if (inst && inst.type === null) {
+                            console.warn('⚠️ Skipping null instance creation');
+                            return;
+                        }
+                    });
+                    
+                    dom.startOverlay.classList.remove('hidden');
+
+                    function syncCanvasSize() {
+                        if (!window.gameRuntime || !dom.canvas) return;
+                        try {
+                            const rect = dom.canvas.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0) {
+                                window.gameRuntime.setSize(rect.width, rect.height, true);
+                                console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
+                            }
+                        } catch (e) {}
+                    }
+
+                    requestAnimationFrame(() => {
+                        setTimeout(syncCanvasSize, 50);
+                    });
+
+                    let resizeTimeout;
+                    window.addEventListener('resize', () => {
+                        clearTimeout(resizeTimeout);
+                        resizeTimeout = setTimeout(syncCanvasSize, 100);
+                    });
+
+                    window.addEventListener('orientationchange', () => {
+                        setTimeout(syncCanvasSize, 300);
+                    });
+
+                    const originalSetSize = runtime.setSize.bind(runtime);
+                    runtime.setSize = function(w, h, force) {
+                        if (w > 0 && h > 0) {
+                            return originalSetSize(w, h, true);
+                        }
+                        return originalSetSize(w, h, force);
+                    };
+
+                    patchInputCoordinates();
+                    ResponsiveManager.init();
+                    waitForGameReady(runtime);
+                    setupTouchControls(runtime);
+                    startLobby();
+                    startScoreTracking();
+
+                    console.log('✅ Game engine initialized with coordinate fixes');
+
+                } catch (e) {
+                    console.error('❌ Error creating runtime:', e);
+                    dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
+                    dom.statusSub.textContent = 'Please refresh and try again';
+                    dom.statusMessage.classList.add('show');
                 }
-            }
-        } catch (e) {
-            console.warn('⚠️ Could not force menu layout:', e);
+            };
+            script.onerror = (e) => {
+                console.error('❌ Failed to load c2runtime.js:', e);
+                dom.statusMain.textContent = '⚠️ Game engine not found';
+                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
+                dom.statusMessage.classList.add('show');
+            };
+            document.head.appendChild(script);
         }
-        return false;
-    }
-    
-    const checkInterval = setInterval(() => {
-        checks++;
-        try {
-            if (!runtime) {
-                if (checks > 5) {
-                    clearInterval(checkInterval);
-                    console.error('❌ Runtime not available');
+
+        function waitForGameReady(runtime) {
+            let checks = 0;
+            const maxChecks = 30;
+            
+            function forceMenuLayout() {
+                try {
+                    if (runtime && runtime.running_layout) {
+                        const currentLayout = runtime.running_layout.name;
+                        if (currentLayout === 'Loading' || currentLayout === undefined) {
+                            console.log('🔄 Forcing navigation to Menu layout...');
+                            const menuLayout = runtime.layouts['Menu'];
+                            if (menuLayout) {
+                                runtime.goToLayout(menuLayout);
+                                console.log('✅ Forced navigation to Menu');
+                                return true;
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Could not force menu layout:', e);
                 }
-                return;
+                return false;
             }
             
-            if (runtime.isloading === false && runtime.running_layout) {
-                const layoutName = runtime.running_layout.name;
-                console.log('📐 Game layout:', layoutName);
+            const checkInterval = setInterval(() => {
+                checks++;
+                try {
+                    if (!runtime) {
+                        if (checks > 5) {
+                            clearInterval(checkInterval);
+                            console.error('❌ Runtime not available');
+                        }
+                        return;
+                    }
+                    
+                    if (runtime.isloading === false && runtime.running_layout) {
+                        const layoutName = runtime.running_layout.name;
+                        console.log('📐 Game layout:', layoutName);
 
-                if (layoutName === 'Game') {
-                    clearInterval(checkInterval);
-                    console.log('✅ Game is ready on Game layout!');
-                    state._gameReady = true;
-                    unpauseGame(runtime);
-                    return;
-                }
+                        if (layoutName === 'Game') {
+                            clearInterval(checkInterval);
+                            console.log('✅ Game is ready on Game layout!');
+                            state._gameReady = true;
+                            unpauseGame(runtime);
+                            return;
+                        }
 
-                if (layoutName === 'Menu') {
-                    clearInterval(checkInterval);
-                    console.log('✅ Game is ready on Menu layout!');
-                    state._gameReady = true;
-                    clickPlayButton(runtime);
-                    return;
-                }
+                        if (layoutName === 'Menu') {
+                            clearInterval(checkInterval);
+                            console.log('✅ Game is ready on Menu layout!');
+                            state._gameReady = true;
+                            clickPlayButton(runtime);
+                            return;
+                        }
 
-                if (layoutName === 'Loading') {
-                    console.log('⏳ Still on Loading layout, forcing menu...');
-                    forceMenuLayout();
-                    if (checks < maxChecks) return;
-                }
-            }
+                        if (layoutName === 'Loading') {
+                            console.log('⏳ Still on Loading layout, forcing menu...');
+                            forceMenuLayout();
+                            if (checks < maxChecks) return;
+                        }
+                    }
 
-            if (checks >= maxChecks) {
-                clearInterval(checkInterval);
-                console.warn('⚠️ Game not ready after ' + maxChecks + ' checks, forcing...');
-                state._gameReady = true;
-                
-                if (!forceMenuLayout()) {
-                    const layout = runtime.running_layout;
-                    if (layout && layout.name === 'Menu') {
-                        clickPlayButton(runtime);
-                    } else {
+                    if (checks >= maxChecks) {
+                        clearInterval(checkInterval);
+                        console.warn('⚠️ Game not ready after ' + maxChecks + ' checks, forcing...');
+                        state._gameReady = true;
+                        
+                        if (!forceMenuLayout()) {
+                            const layout = runtime.running_layout;
+                            if (layout && layout.name === 'Menu') {
+                                clickPlayButton(runtime);
+                            } else {
+                                unpauseGame(runtime);
+                            }
+                        }
+                    }
+                } catch (e) {
+                    console.warn('⚠️ Error in waitForGameReady:', e);
+                    if (checks >= maxChecks) {
+                        clearInterval(checkInterval);
+                        state._gameReady = true;
                         unpauseGame(runtime);
                     }
                 }
-            }
-        } catch (e) {
-            console.warn('⚠️ Error in waitForGameReady:', e);
-            if (checks >= maxChecks) {
-                clearInterval(checkInterval);
-                state._gameReady = true;
-                unpauseGame(runtime);
-            }
+            }, 1000);
         }
-    }, 1000);
-}
 
-        // ============================================================
-        // CLICK THE PLAY BUTTON
-        // ============================================================
         function clickPlayButton(runtime) {
             console.log('🎯 Looking for Play button...');
             try {
@@ -1747,9 +1572,6 @@ function waitForGameReady(runtime) {
             }
         }
 
-        // ============================================================
-        // UNPAUSE GAME
-        // ============================================================
         function unpauseGame(runtime) {
             try {
                 const vars = runtime.all_global_vars || [];
@@ -1774,9 +1596,6 @@ function waitForGameReady(runtime) {
             }
         }
 
-        // ============================================================
-        // START SCORE TRACKING
-        // ============================================================
         function startScoreTracking() {
             if (state.scoreInterval) clearInterval(state.scoreInterval);
             state.scoreInterval = setInterval(() => {
@@ -1812,17 +1631,12 @@ function waitForGameReady(runtime) {
                     } else {
                         dom.scoreOverlay.classList.remove('show');
                     }
-                } catch (e) { /* Silent fail */ }
+                } catch (e) {}
             }, 500);
             console.log('✅ Score tracking started');
         }
 
-        // ============================================================
-        // TOUCH CONTROLS
-        // ============================================================
         function setupTouchControls(runtime) {
-            let leftPressed = false, rightPressed = false, jumpPressed = false;
-
             function dispatchKeyEvent(type, key, keyCode) {
                 const event = new KeyboardEvent(type, { 
                     key: key, 
@@ -1885,9 +1699,6 @@ function waitForGameReady(runtime) {
             });
         }
 
-        // ============================================================
-        // LOBBY SYSTEM
-        // ============================================================
         function startLobby() {
             console.log('🔄 Starting lobby...');
             dom.lobbyOverlay.classList.remove('hidden');
@@ -1944,9 +1755,6 @@ function waitForGameReady(runtime) {
             }).catch(e => console.error('❌ Error creating round:', e));
         }
 
-        // ============================================================
-        // JOIN ROUND
-        // ============================================================
         async function joinRound() {
             if (!state.user || !state.userData) {
                 alert('Please login first');
@@ -1994,9 +1802,6 @@ function waitForGameReady(runtime) {
             }
         }
 
-        // ============================================================
-        // START GAME
-        // ============================================================
         function startGame() {
             state.gameStarted = true;
             console.log('🎮 Game is now live!');
@@ -2017,9 +1822,6 @@ function waitForGameReady(runtime) {
             }, 2000);
         }
 
-        // ============================================================
-        // ROUND MANAGEMENT
-        // ============================================================
         function startRound() {
             if (state.roundState !== 'waiting') return;
             if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
@@ -2053,9 +1855,6 @@ function waitForGameReady(runtime) {
             }, 3000);
         }
 
-        // ============================================================
-        // END ROUND
-        // ============================================================
         function endRound(results) {
             state.roundState = 'ended';
             state.results = results;
@@ -2114,9 +1913,6 @@ function waitForGameReady(runtime) {
             }, 10000);
         }
 
-        // ============================================================
-        // TIMER
-        // ============================================================
         function startRoundTimer() {
             setInterval(() => {
                 if (state.roundState === 'playing') {
@@ -2137,9 +1933,6 @@ function waitForGameReady(runtime) {
             dom.lobbyTimer.textContent = display;
         }
 
-        // ============================================================
-        // GET GAME RESULTS
-        // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
             let score = 0, coins = 0, distance = 0;
@@ -2156,9 +1949,6 @@ function waitForGameReady(runtime) {
             return { score, coins, distance };
         }
 
-        // ============================================================
-        // UPDATE UI
-        // ============================================================
         function updateUI() {
             const players = getPlayersArray();
             state.playerCount = players.length;
@@ -2196,9 +1986,6 @@ function waitForGameReady(runtime) {
 
         function updateLobbyUI() { updateUI(); }
 
-        // ============================================================
-        // RENDER PLAYER LIST
-        // ============================================================
         function renderPlayerList() {
             const players = getPlayersArray();
             if (players.length === 0) {
@@ -2222,9 +2009,6 @@ function waitForGameReady(runtime) {
             dom.playersContainer.innerHTML = html;
         }
 
-        // ============================================================
-        // SIMULATE PLAYERS FOR TESTING
-        // ============================================================
         function simulatePlayers() {
             setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
             const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
@@ -2248,9 +2032,6 @@ function waitForGameReady(runtime) {
             });
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
         console.log('%c🏃 NINJARUN - TOURNAMENT EDITION', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
         console.log('%c🎮 Professional Gaming Interface Loaded', 'color: #34d399; font-size: 14px;');
         console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #fbbf24; font-size: 12px;');
