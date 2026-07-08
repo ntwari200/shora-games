@@ -1288,122 +1288,263 @@ detectDevice();
         // ============================================================
         // LOAD DATA.JS AND FIX PATHS
         // ============================================================
-        function loadDataAndEngine() {
-            console.log('🔄 Loading data.js and fixing paths...');
-            fetch('/games/ninja%20run/data.js')
-                .then(response => response.text())
-                .then(dataText => {
-                    console.log('✅ data.js fetched');
-                    
-                    // Fix paths
-                    let fixedData = dataText
-                        .replace(/images\//g, '/games/ninja%20run/images/')
-                        .replace(/media\//g, '/games/ninja%20run/media/');
-                    
-                    // 🔥 CRITICAL FIX: Change first layout from "Loading" to "Menu"
-                    try {
-                        const projectData = JSON.parse(fixedData);
-                        if (projectData.project && projectData.project[1] === 'Loading') {
-                            projectData.project[1] = 'Menu';
-                            console.log('✅ Changed first layout from Loading to Menu');
-                            fixedData = JSON.stringify(projectData);
-                        }
-                    } catch (e) {
-                        console.warn('⚠️ Could not parse data.js, using string replacement');
-                        fixedData = fixedData.replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"');
+      // ============================================================
+// LOAD DATA.JS AND FIX PATHS - UPDATED
+// ============================================================
+function loadDataAndEngine() {
+    console.log('🔄 Loading data.js and fixing paths...');
+    fetch('/games/ninja%20run/data.js')
+        .then(response => response.text())
+        .then(dataText => {
+            console.log('✅ data.js fetched');
+            
+            // Fix paths
+            let fixedData = dataText
+                .replace(/images\//g, '/games/ninja%20run/images/')
+                .replace(/media\//g, '/games/ninja%20run/media/');
+            
+            // 🔥 IMPROVED FIX: Handle the Loading layout properly
+            try {
+                const projectData = JSON.parse(fixedData);
+                
+                // Change first layout from "Loading" to "Menu"
+                if (projectData.project && projectData.project[1] === 'Loading') {
+                    projectData.project[1] = 'Menu';
+                    console.log('✅ Changed first layout from Loading to Menu');
+                }
+                
+                // 🔥 CRITICAL FIX: Remove Loading layout entirely from layouts array
+                // The Loading layout is at index 2 in the layouts array
+                if (projectData.project && projectData.project[5]) {
+                    const layouts = projectData.project[5];
+                    // Remove the Loading layout (index 2)
+                    if (layouts[2] && layouts[2][0] === 'Loading') {
+                        layouts.splice(2, 1);
+                        console.log('✅ Removed Loading layout from layouts array');
                     }
-                    
-                    console.log('✅ Image and audio paths fixed');
-                    const projectData = JSON.parse(fixedData);
-                    window._c2projectData = projectData;
-                    console.log('✅ data.js parsed and stored');
-                    loadGameEngine();
-                })
-                .catch(err => {
-                    console.error('❌ Failed to fetch data.js:', err);
-                    dom.statusMain.textContent = '⚠️ data.js not found';
-                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
-                    dom.statusMessage.classList.add('show');
-                });
-        }
+                }
+                
+                // 🔥 FIX: Update any references to Loading layout in event sheets
+                // Find and replace any "Loading" references with "Menu"
+                fixedData = JSON.stringify(projectData);
+                
+                // Also do a string replacement for safety
+                fixedData = fixedData
+                    .replace(/"Loading"/g, '"Menu"')
+                    .replace(/LoadingSet/g, 'MenuSet');
+                
+                console.log('✅ Layout references fixed');
+                
+            } catch (e) {
+                console.warn('⚠️ Could not parse data.js, using string replacement');
+                fixedData = fixedData
+                    .replace(/"project":\s*\[null,\s*"Loading"/, '"project": [null, "Menu"')
+                    .replace(/"Loading"/g, '"Menu"')
+                    .replace(/LoadingSet/g, 'MenuSet');
+            }
+            
+            const projectData = JSON.parse(fixedData);
+            window._c2projectData = projectData;
+            console.log('✅ data.js parsed and stored');
+            loadGameEngine();
+        })
+        .catch(err => {
+            console.error('❌ Failed to fetch data.js:', err);
+            dom.statusMain.textContent = '⚠️ data.js not found';
+            dom.statusSub.textContent = 'Make sure data.js is in the game folder';
+            dom.statusMessage.classList.add('show');
+        });
+}
 
         // ============================================================
         // LOAD GAME ENGINE
         // ============================================================
-        function loadGameEngine() {
-            console.log('🔄 Loading game engine...');
-            
-            // Patch AudioListener to handle NaN values
-            try {
-                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
-                    const originalSetPosition = AudioListener.prototype.setPosition;
-                    AudioListener.prototype.setPosition = function(x, y, z) {
-                        if (isNaN(x) || x === undefined || x === null) x = 0;
-                        if (isNaN(y) || y === undefined || y === null) y = 0;
-                        if (isNaN(z) || z === undefined || z === null) z = -600;
-                        return originalSetPosition.call(this, x, y, z);
-                    };
-                    console.log('✅ AudioListener patched');
-                }
-            } catch (e) {
-                console.warn('⚠️ Could not patch AudioListener:', e);
-            }
+     function loadGameEngine() {
+    console.log('🔄 Loading game engine...');
+    
+    // Patch AudioListener to handle NaN values
+    try {
+        if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
+            const originalSetPosition = AudioListener.prototype.setPosition;
+            AudioListener.prototype.setPosition = function(x, y, z) {
+                if (isNaN(x) || x === undefined || x === null) x = 0;
+                if (isNaN(y) || y === undefined || y === null) y = 0;
+                if (isNaN(z) || z === undefined || z === null) z = -600;
+                return originalSetPosition.call(this, x, y, z);
+            };
+            console.log('✅ AudioListener patched');
+        }
+    } catch (e) {
+        console.warn('⚠️ Could not patch AudioListener:', e);
+    }
 
-            // ============================================================
-            // 🔥 FIX: Patch input coordinate calculations
-            // ============================================================
-            function patchInputCoordinates() {
-                if (typeof cr === 'undefined' || !cr.plugins_) {
-                    setTimeout(patchInputCoordinates, 100);
+    // ============================================================
+    // 🔥 FIX: Patch input coordinate calculations
+    // ============================================================
+    function patchInputCoordinates() {
+        if (typeof cr === 'undefined' || !cr.plugins_) {
+            setTimeout(patchInputCoordinates, 100);
+            return;
+        }
+
+        // Patch Mouse plugin
+        if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
+            const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
+            if (mouseProto.onMouseMove) {
+                const originalOnMouseMove = mouseProto.onMouseMove;
+                mouseProto.onMouseMove = function(info) {
+                    if (!this.runtime || !this.runtime.canvas) {
+                        return originalOnMouseMove.call(this, info);
+                    }
+                    const rect = this.runtime.canvas.getBoundingClientRect();
+                    const scaleX = this.runtime.canvas.width / rect.width;
+                    const scaleY = this.runtime.canvas.height / rect.height;
+                    this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
+                    this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
+                };
+                console.log('✅ Mouse coordinates patched');
+            }
+        }
+
+        // Patch Touch plugin
+        if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
+            const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
+            if (touchProto.onTouchStart) {
+                const originalOnTouchStart = touchProto.onTouchStart;
+                touchProto.onTouchStart = function(info) {
+                    if (!this.runtime || !this.runtime.canvas) {
+                        return originalOnTouchStart.call(this, info);
+                    }
+                    const rect = this.runtime.canvas.getBoundingClientRect();
+                    const scaleX = this.runtime.canvas.width / rect.width;
+                    const scaleY = this.runtime.canvas.height / rect.height;
+                    
+                    const adjustedInfo = {
+                        ...info,
+                        changedTouches: info.changedTouches.map(t => ({
+                            ...t,
+                            pageX: (t.pageX - rect.left) * scaleX,
+                            pageY: (t.pageY - rect.top) * scaleY
+                        }))
+                    };
+                    return originalOnTouchStart.call(this, adjustedInfo);
+                };
+                console.log('✅ Touch coordinates patched');
+            }
+        }
+    }
+
+    const script = document.createElement('script');
+    script.src = '/games/ninja%20run/c2runtime.js';
+    script.onload = () => {
+        console.log('✅ Runtime loaded');
+        
+        // Override requestProjectData to use cached data
+        try {
+            if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+                const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+                cr.runtime.prototype.requestProjectData = function() {
+                    console.log('🔄 Using cached project data');
+                    if (window._c2projectData) {
+                        this.loadProject(window._c2projectData);
+                    } else {
+                        console.error('❌ No cached project data found!');
+                        originalRequestProjectData.call(this);
+                    }
+                };
+                console.log('✅ Runtime.requestProjectData overridden');
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not override requestProjectData:', e);
+        }
+
+        try {
+            const runtime = new cr.createRuntime('c2canvas');
+            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+            window.gameRuntime = runtime;
+            
+            // 🔥 NEW: Handle runtime errors gracefully
+            runtime.addDestroyCallback(function(inst) {
+                // Catch any instance creation errors
+                if (inst && inst.type === null) {
+                    console.warn('⚠️ Skipping null instance creation');
                     return;
                 }
+            });
+            
+            dom.startOverlay.classList.remove('hidden');
 
-                // Patch Mouse plugin
-                if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
-                    const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
-                    if (mouseProto.onMouseMove) {
-                        const originalOnMouseMove = mouseProto.onMouseMove;
-                        mouseProto.onMouseMove = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) {
-                                return originalOnMouseMove.call(this, info);
-                            }
-                            const rect = this.runtime.canvas.getBoundingClientRect();
-                            const scaleX = this.runtime.canvas.width / rect.width;
-                            const scaleY = this.runtime.canvas.height / rect.height;
-                            this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
-                            this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
-                        };
-                        console.log('✅ Mouse coordinates patched');
+            // ============================================================
+            // 🔥 CRITICAL FIX: Sync canvas size with display
+            // ============================================================
+            function syncCanvasSize() {
+                if (!window.gameRuntime || !dom.canvas) return;
+                try {
+                    const rect = dom.canvas.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        window.gameRuntime.setSize(rect.width, rect.height, true);
+                        console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
                     }
-                }
-
-                // Patch Touch plugin
-                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-                    if (touchProto.onTouchStart) {
-                        const originalOnTouchStart = touchProto.onTouchStart;
-                        touchProto.onTouchStart = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) {
-                                return originalOnTouchStart.call(this, info);
-                            }
-                            const rect = this.runtime.canvas.getBoundingClientRect();
-                            const scaleX = this.runtime.canvas.width / rect.width;
-                            const scaleY = this.runtime.canvas.height / rect.height;
-                            
-                            const adjustedInfo = {
-                                ...info,
-                                changedTouches: info.changedTouches.map(t => ({
-                                    ...t,
-                                    pageX: (t.pageX - rect.left) * scaleX,
-                                    pageY: (t.pageY - rect.top) * scaleY
-                                }))
-                            };
-                            return originalOnTouchStart.call(this, adjustedInfo);
-                        };
-                        console.log('✅ Touch coordinates patched');
-                    }
+                } catch (e) {
+                    // Silent fail
                 }
             }
+
+            // Sync after DOM layout settles
+            requestAnimationFrame(() => {
+                setTimeout(syncCanvasSize, 50);
+            });
+
+            // Sync on resize with debounce
+            let resizeTimeout;
+            window.addEventListener('resize', () => {
+                clearTimeout(resizeTimeout);
+                resizeTimeout = setTimeout(syncCanvasSize, 100);
+            });
+
+            // Sync on orientation change
+            window.addEventListener('orientationchange', () => {
+                setTimeout(syncCanvasSize, 300);
+            });
+
+            // Override runtime.setSize to always force
+            const originalSetSize = runtime.setSize.bind(runtime);
+            runtime.setSize = function(w, h, force) {
+                if (w > 0 && h > 0) {
+                    return originalSetSize(w, h, true);
+                }
+                return originalSetSize(w, h, force);
+            };
+
+            // Patch input coordinates
+            patchInputCoordinates();
+
+            // Initialize responsive manager
+            ResponsiveManager.init();
+
+            // 🔥 NEW: Wait for game with better error handling
+            waitForGameReady(runtime);
+            setupTouchControls(runtime);
+            startLobby();
+            startScoreTracking();
+
+            console.log('✅ Game engine initialized with coordinate fixes');
+
+        } catch (e) {
+            console.error('❌ Error creating runtime:', e);
+            dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
+            dom.statusSub.textContent = 'Please refresh and try again';
+            dom.statusMessage.classList.add('show');
+        }
+    };
+    script.onerror = (e) => {
+        console.error('❌ Failed to load c2runtime.js:', e);
+        dom.statusMain.textContent = '⚠️ Game engine not found';
+        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
+        dom.statusMessage.classList.add('show');
+    };
+    document.head.appendChild(script);
+}
 
             const script = document.createElement('script');
             script.src = '/games/ninja%20run/c2runtime.js';
@@ -1509,54 +1650,96 @@ detectDevice();
         // ============================================================
         // WAIT FOR GAME TO BE READY
         // ============================================================
-        function waitForGameReady(runtime) {
-            let checks = 0;
-            const maxChecks = 20;
-            const checkInterval = setInterval(() => {
-                checks++;
-                try {
-                    if (runtime && runtime.isloading === false && runtime.running_layout) {
-                        const layoutName = runtime.running_layout.name;
-                        console.log('📐 Game layout:', layoutName);
-
-                        if (layoutName === 'Game') {
-                            clearInterval(checkInterval);
-                            console.log('✅ Game is ready on Game layout!');
-                            state._gameReady = true;
-                            unpauseGame(runtime);
-                            return;
-                        }
-
-                        if (layoutName === 'Menu') {
-                            clearInterval(checkInterval);
-                            console.log('✅ Game is ready on Menu layout!');
-                            state._gameReady = true;
-                            clickPlayButton(runtime);
-                            return;
-                        }
-
-                        if (layoutName === 'Loading') {
-                            console.log('⏳ Still on Loading layout, waiting...');
-                            if (checks < maxChecks) return;
-                        }
+    // ============================================================
+// WAIT FOR GAME TO BE READY - UPDATED
+// ============================================================
+function waitForGameReady(runtime) {
+    let checks = 0;
+    const maxChecks = 30;
+    
+    // 🔥 NEW: Force navigation to Menu layout
+    function forceMenuLayout() {
+        try {
+            if (runtime && runtime.running_layout) {
+                const currentLayout = runtime.running_layout.name;
+                if (currentLayout === 'Loading' || currentLayout === undefined) {
+                    console.log('🔄 Forcing navigation to Menu layout...');
+                    const menuLayout = runtime.layouts['Menu'];
+                    if (menuLayout) {
+                        runtime.goToLayout(menuLayout);
+                        console.log('✅ Forced navigation to Menu');
+                        return true;
                     }
-
-                    if (checks >= maxChecks) {
-                        clearInterval(checkInterval);
-                        console.warn('⚠️ Game not ready after ' + maxChecks + ' checks, forcing...');
-                        state._gameReady = true;
-                        const layout = runtime.running_layout;
-                        if (layout && layout.name === 'Menu') {
-                            clickPlayButton(runtime);
-                        } else {
-                            unpauseGame(runtime);
-                        }
-                    }
-                } catch (e) {
-                    // Silent fail
                 }
-            }, 1000);
+            }
+        } catch (e) {
+            console.warn('⚠️ Could not force menu layout:', e);
         }
+        return false;
+    }
+    
+    const checkInterval = setInterval(() => {
+        checks++;
+        try {
+            if (!runtime) {
+                if (checks > 5) {
+                    clearInterval(checkInterval);
+                    console.error('❌ Runtime not available');
+                }
+                return;
+            }
+            
+            if (runtime.isloading === false && runtime.running_layout) {
+                const layoutName = runtime.running_layout.name;
+                console.log('📐 Game layout:', layoutName);
+
+                if (layoutName === 'Game') {
+                    clearInterval(checkInterval);
+                    console.log('✅ Game is ready on Game layout!');
+                    state._gameReady = true;
+                    unpauseGame(runtime);
+                    return;
+                }
+
+                if (layoutName === 'Menu') {
+                    clearInterval(checkInterval);
+                    console.log('✅ Game is ready on Menu layout!');
+                    state._gameReady = true;
+                    clickPlayButton(runtime);
+                    return;
+                }
+
+                if (layoutName === 'Loading') {
+                    console.log('⏳ Still on Loading layout, forcing menu...');
+                    forceMenuLayout();
+                    if (checks < maxChecks) return;
+                }
+            }
+
+            if (checks >= maxChecks) {
+                clearInterval(checkInterval);
+                console.warn('⚠️ Game not ready after ' + maxChecks + ' checks, forcing...');
+                state._gameReady = true;
+                
+                if (!forceMenuLayout()) {
+                    const layout = runtime.running_layout;
+                    if (layout && layout.name === 'Menu') {
+                        clickPlayButton(runtime);
+                    } else {
+                        unpauseGame(runtime);
+                    }
+                }
+            }
+        } catch (e) {
+            console.warn('⚠️ Error in waitForGameReady:', e);
+            if (checks >= maxChecks) {
+                clearInterval(checkInterval);
+                state._gameReady = true;
+                unpauseGame(runtime);
+            }
+        }
+    }, 1000);
+}
 
         // ============================================================
         // CLICK THE PLAY BUTTON
