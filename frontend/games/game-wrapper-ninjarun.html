@@ -9,41 +9,31 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        /* ============================================================
-           PROFESSIONAL GAMING THEME
-           ============================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* ===== CSS ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         :root {
             --bg-primary: #0a0e17;
             --bg-secondary: #111927;
-            --bg-card: rgba(255, 255, 255, 0.03);
-            --bg-card-hover: rgba(255, 255, 255, 0.06);
+            --bg-card: rgba(255,255,255,0.03);
+            --bg-card-hover: rgba(255,255,255,0.06);
             --primary: #00d4ff;
-            --primary-glow: rgba(0, 212, 255, 0.3);
+            --primary-glow: rgba(0,212,255,0.3);
             --secondary: #7c3aed;
-            --secondary-glow: rgba(124, 58, 237, 0.3);
+            --secondary-glow: rgba(124,58,237,0.3);
             --gold: #fbbf24;
-            --gold-glow: rgba(251, 191, 36, 0.3);
+            --gold-glow: rgba(251,191,36,0.3);
             --success: #34d399;
             --danger: #f87171;
             --text-primary: #f8fafc;
             --text-secondary: #94a3b8;
             --text-muted: #475569;
-            --border-color: rgba(255, 255, 255, 0.05);
+            --border-color: rgba(255,255,255,0.05);
             --radius: 16px;
             --radius-sm: 10px;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
-            --shadow-glow: 0 0 60px rgba(0, 212, 255, 0.05);
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            --shadow: 0 25px 50px -12px rgba(0,0,0,0.8);
+            --transition: all 0.4s cubic-bezier(0.16,1,0.3,1);
         }
-
-        html,
-        body {
+        html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
@@ -56,1441 +46,203 @@
             -webkit-touch-callout: none;
             -webkit-tap-highlight-color: transparent;
         }
-
-        /* ============================================================
-           ANIMATED BACKGROUND
-           ============================================================ */
-        .bg-animation {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-            overflow: hidden;
-        }
-
-        .bg-animation .orb {
-            position: absolute;
-            border-radius: 50%;
-            filter: blur(80px);
-            opacity: 0.3;
-            animation: orbFloat 20s ease-in-out infinite;
-        }
-
-        .bg-animation .orb:nth-child(1) {
-            width: 600px;
-            height: 600px;
-            background: var(--primary);
-            top: -10%;
-            left: -10%;
-            animation-delay: 0s;
-        }
-
-        .bg-animation .orb:nth-child(2) {
-            width: 400px;
-            height: 400px;
-            background: var(--secondary);
-            bottom: -10%;
-            right: -10%;
-            animation-delay: -7s;
-        }
-
-        .bg-animation .orb:nth-child(3) {
-            width: 300px;
-            height: 300px;
-            background: var(--gold);
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            animation-delay: -14s;
-            opacity: 0.1;
-        }
-
-        @keyframes orbFloat {
-            0%,
-            100% {
-                transform: translate(0, 0) scale(1);
-            }
-            25% {
-                transform: translate(100px, -80px) scale(1.1);
-            }
-            50% {
-                transform: translate(-50px, 100px) scale(0.9);
-            }
-            75% {
-                transform: translate(80px, 50px) scale(1.05);
-            }
-        }
-
-        /* Grid overlay */
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 212, 255, 0.015) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 212, 255, 0.015) 1px, transparent 1px);
-            background-size: 50px 50px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* ============================================================
-           GAME WRAPPER
-           ============================================================ */
-        #gameWrapper {
-            position: relative;
-            width: 100vw;
-            height: 100vh;
-            height: 100dvh;
-            overflow: hidden;
-            background: transparent;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 2;
-        }
-
-        #gameContainer {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #gameContainer canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw;
-            max-height: 100vh;
-            max-height: 100dvh;
-            object-fit: contain;
-            image-rendering: auto;
-            background: transparent;
-            touch-action: none;
-            border-radius: 0;
-        }
-
-        /* ============================================================
-           PROFESSIONAL LOADING SCREEN
-           ============================================================ */
-        #loadingScreen {
-            position: absolute;
-            inset: 0;
-            z-index: 50;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: var(--bg-primary);
-            transition: opacity 0.8s ease, visibility 0.8s ease;
-            padding: 20px;
-        }
-
-        #loadingScreen.hidden {
-            opacity: 0;
-            visibility: hidden;
-            pointer-events: none;
-        }
-
-        .loading-content {
-            text-align: center;
-            position: relative;
-            max-width: 400px;
-            width: 100%;
-        }
-
-        .loading-logo {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-            letter-spacing: 4px;
-            animation: logoPulse 2s ease-in-out infinite;
-        }
-
-        .loading-logo-sub {
-            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
-            color: var(--text-secondary);
-            letter-spacing: 8px;
-            text-transform: uppercase;
-            margin-bottom: clamp(24px, 5vh, 40px);
-        }
-
-        @keyframes logoPulse {
-            0%,
-            100% {
-                transform: scale(1);
-                filter: brightness(1);
-            }
-            50% {
-                transform: scale(1.02);
-                filter: brightness(1.2);
-            }
-        }
-
-        .loading-spinner {
-            width: clamp(40px, 8vw, 60px);
-            height: clamp(40px, 8vw, 60px);
-            margin: 0 auto clamp(16px, 3vh, 24px);
-            position: relative;
-        }
-
-        .loading-spinner::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-top-color: var(--primary);
-            border-right-color: var(--secondary);
-            animation: spin 1s linear infinite;
-        }
-
-        .loading-spinner::after {
-            content: '';
-            position: absolute;
-            inset: 8px;
-            border-radius: 50%;
-            border: 3px solid transparent;
-            border-bottom-color: var(--gold);
-            border-left-color: var(--primary);
-            animation: spin 0.6s linear infinite reverse;
-        }
-
-        @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
-        }
-
-        .loading-progress-wrap {
-            width: 100%;
-            max-width: 280px;
-            height: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 4px;
-            overflow: hidden;
-            margin: 0 auto clamp(12px, 2vh, 16px);
-            position: relative;
-        }
-
-        .loading-progress-wrap::after {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
-            animation: shimmer 1.5s ease-in-out infinite;
-        }
-
-        @keyframes shimmer {
-            0% {
-                transform: translateX(-100%);
-            }
-            100% {
-                transform: translateX(100%);
-            }
-        }
-
-        .loading-progress-bar {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold));
-            border-radius: 4px;
-            transition: width 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .loading-text {
-            font-size: clamp(0.6rem, 1.5vw, 0.8rem);
-            color: var(--text-secondary);
-            letter-spacing: 2px;
-            font-weight: 500;
-            min-height: 1.5em;
-        }
-
-        .loading-tips {
-            margin-top: clamp(12px, 2vh, 20px);
-            font-size: clamp(0.55rem, 1.2vw, 0.75rem);
-            color: var(--text-muted);
-            letter-spacing: 1px;
-            max-width: 300px;
-            opacity: 0.6;
-            animation: tipFade 3s ease-in-out infinite;
-            min-height: 2em;
-            padding: 0 10px;
-        }
-
-        @keyframes tipFade {
-            0%,
-            100% {
-                opacity: 0.4;
-            }
-            50% {
-                opacity: 0.8;
-            }
-        }
-
-        /* ============================================================
-           CLICK TO START OVERLAY
-           ============================================================ */
-        #startOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 40;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            cursor: pointer;
-            transition: opacity 0.6s ease;
-            pointer-events: auto;
-            padding: 20px;
-        }
-
-        #startOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .start-content {
-            text-align: center;
-            animation: fadeInUp 0.8s ease;
-            max-width: 500px;
-            width: 100%;
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        .start-content .icon {
-            font-size: clamp(3rem, 10vw, 5rem);
-            margin-bottom: 12px;
-            display: inline-block;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        .start-content .title {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1.8rem, 6vw, 3rem);
-            font-weight: 900;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 4px;
-            letter-spacing: 4px;
-        }
-
-        .start-content .sub {
-            color: var(--text-secondary);
-            font-size: clamp(0.8rem, 2vw, 1.1rem);
-            letter-spacing: 2px;
-        }
-
-        .start-content .sub .highlight {
-            color: var(--gold);
-            font-weight: 600;
-        }
-
-        .start-btn {
-            margin-top: clamp(16px, 3vh, 24px);
-            padding: clamp(12px, 2vh, 16px) clamp(24px, 4vw, 48px);
-            border: none;
-            border-radius: 50px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: clamp(0.85rem, 2vw, 1.1rem);
-            cursor: pointer;
-            transition: var(--transition);
-            letter-spacing: 2px;
-            text-transform: uppercase;
-            box-shadow: 0 0 40px var(--primary-glow);
-            width: 100%;
-            max-width: 280px;
-            touch-action: manipulation;
-        }
-
-        .start-btn:hover {
-            transform: translateY(-2px) scale(1.02);
-            box-shadow: 0 0 60px var(--primary-glow);
-        }
-
-        .start-btn:active {
-            transform: scale(0.97);
-        }
-
-        @keyframes pulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        /* ============================================================
-           TOP BAR - Mobile First
-           ============================================================ */
-        #topBar {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 12;
-            padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2vw, 24px);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            background: rgba(10, 14, 23, 0.7);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            flex-wrap: wrap;
-            gap: 6px;
-            pointer-events: none;
-        }
-
-        .top-left {
-            display: flex;
-            align-items: center;
-            gap: clamp(6px, 1.5vw, 16px);
-            flex-wrap: wrap;
-        }
-
-        .top-right {
-            display: flex;
-            align-items: center;
-            gap: clamp(4px, 1vw, 14px);
-            flex-wrap: wrap;
-        }
-
-        .back-btn {
-            color: var(--text-secondary);
-            text-decoration: none;
-            font-size: clamp(0.6rem, 1.2vw, 0.85rem);
-            padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1.5vw, 16px);
-            border-radius: 30px;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            pointer-events: auto;
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .back-btn:hover {
-            background: rgba(255, 255, 255, 0.08);
-            color: #fff;
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        .back-btn i {
-            font-size: clamp(0.5rem, 1vw, 0.7rem);
-        }
-
-        .top-stat {
-            font-size: clamp(0.5rem, 1vw, 0.7rem);
-            color: var(--text-secondary);
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
-            letter-spacing: 0.5px;
-            padding: clamp(3px, 0.5vh, 6px) clamp(6px, 1vw, 14px);
-            border-radius: 30px;
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.02);
-            white-space: nowrap;
-        }
-
-        .top-stat .value {
-            color: #fff;
-            font-weight: 700;
-            font-family: 'Orbitron', monospace;
-        }
-
-        .top-stat .value.gold {
-            color: var(--gold);
-        }
-        .top-stat .value.green {
-            color: var(--success);
-        }
-        .top-stat .value.red {
-            color: var(--danger);
-        }
-        .top-stat .value.primary {
-            color: var(--primary);
-        }
-
-        .top-stat .icon {
-            font-size: clamp(0.5rem, 0.8vw, 0.7rem);
-            opacity: 0.6;
-        }
-
-        /* ============================================================
-           SCORE OVERLAY
-           ============================================================ */
-        #scoreOverlay {
-            position: absolute;
-            bottom: clamp(70px, 12vh, 100px);
-            left: 50%;
-            transform: translateX(-50%);
-            z-index: 14;
-            display: none;
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px);
-            border-radius: 50px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            gap: clamp(10px, 2vw, 24px);
-            align-items: center;
-            pointer-events: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
-            flex-wrap: wrap;
-            justify-content: center;
-        }
-
-        #scoreOverlay.show {
-            display: flex;
-            animation: fadeInUp 0.5s ease;
-        }
-
-        .score-item {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: clamp(0.55rem, 1.2vw, 0.75rem);
-            color: var(--text-secondary);
-            font-weight: 500;
-            white-space: nowrap;
-        }
-
-        .score-item .value {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: #fff;
-            font-size: clamp(0.65rem, 1.4vw, 0.9rem);
-        }
-
-        .score-item .value.gold {
-            color: var(--gold);
-        }
-        .score-item .value.green {
-            color: var(--success);
-        }
-        .score-item .value.primary {
-            color: var(--primary);
-        }
-
-        .score-item i {
-            font-size: clamp(0.5rem, 1vw, 0.7rem);
-        }
-
-        /* ============================================================
-           PLAYER LIST
-           ============================================================ */
-        #playerList {
-            position: absolute;
-            top: clamp(60px, 10vh, 80px);
-            right: clamp(8px, 1.5vw, 16px);
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border-radius: var(--radius-sm);
-            padding: clamp(8px, 1.5vh, 14px) clamp(10px, 1.5vw, 16px);
-            min-width: clamp(80px, 15vw, 150px);
-            max-width: clamp(120px, 20vw, 200px);
-            max-height: 50vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            z-index: 12;
-            font-size: clamp(0.5rem, 1vw, 0.7rem);
-            pointer-events: none;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
-        }
-
-        #playerList .title {
-            color: var(--text-secondary);
-            font-size: clamp(0.45rem, 0.8vw, 0.6rem);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: clamp(6px, 1vh, 10px);
-            font-weight: 600;
-        }
-
-        .player-item {
-            display: flex;
-            justify-content: space-between;
-            padding: clamp(2px, 0.3vh, 4px) 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            color: var(--text-primary);
-            font-size: clamp(0.5rem, 0.9vw, 0.65rem);
-            align-items: center;
-            gap: 4px;
-        }
-
-        .player-item .status-dot {
-            width: clamp(4px, 0.8vw, 6px);
-            height: clamp(4px, 0.8vw, 6px);
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 4px;
-            flex-shrink: 0;
-        }
-
-        .player-item .status-dot.ready {
-            background: var(--success);
-            box-shadow: 0 0 10px var(--success);
-        }
-
-        .player-item .status-dot.waiting {
-            background: var(--gold);
-            box-shadow: 0 0 10px var(--gold-glow);
-        }
-
-        .player-item .player-name {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-weight: 500;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            flex: 1;
-        }
-
-        .player-item .player-score {
-            color: var(--text-secondary);
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(0.45rem, 0.8vw, 0.6rem);
-            flex-shrink: 0;
-        }
-
-        #playerList::-webkit-scrollbar {
-            width: 3px;
-        }
-        #playerList::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        #playerList::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 2px;
-        }
-
-        /* ============================================================
-           LOBBY OVERLAY
-           ============================================================ */
-        #lobbyOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(10, 14, 23, 0.85);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            padding: 20px;
-            transition: opacity 0.6s ease;
-            pointer-events: auto;
-        }
-
-        #lobbyOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .lobby-box {
-            background: rgba(255, 255, 255, 0.02);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            border-radius: var(--radius);
-            padding: clamp(20px, 4vh, 40px) clamp(16px, 3vw, 50px);
-            max-width: clamp(320px, 80vw, 480px);
-            width: 100%;
-            text-align: center;
-            box-shadow: var(--shadow);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            animation: fadeInUp 0.6s ease;
-        }
-
-        .lobby-box .game-icon {
-            font-size: clamp(2.5rem, 8vw, 3.5rem);
-            margin-bottom: clamp(8px, 1.5vh, 12px);
-            display: inline-block;
-        }
-
-        .lobby-box h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1rem, 3vw, 1.4rem);
-            font-weight: 700;
-            margin-bottom: 2px;
-            letter-spacing: 2px;
-        }
-
-        .lobby-box h2 span {
-            color: var(--primary);
-        }
-
-        .lobby-box .subtitle {
-            color: var(--text-secondary);
-            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
-            margin-bottom: clamp(16px, 3vh, 24px);
-            letter-spacing: 1px;
-        }
-
-        .lobby-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: clamp(4px, 1vw, 10px);
-            margin-bottom: clamp(16px, 3vh, 24px);
-        }
-
-        .lobby-stat {
-            background: rgba(255, 255, 255, 0.02);
-            border-radius: var(--radius-sm);
-            padding: clamp(8px, 1.5vh, 14px) clamp(4px, 0.8vw, 8px);
-            border: 1px solid rgba(255, 255, 255, 0.03);
-            transition: var(--transition);
-        }
-
-        .lobby-stat:hover {
-            background: rgba(255, 255, 255, 0.04);
-            border-color: rgba(255, 255, 255, 0.06);
-        }
-
-        .lobby-stat .number {
-            font-family: 'Orbitron', monospace;
-            font-size: clamp(1.2rem, 4vw, 1.6rem);
-            font-weight: 700;
-            color: var(--primary);
-        }
-
-        .lobby-stat .number.gold {
-            color: var(--gold);
-        }
-
-        .lobby-stat .number.green {
-            color: var(--success);
-        }
-
-        .lobby-stat .number.red {
-            color: var(--danger);
-        }
-
-        .lobby-stat .label {
-            font-size: clamp(0.45rem, 1vw, 0.55rem);
-            color: var(--text-muted);
-            text-transform: uppercase;
-            letter-spacing: 1.5px;
-            margin-top: 4px;
-            font-weight: 600;
-        }
-
-        .lobby-box .prize-pool {
-            font-size: clamp(0.9rem, 2.5vw, 1.2rem);
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: clamp(8px, 1.5vh, 12px);
-            letter-spacing: 1px;
-        }
-
-        .lobby-box .prize-pool small {
-            font-size: clamp(0.5rem, 1vw, 0.7rem);
-            color: var(--text-muted);
-            font-weight: 400;
-        }
-
-        .lobby-box .entry-fee {
-            font-size: clamp(0.65rem, 1.5vw, 0.8rem);
-            color: var(--text-secondary);
-            margin-bottom: clamp(12px, 2vh, 20px);
-        }
-
-        .lobby-box .entry-fee strong {
-            color: var(--gold);
-        }
-
-        .btn-join {
-            padding: clamp(10px, 2vh, 14px) clamp(16px, 3vw, 40px);
-            border: none;
-            border-radius: 50px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: clamp(0.8rem, 2vw, 1rem);
-            cursor: pointer;
-            transition: var(--transition);
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            width: 100%;
-            touch-action: manipulation;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            box-shadow: 0 0 30px var(--primary-glow);
-        }
-
-        .btn-join:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 0 50px var(--primary-glow);
-        }
-
-        .btn-join:active {
-            transform: scale(0.97);
-        }
-
-        .btn-join:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none;
-        }
-
-        .btn-join.joined {
-            background: linear-gradient(135deg, var(--success), #059669);
-            box-shadow: 0 0 30px rgba(52, 211, 153, 0.3);
-        }
-
-        .btn-join.playing {
-            background: linear-gradient(135deg, var(--danger), #dc2626);
-            box-shadow: 0 0 30px rgba(248, 113, 113, 0.3);
-        }
-
-        /* ============================================================
-           STATUS MESSAGE
-           ============================================================ */
-        #statusMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 13;
-            text-align: center;
-            pointer-events: none;
-            display: none;
-            background: rgba(10, 14, 23, 0.8);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: clamp(16px, 3vh, 24px) clamp(20px, 4vw, 32px);
-            border-radius: var(--radius);
-            border: 1px solid rgba(255, 255, 255, 0.04);
-            box-shadow: var(--shadow);
-            animation: fadeInUp 0.4s ease;
-            max-width: 90vw;
-        }
-
-        #statusMessage.show {
-            display: block;
-        }
-
-        #statusMessage .main {
-            font-size: clamp(1rem, 3vw, 1.4rem);
-            font-weight: 700;
-            color: #fff;
-            font-family: 'Orbitron', monospace;
-            letter-spacing: 1px;
-        }
-
-        #statusMessage .sub {
-            font-size: clamp(0.65rem, 1.5vw, 0.85rem);
-            color: var(--text-secondary);
-            margin-top: 6px;
-        }
-
-        /* ============================================================
-           TOUCH CONTROLS - Mobile Optimized
-           ============================================================ */
-        #touchControls {
-            position: absolute;
-            bottom: clamp(16px, 3vh, 30px);
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding: 0 clamp(12px, 2vw, 24px);
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        @media (hover: none) and (pointer: coarse) {
-            #touchControls {
-                display: flex !important;
-            }
-        }
-        @media (max-width: 1024px) {
-            #touchControls {
-                display: flex !important;
-            }
-        }
-
-        .touch-btn {
-            pointer-events: auto;
-            width: clamp(50px, 10vw, 65px);
-            height: clamp(50px, 10vw, 65px);
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.08);
-            background: rgba(255, 255, 255, 0.04);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-            color: #fff;
-            font-size: clamp(1.2rem, 3vw, 1.8rem);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-            -webkit-touch-callout: none;
-        }
-
-        .touch-btn:active {
-            transform: scale(0.88);
-            background: rgba(255, 255, 255, 0.12);
-            border-color: var(--primary);
-            box-shadow: 0 0 30px var(--primary-glow);
-        }
-
-        .touch-btn.left {
-            margin-right: auto;
-        }
-
-        .touch-btn.right {
-            margin-left: auto;
-        }
-
-        .touch-btn.jump {
-            width: clamp(60px, 12vw, 80px);
-            height: clamp(60px, 12vw, 80px);
-            font-size: clamp(1.6rem, 4vw, 2.2rem);
-            background: rgba(0, 212, 255, 0.08);
-            border-color: rgba(0, 212, 255, 0.15);
-            margin: 0 auto;
-        }
-
-        .touch-btn.jump:active {
-            background: rgba(0, 212, 255, 0.25);
-            border-color: var(--primary);
-            box-shadow: 0 0 40px var(--primary-glow);
-        }
-
-        .touch-controls-group {
-            display: flex;
-            gap: clamp(8px, 2vw, 15px);
-            align-items: center;
-            pointer-events: none;
-        }
-
-        .touch-controls-group .touch-btn {
-            pointer-events: auto;
-        }
-
-        /* ============================================================
-           RESPONSIVE BREAKPOINTS
-           ============================================================ */
-
-        /* Large Tablets & Small Laptops */
-        @media (max-width: 1024px) {
-            #scoreOverlay {
-                bottom: clamp(80px, 14vh, 100px);
-                padding: 8px 16px;
-                gap: 14px;
-                border-radius: 40px;
-            }
-            .touch-btn {
-                width: 55px;
-                height: 55px;
-                font-size: 1.4rem;
-            }
-            .touch-btn.jump {
-                width: 65px;
-                height: 65px;
-                font-size: 1.8rem;
-            }
-            .lobby-box {
-                padding: 28px 30px;
-                max-width: 420px;
-            }
-        }
-
-        /* Tablets */
+        .bg-animation { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .bg-animation .orb { position: absolute; border-radius: 50%; filter: blur(80px); opacity: 0.3; animation: orbFloat 20s ease-in-out infinite; }
+        .bg-animation .orb:nth-child(1) { width: 600px; height: 600px; background: var(--primary); top: -10%; left: -10%; animation-delay: 0s; }
+        .bg-animation .orb:nth-child(2) { width: 400px; height: 400px; background: var(--secondary); bottom: -10%; right: -10%; animation-delay: -7s; }
+        .bg-animation .orb:nth-child(3) { width: 300px; height: 300px; background: var(--gold); top: 50%; left: 50%; transform: translate(-50%,-50%); animation-delay: -14s; opacity: 0.1; }
+        @keyframes orbFloat { 0%,100% { transform: translate(0,0) scale(1); } 25% { transform: translate(100px,-80px) scale(1.1); } 50% { transform: translate(-50px,100px) scale(0.9); } 75% { transform: translate(80px,50px) scale(1.05); } }
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(0,212,255,0.015) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.015) 1px, transparent 1px); background-size: 50px 50px; pointer-events: none; z-index: 1; }
+
+        #gameWrapper { position: relative; width: 100vw; height: 100vh; height: 100dvh; overflow: hidden; background: transparent; display: flex; justify-content: center; align-items: center; z-index: 2; }
+        #gameContainer { position: relative; width: 100%; height: 100%; display: flex; justify-content: center; align-items: center; }
+        #gameContainer canvas { display: block; width: 100% !important; height: 100% !important; max-width: 100vw; max-height: 100vh; max-height: 100dvh; object-fit: contain; image-rendering: auto; background: transparent; touch-action: none; border-radius: 0; }
+
+        /* Loading Screen */
+        #loadingScreen { position: absolute; inset: 0; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; background: var(--bg-primary); transition: opacity 0.8s ease, visibility 0.8s ease; padding: 20px; }
+        #loadingScreen.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loading-content { text-align: center; position: relative; max-width: 400px; width: 100%; }
+        .loading-logo { font-family: 'Orbitron', monospace; font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; letter-spacing: 4px; animation: logoPulse 2s ease-in-out infinite; }
+        .loading-logo-sub { font-size: clamp(0.6rem, 1.5vw, 0.9rem); color: var(--text-secondary); letter-spacing: 8px; text-transform: uppercase; margin-bottom: clamp(24px, 5vh, 40px); }
+        @keyframes logoPulse { 0%,100% { transform: scale(1); filter: brightness(1); } 50% { transform: scale(1.02); filter: brightness(1.2); } }
+        .loading-spinner { width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px); margin: 0 auto clamp(16px, 3vh, 24px); position: relative; }
+        .loading-spinner::before { content: ''; position: absolute; inset: 0; border-radius: 50%; border: 3px solid transparent; border-top-color: var(--primary); border-right-color: var(--secondary); animation: spin 1s linear infinite; }
+        .loading-spinner::after { content: ''; position: absolute; inset: 8px; border-radius: 50%; border: 3px solid transparent; border-bottom-color: var(--gold); border-left-color: var(--primary); animation: spin 0.6s linear infinite reverse; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .loading-progress-wrap { width: 100%; max-width: 280px; height: 4px; background: rgba(255,255,255,0.05); border-radius: 4px; overflow: hidden; margin: 0 auto clamp(12px, 2vh, 16px); position: relative; }
+        .loading-progress-wrap::after { content: ''; position: absolute; inset: 0; background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent); animation: shimmer 1.5s ease-in-out infinite; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+        .loading-progress-bar { height: 100%; width: 0%; background: linear-gradient(90deg, var(--primary), var(--secondary), var(--gold)); border-radius: 4px; transition: width 0.3s ease; position: relative; z-index: 1; }
+        .loading-text { font-size: clamp(0.6rem, 1.5vw, 0.8rem); color: var(--text-secondary); letter-spacing: 2px; font-weight: 500; min-height: 1.5em; }
+        .loading-tips { margin-top: clamp(12px, 2vh, 20px); font-size: clamp(0.55rem, 1.2vw, 0.75rem); color: var(--text-muted); letter-spacing: 1px; max-width: 300px; opacity: 0.6; animation: tipFade 3s ease-in-out infinite; min-height: 2em; padding: 0 10px; }
+        @keyframes tipFade { 0%,100% { opacity: 0.4; } 50% { opacity: 0.8; } }
+
+        /* Start Overlay */
+        #startOverlay { position: absolute; inset: 0; z-index: 40; display: flex; justify-content: center; align-items: center; background: rgba(10,14,23,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); cursor: pointer; transition: opacity 0.6s ease; pointer-events: auto; padding: 20px; }
+        #startOverlay.hidden { opacity: 0; pointer-events: none; }
+        .start-content { text-align: center; animation: fadeInUp 0.8s ease; max-width: 500px; width: 100%; }
+        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .start-content .icon { font-size: clamp(3rem, 10vw, 5rem); margin-bottom: 12px; display: inline-block; animation: pulse 2s ease-in-out infinite; }
+        .start-content .title { font-family: 'Orbitron', monospace; font-size: clamp(1.8rem, 6vw, 3rem); font-weight: 900; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 4px; letter-spacing: 4px; }
+        .start-content .sub { color: var(--text-secondary); font-size: clamp(0.8rem, 2vw, 1.1rem); letter-spacing: 2px; }
+        .start-content .sub .highlight { color: var(--gold); font-weight: 600; }
+        .start-btn { margin-top: clamp(16px, 3vh, 24px); padding: clamp(12px, 2vh, 16px) clamp(24px, 4vw, 48px); border: none; border-radius: 50px; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(0.85rem, 2vw, 1.1rem); cursor: pointer; transition: var(--transition); letter-spacing: 2px; text-transform: uppercase; box-shadow: 0 0 40px var(--primary-glow); width: 100%; max-width: 280px; touch-action: manipulation; }
+        .start-btn:hover { transform: translateY(-2px) scale(1.02); box-shadow: 0 0 60px var(--primary-glow); }
+        .start-btn:active { transform: scale(0.97); }
+        @keyframes pulse { 0%,100% { transform: scale(1); } 50% { transform: scale(1.05); } }
+
+        /* Top Bar */
+        #topBar { position: absolute; top: 0; left: 0; right: 0; z-index: 12; padding: clamp(8px, 1.5vh, 14px) clamp(12px, 2vw, 24px); display: flex; justify-content: space-between; align-items: center; background: rgba(10,14,23,0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid rgba(255,255,255,0.03); flex-wrap: wrap; gap: 6px; pointer-events: none; }
+        .top-left { display: flex; align-items: center; gap: clamp(6px, 1.5vw, 16px); flex-wrap: wrap; }
+        .top-right { display: flex; align-items: center; gap: clamp(4px, 1vw, 14px); flex-wrap: wrap; }
+        .back-btn { color: var(--text-secondary); text-decoration: none; font-size: clamp(0.6rem, 1.2vw, 0.85rem); padding: clamp(4px, 0.8vh, 8px) clamp(8px, 1.5vw, 16px); border-radius: 30px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); display: flex; align-items: center; gap: 6px; pointer-events: auto; font-weight: 500; white-space: nowrap; }
+        .back-btn:hover { background: rgba(255,255,255,0.08); color: #fff; border-color: rgba(255,255,255,0.1); }
+        .back-btn i { font-size: clamp(0.5rem, 1vw, 0.7rem); }
+        .top-stat { font-size: clamp(0.5rem, 1vw, 0.7rem); color: var(--text-secondary); display: flex; align-items: center; gap: 4px; font-weight: 500; letter-spacing: 0.5px; padding: clamp(3px, 0.5vh, 6px) clamp(6px, 1vw, 14px); border-radius: 30px; background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.02); white-space: nowrap; }
+        .top-stat .value { color: #fff; font-weight: 700; font-family: 'Orbitron', monospace; }
+        .top-stat .value.gold { color: var(--gold); }
+        .top-stat .value.green { color: var(--success); }
+        .top-stat .value.red { color: var(--danger); }
+        .top-stat .value.primary { color: var(--primary); }
+        .top-stat .icon { font-size: clamp(0.5rem, 0.8vw, 0.7rem); opacity: 0.6; }
+
+        /* Score Overlay */
+        #scoreOverlay { position: absolute; bottom: clamp(70px, 12vh, 100px); left: 50%; transform: translateX(-50%); z-index: 14; display: none; background: rgba(10,14,23,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: clamp(6px, 1vh, 12px) clamp(12px, 2vw, 24px); border-radius: 50px; border: 1px solid rgba(255,255,255,0.05); gap: clamp(10px, 2vw, 24px); align-items: center; pointer-events: none; box-shadow: 0 10px 40px rgba(0,0,0,0.5); flex-wrap: wrap; justify-content: center; }
+        #scoreOverlay.show { display: flex; animation: fadeInUp 0.5s ease; }
+        .score-item { display: flex; align-items: center; gap: 4px; font-size: clamp(0.55rem, 1.2vw, 0.75rem); color: var(--text-secondary); font-weight: 500; white-space: nowrap; }
+        .score-item .value { font-family: 'Orbitron', monospace; font-weight: 700; color: #fff; font-size: clamp(0.65rem, 1.4vw, 0.9rem); }
+        .score-item .value.gold { color: var(--gold); }
+        .score-item .value.green { color: var(--success); }
+        .score-item .value.primary { color: var(--primary); }
+        .score-item i { font-size: clamp(0.5rem, 1vw, 0.7rem); }
+
+        /* Player List */
+        #playerList { position: absolute; top: clamp(60px, 10vh, 80px); right: clamp(8px, 1.5vw, 16px); background: rgba(10,14,23,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-radius: var(--radius-sm); padding: clamp(8px, 1.5vh, 14px) clamp(10px, 1.5vw, 16px); min-width: clamp(80px, 15vw, 150px); max-width: clamp(120px, 20vw, 200px); max-height: 50vh; overflow-y: auto; border: 1px solid rgba(255,255,255,0.03); z-index: 12; font-size: clamp(0.5rem, 1vw, 0.7rem); pointer-events: none; box-shadow: 0 10px 40px rgba(0,0,0,0.4); }
+        #playerList .title { color: var(--text-secondary); font-size: clamp(0.45rem, 0.8vw, 0.6rem); text-transform: uppercase; letter-spacing: 2px; margin-bottom: clamp(6px, 1vh, 10px); font-weight: 600; }
+        .player-item { display: flex; justify-content: space-between; padding: clamp(2px, 0.3vh, 4px) 0; border-bottom: 1px solid rgba(255,255,255,0.03); color: var(--text-primary); font-size: clamp(0.5rem, 0.9vw, 0.65rem); align-items: center; gap: 4px; }
+        .player-item .status-dot { width: clamp(4px, 0.8vw, 6px); height: clamp(4px, 0.8vw, 6px); border-radius: 50%; display: inline-block; margin-right: 4px; flex-shrink: 0; }
+        .player-item .status-dot.ready { background: var(--success); box-shadow: 0 0 10px var(--success); }
+        .player-item .status-dot.waiting { background: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+        .player-item .player-name { display: flex; align-items: center; gap: 4px; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; }
+        .player-item .player-score { color: var(--text-secondary); font-family: 'Orbitron', monospace; font-size: clamp(0.45rem, 0.8vw, 0.6rem); flex-shrink: 0; }
+        #playerList::-webkit-scrollbar { width: 3px; }
+        #playerList::-webkit-scrollbar-track { background: transparent; }
+        #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
+
+        /* Lobby */
+        #lobbyOverlay { position: absolute; inset: 0; z-index: 15; display: flex; flex-direction: column; justify-content: center; align-items: center; background: rgba(10,14,23,0.85); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); padding: 20px; transition: opacity 0.6s ease; pointer-events: auto; }
+        #lobbyOverlay.hidden { opacity: 0; pointer-events: none; }
+        .lobby-box { background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.04); border-radius: var(--radius); padding: clamp(20px, 4vh, 40px) clamp(16px, 3vw, 50px); max-width: clamp(320px, 80vw, 480px); width: 100%; text-align: center; box-shadow: var(--shadow); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); animation: fadeInUp 0.6s ease; }
+        .lobby-box .game-icon { font-size: clamp(2.5rem, 8vw, 3.5rem); margin-bottom: clamp(8px, 1.5vh, 12px); display: inline-block; }
+        .lobby-box h2 { font-family: 'Orbitron', monospace; font-size: clamp(1rem, 3vw, 1.4rem); font-weight: 700; margin-bottom: 2px; letter-spacing: 2px; }
+        .lobby-box h2 span { color: var(--primary); }
+        .lobby-box .subtitle { color: var(--text-secondary); font-size: clamp(0.65rem, 1.5vw, 0.8rem); margin-bottom: clamp(16px, 3vh, 24px); letter-spacing: 1px; }
+        .lobby-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: clamp(4px, 1vw, 10px); margin-bottom: clamp(16px, 3vh, 24px); }
+        .lobby-stat { background: rgba(255,255,255,0.02); border-radius: var(--radius-sm); padding: clamp(8px, 1.5vh, 14px) clamp(4px, 0.8vw, 8px); border: 1px solid rgba(255,255,255,0.03); transition: var(--transition); }
+        .lobby-stat:hover { background: rgba(255,255,255,0.04); border-color: rgba(255,255,255,0.06); }
+        .lobby-stat .number { font-family: 'Orbitron', monospace; font-size: clamp(1.2rem, 4vw, 1.6rem); font-weight: 700; color: var(--primary); }
+        .lobby-stat .number.gold { color: var(--gold); }
+        .lobby-stat .number.green { color: var(--success); }
+        .lobby-stat .number.red { color: var(--danger); }
+        .lobby-stat .label { font-size: clamp(0.45rem, 1vw, 0.55rem); color: var(--text-muted); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 4px; font-weight: 600; }
+        .lobby-box .prize-pool { font-size: clamp(0.9rem, 2.5vw, 1.2rem); font-weight: 700; color: var(--gold); margin-bottom: clamp(8px, 1.5vh, 12px); letter-spacing: 1px; }
+        .lobby-box .prize-pool small { font-size: clamp(0.5rem, 1vw, 0.7rem); color: var(--text-muted); font-weight: 400; }
+        .lobby-box .entry-fee { font-size: clamp(0.65rem, 1.5vw, 0.8rem); color: var(--text-secondary); margin-bottom: clamp(12px, 2vh, 20px); }
+        .lobby-box .entry-fee strong { color: var(--gold); }
+        .btn-join { padding: clamp(10px, 2vh, 14px) clamp(16px, 3vw, 40px); border: none; border-radius: 50px; font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: clamp(0.8rem, 2vw, 1rem); cursor: pointer; transition: var(--transition); background: linear-gradient(135deg, var(--primary), var(--secondary)); color: #fff; width: 100%; touch-action: manipulation; letter-spacing: 1px; text-transform: uppercase; box-shadow: 0 0 30px var(--primary-glow); }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 0 50px var(--primary-glow); }
+        .btn-join:active { transform: scale(0.97); }
+        .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; box-shadow: none; }
+        .btn-join.joined { background: linear-gradient(135deg, var(--success), #059669); box-shadow: 0 0 30px rgba(52,211,153,0.3); }
+        .btn-join.playing { background: linear-gradient(135deg, var(--danger), #dc2626); box-shadow: 0 0 30px rgba(248,113,113,0.3); }
+
+        /* Status Message */
+        #statusMessage { position: absolute; top: 50%; left: 50%; transform: translate(-50%,-50%); z-index: 13; text-align: center; pointer-events: none; display: none; background: rgba(10,14,23,0.8); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); padding: clamp(16px, 3vh, 24px) clamp(20px, 4vw, 32px); border-radius: var(--radius); border: 1px solid rgba(255,255,255,0.04); box-shadow: var(--shadow); animation: fadeInUp 0.4s ease; max-width: 90vw; }
+        #statusMessage.show { display: block; }
+        #statusMessage .main { font-size: clamp(1rem, 3vw, 1.4rem); font-weight: 700; color: #fff; font-family: 'Orbitron', monospace; letter-spacing: 1px; }
+        #statusMessage .sub { font-size: clamp(0.65rem, 1.5vw, 0.85rem); color: var(--text-secondary); margin-top: 6px; }
+
+        /* Touch Controls */
+        #touchControls { position: absolute; bottom: clamp(16px, 3vh, 30px); left: 0; right: 0; display: none; justify-content: space-between; padding: 0 clamp(12px, 2vw, 24px); pointer-events: none; z-index: 20; }
+        @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
+        @media (max-width: 1024px) { #touchControls { display: flex !important; } }
+        .touch-btn { pointer-events: auto; width: clamp(50px, 10vw, 65px); height: clamp(50px, 10vw, 65px); border-radius: 50%; border: 2px solid rgba(255,255,255,0.08); background: rgba(255,255,255,0.04); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); color: #fff; font-size: clamp(1.2rem, 3vw, 1.8rem); display: flex; align-items: center; justify-content: center; transition: all 0.15s; touch-action: none; -webkit-tap-highlight-color: transparent; box-shadow: 0 4px 20px rgba(0,0,0,0.4); -webkit-touch-callout: none; }
+        .touch-btn:active { transform: scale(0.88); background: rgba(255,255,255,0.12); border-color: var(--primary); box-shadow: 0 0 30px var(--primary-glow); }
+        .touch-btn.left { margin-right: auto; }
+        .touch-btn.right { margin-left: auto; }
+        .touch-btn.jump { width: clamp(60px, 12vw, 80px); height: clamp(60px, 12vw, 80px); font-size: clamp(1.6rem, 4vw, 2.2rem); background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.15); margin: 0 auto; }
+        .touch-btn.jump:active { background: rgba(0,212,255,0.25); border-color: var(--primary); box-shadow: 0 0 40px var(--primary-glow); }
+        .touch-controls-group { display: flex; gap: clamp(8px, 2vw, 15px); align-items: center; pointer-events: none; }
+        .touch-controls-group .touch-btn { pointer-events: auto; }
+
+        /* Responsive */
         @media (max-width: 768px) {
-            #topBar {
-                padding: 8px 12px;
-                gap: 4px;
-            }
-            .top-stat {
-                font-size: 0.5rem;
-                padding: 3px 8px;
-                gap: 3px;
-            }
-            .back-btn {
-                font-size: 0.6rem;
-                padding: 4px 10px;
-            }
-            .lobby-box {
-                padding: 24px 20px;
-                max-width: 360px;
-                border-radius: var(--radius-sm);
-            }
-            .lobby-box .game-icon {
-                font-size: 2.8rem;
-            }
-            .lobby-box h2 {
-                font-size: 1.1rem;
-            }
-            .lobby-box .subtitle {
-                font-size: 0.7rem;
-                margin-bottom: 16px;
-            }
-            .lobby-stats {
-                gap: 6px;
-                margin-bottom: 16px;
-            }
-            .lobby-stat {
-                padding: 10px 4px;
-            }
-            .lobby-stat .number {
-                font-size: 1.2rem;
-            }
-            .lobby-stat .label {
-                font-size: 0.5rem;
-            }
-            .lobby-box .prize-pool {
-                font-size: 0.95rem;
-            }
-            .lobby-box .entry-fee {
-                font-size: 0.7rem;
-                margin-bottom: 14px;
-            }
-            .btn-join {
-                padding: 10px 16px;
-                font-size: 0.85rem;
-            }
-            #playerList {
-                top: 55px;
-                right: 8px;
-                min-width: 90px;
-                max-width: 130px;
-                padding: 8px 10px;
-                font-size: 0.55rem;
-                max-height: 35vh;
-            }
-            #scoreOverlay {
-                bottom: clamp(70px, 12vh, 90px);
-                padding: 6px 12px;
-                gap: 10px;
-                border-radius: 30px;
-            }
-            .score-item {
-                font-size: 0.55rem;
-            }
-            .score-item .value {
-                font-size: 0.7rem;
-            }
-            .touch-btn {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-            .touch-btn.jump {
-                width: 58px;
-                height: 58px;
-                font-size: 1.5rem;
-            }
-            #touchControls {
-                bottom: 14px;
-                padding: 0 12px;
-            }
-            .touch-controls-group {
-                gap: 8px;
-            }
-            #statusMessage {
-                padding: 14px 18px;
-                max-width: 85vw;
-            }
-            #statusMessage .main {
-                font-size: 1rem;
-            }
-            #statusMessage .sub {
-                font-size: 0.65rem;
-            }
-            .loading-logo {
-                font-size: 2rem;
-            }
-            .loading-progress-wrap {
-                max-width: 200px;
-            }
-            .start-content .title {
-                font-size: 2rem;
-            }
-            .start-content .icon {
-                font-size: 3.5rem;
-            }
-            .start-btn {
-                padding: 10px 24px;
-                font-size: 0.85rem;
-                max-width: 220px;
-            }
+            #topBar { padding: 6px 10px; }
+            .top-stat { font-size: 0.45rem; padding: 2px 6px; }
+            .back-btn { font-size: 0.5rem; padding: 3px 8px; }
+            .lobby-box { padding: 18px 14px; max-width: 290px; border-radius: 12px; }
+            .lobby-box .game-icon { font-size: 2.2rem; }
+            .lobby-box h2 { font-size: 0.9rem; }
+            .lobby-stat .number { font-size: 1rem; }
+            .btn-join { padding: 8px 12px; font-size: 0.75rem; }
+            #playerList { top: 50px; right: 6px; min-width: 70px; max-width: 100px; padding: 6px 8px; font-size: 0.45rem; max-height: 30vh; }
+            #scoreOverlay { bottom: clamp(55px, 10vh, 70px); padding: 4px 10px; gap: 6px; border-radius: 20px; }
+            .score-item { font-size: 0.5rem; }
+            .score-item .value { font-size: 0.6rem; }
+            .touch-btn { width: 42px; height: 42px; font-size: 1rem; }
+            .touch-btn.jump { width: 50px; height: 50px; font-size: 1.2rem; }
+            #touchControls { bottom: 10px; padding: 0 8px; }
+            .touch-controls-group { gap: 6px; }
+            #statusMessage { padding: 10px 14px; }
+            #statusMessage .main { font-size: 0.85rem; }
+            #statusMessage .sub { font-size: 0.55rem; }
+            .loading-logo { font-size: 1.6rem; }
+            .loading-progress-wrap { max-width: 160px; }
+            .start-content .title { font-size: 1.5rem; }
+            .start-content .icon { font-size: 3rem; }
+            .start-btn { padding: 8px 20px; font-size: 0.75rem; max-width: 180px; }
         }
-
-        /* Small Phones */
         @media (max-width: 480px) {
-            #topBar {
-                padding: 6px 10px;
-            }
-            .top-stat {
-                font-size: 0.45rem;
-                padding: 2px 6px;
-                gap: 2px;
-            }
-            .back-btn {
-                font-size: 0.5rem;
-                padding: 3px 8px;
-                gap: 4px;
-            }
-            .lobby-box {
-                padding: 18px 14px;
-                max-width: 290px;
-                border-radius: 12px;
-            }
-            .lobby-box .game-icon {
-                font-size: 2.2rem;
-            }
-            .lobby-box h2 {
-                font-size: 0.9rem;
-            }
-            .lobby-box .subtitle {
-                font-size: 0.6rem;
-                margin-bottom: 12px;
-            }
-            .lobby-stats {
-                gap: 4px;
-                margin-bottom: 12px;
-            }
-            .lobby-stat {
-                padding: 6px 2px;
-            }
-            .lobby-stat .number {
-                font-size: 1rem;
-            }
-            .lobby-stat .label {
-                font-size: 0.4rem;
-                letter-spacing: 1px;
-            }
-            .lobby-box .prize-pool {
-                font-size: 0.8rem;
-            }
-            .lobby-box .entry-fee {
-                font-size: 0.6rem;
-                margin-bottom: 10px;
-            }
-            .btn-join {
-                padding: 8px 12px;
-                font-size: 0.75rem;
-                border-radius: 30px;
-            }
-            #playerList {
-                top: 48px;
-                right: 6px;
-                min-width: 70px;
-                max-width: 100px;
-                padding: 6px 8px;
-                font-size: 0.45rem;
-                max-height: 30vh;
-                border-radius: 8px;
-            }
-            #playerList .title {
-                font-size: 0.4rem;
-                margin-bottom: 4px;
-            }
-            .player-item {
-                font-size: 0.45rem;
-                padding: 2px 0;
-            }
-            .player-item .player-score {
-                font-size: 0.4rem;
-            }
-            #scoreOverlay {
-                bottom: clamp(55px, 10vh, 70px);
-                padding: 4px 10px;
-                gap: 6px;
-                border-radius: 20px;
-            }
-            .score-item {
-                font-size: 0.5rem;
-                gap: 3px;
-            }
-            .score-item .value {
-                font-size: 0.6rem;
-            }
-            .score-item i {
-                font-size: 0.45rem;
-            }
-            .touch-btn {
-                width: 42px;
-                height: 42px;
-                font-size: 1rem;
-            }
-            .touch-btn.jump {
-                width: 50px;
-                height: 50px;
-                font-size: 1.2rem;
-            }
-            #touchControls {
-                bottom: 10px;
-                padding: 0 8px;
-            }
-            .touch-controls-group {
-                gap: 6px;
-            }
-            #statusMessage {
-                padding: 10px 14px;
-                max-width: 80vw;
-            }
-            #statusMessage .main {
-                font-size: 0.85rem;
-            }
-            #statusMessage .sub {
-                font-size: 0.55rem;
-            }
-            .loading-logo {
-                font-size: 1.6rem;
-                letter-spacing: 2px;
-            }
-            .loading-logo-sub {
-                font-size: 0.5rem;
-                letter-spacing: 4px;
-                margin-bottom: 16px;
-            }
-            .loading-progress-wrap {
-                max-width: 160px;
-                height: 3px;
-            }
-            .loading-text {
-                font-size: 0.55rem;
-            }
-            .loading-tips {
-                font-size: 0.5rem;
-                max-width: 200px;
-            }
-            .loading-spinner {
-                width: 35px;
-                height: 35px;
-            }
-            .start-content .title {
-                font-size: 1.5rem;
-                letter-spacing: 2px;
-            }
-            .start-content .icon {
-                font-size: 3rem;
-            }
-            .start-content .sub {
-                font-size: 0.7rem;
-            }
-            .start-btn {
-                padding: 8px 20px;
-                font-size: 0.75rem;
-                max-width: 180px;
-            }
+            .lobby-box { padding: 14px 10px; max-width: 250px; }
+            .lobby-box .game-icon { font-size: 1.8rem; }
+            .lobby-box h2 { font-size: 0.75rem; }
+            .lobby-stat .number { font-size: 0.85rem; }
+            .btn-join { padding: 6px 10px; font-size: 0.65rem; }
+            .touch-btn { width: 36px; height: 36px; font-size: 0.85rem; }
+            .touch-btn.jump { width: 44px; height: 44px; font-size: 1rem; }
+            #scoreOverlay { padding: 3px 8px; gap: 4px; }
+            .score-item { font-size: 0.4rem; }
+            .score-item .value { font-size: 0.5rem; }
+            #playerList { top: 42px; right: 4px; min-width: 60px; max-width: 85px; padding: 4px 6px; }
         }
-
-        /* Extra Small Phones */
-        @media (max-width: 360px) {
-            .lobby-box {
-                padding: 14px 10px;
-                max-width: 250px;
-            }
-            .lobby-box .game-icon {
-                font-size: 1.8rem;
-            }
-            .lobby-box h2 {
-                font-size: 0.75rem;
-            }
-            .lobby-stat .number {
-                font-size: 0.85rem;
-            }
-            .btn-join {
-                padding: 6px 10px;
-                font-size: 0.65rem;
-            }
-            .touch-btn {
-                width: 36px;
-                height: 36px;
-                font-size: 0.85rem;
-            }
-            .touch-btn.jump {
-                width: 44px;
-                height: 44px;
-                font-size: 1rem;
-            }
-            #scoreOverlay {
-                padding: 3px 8px;
-                gap: 4px;
-            }
-            .score-item {
-                font-size: 0.4rem;
-            }
-            .score-item .value {
-                font-size: 0.5rem;
-            }
-            #topBar {
-                padding: 4px 8px;
-            }
-            .top-stat {
-                font-size: 0.4rem;
-                padding: 2px 4px;
-            }
-            .back-btn {
-                font-size: 0.45rem;
-                padding: 2px 6px;
-            }
-            #playerList {
-                top: 42px;
-                right: 4px;
-                min-width: 60px;
-                max-width: 85px;
-                padding: 4px 6px;
-            }
-        }
-
-        /* Landscape Phones */
         @media (max-height: 500px) and (orientation: landscape) {
-            #touchControls {
-                bottom: 6px;
-                padding: 0 8px;
-            }
-            .touch-btn {
-                width: 38px;
-                height: 38px;
-                font-size: 0.9rem;
-            }
-            .touch-btn.jump {
-                width: 46px;
-                height: 46px;
-                font-size: 1.1rem;
-            }
-            .lobby-box {
-                padding: 12px 16px;
-                max-width: 300px;
-                border-radius: 12px;
-            }
-            .lobby-box .game-icon {
-                font-size: 2rem;
-            }
-            .lobby-box h2 {
-                font-size: 0.85rem;
-            }
-            .lobby-box .subtitle {
-                font-size: 0.6rem;
-                margin-bottom: 10px;
-            }
-            .lobby-stats {
-                gap: 4px;
-                margin-bottom: 10px;
-            }
-            .lobby-stat {
-                padding: 4px 4px;
-            }
-            .lobby-stat .number {
-                font-size: 0.9rem;
-            }
-            .lobby-stat .label {
-                font-size: 0.4rem;
-            }
-            .btn-join {
-                padding: 6px 12px;
-                font-size: 0.7rem;
-            }
-            #playerList {
-                top: 40px;
-                right: 6px;
-                min-width: 60px;
-                max-width: 90px;
-                padding: 4px 6px;
-                font-size: 0.4rem;
-                max-height: 25vh;
-            }
-            #scoreOverlay {
-                bottom: 40px;
-                padding: 3px 10px;
-                gap: 6px;
-            }
-            .score-item {
-                font-size: 0.45rem;
-            }
-            .score-item .value {
-                font-size: 0.55rem;
-            }
-            #topBar {
-                padding: 4px 8px;
-            }
-            .top-stat {
-                font-size: 0.4rem;
-                padding: 2px 6px;
-            }
-            .back-btn {
-                font-size: 0.5rem;
-                padding: 2px 8px;
-            }
-            #statusMessage {
-                padding: 8px 12px;
-            }
-            #statusMessage .main {
-                font-size: 0.8rem;
-            }
-            #statusMessage .sub {
-                font-size: 0.5rem;
-            }
-            .loading-logo {
-                font-size: 1.5rem;
-            }
-            .loading-logo-sub {
-                font-size: 0.5rem;
-                margin-bottom: 12px;
-            }
-            .loading-progress-wrap {
-                max-width: 150px;
-            }
-            .loading-spinner {
-                width: 30px;
-                height: 30px;
-            }
+            #touchControls { bottom: 6px; padding: 0 8px; }
+            .touch-btn { width: 38px; height: 38px; font-size: 0.9rem; }
+            .touch-btn.jump { width: 46px; height: 46px; font-size: 1.1rem; }
+            .lobby-box { padding: 12px 16px; max-width: 300px; border-radius: 12px; }
+            .lobby-box .game-icon { font-size: 2rem; }
+            .lobby-box h2 { font-size: 0.85rem; }
+            .lobby-stats { gap: 4px; margin-bottom: 10px; }
+            .lobby-stat { padding: 4px 4px; }
+            .lobby-stat .number { font-size: 0.9rem; }
+            .btn-join { padding: 6px 12px; font-size: 0.7rem; }
+            #playerList { top: 40px; right: 6px; min-width: 60px; max-width: 90px; padding: 4px 6px; font-size: 0.4rem; max-height: 25vh; }
+            #scoreOverlay { bottom: 40px; padding: 3px 10px; gap: 6px; }
+            .score-item { font-size: 0.45rem; }
+            .score-item .value { font-size: 0.55rem; }
+            #topBar { padding: 4px 8px; }
+            .top-stat { font-size: 0.4rem; padding: 2px 6px; }
+            .back-btn { font-size: 0.5rem; padding: 2px 8px; }
+            #statusMessage { padding: 8px 12px; }
+            #statusMessage .main { font-size: 0.8rem; }
+            #statusMessage .sub { font-size: 0.5rem; }
         }
     </style>
 </head>
 <body>
 
     <!-- ===== ANIMATED BACKGROUND ===== -->
-    <div class="bg-animation">
-        <div class="orb"></div>
-        <div class="orb"></div>
-        <div class="orb"></div>
-    </div>
+    <div class="bg-animation"><div class="orb"></div><div class="orb"></div><div class="orb"></div></div>
     <div class="grid-overlay"></div>
 
     <!-- ===== LOADING SCREEN ===== -->
@@ -1499,9 +251,7 @@
             <div class="loading-logo">NINJARUN</div>
             <div class="loading-logo-sub">Tournament Edition</div>
             <div class="loading-spinner"></div>
-            <div class="loading-progress-wrap">
-                <div class="loading-progress-bar" id="loadProgress"></div>
-            </div>
+            <div class="loading-progress-wrap"><div class="loading-progress-bar" id="loadProgress"></div></div>
             <div class="loading-text" id="loadingText">Loading Game Assets...</div>
             <div class="loading-tips" id="loadingTip">💡 Tip: Collect coins to increase your score!</div>
         </div>
@@ -1513,130 +263,68 @@
             <div class="icon">🎮</div>
             <div class="title">NINJARUN</div>
             <div class="sub">🏆 <span class="highlight">Tournament Mode</span> • 2-50 Players</div>
-            <button class="start-btn" id="startBtn">
-                <i class="fas fa-play"></i> Click to Start
-            </button>
+            <button class="start-btn" id="startBtn"><i class="fas fa-play"></i> Click to Start</button>
         </div>
     </div>
 
     <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
-
         <div id="gameContainer"></div>
 
-        <!-- ===== TOP BAR ===== -->
         <div id="topBar">
             <div class="top-left">
-                <a href="../game-lobby.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <span class="top-stat">
-                    <i class="fas fa-trophy icon"></i>
-                    ROUND <span class="value primary" id="roundNumber">001</span>
-                </span>
+                <a href="../game-lobby.html" class="back-btn"><i class="fas fa-arrow-left"></i> Back</a>
+                <span class="top-stat"><i class="fas fa-trophy icon"></i> ROUND <span class="value primary" id="roundNumber">001</span></span>
             </div>
             <div class="top-right">
-                <span class="top-stat">
-                    <i class="fas fa-users icon"></i>
-                    <span class="value green" id="playerCount">0</span>/50
-                </span>
-                <span class="top-stat">
-                    <i class="fas fa-clock icon"></i>
-                    <span class="value red" id="roundTimer">5:00</span>
-                </span>
-                <span class="top-stat">
-                    <i class="fas fa-coins icon"></i>
-                    <span class="value gold" id="prizeDisplay">0</span> RWF
-                </span>
+                <span class="top-stat"><i class="fas fa-users icon"></i> <span class="value green" id="playerCount">0</span>/50</span>
+                <span class="top-stat"><i class="fas fa-clock icon"></i> <span class="value red" id="roundTimer">5:00</span></span>
+                <span class="top-stat"><i class="fas fa-coins icon"></i> <span class="value gold" id="prizeDisplay">0</span> RWF</span>
             </div>
         </div>
 
-        <!-- ===== SCORE OVERLAY ===== -->
         <div id="scoreOverlay">
-            <div class="score-item">
-                <i class="fas fa-running" style="color:var(--gold);"></i>
-                Score: <span class="value gold" id="liveScore">0</span>
-            </div>
-            <div class="score-item">
-                <i class="fas fa-coins" style="color:var(--success);"></i>
-                Coins: <span class="value green" id="liveCoins">0</span>
-            </div>
-            <div class="score-item">
-                <i class="fas fa-route" style="color:var(--primary);"></i>
-                Dist: <span class="value primary" id="liveDistance">0</span>
-            </div>
+            <div class="score-item"><i class="fas fa-running" style="color:var(--gold);"></i> Score: <span class="value gold" id="liveScore">0</span></div>
+            <div class="score-item"><i class="fas fa-coins" style="color:var(--success);"></i> Coins: <span class="value green" id="liveCoins">0</span></div>
+            <div class="score-item"><i class="fas fa-route" style="color:var(--primary);"></i> Dist: <span class="value primary" id="liveDistance">0</span></div>
         </div>
 
-        <!-- ===== PLAYER LIST ===== -->
         <div id="playerList">
             <div class="title"><i class="fas fa-users"></i> Players</div>
-            <div id="playersContainer">
-                <div class="player-item" style="color:var(--text-muted);">No players yet...</div>
-            </div>
+            <div id="playersContainer"><div class="player-item" style="color:var(--text-muted);">No players yet...</div></div>
         </div>
 
-        <!-- ===== STATUS MESSAGE ===== -->
         <div id="statusMessage">
             <div class="main" id="statusMain">⏳ Waiting for players...</div>
             <div class="sub" id="statusSub">Need 2 more players to start</div>
         </div>
 
-        <!-- ===== LOBBY OVERLAY ===== -->
         <div id="lobbyOverlay">
             <div class="lobby-box">
                 <div class="game-icon">🏃</div>
                 <h2>Ninja<span>Run</span></h2>
                 <div class="subtitle">🏆 Tournament Mode • Entry Fee: <strong style="color:var(--gold);">100 RWF</strong></div>
-
                 <div class="lobby-stats">
-                    <div class="lobby-stat">
-                        <div class="number" id="lobbyPlayers">0</div>
-                        <div class="label">Players</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number gold" id="lobbyPrize">0</div>
-                        <div class="label">Prize Pool</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number green" id="lobbyTimer">5:00</div>
-                        <div class="label">Time Left</div>
-                    </div>
+                    <div class="lobby-stat"><div class="number" id="lobbyPlayers">0</div><div class="label">Players</div></div>
+                    <div class="lobby-stat"><div class="number gold" id="lobbyPrize">0</div><div class="label">Prize Pool</div></div>
+                    <div class="lobby-stat"><div class="number green" id="lobbyTimer">5:00</div><div class="label">Time Left</div></div>
                 </div>
-
-                <div class="prize-pool">
-                    🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF
-                </div>
-
-                <div class="entry-fee">
-                    Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF
-                </div>
-
-                <button class="btn-join" id="joinBtn">
-                    <i class="fas fa-gamepad"></i> Join Round
-                </button>
+                <div class="prize-pool">🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF</div>
+                <div class="entry-fee">Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF</div>
+                <button class="btn-join" id="joinBtn"><i class="fas fa-gamepad"></i> Join Round</button>
             </div>
         </div>
 
-        <!-- ===== TOUCH CONTROLS ===== -->
         <div id="touchControls">
             <div class="touch-controls-group">
-                <button class="touch-btn left" id="touchLeft">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="touch-btn right" id="touchRight">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
+                <button class="touch-btn left" id="touchLeft"><i class="fas fa-chevron-left"></i></button>
+                <button class="touch-btn right" id="touchRight"><i class="fas fa-chevron-right"></i></button>
             </div>
-            <button class="touch-btn jump" id="touchJump">
-                <i class="fas fa-arrow-up"></i>
-            </button>
+            <button class="touch-btn jump" id="touchJump"><i class="fas fa-arrow-up"></i></button>
         </div>
-
     </div>
 
-    <!-- ================================================================
-    FIREBASE + GAME INTEGRATION
-    ================================================================ -->
+    <!-- ================================================================ -->
     <script type="importmap">
         {
             "imports": {
@@ -1648,16 +336,10 @@
     </script>
 
     <script type="module">
-        // ============================================================
-        // IMPORTS
-        // ============================================================
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
-        // ============================================================
-        // FIREBASE CONFIG
-        // ============================================================
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
             authDomain: "shora-games.firebaseapp.com",
@@ -1669,9 +351,6 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
-        // ============================================================
-        // CONFIG
-        // ============================================================
         const CONFIG = {
             ENTRY_FEE: 100,
             MAX_PLAYERS: 50,
@@ -1681,9 +360,6 @@
             GAME_HEIGHT: 720
         };
 
-        // ============================================================
-        // STATE
-        // ============================================================
         const state = {
             roundId: '001',
             roundState: 'waiting',
@@ -1703,6 +379,7 @@
             _forceStartAttempts: 0,
             _gameStarted: false,
             _switchAttempts: 0,
+            _engineReady: false,
             loadingTips: [
                 '💡 Collect coins to increase your score!',
                 '🎯 Avoid bombs to stay alive!',
@@ -1714,9 +391,6 @@
             ]
         };
 
-        // ============================================================
-        // DOM REFS
-        // ============================================================
         const dom = {
             container: document.getElementById('gameContainer'),
             canvas: null,
@@ -1752,9 +426,6 @@
 
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
 
-        // ============================================================
-        // HELPERS
-        // ============================================================
         function getPlayersArray() {
             if (Array.isArray(state.players)) return state.players;
             if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
@@ -1769,11 +440,7 @@
             return arr;
         }
 
-        // ============================================================
-        // ROTATE LOADING TIPS
-        // ============================================================
         let tipInterval = null;
-
         function startTipRotation() {
             const tips = shuffleArray([...state.loadingTips]);
             let tipIndex = 0;
@@ -1788,12 +455,8 @@
                 }, 300);
             }, 4000);
         }
-
         startTipRotation();
 
-        // ============================================================
-        // AUTH
-        // ============================================================
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 state.user = user;
@@ -1813,24 +476,16 @@
             }
         });
 
-        // ============================================================
-        // START BUTTON HANDLER
-        // ============================================================
         dom.startBtn.addEventListener('click', () => {
             dom.startOverlay.classList.add('hidden');
-            if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance
-                .context) {
+            if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance.context) {
                 window.gameRuntime.audioInstance.context.resume();
             }
             console.log('🎵 Audio context resumed');
         });
 
-        // ============================================================
-        // GAME LOADER
-        // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
-
             const canvas = document.createElement('canvas');
             canvas.id = 'c2canvas';
             canvas.width = CONFIG.GAME_WIDTH;
@@ -1840,30 +495,17 @@
             dom.container.appendChild(canvas);
             dom.canvas = canvas;
 
-            const loadingMessages = [
-                'Loading Game Engine...',
-                'Loading Assets...',
-                'Preparing Game World...',
-                'Almost Ready...',
-                'Starting Game...'
-            ];
+            const loadingMessages = ['Loading Game Engine...', 'Loading Assets...', 'Preparing Game World...', 'Almost Ready...', 'Starting Game...'];
             let msgIndex = 0;
-
             let progress = 0;
             const loadInterval = setInterval(() => {
                 progress += Math.random() * 12 + 3;
                 if (progress > 100) progress = 100;
                 dom.loadProgress.style.width = progress + '%';
-
-                if (progress > 20 && msgIndex < 1) { msgIndex = 1;
-                    dom.loadingText.textContent = loadingMessages[1]; }
-                if (progress > 40 && msgIndex < 2) { msgIndex = 2;
-                    dom.loadingText.textContent = loadingMessages[2]; }
-                if (progress > 65 && msgIndex < 3) { msgIndex = 3;
-                    dom.loadingText.textContent = loadingMessages[3]; }
-                if (progress > 85 && msgIndex < 4) { msgIndex = 4;
-                    dom.loadingText.textContent = loadingMessages[4]; }
-
+                if (progress > 20 && msgIndex < 1) { msgIndex = 1; dom.loadingText.textContent = loadingMessages[1]; }
+                if (progress > 40 && msgIndex < 2) { msgIndex = 2; dom.loadingText.textContent = loadingMessages[2]; }
+                if (progress > 65 && msgIndex < 3) { msgIndex = 3; dom.loadingText.textContent = loadingMessages[3]; }
+                if (progress > 85 && msgIndex < 4) { msgIndex = 4; dom.loadingText.textContent = loadingMessages[4]; }
                 if (progress === 100) {
                     clearInterval(loadInterval);
                     dom.loadingText.textContent = '✅ Ready!';
@@ -1876,12 +518,8 @@
             }, 200);
         }
 
-        // ============================================================
-        // INIT GAME
-        // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
-
             try {
                 const jqueryScript = document.createElement('script');
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
@@ -1911,7 +549,6 @@
                     dom.statusMessage.classList.add('show');
                 };
                 document.head.appendChild(jqueryScript);
-
             } catch (e) {
                 console.error('❌ Error initializing game:', e);
                 dom.statusMain.textContent = '⚠️ Game initialization error';
@@ -1920,26 +557,19 @@
             }
         }
 
-        // ============================================================
-        // LOAD DATA.JS AND FIX PATHS
-        // ============================================================
         function loadDataAndEngine() {
             console.log('🔄 Loading data.js and fixing paths...');
-
             fetch('/games/ninja%20run/data.js')
                 .then(response => response.text())
                 .then(dataText => {
                     console.log('✅ data.js fetched');
-
                     const fixedData = dataText
                         .replace(/images\//g, '/games/ninja%20run/images/')
                         .replace(/media\//g, '/games/ninja%20run/media/');
                     console.log('✅ Image and audio paths fixed');
-
                     const projectData = JSON.parse(fixedData);
                     window._c2projectData = projectData;
                     console.log('✅ data.js parsed and stored');
-
                     loadGameEngine();
                 })
                 .catch(err => {
@@ -1950,12 +580,8 @@
                 });
         }
 
-        // ============================================================
-        // LOAD GAME ENGINE
-        // ============================================================
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
-
             try {
                 if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
                     const originalSetPosition = AudioListener.prototype.setPosition;
@@ -1975,7 +601,6 @@
             script.src = '/games/ninja%20run/c2runtime.js';
             script.onload = () => {
                 console.log('✅ Runtime loaded');
-
                 try {
                     if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
                         const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
@@ -1994,21 +619,14 @@
                     const runtime = new cr.createRuntime('c2canvas');
                     runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
                     window.gameRuntime = runtime;
-
                     dom.startOverlay.classList.remove('hidden');
+
+                    // Wait for engine to be fully ready
+                    waitForEngineReady(runtime);
 
                     setupTouchControls(runtime);
                     startLobby();
                     startScoreTracking();
-                    monitorLayoutChanges(runtime);
-
-                    // Safety timer: force start after 20 seconds if not started
-                    setTimeout(() => {
-                        if (!state._gameStarted && state.roundState === 'playing') {
-                            console.log('⏳ Safety timeout: forcing game start...');
-                            forceGameStart();
-                        }
-                    }, 20000);
 
                 } catch (e) {
                     console.error('❌ Error creating runtime:', e);
@@ -2027,193 +645,99 @@
         }
 
         // ============================================================
-        // MONITOR LAYOUT CHANGES
+        // WAIT FOR ENGINE TO BE FULLY READY
         // ============================================================
-        function monitorLayoutChanges(runtime) {
-            let monitorAttempts = 0;
-            setInterval(() => {
+        function waitForEngineReady(runtime) {
+            let checks = 0;
+            const maxChecks = 30;
+            const checkInterval = setInterval(() => {
+                checks++;
                 try {
-                    const layout = runtime.running_layout;
-                    if (layout && layout.name) {
-                        console.log('📐 Current layout:', layout.name);
-                        if ((layout.name === 'Menu' || layout.name === 'Game') && !state._gameStarted) {
-                            console.log('🎯 Layout ready, forcing game start...');
+                    // Check if runtime is no longer loading and has a running layout
+                    if (runtime && runtime.isloading === false && runtime.running_layout) {
+                        state._engineReady = true;
+                        clearInterval(checkInterval);
+                        console.log('✅ Engine is fully ready!');
+                        // Now we can safely try to start the game
+                        if (state.roundState === 'playing' && !state._gameStarted) {
+                            console.log('🎯 Engine ready, forcing game start...');
                             forceGameStart();
                         }
-                        if (layout.name === 'Loading' && monitorAttempts > 10 && !state._gameStarted) {
-                            console.log('⏳ Loading taking too long, forcing game start...');
-                            forceGameStart();
-                        }
-                        monitorAttempts++;
+                        return;
                     }
-                } catch (e) { /* Silent fail */ }
-            }, 3000);
+                    if (checks >= maxChecks) {
+                        clearInterval(checkInterval);
+                        console.warn('⚠️ Engine not ready after ' + maxChecks + ' checks, forcing game start...');
+                        state._engineReady = true;
+                        if (state.roundState === 'playing' && !state._gameStarted) {
+                            forceGameStart();
+                        }
+                    }
+                } catch (e) {
+                    // Silent fail
+                }
+            }, 1000);
         }
 
-        // ============================================================
-        // SCORE TRACKING
-        // ============================================================
         function startScoreTracking() {
             if (state.scoreInterval) clearInterval(state.scoreInterval);
-
             state.scoreInterval = setInterval(() => {
                 if (!window.gameRuntime) return;
-
                 try {
                     const runtime = window.gameRuntime;
                     const vars = runtime.all_global_vars || [];
-
-                    let score = 0,
-                        coins = 0,
-                        distance = 0;
-
+                    let score = 0, coins = 0, distance = 0;
                     for (let v of vars) {
                         if (v.name === 'Score') score = v.data || 0;
                         if (v.name === 'Coins') coins = v.data || 0;
                         if (v.name === 'Distances') distance = v.data || 0;
                     }
-
                     state.currentScore = score;
                     state.currentCoins = coins;
                     state.currentDistance = distance;
-
                     dom.liveScore.textContent = score;
                     dom.liveCoins.textContent = coins;
                     dom.liveDistance.textContent = distance;
-
                     if (state.joined && state.user) {
                         const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                        update(playerRef, {
-                            score: score,
-                            coins: coins,
-                            distance: distance,
-                            lastUpdate: Date.now()
-                        }).catch(e => console.warn('⚠️ Could not update score:', e));
+                        update(playerRef, { score: score, coins: coins, distance: distance, lastUpdate: Date.now() }).catch(e => console.warn('⚠️ Could not update score:', e));
                     }
-
                     if (state.roundState === 'playing') {
                         dom.scoreOverlay.classList.add('show');
                     } else {
                         dom.scoreOverlay.classList.remove('show');
                     }
-
                 } catch (e) { /* Silent fail */ }
             }, 500);
-
             console.log('✅ Score tracking started');
         }
 
-        // ============================================================
-        // TOUCH CONTROLS
-        // ============================================================
         function setupTouchControls(runtime) {
-            let leftPressed = false,
-                rightPressed = false,
-                jumpPressed = false;
-
+            let leftPressed = false, rightPressed = false, jumpPressed = false;
             function dispatchKeyEvent(type, key, keyCode) {
-                const event = new KeyboardEvent(type, {
-                    key: key,
-                    keyCode: keyCode,
-                    code: key,
-                    bubbles: true,
-                    cancelable: true
-                });
+                const event = new KeyboardEvent(type, { key: key, keyCode: keyCode, code: key, bubbles: true, cancelable: true });
                 document.dispatchEvent(event);
             }
-
-            dom.touchLeft.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!leftPressed) { leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-
-            dom.touchRight.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!rightPressed) { rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-
-            dom.touchJump.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!jumpPressed) { jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-
-            // Mouse fallback
-            dom.touchLeft.addEventListener('mousedown', () => {
-                if (!leftPressed) { leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('mouseup', () => {
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('mouseleave', () => {
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-
-            dom.touchRight.addEventListener('mousedown', () => {
-                if (!rightPressed) { rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('mouseup', () => {
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('mouseleave', () => {
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-
-            dom.touchJump.addEventListener('mousedown', () => {
-                if (!jumpPressed) { jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('mouseup', () => {
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('mouseleave', () => {
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
+            dom.touchLeft.addEventListener('touchstart', (e) => { e.preventDefault(); if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); } });
+            dom.touchLeft.addEventListener('touchend', (e) => { e.preventDefault(); if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); } });
+            dom.touchLeft.addEventListener('touchcancel', (e) => { e.preventDefault(); if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); } });
+            dom.touchRight.addEventListener('touchstart', (e) => { e.preventDefault(); if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); } });
+            dom.touchRight.addEventListener('touchend', (e) => { e.preventDefault(); if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); } });
+            dom.touchRight.addEventListener('touchcancel', (e) => { e.preventDefault(); if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); } });
+            dom.touchJump.addEventListener('touchstart', (e) => { e.preventDefault(); if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); } });
+            dom.touchJump.addEventListener('touchend', (e) => { e.preventDefault(); if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); } });
+            dom.touchJump.addEventListener('touchcancel', (e) => { e.preventDefault(); if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); } });
+            dom.touchLeft.addEventListener('mousedown', () => { if (!leftPressed) { leftPressed = true; dispatchKeyEvent('keydown', 'ArrowLeft', 37); } });
+            dom.touchLeft.addEventListener('mouseup', () => { if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); } });
+            dom.touchLeft.addEventListener('mouseleave', () => { if (leftPressed) { leftPressed = false; dispatchKeyEvent('keyup', 'ArrowLeft', 37); } });
+            dom.touchRight.addEventListener('mousedown', () => { if (!rightPressed) { rightPressed = true; dispatchKeyEvent('keydown', 'ArrowRight', 39); } });
+            dom.touchRight.addEventListener('mouseup', () => { if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); } });
+            dom.touchRight.addEventListener('mouseleave', () => { if (rightPressed) { rightPressed = false; dispatchKeyEvent('keyup', 'ArrowRight', 39); } });
+            dom.touchJump.addEventListener('mousedown', () => { if (!jumpPressed) { jumpPressed = true; dispatchKeyEvent('keydown', 'ArrowUp', 38); } });
+            dom.touchJump.addEventListener('mouseup', () => { if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); } });
+            dom.touchJump.addEventListener('mouseleave', () => { if (jumpPressed) { jumpPressed = false; dispatchKeyEvent('keyup', 'ArrowUp', 38); } });
         }
 
-        // ============================================================
-        // LOBBY SYSTEM
-        // ============================================================
         function startLobby() {
             console.log('🔄 Starting lobby...');
             dom.lobbyOverlay.classList.remove('hidden');
@@ -2233,8 +757,7 @@
                         const data = snapshot.val();
                         state.roundState = data.status || 'waiting';
                         state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data
-                            .players)) : [];
+                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data.players)) : [];
                         state.playerCount = state.players.length;
                         updateUI();
                         if (state.roundState === 'playing' && !state.gameStarted) startGame();
@@ -2271,9 +794,6 @@
             }).catch(e => console.error('❌ Error creating round:', e));
         }
 
-        // ============================================================
-        // JOIN ROUND
-        // ============================================================
         async function joinRound() {
             if (!state.user || !state.userData) {
                 alert('Please login first');
@@ -2293,10 +813,8 @@
             try {
                 dom.joinBtn.disabled = true;
                 dom.joinBtn.textContent = '⏳ Processing...';
-
                 await update(ref(db, `users/${state.user.uid}`), { balance: balance - CONFIG.ENTRY_FEE });
                 state.userData.balance = balance - CONFIG.ENTRY_FEE;
-
                 await set(ref(db, `rounds/${state.roundId}/players/${state.user.uid}`), {
                     uid: state.user.uid,
                     username: state.userData.username || 'Player',
@@ -2306,16 +824,13 @@
                     distance: 0,
                     status: 'ready'
                 });
-
                 state.joined = true;
                 dom.joinBtn.textContent = '✅ Joined!';
                 dom.joinBtn.classList.add('joined');
                 dom.joinBtn.disabled = true;
-
                 const snapshot = await get(ref(db, `rounds/${state.roundId}/prizePool`));
                 const currentPrize = snapshot.val() || 0;
                 await set(ref(db, `rounds/${state.roundId}/prizePool`), currentPrize + CONFIG.ENTRY_FEE);
-
                 console.log('✅ Joined round!');
             } catch (e) {
                 console.error('❌ Error joining round:', e);
@@ -2326,34 +841,47 @@
             }
         }
 
-        // ============================================================
-        // START GAME
-        // ============================================================
         function startGame() {
             state.gameStarted = true;
             console.log('🎮 Game is now live!');
             dom.lobbyOverlay.classList.add('hidden');
             dom.statusMessage.classList.remove('show');
             dom.scoreOverlay.classList.add('show');
-            forceGameStart();
+            // Only force start if engine is ready, otherwise wait
+            if (state._engineReady) {
+                forceGameStart();
+            } else {
+                console.log('⏳ Engine not ready yet, waiting...');
+                setTimeout(() => {
+                    if (state._engineReady) {
+                        forceGameStart();
+                    } else {
+                        console.log('⏳ Engine still not ready, forcing anyway...');
+                        forceGameStart();
+                    }
+                }, 3000);
+            }
         }
 
-        // ============================================================
-        // GO TO GAME LAYOUT
-        // ============================================================
         function goToGameLayout(runtime) {
             try {
-                const currentLayout = runtime.running_layout;
+                // Check if engine is ready
+                if (!state._engineReady) {
+                    console.log('⏳ Engine not ready, waiting...');
+                    state._switchAttempts++;
+                    if (state._switchAttempts < 20) {
+                        setTimeout(() => { goToGameLayout(runtime); }, 1500);
+                    }
+                    return false;
+                }
 
+                const currentLayout = runtime.running_layout;
                 if (currentLayout && currentLayout.name === 'Loading') {
-                    console.log('⏳ Still on Loading layout, waiting for initialization...');
+                    console.log('⏳ Still on Loading layout, waiting...');
                     state._switchAttempts++;
                     if (state._switchAttempts < 30) {
-                        setTimeout(() => {
-                            goToGameLayout(runtime);
-                        }, 1500);
+                        setTimeout(() => { goToGameLayout(runtime); }, 1500);
                     } else {
-                        console.log('⚠️ Loading taking too long, forcing switch anyway...');
                         state._switchAttempts = 0;
                         const gameLayout = runtime.layouts['Game'];
                         if (gameLayout) {
@@ -2370,7 +898,6 @@
                 }
 
                 state._switchAttempts = 0;
-
                 const gameLayout = runtime.layouts['Game'];
                 if (!gameLayout) {
                     console.log('❌ Game layout not found!');
@@ -2385,7 +912,6 @@
                 }
 
                 console.log('🔄 Switching to Game layout...');
-
                 runtime.changelayout = gameLayout;
                 runtime.doChangeLayout(gameLayout);
                 console.log('✅ Switched to Game layout');
@@ -2410,25 +936,19 @@
 
                 state._forceStartAttempts = 0;
                 return true;
-
             } catch (e) {
                 console.error('❌ Error switching to Game layout:', e);
                 if (!state._gameStarted && state._switchAttempts < 10) {
                     state._switchAttempts++;
                     setTimeout(() => {
                         const runtime = window.gameRuntime;
-                        if (runtime) {
-                            goToGameLayout(runtime);
-                        }
+                        if (runtime) { goToGameLayout(runtime); }
                     }, 3000);
                 }
                 return false;
             }
         }
 
-        // ============================================================
-        // UNPAUSE GAME
-        // ============================================================
         function unpauseGame(runtime) {
             try {
                 const vars = runtime.all_global_vars || [];
@@ -2456,9 +976,6 @@
             }
         }
 
-        // ============================================================
-        // FORCE GAME START
-        // ============================================================
         function forceGameStart() {
             const runtime = window.gameRuntime;
             if (!runtime) {
@@ -2470,6 +987,16 @@
                 return;
             }
 
+            // Check if engine is ready
+            if (!state._engineReady) {
+                console.log('⏳ Engine not ready, waiting...');
+                state._forceStartAttempts++;
+                if (state._forceStartAttempts < 20) {
+                    setTimeout(forceGameStart, 1000);
+                }
+                return;
+            }
+
             console.log('🎮 Force starting game... (Attempt ' + (state._forceStartAttempts + 1) + ')');
 
             try {
@@ -2477,15 +1004,12 @@
                 console.log('📐 Current layout:', currentLayout ? currentLayout.name : 'None');
 
                 if (currentLayout && currentLayout.name === 'Loading') {
-                    console.log('⏳ On Loading layout, waiting for complete initialization...');
+                    console.log('⏳ On Loading layout, waiting...');
                     state._forceStartAttempts++;
                     setTimeout(() => {
                         const layout = runtime.running_layout;
                         if (layout && layout.name === 'Loading') {
-                            console.log('⏳ Loading still in progress, waiting longer...');
-                            setTimeout(() => {
-                                forceGameStart();
-                            }, 3000);
+                            setTimeout(() => { forceGameStart(); }, 3000);
                         } else {
                             goToGameLayout(runtime);
                         }
@@ -2509,49 +1033,22 @@
 
                 console.log('🔍 Looking for Game layout...');
                 goToGameLayout(runtime);
-
             } catch (e) {
                 console.error('❌ Error forcing game start:', e);
             }
 
             if (!state._gameStarted && state._forceStartAttempts < 20) {
                 state._forceStartAttempts++;
-                console.log('⏳ Retrying force start in 2 seconds...');
                 setTimeout(forceGameStart, 2000);
             } else if (state._gameStarted) {
                 console.log('✅ Game successfully started!');
                 state._forceStartAttempts = 0;
             } else {
-                console.log('⚠️ Max attempts reached, trying one more time...');
+                console.log('⚠️ Max attempts reached');
                 state._forceStartAttempts = 0;
-                setTimeout(() => {
-                    const runtime = window.gameRuntime;
-                    if (runtime) {
-                        const layout = runtime.running_layout;
-                        if (layout && layout.name !== 'Game') {
-                            const gameLayout = runtime.layouts['Game'];
-                            if (gameLayout) {
-                                try {
-                                    runtime.changelayout = gameLayout;
-                                    runtime.doChangeLayout(gameLayout);
-                                    console.log('✅ Final forced switch to Game layout');
-                                    setTimeout(() => {
-                                        unpauseGame(runtime);
-                                        state._gameStarted = true;
-                                    }, 2000);
-                                } catch (e) {
-                                    console.error('❌ Final attempt failed:', e);
-                                }
-                            }
-                        }
-                    }
-                }, 5000);
             }
         }
 
-        // ============================================================
-        // ROUND MANAGEMENT
-        // ============================================================
         function startRound() {
             if (state.roundState !== 'waiting') return;
             if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
@@ -2576,24 +1073,36 @@
             state._gameStarted = false;
             state._switchAttempts = 0;
 
-            setTimeout(forceGameStart, 3000);
+            // Wait for engine to be ready before forcing start
+            if (state._engineReady) {
+                setTimeout(forceGameStart, 2000);
+            } else {
+                console.log('⏳ Waiting for engine to be ready...');
+                const waitForEngine = setInterval(() => {
+                    if (state._engineReady) {
+                        clearInterval(waitForEngine);
+                        setTimeout(forceGameStart, 2000);
+                    }
+                }, 1000);
+                // Safety timeout
+                setTimeout(() => {
+                    clearInterval(waitForEngine);
+                    if (!state._gameStarted) {
+                        console.log('⏳ Engine still not ready, forcing...');
+                        forceGameStart();
+                    }
+                }, 10000);
+            }
         }
 
-        // ============================================================
-        // END ROUND
-        // ============================================================
         function endRound(results) {
             state.roundState = 'ended';
             state.results = results;
             dom.scoreOverlay.classList.remove('show');
-
-            if (state.scoreInterval) {
-                clearInterval(state.scoreInterval);
-                state.scoreInterval = null;
-            }
+            if (state.scoreInterval) { clearInterval(state.scoreInterval);
+                state.scoreInterval = null; }
 
             const finalResults = getGameResults();
-
             if (state.joined && state.user) {
                 const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
                 update(playerRef, {
@@ -2611,8 +1120,7 @@
             const winner = sorted[0];
 
             dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
-            dom.statusSub.textContent =
-                `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
+            dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
             dom.statusMessage.classList.add('show');
 
             if (winner && winner.uid) {
@@ -2649,9 +1157,6 @@
             }, 10000);
         }
 
-        // ============================================================
-        // TIMER
-        // ============================================================
         function startRoundTimer() {
             setInterval(() => {
                 if (state.roundState === 'playing') {
@@ -2672,14 +1177,9 @@
             dom.lobbyTimer.textContent = display;
         }
 
-        // ============================================================
-        // GET GAME RESULTS
-        // ============================================================
         function getGameResults() {
             const runtime = window.gameRuntime;
-            let score = 0,
-                coins = 0,
-                distance = 0;
+            let score = 0, coins = 0, distance = 0;
             if (runtime) {
                 try {
                     const vars = runtime.all_global_vars || [];
@@ -2693,21 +1193,15 @@
             return { score, coins, distance };
         }
 
-        // ============================================================
-        // UPDATE UI
-        // ============================================================
         function updateUI() {
             const players = getPlayersArray();
             state.playerCount = players.length;
-
             dom.playerCount.textContent = state.playerCount;
             dom.lobbyPlayers.textContent = state.playerCount;
-
             const prizePool = state.playerCount * CONFIG.ENTRY_FEE;
             dom.prizeDisplay.textContent = prizePool.toLocaleString();
             dom.lobbyPrize.textContent = prizePool.toLocaleString();
             dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
-
             dom.roundNumber.textContent = state.roundId;
             renderPlayerList();
 
@@ -2736,18 +1230,13 @@
 
         function updateLobbyUI() { updateUI(); }
 
-        // ============================================================
-        // RENDER PLAYER LIST
-        // ============================================================
         function renderPlayerList() {
             const players = getPlayersArray();
-
             if (players.length === 0) {
                 dom.playersContainer.innerHTML =
                     `<div class="player-item" style="color:var(--text-muted);">No players yet...</div>`;
                 return;
             }
-
             let html = '';
             players.forEach((p) => {
                 const isMe = p.uid === state.user?.uid;
@@ -2765,12 +1254,8 @@
             dom.playersContainer.innerHTML = html;
         }
 
-        // ============================================================
-        // SIMULATE PLAYERS FOR TESTING
-        // ============================================================
         function simulatePlayers() {
             setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
-
             const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
             botNames.forEach((name, index) => {
                 setTimeout(() => {
@@ -2792,9 +1277,6 @@
             });
         }
 
-        // ============================================================
-        // INIT
-        // ============================================================
         console.log('%c🏃 NINJARUN - TOURNAMENT EDITION', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
         console.log('%c🎮 Professional Gaming Interface Loaded', 'color: #34d399; font-size: 14px;');
         console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #fbbf24; font-size: 12px;');
@@ -2802,7 +1284,6 @@
         console.log('%c📱 Fully optimized for all devices!', 'color: #818cf8; font-size: 12px;');
 
         loadGame();
-
         window.state = state;
         window.db = db;
     </script>
