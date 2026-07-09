@@ -779,7 +779,7 @@ setupAudioAutoplayFix();
         // ============================================================
         // 🔥 FIXED: Find buttons by texture filename
         // ============================================================
-       function clickPlayButton(runtime) {
+    function clickPlayButton(runtime) {
     console.log('🎯 Looking for Play button by texture...');
     try {
         const types = runtime.types_by_index || [];
@@ -794,17 +794,56 @@ setupAudioAutoplayFix();
                 console.log('🎯 Found Play button by texture:', type.texture_file);
             }
             
-            // Check animations
+            // Check animations - FIXED
             if (!isPlayButton && type.animations) {
-                for (let anim of type.animations) {
-                    for (let frame of anim.frames) {
-                        if (frame.texture_file && frame.texture_file.includes('btnplay')) {
-                            isPlayButton = true;
-                            console.log('🎯 Found Play button in animation:', frame.texture_file);
-                            break;
+                try {
+                    // Check if animations is an array
+                    if (Array.isArray(type.animations)) {
+                        for (let anim of type.animations) {
+                            // Check if frames exists and is iterable
+                            if (anim.frames && Array.isArray(anim.frames)) {
+                                for (let frame of anim.frames) {
+                                    if (frame.texture_file && frame.texture_file.includes('btnplay')) {
+                                        isPlayButton = true;
+                                        console.log('🎯 Found Play button in animation:', frame.texture_file);
+                                        break;
+                                    }
+                                }
+                            } else if (anim.frames && typeof anim.frames === 'object') {
+                                // If frames is an object (not array), convert to array
+                                const frameKeys = Object.keys(anim.frames);
+                                for (let key of frameKeys) {
+                                    const frame = anim.frames[key];
+                                    if (frame && frame.texture_file && frame.texture_file.includes('btnplay')) {
+                                        isPlayButton = true;
+                                        console.log('🎯 Found Play button in animation object:', frame.texture_file);
+                                        break;
+                                    }
+                                }
+                            }
+                            if (isPlayButton) break;
+                        }
+                    } else if (type.animations && typeof type.animations === 'object') {
+                        // If animations is an object, iterate over its keys
+                        const animKeys = Object.keys(type.animations);
+                        for (let key of animKeys) {
+                            const anim = type.animations[key];
+                            if (anim && anim.frames) {
+                                if (Array.isArray(anim.frames)) {
+                                    for (let frame of anim.frames) {
+                                        if (frame.texture_file && frame.texture_file.includes('btnplay')) {
+                                            isPlayButton = true;
+                                            console.log('🎯 Found Play button in animation object:', frame.texture_file);
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if (isPlayButton) break;
                         }
                     }
-                    if (isPlayButton) break;
+                } catch (e) {
+                    console.warn('⚠️ Could not check animations:', e);
                 }
             }
 
@@ -868,15 +907,17 @@ setupAudioAutoplayFix();
                                 
                                 // Also send touchend to complete the gesture
                                 setTimeout(() => {
-                                    const touchEndEvent = new TouchEvent('touchend', {
-                                        touches: [],
-                                        changedTouches: [touch],
-                                        targetTouches: [],
-                                        bubbles: true,
-                                        cancelable: true,
-                                        view: window
-                                    });
-                                    canvas.dispatchEvent(touchEndEvent);
+                                    try {
+                                        const touchEndEvent = new TouchEvent('touchend', {
+                                            touches: [],
+                                            changedTouches: [touch],
+                                            targetTouches: [],
+                                            bubbles: true,
+                                            cancelable: true,
+                                            view: window
+                                        });
+                                        canvas.dispatchEvent(touchEndEvent);
+                                    } catch (e) {}
                                 }, 50);
                                 
                             } catch (touchError) {
@@ -902,7 +943,6 @@ setupAudioAutoplayFix();
                                 console.log('✅ Play button triggered via Pointer event');
                             } catch (pointerError) {
                                 // Pointer events not supported
-                                console.log('ℹ️ Pointer event not supported');
                             }
                             
                             // ============================================================
@@ -923,7 +963,7 @@ setupAudioAutoplayFix();
                                 canvas.dispatchEvent(customEvent);
                                 console.log('✅ Play button triggered via Custom event');
                             } catch (customError) {
-                                console.log('ℹ️ Custom event not supported');
+                                // Custom event not supported
                             }
                         }
                     } catch (e) {
@@ -932,6 +972,44 @@ setupAudioAutoplayFix();
                 });
             }
         });
+
+        // If no play button found, try clicking any button with "play" in the texture
+        if (!found) {
+            console.log('⚠️ No play button found by texture, searching for any button...');
+            try {
+                types.forEach(type => {
+                    if (type.instances && type.instances.length > 0) {
+                        // Try to click the first instance of each type
+                        const inst = type.instances[0];
+                        const canvas = dom.canvas;
+                        if (canvas) {
+                            const rect = canvas.getBoundingClientRect();
+                            const scaleX = canvas.width / rect.width;
+                            const scaleY = canvas.height / rect.height;
+                            
+                            const instX = inst.x || 0;
+                            const instY = inst.y || 0;
+                            
+                            const screenX = rect.left + (instX / scaleX);
+                            const screenY = rect.top + (instY / scaleY);
+                            
+                            const clickEvent = new MouseEvent('click', {
+                                clientX: screenX,
+                                clientY: screenY,
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            canvas.dispatchEvent(clickEvent);
+                            console.log('✅ Clicked fallback button at', Math.round(screenX), Math.round(screenY));
+                            found = true;
+                        }
+                    }
+                });
+            } catch (e) {
+                console.warn('⚠️ Fallback click failed:', e);
+            }
+        }
 
         if (!found) {
             console.log('⚠️ No play button found, trying unpause...');
@@ -942,7 +1020,6 @@ setupAudioAutoplayFix();
         unpauseGame(runtime);
     }
 }
-
         function waitForGameReady(runtime) {
             console.log('⏳ Fallback: Waiting for game to be ready...');
             let checks = 0;
