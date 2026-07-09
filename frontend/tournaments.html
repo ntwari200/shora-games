@@ -1073,48 +1073,112 @@
         // ========================================
         // PLAY GAME
         // ========================================
+// ========================================
+// PLAY NINJA RUN
+// ========================================
 
-        window.playGame = function() {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            if (!currentEvent || currentEvent.status !== 'live') {
-                showToast('Event is not available', 'error');
-                return;
-            }
-            
-            if (userData.hasPlayedCurrentEvent) {
-                showToast('You already played! Wait for the next event.', 'error');
-                return;
-            }
-            
-            if (!currentEvent.players || !currentEvent.players[currentUser.uid]) {
-                showToast('Please join the event first!', 'error');
-                return;
-            }
-            
-            // Mark user as played
-            update(ref(db, `users/${currentUser.uid}`), {
-                hasPlayedCurrentEvent: true
-            });
-            
-            update(ref(db, `tournaments/current_event/players/${currentUser.uid}`), {
-                hasPlayed: true
-            });
-            
-            showToast('🎮 Launching Ninja Run... Good luck!', 'success');
-            
-            // Redirect to game
-            setTimeout(() => {
-                window.location.href = 'game-wrapper.html?game=ninja-run&event=' + eventId;
-            }, 1500);
-        };
+window.playGame = function() {
+    if (!currentUser) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    
+    if (!currentEvent || currentEvent.status !== 'live') {
+        showToast('Event is not available', 'error');
+        return;
+    }
+    
+    if (userData.hasPlayedCurrentEvent) {
+        showToast('❌ You already played! Wait for the next event.', 'error');
+        return;
+    }
+    
+    if (!currentEvent.players || !currentEvent.players[currentUser.uid]) {
+        showToast('Please join the event first!', 'error');
+        return;
+    }
+    
+    const eventId = currentEvent.id || 'event_001';
+    const userId = currentUser.uid;
+    const gameUrl = `/game-wrapper.html?event=${eventId}&user=${userId}`;
+    
+    // Open in new tab
+    const gameWindow = window.open(gameUrl, '_blank');
+    
+    if (!gameWindow) {
+        showToast('⚠️ Please allow pop-ups for this site', 'error');
+        return;
+    }
+    
+    showToast('🎮 Opening Ninja Run... Good luck!', 'success');
+    
+    // Start monitoring for game completion
+    startGameMonitor(eventId, userId);
+};
 
-        // ========================================
-        // START COUNTDOWN
-        // ========================================
+// ========================================
+// GAME MONITOR
+// ========================================
+
+function startGameMonitor(eventId, userId) {
+    let checkCount = 0;
+    const maxChecks = 300; // 5 minutes at 1 second intervals
+    
+    const monitorInterval = setInterval(() => {
+        checkCount++;
+        
+        // Check session storage for game completion
+        const played = sessionStorage.getItem('ninjaRunPlayed');
+        const score = sessionStorage.getItem('ninjaRunScore');
+        
+        if (played === 'true' && score !== null) {
+            clearInterval(monitorInterval);
+            const scoreValue = parseInt(score);
+            console.log(`🎯 Game completed with score: ${scoreValue}`);
+            
+            // Update user as played
+            updateUserPlayed(eventId, userId, scoreValue);
+            return;
+        }
+        
+        if (checkCount > maxChecks) {
+            clearInterval(monitorInterval);
+            console.log('⏰ Game monitor timed out');
+        }
+    }, 1000);
+}
+
+// ========================================
+// UPDATE USER PLAYED STATUS
+// ========================================
+
+async function updateUserPlayed(eventId, userId, score) {
+    try {
+        // Mark user as played in Firebase
+        await update(ref(db, `users/${userId}`), {
+            hasPlayedCurrentEvent: true
+        });
+        
+        await update(ref(db, `tournaments/current_event/players/${userId}`), {
+            hasPlayed: true,
+            score: score
+        });
+        
+        // Update local state
+        userData.hasPlayedCurrentEvent = true;
+        
+        // Update UI
+        updateUI();
+        showToast(`✅ Score: ${score} points submitted!`, 'success');
+        
+        // Reload event data
+        loadEventData();
+        
+    } catch (error) {
+        console.error('Error updating user played status:', error);
+        showToast('⚠️ Error saving score. Please contact support.', 'error');
+    }
+}
 
         function startCountdown(seconds) {
             if (countdownInterval) clearInterval(countdownInterval);
