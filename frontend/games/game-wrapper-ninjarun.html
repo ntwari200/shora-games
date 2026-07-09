@@ -449,7 +449,7 @@
         }
 
         // ============================================================
-        // 🔥 FINAL WORKING SOLUTION
+        // 🔥 COMPLETE FIXED GAME ENGINE LOADER
         // ============================================================
         function loadGameEngine() {
             console.log('🔄 Loading game engine...');
@@ -501,54 +501,36 @@
                 }
             }
 
-            // 🔥 FIX: Override the runtime's data.js request BEFORE loading
+            // 🔥 FIX: Override data.js path
             if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
                 const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
                 cr.runtime.prototype.requestProjectData = function() {
                     console.log('🔄 Loading data.js from: /games/ninja%20run/data.js');
                     var self = this;
-                    var xhr;
-                    if (this.isWindowsPhone8)
-                        xhr = new ActiveXObject("Microsoft.XMLHTTP");
-                    else
-                        xhr = new XMLHttpRequest();
-                    
+                    var xhr = new XMLHttpRequest();
                     xhr.open("GET", "/games/ninja%20run/data.js", true);
-                    
                     var supportsJsonResponse = false;
                     if (!this.isDomFree && ("response" in xhr) && ("responseType" in xhr)) {
                         try {
                             xhr["responseType"] = "json";
                             supportsJsonResponse = (xhr["responseType"] === "json");
-                        }
-                        catch (e) {
-                            supportsJsonResponse = false;
-                        }
+                        } catch (e) { supportsJsonResponse = false; }
                     }
                     if (!supportsJsonResponse && ("responseType" in xhr)) {
-                        try {
-                            xhr["responseType"] = "text";
-                        }
-                        catch (e) {}
+                        try { xhr["responseType"] = "text"; } catch (e) {}
                     }
                     if ("overrideMimeType" in xhr) {
-                        try {
-                            xhr["overrideMimeType"]("application/json; charset=utf-8");
-                        }
-                        catch (e) {}
+                        try { xhr["overrideMimeType"]("application/json; charset=utf-8"); } catch (e) {}
                     }
                     xhr.onload = function () {
                         if (supportsJsonResponse) {
                             self.loadProject(xhr["response"]);
-                        }
-                        else {
-                            if (self.isEjecta) {
-                                var str = xhr["responseText"];
-                                str = str.substr(str.indexOf("{"));
-                                self.loadProject(JSON.parse(str));
-                            }
-                            else {
+                        } else {
+                            try {
                                 self.loadProject(JSON.parse(xhr["responseText"]));
+                                console.log('✅ data.js loaded successfully');
+                            } catch(e) {
+                                console.error('❌ Error parsing data.js:', e);
                             }
                         }
                     };
@@ -558,7 +540,7 @@
                     };
                     xhr.send();
                 };
-                console.log('✅ Runtime.requestProjectData overridden with custom path');
+                console.log('✅ Runtime.requestProjectData overridden');
             }
 
             const script = document.createElement('script');
@@ -667,6 +649,90 @@
             document.head.appendChild(script);
         }
 
+        // ============================================================
+        // 🔥 FIXED: Find buttons by texture filename
+        // ============================================================
+        function clickPlayButton(runtime) {
+            console.log('🎯 Looking for Play button by texture...');
+            try {
+                const types = runtime.types_by_index || [];
+                let found = false;
+
+                types.forEach(type => {
+                    let isPlayButton = false;
+                    
+                    // Check texture_file directly
+                    if (type.texture_file && type.texture_file.includes('btnplay')) {
+                        isPlayButton = true;
+                        console.log('🎯 Found Play button by texture:', type.texture_file);
+                    }
+                    
+                    // Check animations
+                    if (!isPlayButton && type.animations) {
+                        for (let anim of type.animations) {
+                            for (let frame of anim.frames) {
+                                if (frame.texture_file && frame.texture_file.includes('btnplay')) {
+                                    isPlayButton = true;
+                                    console.log('🎯 Found Play button in animation:', frame.texture_file);
+                                    break;
+                                }
+                            }
+                            if (isPlayButton) break;
+                        }
+                    }
+
+                    if (isPlayButton && type.instances) {
+                        type.instances.forEach(inst => {
+                            try {
+                                const canvas = dom.canvas;
+                                if (canvas) {
+                                    const rect = canvas.getBoundingClientRect();
+                                    const scaleX = canvas.width / rect.width;
+                                    const scaleY = canvas.height / rect.height;
+                                    
+                                    const instX = inst.x || 0;
+                                    const instY = inst.y || 0;
+                                    
+                                    const screenX = rect.left + (instX / scaleX);
+                                    const screenY = rect.top + (instY / scaleY);
+                                    
+                                    // Mouse click
+                                    const clickEvent = new MouseEvent('click', {
+                                        clientX: screenX,
+                                        clientY: screenY,
+                                        bubbles: true,
+                                        cancelable: true
+                                    });
+                                    canvas.dispatchEvent(clickEvent);
+                                    found = true;
+                                    console.log('✅ Play button clicked via Mouse event at', screenX, screenY);
+                                    
+                                    // Touch event for mobile
+                                    const touchEvent = new TouchEvent('touchstart', {
+                                        touches: [{ clientX: screenX, clientY: screenY, identifier: 0 }],
+                                        changedTouches: [{ clientX: screenX, clientY: screenY, identifier: 0 }],
+                                        bubbles: true
+                                    });
+                                    canvas.dispatchEvent(touchEvent);
+                                    console.log('✅ Play button triggered via Touch event');
+                                }
+                            } catch (e) {
+                                console.warn('Could not trigger button:', e);
+                            }
+                        });
+                    }
+                });
+
+                if (!found) {
+                    console.log('⚠️ No play button found, trying unpause...');
+                    unpauseGame(runtime);
+                }
+            } catch (e) {
+                console.error('❌ Error clicking play button:', e);
+                unpauseGame(runtime);
+            }
+        }
+
         function waitForGameReady(runtime) {
             console.log('⏳ Fallback: Waiting for game to be ready...');
             let checks = 0;
@@ -698,69 +764,6 @@
                     if (checks >= maxChecks) { clearInterval(checkInterval); state._gameReady = true; unpauseGame(runtime); }
                 }
             }, 500);
-        }
-
-        function clickPlayButton(runtime) {
-            console.log('🎯 Looking for Play button...');
-            try {
-                const types = runtime.types_by_index || [];
-                let found = false;
-                types.forEach(type => {
-                    if (type.name && type.name.toLowerCase().includes('btnplay')) {
-                        console.log('🎯 Found Play button type:', type.name);
-                        type.instances.forEach(inst => {
-                            try {
-                                const cnds = Object.getPrototypeOf(type.plugin).cnds;
-                                if (cnds && cnds.OnClick) {
-                                    runtime.trigger(cnds.OnClick, inst);
-                                    found = true;
-                                    console.log('✅ Play button triggered via event');
-                                }
-                            } catch (e) { console.warn('Could not trigger via event:', e); }
-                            try {
-                                const canvas = dom.canvas;
-                                if (canvas) {
-                                    const rect = canvas.getBoundingClientRect();
-                                    const scaleX = rect.width / CONFIG.GAME_WIDTH;
-                                    const scaleY = rect.height / CONFIG.GAME_HEIGHT;
-                                    const clickEvent = new MouseEvent('click', {
-                                        clientX: rect.left + (inst.x * scaleX),
-                                        clientY: rect.top + (inst.y * scaleY),
-                                        bubbles: true
-                                    });
-                                    canvas.dispatchEvent(clickEvent);
-                                    found = true;
-                                    console.log('✅ Play button clicked via mouse event');
-                                }
-                            } catch (e) { console.warn('Could not click via mouse event:', e); }
-                        });
-                    }
-                });
-                if (!found) {
-                    types.forEach(type => {
-                        if (type.name && type.name.toLowerCase().includes('play')) {
-                            console.log('🎯 Found alternative button:', type.name);
-                            type.instances.forEach(inst => {
-                                try {
-                                    const cnds = Object.getPrototypeOf(type.plugin).cnds;
-                                    if (cnds && cnds.OnClick) {
-                                        runtime.trigger(cnds.OnClick, inst);
-                                        found = true;
-                                        console.log('✅ Alternative play button triggered');
-                                    }
-                                } catch (e) {}
-                            });
-                        }
-                    });
-                }
-                if (!found) {
-                    console.log('⚠️ No play button found, trying to unpause instead');
-                    unpauseGame(runtime);
-                }
-            } catch (e) {
-                console.error('❌ Error clicking play button:', e);
-                unpauseGame(runtime);
-            }
         }
 
         function unpauseGame(runtime) {
