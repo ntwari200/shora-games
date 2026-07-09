@@ -2,1691 +2,266 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>NinjaRun - Shora Games</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ninja Run - Shora Games</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg: #06111F;
-            --bg2: #0B1F36;
-            --primary: #00BFFF;
-            --secondary: #6C63FF;
-            --success: #00E676;
-            --danger: #FF4D6D;
-            --gold: #FFD700;
-            --text: #F5F7FA;
-            --muted: #A7B5C5;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
-        html, body {
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            background: var(--bg);
-            font-family: 'Inter', 'Space Grotesk', sans-serif;
-            color: var(--text);
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            -webkit-touch-callout: none;
-        }
-
-        #gameWrapper {
-            position: relative;
-            width: 100vw;
+        body {
+            background: #06111F;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
             height: 100vh;
-            height: 100dvh;
             overflow: hidden;
-            background: #000;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            margin: 0;
         }
-
         #gameContainer {
+            width: 100%;
+            height: 100vh;
             position: relative;
+        }
+        #gameFrame {
             width: 100%;
             height: 100%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        #gameContainer canvas {
-            display: block;
-            width: 100% !important;
-            height: 100% !important;
-            max-width: 100vw;
-            max-height: 100vh;
-            max-height: 100dvh;
-            object-fit: contain;
-            image-rendering: auto;
-            background: #000;
-            touch-action: none;
-        }
-
-        /* ===== CLICK TO START OVERLAY ===== */
-        #startOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 40;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            cursor: pointer;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-
-        #startOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        #startOverlay .content {
-            text-align: center;
-            color: #fff;
-            animation: pulse 2s ease-in-out infinite;
-        }
-
-        #startOverlay .content .icon { font-size: 4rem; margin-bottom: 16px; }
-        #startOverlay .content .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.8rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        #startOverlay .content .sub { color: var(--muted); font-size: 0.9rem; margin-top: 8px; }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.02); }
-        }
-
-        /* ===== TOUCH CONTROLS ===== */
-        #touchControls {
-            position: absolute;
-            bottom: 30px;
-            left: 0;
-            right: 0;
-            display: none;
-            justify-content: space-between;
-            padding: 0 20px;
-            pointer-events: none;
-            z-index: 20;
-        }
-
-        @media (hover: none) and (pointer: coarse) { #touchControls { display: flex !important; } }
-        @media (max-width: 1024px) { #touchControls { display: flex !important; } }
-
-        .touch-btn {
-            pointer-events: auto;
-            width: 70px;
-            height: 70px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 255, 255, 0.2);
-            background: rgba(255, 255, 255, 0.08);
-            backdrop-filter: blur(8px);
-            color: #fff;
-            font-size: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.15s;
-            touch-action: none;
-            -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-        }
-
-        .touch-btn:active {
-            transform: scale(0.88);
-            background: rgba(255, 255, 255, 0.2);
-            border-color: var(--primary);
-        }
-
-        .touch-btn.left { margin-right: auto; }
-        .touch-btn.right { margin-left: auto; }
-
-        .touch-btn.jump {
-            width: 90px;
-            height: 90px;
-            font-size: 2.4rem;
-            background: rgba(0, 191, 255, 0.15);
-            border-color: rgba(0, 191, 255, 0.3);
-            margin: 0 auto;
-        }
-        .touch-btn.jump:active {
-            background: rgba(0, 191, 255, 0.4);
-            border-color: var(--primary);
-        }
-
-        .touch-controls-group {
-            display: flex;
-            gap: 15px;
-            align-items: center;
-            pointer-events: none;
-        }
-        .touch-controls-group .touch-btn { pointer-events: auto; }
-
-        /* ===== LOBBY OVERLAY ===== */
-        #lobbyOverlay {
-            position: absolute;
-            inset: 0;
-            z-index: 15;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            background: rgba(6, 17, 31, 0.85);
-            backdrop-filter: blur(12px);
-            padding: 20px;
-            transition: opacity 0.5s ease;
-            pointer-events: auto;
-        }
-        #lobbyOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-
-        .lobby-box {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            border-radius: 24px;
-            padding: 40px 50px;
-            max-width: 500px;
-            width: 100%;
-            text-align: center;
-            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.5);
-        }
-
-        .lobby-box .game-icon { font-size: 4rem; margin-bottom: 10px; }
-        .lobby-box h2 { font-family: 'Orbitron', monospace; font-size: 1.4rem; margin-bottom: 4px; }
-        .lobby-box h2 span { color: var(--primary); }
-        .lobby-box .subtitle { color: var(--muted); font-size: 0.85rem; margin-bottom: 20px; }
-
-        .lobby-stats {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 20px;
-        }
-
-        .lobby-stat {
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 12px;
-            padding: 12px 8px;
-            border: 1px solid rgba(255, 255, 255, 0.04);
-        }
-
-        .lobby-stat .number {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .lobby-stat .label {
-            font-size: 0.6rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-top: 2px;
-        }
-        .lobby-stat .number.gold { color: var(--gold); }
-        .lobby-stat .number.green { color: var(--success); }
-        .lobby-stat .number.red { color: var(--danger); }
-
-        .lobby-box .prize-pool {
-            font-size: 1.2rem;
-            font-weight: 700;
-            color: var(--gold);
-            margin-bottom: 16px;
-        }
-        .lobby-box .prize-pool small {
-            font-size: 0.7rem;
-            color: var(--muted);
-            font-weight: 400;
-        }
-        .lobby-box .entry-fee {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin-bottom: 16px;
-        }
-        .lobby-box .entry-fee strong { color: var(--gold); }
-
-        .btn-join {
-            padding: 14px 40px;
             border: none;
-            border-radius: 12px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.1rem;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: #fff;
-            width: 100%;
-            touch-action: manipulation;
+            background: #000;
         }
-        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 10px 40px rgba(0, 191, 255, 0.3); }
-        .btn-join:active { transform: scale(0.97); }
-        .btn-join:disabled { opacity: 0.4; cursor: not-allowed; transform: none !important; }
-        .btn-join.joined { background: var(--success); }
-        .btn-join.playing { background: var(--danger); }
-
-        /* ===== PLAYER LIST ===== */
-        #playerList {
-            position: absolute;
-            top: 80px;
-            right: 16px;
-            background: rgba(0, 0, 0, 0.7);
-            backdrop-filter: blur(8px);
-            border-radius: 12px;
-            padding: 12px 14px;
-            min-width: 140px;
-            max-width: 200px;
-            max-height: 50vh;
-            overflow-y: auto;
-            border: 1px solid rgba(255, 255, 255, 0.06);
-            z-index: 12;
-            font-size: 0.75rem;
-            pointer-events: none;
-        }
-        #playerList .title {
-            color: var(--muted);
-            font-size: 0.6rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 8px;
-        }
-        .player-item {
-            display: flex;
-            justify-content: space-between;
-            padding: 3px 0;
-            border-bottom: 1px solid rgba(255, 255, 255, 0.03);
-            color: var(--text);
-            font-size: 0.7rem;
-        }
-        .player-item .status-dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            display: inline-block;
-            margin-right: 6px;
-        }
-        .player-item .status-dot.ready { background: var(--success); }
-        .player-item .status-dot.waiting { background: var(--gold); }
-        .player-item .player-name { display: flex; align-items: center; gap: 4px; }
-
-        /* ===== TOP BAR ===== */
-        #topBar {
+        .game-header {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            z-index: 12;
-            padding: 10px 16px;
+            z-index: 100;
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(16px);
+            padding: 8px 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-            flex-wrap: wrap;
-            gap: 6px;
-            pointer-events: none;
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
         }
-        .top-left { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
-        .top-right { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-        .top-stat {
-            font-size: 0.7rem;
-            color: var(--muted);
+        .game-header .title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: #00BFFF;
             display: flex;
             align-items: center;
-            gap: 4px;
-            white-space: nowrap;
+            gap: 10px;
         }
-        .top-stat .value { color: #fff; font-weight: 600; }
-        .top-stat .value.gold { color: var(--gold); }
-        .top-stat .value.green { color: var(--success); }
-        .top-stat .value.red { color: var(--danger); }
-        .top-stat .value.primary { color: var(--primary); }
-
-        .back-btn {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.85rem;
-            padding: 6px 12px;
-            border-radius: 8px;
-            transition: var(--transition);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            background: rgba(255, 255, 255, 0.02);
+        .game-header .title i { color: #FFD700; }
+        .game-header .status {
+            font-size: 0.75rem;
+            color: #A7B5C5;
             display: flex;
             align-items: center;
-            gap: 4px;
-            pointer-events: auto;
+            gap: 8px;
         }
-        .back-btn:hover { background: rgba(255, 255, 255, 0.08); color: #fff; }
-
-        /* ===== STATUS MESSAGE ===== */
-        #statusMessage {
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            z-index: 13;
-            text-align: center;
-            pointer-events: none;
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 20px 30px;
-            border-radius: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+        .game-header .status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #00E676;
+            animation: pulse 1.5s infinite;
         }
-        #statusMessage.show { display: block; }
-        #statusMessage .main { font-size: 1.4rem; font-weight: 700; color: #fff; }
-        #statusMessage .sub { font-size: 0.85rem; color: var(--muted); margin-top: 6px; }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .lobby-box { padding: 30px 35px; max-width: 420px; }
-            .lobby-box .game-icon { font-size: 3rem; }
-            .lobby-box h2 { font-size: 1.2rem; }
-            #playerList { top: 70px; right: 12px; min-width: 120px; font-size: 0.7rem; padding: 10px 12px; }
-            .touch-btn { width: 60px; height: 60px; font-size: 1.6rem; }
-            .touch-btn.jump { width: 75px; height: 75px; font-size: 2rem; }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
         }
-
-        @media (max-width: 768px) {
-            #topBar { padding: 8px 12px; font-size: 0.65rem; }
-            .top-stat { font-size: 0.6rem; }
-            .back-btn { font-size: 0.7rem; padding: 4px 10px; }
-            .lobby-box { padding: 24px 20px; max-width: 340px; border-radius: 18px; }
-            .lobby-box .game-icon { font-size: 2.5rem; }
-            .lobby-box h2 { font-size: 1rem; }
-            .lobby-box .subtitle { font-size: 0.75rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 8px; }
-            .lobby-stat { padding: 8px 4px; }
-            .lobby-stat .number { font-size: 1.2rem; }
-            .lobby-stat .label { font-size: 0.5rem; }
-            .lobby-box .prize-pool { font-size: 1rem; }
-            .lobby-box .entry-fee { font-size: 0.75rem; }
-            .btn-join { padding: 12px 20px; font-size: 0.95rem; }
-            #playerList { top: 60px; right: 8px; min-width: 100px; max-width: 150px; padding: 8px 10px; font-size: 0.6rem; border-radius: 8px; max-height: 40vh; }
-            #playerList .title { font-size: 0.5rem; }
-            .player-item { font-size: 0.6rem; padding: 2px 0; }
-            .touch-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            .touch-btn.jump { width: 65px; height: 65px; font-size: 1.6rem; }
-            #touchControls { bottom: 20px; padding: 0 12px; }
-            .touch-controls-group { gap: 10px; }
-            #statusMessage { padding: 14px 20px; }
-            #statusMessage .main { font-size: 1.1rem; }
-            #statusMessage .sub { font-size: 0.7rem; }
-        }
-
-        @media (max-width: 400px) {
-            .lobby-box { padding: 18px 14px; max-width: 280px; }
-            .lobby-box .game-icon { font-size: 2rem; }
-            .lobby-box h2 { font-size: 0.85rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-            .lobby-stat .number { font-size: 1rem; }
-            .btn-join { padding: 10px 16px; font-size: 0.85rem; }
-            .touch-btn { width: 42px; height: 42px; font-size: 1rem; }
-            .touch-btn.jump { width: 55px; height: 55px; font-size: 1.4rem; }
-            #touchControls { bottom: 14px; padding: 0 8px; }
-            .touch-controls-group { gap: 6px; }
-            #playerList { top: 55px; right: 6px; min-width: 80px; max-width: 120px; padding: 6px 8px; font-size: 0.5rem; }
-            #topBar { padding: 6px 8px; }
-            .top-stat { font-size: 0.5rem; }
-            .back-btn { font-size: 0.6rem; padding: 3px 8px; }
-        }
-
-        @media (max-height: 500px) and (orientation: landscape) {
-            #touchControls { bottom: 8px; padding: 0 8px; }
-            .touch-btn { width: 40px; height: 40px; font-size: 0.9rem; }
-            .touch-btn.jump { width: 50px; height: 50px; font-size: 1.2rem; }
-            .lobby-box { padding: 16px 20px; max-width: 320px; }
-            .lobby-box .game-icon { font-size: 2rem; }
-            .lobby-box h2 { font-size: 0.9rem; }
-            .lobby-stats { grid-template-columns: 1fr 1fr 1fr; gap: 4px; }
-            .lobby-stat { padding: 4px 4px; }
-            .lobby-stat .number { font-size: 0.9rem; }
-            .btn-join { padding: 8px 16px; font-size: 0.8rem; }
-            #playerList { top: 45px; right: 6px; min-width: 70px; max-width: 100px; padding: 4px 6px; font-size: 0.5rem; max-height: 30vh; }
-            #topBar { padding: 4px 8px; }
-            .top-stat { font-size: 0.5rem; }
-        }
-
-        #playerList::-webkit-scrollbar { width: 3px; }
-        #playerList::-webkit-scrollbar-track { background: transparent; }
-        #playerList::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 2px; }
-
-        #loadingScreen {
-            position: absolute;
+        #loadingOverlay {
+            position: fixed;
             inset: 0;
-            z-index: 30;
+            background: #06111F;
             display: flex;
             flex-direction: column;
-            justify-content: center;
             align-items: center;
-            background: var(--bg);
-            transition: opacity 0.6s ease;
+            justify-content: center;
+            z-index: 1000;
+            transition: opacity 0.5s ease;
         }
-        #loadingScreen.hidden { opacity: 0; pointer-events: none; }
-
-        .loader {
+        #loadingOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        #loadingOverlay .spinner {
             width: 50px;
             height: 50px;
-            border: 3px solid rgba(255, 255, 255, 0.05);
-            border-top-color: var(--primary);
+            border: 4px solid rgba(0, 191, 255, 0.1);
+            border-top-color: #00BFFF;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        .loader-text {
-            margin-top: 16px;
-            color: var(--muted);
-            font-size: 0.8rem;
-            font-weight: 500;
+        @keyframes spin {
+            to { transform: rotate(360deg); }
         }
-        .loader-progress {
-            margin-top: 8px;
-            width: 150px;
-            height: 3px;
-            background: rgba(255, 255, 255, 0.05);
+        #loadingOverlay .text {
+            margin-top: 20px;
+            color: #A7B5C5;
+            font-size: 0.9rem;
+            font-family: 'Orbitron', monospace;
+        }
+        #loadingOverlay .progress-bar {
+            margin-top: 15px;
+            width: 200px;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
             border-radius: 2px;
             overflow: hidden;
         }
-        .loader-progress-bar {
+        #loadingOverlay .progress-bar .fill {
             height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            background: linear-gradient(90deg, #00BFFF, #6C63FF);
             border-radius: 2px;
+            width: 0%;
             transition: width 0.3s ease;
         }
-
-        /* ===== SCORE DISPLAY IN GAME ===== */
-        #scoreOverlay {
-            position: absolute;
-            bottom: 100px;
+        .toast-cyber {
+            position: fixed;
+            bottom: 30px;
             left: 50%;
             transform: translateX(-50%);
-            z-index: 14;
-            display: none;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(8px);
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 1px solid rgba(255, 215, 0, 0.1);
-            gap: 20px;
-            align-items: center;
-            pointer-events: none;
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 230, 118, 0.3);
+            border-radius: 50px;
+            padding: 12px 24px;
+            color: #00E676;
+            font-size: 0.9rem;
+            z-index: 9999;
+            font-family: 'Inter', sans-serif;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            max-width: 90%;
+            text-align: center;
+            animation: slideUp 0.3s ease;
         }
-
-        #scoreOverlay.show { display: flex; }
-
-        .score-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.8rem;
-            color: var(--muted);
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
-
-        .score-item .value {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        .score-item .value.gold { color: var(--gold); }
-        .score-item .value.green { color: var(--success); }
-        .score-item .value.primary { color: var(--primary); }
     </style>
 </head>
 <body>
 
-    <!-- ===== LOADING SCREEN ===== -->
-    <div id="loadingScreen">
-        <div class="loader"></div>
-        <div class="loader-text">Loading NinjaRun...</div>
-        <div class="loader-progress">
-            <div class="loader-progress-bar" id="loadProgress"></div>
+    <div id="loadingOverlay">
+        <div class="spinner"></div>
+        <div class="text">🏃 Loading Ninja Run...</div>
+        <div class="progress-bar">
+            <div class="fill" id="progressFill"></div>
         </div>
     </div>
 
-    <!-- ===== CLICK TO START OVERLAY ===== -->
-    <div id="startOverlay">
-        <div class="content">
-            <div class="icon">🎮</div>
-            <div class="title">NinjaRun</div>
-            <div class="sub">👆 Tap anywhere to start<br><span style="font-size:0.7rem;color:#666;">(Audio will be enabled)</span></div>
+    <div id="gameContainer">
+        <div class="game-header">
+            <div class="title">
+                <i class="fas fa-gamepad"></i>
+                <span>Ninja Run</span>
+            </div>
+            <div class="status">
+                <span class="dot"></span>
+                <span id="statusText">Playing...</span>
+            </div>
         </div>
+        <iframe id="gameFrame" src="games/ninja run/index.html?event=%%EVENT_ID%%&user=%%USER_ID%%&t=%%TIMESTAMP%%"></iframe>
     </div>
 
-    <!-- ===== GAME WRAPPER ===== -->
-    <div id="gameWrapper">
+    <script>
+        const params = new URLSearchParams(window.location.search);
+        const EVENT_ID = params.get('event') || 'event_001';
+        const USER_ID = params.get('user') || 'user_001';
 
-        <div id="gameContainer"></div>
+        let progress = 0;
+        const progressFill = document.getElementById('progressFill');
+        const loadingOverlay = document.getElementById('loadingOverlay');
 
-        <!-- ===== TOP BAR ===== -->
-        <div id="topBar">
-            <div class="top-left">
-                <a href="../game-lobby.html" class="back-btn">
-                    <i class="fas fa-arrow-left"></i> Back
-                </a>
-                <span class="top-stat">
-                    🏆 ROUND <span class="value primary" id="roundNumber">001</span>
-                </span>
-            </div>
-            <div class="top-right">
-                <span class="top-stat">
-                    👥 <span class="value green" id="playerCount">0</span>/50
-                </span>
-                <span class="top-stat">
-                    ⏱️ <span class="value red" id="roundTimer">5:00</span>
-                </span>
-                <span class="top-stat">
-                    💰 <span class="value gold" id="prizeDisplay">0</span> RWF
-                </span>
-            </div>
-        </div>
-
-        <!-- ===== SCORE OVERLAY ===== -->
-        <div id="scoreOverlay">
-            <div class="score-item">
-                🏃 Score: <span class="value gold" id="liveScore">0</span>
-            </div>
-            <div class="score-item">
-                🪙 Coins: <span class="value green" id="liveCoins">0</span>
-            </div>
-            <div class="score-item">
-                📏 Dist: <span class="value primary" id="liveDistance">0</span>
-            </div>
-        </div>
-
-        <!-- ===== PLAYER LIST ===== -->
-        <div id="playerList">
-            <div class="title">👥 Players</div>
-            <div id="playersContainer">
-                <div class="player-item" style="color:var(--muted);">No players yet...</div>
-            </div>
-        </div>
-
-        <!-- ===== STATUS MESSAGE ===== -->
-        <div id="statusMessage">
-            <div class="main" id="statusMain">⏳ Waiting for players...</div>
-            <div class="sub" id="statusSub">Need 2 more players to start</div>
-        </div>
-
-        <!-- ===== LOBBY OVERLAY ===== -->
-        <div id="lobbyOverlay">
-            <div class="lobby-box">
-                <div class="game-icon">🏃</div>
-                <h2>Ninja<span>Run</span></h2>
-                <div class="subtitle">🏆 Tournament Mode</div>
-
-                <div class="lobby-stats">
-                    <div class="lobby-stat">
-                        <div class="number" id="lobbyPlayers">0</div>
-                        <div class="label">Players</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number gold" id="lobbyPrize">0</div>
-                        <div class="label">Prize Pool</div>
-                    </div>
-                    <div class="lobby-stat">
-                        <div class="number green" id="lobbyTimer">5:00</div>
-                        <div class="label">Time Left</div>
-                    </div>
-                </div>
-
-                <div class="prize-pool">
-                    🏆 Prize Pool: <span id="lobbyPrizePool">0</span> RWF
-                </div>
-
-                <div class="entry-fee">
-                    Entry Fee: <strong id="entryFeeDisplay">100</strong> RWF
-                </div>
-
-                <button class="btn-join" id="joinBtn">
-                    <i class="fas fa-gamepad"></i> Join Round
-                </button>
-            </div>
-        </div>
-
-        <!-- ===== TOUCH CONTROLS ===== -->
-        <div id="touchControls">
-            <div class="touch-controls-group">
-                <button class="touch-btn left" id="touchLeft">
-                    <i class="fas fa-chevron-left"></i>
-                </button>
-                <button class="touch-btn right" id="touchRight">
-                    <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-            <button class="touch-btn jump" id="touchJump">
-                <i class="fas fa-arrow-up"></i>
-            </button>
-        </div>
-    </div>
-
-    <!-- ================================================================
-    FIREBASE + GAME INTEGRATION
-    ================================================================ -->
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
-                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+        const loadingInterval = setInterval(() => {
+            progress += Math.random() * 15;
+            if (progress > 100) progress = 100;
+            progressFill.style.width = progress + '%';
+            if (progress >= 100) {
+                clearInterval(loadingInterval);
+                setTimeout(() => {
+                    loadingOverlay.classList.add('hidden');
+                }, 500);
             }
-        }
-    </script>
+        }, 200);
 
-    <script type="module">
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, set, update, get, child } from "firebase/database";
-        import { getAuth, onAuthStateChanged } from "firebase/auth";
+        window.onNinjaRunComplete = function(score, eventId, userId) {
+            console.log('🎯 Game Complete! Score:', score);
+            document.getElementById('statusText').textContent = '✅ Complete!';
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-cyber';
+            toast.textContent = `🏆 Score: ${score} points!`;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 4000);
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
-            authDomain: "shora-games.firebaseapp.com",
-            projectId: "shora-games",
-            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+            setTimeout(() => {
+                window.close();
+            }, 3000);
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
-
-        const CONFIG = {
-            ENTRY_FEE: 100,
-            MAX_PLAYERS: 50,
-            MIN_PLAYERS: 2,
-            ROUND_DURATION: 300,
-            GAME_WIDTH: 1280,
-            GAME_HEIGHT: 720
-        };
-
-        const state = {
-            roundId: '001',
-            roundState: 'waiting',
-            players: [],
-            playerCount: 0,
-            timeRemaining: CONFIG.ROUND_DURATION,
-            user: null,
-            userData: null,
-            joined: false,
-            gameStarted: false,
-            results: null,
-            _startTimeout: null,
-            scoreInterval: null,
-            currentScore: 0,
-            currentCoins: 0,
-            currentDistance: 0,
-            _forceStartAttempts: 0
-        };
-
-        const dom = {
-            container: document.getElementById('gameContainer'),
-            canvas: null,
-            roundNumber: document.getElementById('roundNumber'),
-            playerCount: document.getElementById('playerCount'),
-            roundTimer: document.getElementById('roundTimer'),
-            prizeDisplay: document.getElementById('prizeDisplay'),
-            lobbyOverlay: document.getElementById('lobbyOverlay'),
-            lobbyPlayers: document.getElementById('lobbyPlayers'),
-            lobbyPrize: document.getElementById('lobbyPrize'),
-            lobbyTimer: document.getElementById('lobbyTimer'),
-            lobbyPrizePool: document.getElementById('lobbyPrizePool'),
-            entryFeeDisplay: document.getElementById('entryFeeDisplay'),
-            joinBtn: document.getElementById('joinBtn'),
-            playersContainer: document.getElementById('playersContainer'),
-            statusMessage: document.getElementById('statusMessage'),
-            statusMain: document.getElementById('statusMain'),
-            statusSub: document.getElementById('statusSub'),
-            loadingScreen: document.getElementById('loadingScreen'),
-            loadProgress: document.getElementById('loadProgress'),
-            touchLeft: document.getElementById('touchLeft'),
-            touchRight: document.getElementById('touchRight'),
-            touchJump: document.getElementById('touchJump'),
-            startOverlay: document.getElementById('startOverlay'),
-            liveScore: document.getElementById('liveScore'),
-            liveCoins: document.getElementById('liveCoins'),
-            liveDistance: document.getElementById('liveDistance'),
-            scoreOverlay: document.getElementById('scoreOverlay')
-        };
-
-        dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
-
-        function getPlayersArray() {
-            if (Array.isArray(state.players)) return state.players;
-            if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
-            return [];
-        }
-
-        // ============================================================
-        // AUTH
-        // ============================================================
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                state.user = user;
-                try {
-                    const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                    if (snapshot.exists()) {
-                        state.userData = snapshot.val();
-                        console.log('✅ User loaded:', state.userData.username);
-                    } else {
-                        state.userData = { username: 'Player', balance: 0 };
-                    }
-                } catch (e) {
-                    state.userData = { username: 'Player', balance: 0 };
-                }
-            } else {
-                window.location.href = '../login.html';
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
+                window.onNinjaRunComplete(event.data.score, event.data.eventId, event.data.userId);
             }
         });
 
-        // ============================================================
-        // GAME LOADER
-        // ============================================================
-        function loadGame() {
-            console.log('🎮 Loading NinjaRun game...');
+        const frame = document.getElementById('gameFrame');
+        const timestamp = Date.now();
+        frame.src = frame.src
+            .replace('%%EVENT_ID%%', EVENT_ID)
+            .replace('%%USER_ID%%', USER_ID)
+            .replace('%%TIMESTAMP%%', timestamp);
 
-            const canvas = document.createElement('canvas');
-            canvas.id = 'c2canvas';
-            canvas.width = CONFIG.GAME_WIDTH;
-            canvas.height = CONFIG.GAME_HEIGHT;
-            canvas.style.width = '100%';
-            canvas.style.height = '100%';
-            dom.container.appendChild(canvas);
-            dom.canvas = canvas;
-
-            let progress = 0;
-            const loadInterval = setInterval(() => {
-                progress += Math.random() * 15;
-                if (progress > 100) progress = 100;
-                dom.loadProgress.style.width = progress + '%';
-                if (progress === 100) {
-                    clearInterval(loadInterval);
-                    setTimeout(() => {
-                        dom.loadingScreen.classList.add('hidden');
-                        initGame();
-                    }, 300);
-                }
-            }, 200);
-        }
-
-        // ============================================================
-        // INIT GAME
-        // ============================================================
-        function initGame() {
-            console.log('🏃 Starting NinjaRun...');
-
+        // Inject bridge into iframe
+        frame.addEventListener('load', function() {
+            console.log('📄 Game iframe loaded');
+            
             try {
-                const jqueryScript = document.createElement('script');
-                jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
-                jqueryScript.onload = () => {
-                    console.log('✅ jQuery loaded');
-                    if (typeof jQuery !== 'undefined') {
-                        console.log('✅ jQuery is ready!');
-                        loadDataAndEngine();
-                    } else {
-                        setTimeout(() => {
-                            if (typeof jQuery !== 'undefined') {
-                                console.log('✅ jQuery is ready (after delay)!');
-                                loadDataAndEngine();
-                            } else {
-                                console.error('❌ jQuery still not available');
-                                dom.statusMain.textContent = '⚠️ jQuery failed to load';
-                                dom.statusSub.textContent = 'Please refresh and try again';
-                                dom.statusMessage.classList.add('show');
-                            }
-                        }, 500);
-                    }
-                };
-                jqueryScript.onerror = (e) => {
-                    console.error('❌ Failed to load jQuery:', e);
-                    dom.statusMain.textContent = '⚠️ jQuery not found';
-                    dom.statusSub.textContent = 'Make sure jquery-2.1.1.min.js is in the game folder';
-                    dom.statusMessage.classList.add('show');
-                };
-                document.head.appendChild(jqueryScript);
-
-            } catch (e) {
-                console.error('❌ Error initializing game:', e);
-                dom.statusMain.textContent = '⚠️ Game initialization error';
-                dom.statusSub.textContent = 'Please refresh and try again';
-                dom.statusMessage.classList.add('show');
-            }
-        }
-
-        // ============================================================
-        // LOAD DATA.JS AND FIX PATHS
-        // ============================================================
-        function loadDataAndEngine() {
-            console.log('🔄 Loading data.js and fixing paths...');
-
-            fetch('/games/ninja%20run/data.js')
-                .then(response => response.text())
-                .then(dataText => {
-                    console.log('✅ data.js fetched');
-
-                    const fixedData = dataText
-                        .replace(/images\//g, '/games/ninja%20run/images/')
-                        .replace(/media\//g, '/games/ninja%20run/media/');
-                    console.log('✅ Image and audio paths fixed');
-
-                    const projectData = JSON.parse(fixedData);
-                    window._c2projectData = projectData;
-                    console.log('✅ data.js parsed and stored');
-
-                    loadGameEngine();
-                })
-                .catch(err => {
-                    console.error('❌ Failed to fetch data.js:', err);
-                    dom.statusMain.textContent = '⚠️ data.js not found';
-                    dom.statusSub.textContent = 'Make sure data.js is in the game folder';
-                    dom.statusMessage.classList.add('show');
-                });
-        }
-
-        // ============================================================
-        // LOAD GAME ENGINE
-        // ============================================================
-        function loadGameEngine() {
-            console.log('🔄 Loading game engine...');
-
-            try {
-                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
-                    const originalSetPosition = AudioListener.prototype.setPosition;
-                    AudioListener.prototype.setPosition = function(x, y, z) {
-                        if (isNaN(x) || x === undefined || x === null) x = 0;
-                        if (isNaN(y) || y === undefined || y === null) y = 0;
-                        if (isNaN(z) || z === undefined || z === null) z = -600;
-                        return originalSetPosition.call(this, x, y, z);
+                const frameDoc = document.getElementById('gameFrame').contentDocument;
+                if (frameDoc) {
+                    const bridgeScript = document.createElement('script');
+                    bridgeScript.src = '../js/ninja-run-bridge.js';
+                    bridgeScript.onerror = function() {
+                        console.log('⚠️ Bridge script failed, using fallback');
+                        startFallbackMonitor();
                     };
-                    console.log('✅ AudioListener patched');
+                    frameDoc.head.appendChild(bridgeScript);
+                    console.log('✅ Bridge script injected');
+                } else {
+                    console.log('⚠️ Cannot access iframe, using fallback');
+                    startFallbackMonitor();
                 }
             } catch (e) {
-                console.warn('⚠️ Could not patch AudioListener:', e);
+                console.log('⚠️ Error injecting bridge:', e);
+                startFallbackMonitor();
             }
-
-            const script = document.createElement('script');
-            script.src = '/games/ninja%20run/c2runtime.js';
-            script.onload = () => {
-                console.log('✅ Runtime loaded');
-
-                try {
-                    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                        cr.runtime.prototype.requestProjectData = function() {
-                            console.log('🔄 Using cached project data');
-                            if (window._c2projectData) {
-                                this.loadProject(window._c2projectData);
-                            } else {
-                                console.error('❌ No cached project data found!');
-                                originalRequestProjectData.call(this);
-                            }
-                        };
-                        console.log('✅ Runtime.requestProjectData overridden');
-                    }
-
-                    const runtime = new cr.createRuntime('c2canvas');
-                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                    window.gameRuntime = runtime;
-
-                    dom.startOverlay.addEventListener('click', () => {
-                        dom.startOverlay.classList.add('hidden');
-                        if (runtime.audioInstance && runtime.audioInstance.context) {
-                            runtime.audioInstance.context.resume();
-                        }
-                        console.log('🎵 Audio context resumed');
-                    });
-
-                    setupTouchControls(runtime);
-                    startLobby();
-                    startScoreTracking();
-
-                } catch (e) {
-                    console.error('❌ Error creating runtime:', e);
-                    dom.statusMain.textContent = '⚠️ Game engine error';
-                    dom.statusSub.textContent = 'Please refresh and try again';
-                    dom.statusMessage.classList.add('show');
-                }
-            };
-            script.onerror = (e) => {
-                console.error('❌ Failed to load c2runtime.js:', e);
-                dom.statusMain.textContent = '⚠️ Game engine not found';
-                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-                dom.statusMessage.classList.add('show');
-            };
-            document.head.appendChild(script);
-        }
-
-        // ============================================================
-        // SCORE TRACKING
-        // ============================================================
-        function startScoreTracking() {
-            if (state.scoreInterval) clearInterval(state.scoreInterval);
-
-            state.scoreInterval = setInterval(() => {
-                if (!window.gameRuntime) return;
-
-                try {
-                    const runtime = window.gameRuntime;
-                    const vars = runtime.all_global_vars || [];
-
-                    let score = 0, coins = 0, distance = 0;
-
-                    for (let v of vars) {
-                        if (v.name === 'Score') score = v.data || 0;
-                        if (v.name === 'Coins') coins = v.data || 0;
-                        if (v.name === 'Distances') distance = v.data || 0;
-                    }
-
-                    state.currentScore = score;
-                    state.currentCoins = coins;
-                    state.currentDistance = distance;
-
-                    dom.liveScore.textContent = score;
-                    dom.liveCoins.textContent = coins;
-                    dom.liveDistance.textContent = distance;
-
-                    if (state.joined && state.user) {
-                        const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                        update(playerRef, {
-                            score: score,
-                            coins: coins,
-                            distance: distance,
-                            lastUpdate: Date.now()
-                        }).catch(e => console.warn('⚠️ Could not update score:', e));
-                    }
-
-                    if (state.roundState === 'playing') {
-                        dom.scoreOverlay.classList.add('show');
-                    } else {
-                        dom.scoreOverlay.classList.remove('show');
-                    }
-
-                } catch (e) { /* Silent fail */ }
-            }, 500);
-
-            console.log('✅ Score tracking started');
-        }
-
-        // ============================================================
-        // TOUCH CONTROLS
-        // ============================================================
-        function setupTouchControls(runtime) {
-            let leftPressed = false, rightPressed = false, jumpPressed = false;
-
-            function dispatchKeyEvent(type, key, keyCode) {
-                const event = new KeyboardEvent(type, {
-                    key: key,
-                    keyCode: keyCode,
-                    code: key,
-                    bubbles: true,
-                    cancelable: true
-                });
-                document.dispatchEvent(event);
-            }
-
-            dom.touchLeft.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!leftPressed) { leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-
-            dom.touchRight.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!rightPressed) { rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-
-            dom.touchJump.addEventListener('touchstart', (e) => {
-                e.preventDefault();
-                if (!jumpPressed) { jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('touchend', (e) => {
-                e.preventDefault();
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('touchcancel', (e) => {
-                e.preventDefault();
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-
-            // Mouse fallback
-            dom.touchLeft.addEventListener('mousedown', () => {
-                if (!leftPressed) { leftPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('mouseup', () => {
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-            dom.touchLeft.addEventListener('mouseleave', () => {
-                if (leftPressed) { leftPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowLeft', 37); }
-            });
-
-            dom.touchRight.addEventListener('mousedown', () => {
-                if (!rightPressed) { rightPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('mouseup', () => {
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-            dom.touchRight.addEventListener('mouseleave', () => {
-                if (rightPressed) { rightPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowRight', 39); }
-            });
-
-            dom.touchJump.addEventListener('mousedown', () => {
-                if (!jumpPressed) { jumpPressed = true;
-                    dispatchKeyEvent('keydown', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('mouseup', () => {
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-            dom.touchJump.addEventListener('mouseleave', () => {
-                if (jumpPressed) { jumpPressed = false;
-                    dispatchKeyEvent('keyup', 'ArrowUp', 38); }
-            });
-        }
-
-        // ============================================================
-        // LOBBY SYSTEM
-        // ============================================================
-        function startLobby() {
-            console.log('🔄 Starting lobby...');
-            dom.lobbyOverlay.classList.remove('hidden');
-            updateLobbyUI();
-            listenForRoundUpdates();
-            listenForPlayerUpdates();
-            dom.joinBtn.addEventListener('click', joinRound);
-            startRoundTimer();
-            simulatePlayers();
-        }
-
-        function listenForRoundUpdates() {
-            const roundRef = ref(db, `rounds/${state.roundId}`);
-            onValue(roundRef, (snapshot) => {
-                try {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        state.roundState = data.status || 'waiting';
-                        state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data
-                            .players)) : [];
-                        state.playerCount = state.players.length;
-                        updateUI();
-                        if (state.roundState === 'playing' && !state.gameStarted) startGame();
-                        if (state.roundState === 'ended') endRound(data.results);
-                    } else {
-                        createNewRound();
-                    }
-                } catch (e) { console.error('❌ Error in round listener:', e); }
-            });
-        }
-
-        function listenForPlayerUpdates() {
-            const playersRef = ref(db, `rounds/${state.roundId}/players`);
-            onValue(playersRef, (snapshot) => {
-                try {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        state.players = Array.isArray(data) ? data : Object.values(data);
-                        state.playerCount = state.players.length;
-                        updateUI();
-                    }
-                } catch (e) { console.error('❌ Error in player listener:', e); }
-            });
-        }
-
-        function createNewRound() {
-            set(ref(db, `rounds/${state.roundId}`), {
-                status: 'waiting',
-                timeRemaining: CONFIG.ROUND_DURATION,
-                players: {},
-                prizePool: 0,
-                startTime: Date.now(),
-                createdAt: Date.now()
-            }).catch(e => console.error('❌ Error creating round:', e));
-        }
-
-        // ============================================================
-        // JOIN ROUND
-        // ============================================================
-        async function joinRound() {
-            if (!state.user || !state.userData) {
-                alert('Please login first');
-                window.location.href = '../login.html';
-                return;
-            }
-            if (state.joined) { alert('You are already in this round!'); return; }
-            if (state.playerCount >= CONFIG.MAX_PLAYERS) { alert('Round is full!'); return; }
-
-            const balance = state.userData.balance || 0;
-            if (balance < CONFIG.ENTRY_FEE) {
-                alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`);
-                window.location.href = '../deposit.html';
-                return;
-            }
-
-            try {
-                dom.joinBtn.disabled = true;
-                dom.joinBtn.textContent = '⏳ Processing...';
-
-                await update(ref(db, `users/${state.user.uid}`), { balance: balance - CONFIG.ENTRY_FEE });
-                state.userData.balance = balance - CONFIG.ENTRY_FEE;
-
-                await set(ref(db, `rounds/${state.roundId}/players/${state.user.uid}`), {
-                    uid: state.user.uid,
-                    username: state.userData.username || 'Player',
-                    joinedAt: Date.now(),
-                    score: 0,
-                    coins: 0,
-                    distance: 0,
-                    status: 'ready'
-                });
-
-                state.joined = true;
-                dom.joinBtn.textContent = '✅ Joined!';
-                dom.joinBtn.disabled = true;
-
-                const snapshot = await get(ref(db, `rounds/${state.roundId}/prizePool`));
-                const currentPrize = snapshot.val() || 0;
-                await set(ref(db, `rounds/${state.roundId}/prizePool`), currentPrize + CONFIG.ENTRY_FEE);
-
-                console.log('✅ Joined round!');
-            } catch (e) {
-                console.error('❌ Error joining round:', e);
-                alert('Error joining round. Please try again.');
-                dom.joinBtn.disabled = false;
-                dom.joinBtn.textContent = '🔄 Try Again';
-            }
-        }
-
-        // ============================================================
-        // START GAME - FORCES THE GAME TO BEGIN
-        // ============================================================
-        function startGame() {
-            state.gameStarted = true;
-            console.log('🎮 Game is now live!');
-            dom.lobbyOverlay.classList.add('hidden');
-            dom.statusMessage.classList.remove('show');
-            dom.scoreOverlay.classList.add('show');
-
-            // Force the game to start
-            forceGameStart();
-        }
-
-        // ============================================================
-        // FORCE GAME START - BYPASSES INTERNAL BUTTONS
-        // ============================================================
-        function forceGameStart() {
-            const runtime = window.gameRuntime;
-            if (!runtime) {
-                console.log('⏳ Runtime not ready, retrying...');
-                if (state._forceStartAttempts < 10) {
-                    state._forceStartAttempts++;
-                    setTimeout(forceGameStart, 500);
-                }
-                return;
-            }
-
-            console.log('🎮 Force starting game... (Attempt ' + (state._forceStartAttempts + 1) + ')');
-
-            try {
-                const currentLayout = runtime.running_layout;
-                console.log('📐 Current layout:', currentLayout ? currentLayout.name : 'None');
-
-                // ============================================================
-                // METHOD 1: Direct layout switch to "Game"
-                // ============================================================
-                if (currentLayout && currentLayout.name === 'Menu') {
-                    const gameLayout = runtime.layouts['Game'];
-                    if (gameLayout) {
-                        console.log('🔄 Switching from Menu to Game layout...');
-                        // Use the internal method to change layout
-                        runtime.changelayout = gameLayout;
-                        runtime.doChangeLayout(gameLayout);
-                        console.log('✅ Switched to Game layout');
-
-                        // Wait and then unpause
-                        setTimeout(() => {
-                            const vars = runtime.all_global_vars || [];
-                            vars.forEach(v => {
-                                if (v.name === 'Pause') {
-                                    v.data = 0;
-                                    console.log('✅ Pause set to 0');
-                                }
-                            });
-                            // Force a tick
-                            if (runtime.tick) {
-                                runtime.tick(false);
-                            }
-                        }, 500);
-                        state._forceStartAttempts = 0;
-                        return;
-                    }
-                }
-
-                // ============================================================
-                // METHOD 2: If already on Game, just unpause
-                // ============================================================
-                if (currentLayout && currentLayout.name === 'Game') {
-                    console.log('✅ Already on Game layout, unpausing...');
-                    const vars = runtime.all_global_vars || [];
-                    let unpaused = false;
-                    vars.forEach(v => {
-                        if (v.name === 'Pause') {
-                            v.data = 0;
-                            unpaused = true;
-                            console.log('✅ Pause set to 0');
-                        }
-                    });
-                    // Force a tick
-                    if (runtime.tick) {
-                        runtime.tick(false);
-                    }
-                    state._forceStartAttempts = 0;
-                    return;
-                }
-
-                // ============================================================
-                // METHOD 3: Try to find and trigger the Play button
-                // ============================================================
-                console.log('🔍 Looking for Play button...');
-                const types = runtime.types_by_index || [];
-                let found = false;
-
-                // Look for any object that might be a play button
-                const buttonNames = ['play', 'btnplay', 'start', 'begin', 'go'];
-                types.forEach(type => {
-                    if (type.name) {
-                        const lowerName = type.name.toLowerCase();
-                        if (buttonNames.some(name => lowerName.includes(name))) {
-                            console.log('🎯 Found potential button:', type.name);
-                            type.instances.forEach(inst => {
-                                console.log('  - Clicking instance at', inst.x, inst.y);
-                                // Try to trigger the click event
-                                try {
-                                    const cnds = Object.getPrototypeOf(type.plugin).cnds;
-                                    if (cnds && cnds.OnClick) {
-                                        runtime.trigger(cnds.OnClick, inst);
-                                        found = true;
-                                    }
-                                    // Also try mouse click simulation on the canvas
-                                    const canvas = dom.canvas;
-                                    if (canvas) {
-                                        const rect = canvas.getBoundingClientRect();
-                                        const scaleX = rect.width / CONFIG.GAME_WIDTH;
-                                        const scaleY = rect.height / CONFIG.GAME_HEIGHT;
-                                        const clickEvent = new MouseEvent('click', {
-                                            clientX: rect.left + (inst.x * scaleX),
-                                            clientY: rect.top + (inst.y * scaleY),
-                                            bubbles: true
-                                        });
-                                        canvas.dispatchEvent(clickEvent);
-                                        found = true;
-                                    }
-                                } catch (e) {
-                                    console.warn('Could not click button:', e);
-                                }
-                            });
-                        }
-                    }
-                });
-
-                // ============================================================
-                // METHOD 4: Unpause any paused state
-                // ============================================================
-                try {
-                    const vars = runtime.all_global_vars || [];
-                    vars.forEach(v => {
-                        if (v.name === 'Pause') {
-                            v.data = 0;
-                            console.log('✅ Pause set to 0');
-                        }
-                        if (v.name === 'GameState') {
-                            v.data = 1;
-                            console.log('✅ GameState set to 1');
-                        }
-                        if (v.name === 'GameStarted') {
-                            v.data = 1;
-                            console.log('✅ GameStarted set to 1');
-                        }
-                    });
-                } catch (e) {
-                    console.warn('⚠️ Could not set game state:', e);
-                }
-
-                // ============================================================
-                // METHOD 5: Force the layout to start running
-                // ============================================================
-                if (currentLayout && currentLayout.startRunning) {
-                    console.log('🔄 Re-starting layout...');
-                    currentLayout.startRunning();
-                }
-
-                // ============================================================
-                // METHOD 6: Force the game loop to tick
-                // ============================================================
-                if (runtime.tick) {
-                    runtime.tick(false);
-                    console.log('✅ Forced game tick');
-                }
-
-                // If we found a button and clicked it, reset attempts
-                if (found) {
-                    state._forceStartAttempts = 0;
-                }
-
-            } catch (e) {
-                console.error('❌ Error forcing game start:', e);
-            }
-
-            // If still not started and attempts < 10, retry
-            state._forceStartAttempts++;
-            if (state._forceStartAttempts < 10) {
-                console.log('⏳ Retrying force start in 1 second...');
-                setTimeout(forceGameStart, 1000);
-            } else {
-                console.log('⚠️ Max attempts reached for force start');
-                state._forceStartAttempts = 0;
-            }
-        }
-
-        // ============================================================
-        // ROUND MANAGEMENT
-        // ============================================================
-        function startRound() {
-            if (state.roundState !== 'waiting') return;
-            if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
-
-            update(ref(db, `rounds/${state.roundId}`), {
-                status: 'playing',
-                startTime: Date.now(),
-                timeRemaining: CONFIG.ROUND_DURATION
-            }).catch(e => console.error('❌ Error starting round:', e));
-
-            state.roundState = 'playing';
-            dom.lobbyOverlay.classList.add('hidden');
-            dom.statusMessage.classList.remove('show');
-            dom.scoreOverlay.classList.add('show');
-            console.log('🏁 Round started!');
-
-            // Reset force start attempts
-            state._forceStartAttempts = 0;
-
-            // Force the game to start after a short delay
-            setTimeout(forceGameStart, 1000);
-        }
-
-        // ============================================================
-        // END ROUND
-        // ============================================================
-        function endRound(results) {
-            state.roundState = 'ended';
-            state.results = results;
-            dom.scoreOverlay.classList.remove('show');
-
-            if (state.scoreInterval) {
-                clearInterval(state.scoreInterval);
-                state.scoreInterval = null;
-            }
-
-            const finalResults = getGameResults();
-
-            if (state.joined && state.user) {
-                const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                update(playerRef, {
-                    score: finalResults.score || state.currentScore || 0,
-                    coins: finalResults.coins || state.currentCoins || 0,
-                    distance: finalResults.distance || state.currentDistance || 0,
-                    status: 'finished'
-                }).catch(e => console.error('❌ Error updating final score:', e));
-            }
-
-            console.log('🏁 Round ended! Final scores:', finalResults);
-
-            const players = getPlayersArray();
-            const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
-            const winner = sorted[0];
-
-            dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
-            dom.statusSub.textContent =
-                `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
-            dom.statusMessage.classList.add('show');
-
-            if (winner && winner.uid) {
-                const prizePool = players.length * CONFIG.ENTRY_FEE;
-                const winnings = Math.floor(prizePool * 0.7);
-                get(ref(db, `users/${winner.uid}`)).then((snap) => {
-                    if (snap.exists()) {
-                        update(ref(db, `users/${winner.uid}`), {
-                            balance: (snap.val().balance || 0) + winnings
-                        }).catch(e => console.error('❌ Error updating winner balance:', e));
-                    }
-                }).catch(e => console.error('❌ Error getting winner data:', e));
-            }
-
-            // Reset for next round after 10 seconds
-            setTimeout(() => {
-                dom.statusMessage.classList.remove('show');
-                state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
-                state.roundState = 'waiting';
-                state.timeRemaining = CONFIG.ROUND_DURATION;
-                state.players = [];
-                state.playerCount = 0;
-                state.joined = false;
-                state.gameStarted = false;
-                state.results = null;
-                state._forceStartAttempts = 0;
-                dom.joinBtn.disabled = false;
-                dom.joinBtn.textContent = '🚀 Join Round';
-                dom.lobbyOverlay.classList.remove('hidden');
-                updateUI();
-                // Re-simulate players
-                setTimeout(simulatePlayers, 1000);
-            }, 10000);
-        }
-
-        // ============================================================
-        // TIMER
-        // ============================================================
-        function startRoundTimer() {
-            setInterval(() => {
-                if (state.roundState === 'playing') {
-                    state.timeRemaining--;
-                    updateTimerDisplay();
-                    if (state.timeRemaining <= 0) {
-                        endRound(getGameResults());
-                    }
+        });
+
+        function startFallbackMonitor() {
+            console.log('📊 Starting fallback monitor');
+            const checkInterval = setInterval(() => {
+                const played = sessionStorage.getItem('ninjaRunPlayed');
+                const score = sessionStorage.getItem('ninjaRunScore');
+                if (played === 'true' && score !== null) {
+                    clearInterval(checkInterval);
+                    console.log('🎯 Game completion detected via session storage');
+                    window.onNinjaRunComplete(parseInt(score), EVENT_ID, USER_ID);
                 }
             }, 1000);
+
+            setTimeout(() => {
+                clearInterval(checkInterval);
+            }, 300000);
         }
 
-        function updateTimerDisplay() {
-            const mins = Math.floor(Math.max(0, state.timeRemaining) / 60);
-            const secs = Math.floor(Math.max(0, state.timeRemaining) % 60);
-            const display = `${mins}:${secs.toString().padStart(2, '0')}`;
-            dom.roundTimer.textContent = display;
-            dom.lobbyTimer.textContent = display;
-        }
-
-        // ============================================================
-        // GET GAME RESULTS
-        // ============================================================
-        function getGameResults() {
-            const runtime = window.gameRuntime;
-            let score = 0, coins = 0, distance = 0;
-            if (runtime) {
-                try {
-                    const vars = runtime.all_global_vars || [];
-                    for (let v of vars) {
-                        if (v.name === 'Score') score = v.data || 0;
-                        if (v.name === 'Coins') coins = v.data || 0;
-                        if (v.name === 'Distances') distance = v.data || 0;
-                    }
-                } catch (e) {}
-            }
-            return { score, coins, distance };
-        }
-
-        // ============================================================
-        // UPDATE UI
-        // ============================================================
-        function updateUI() {
-            const players = getPlayersArray();
-            state.playerCount = players.length;
-
-            dom.playerCount.textContent = state.playerCount;
-            dom.lobbyPlayers.textContent = state.playerCount;
-
-            const prizePool = state.playerCount * CONFIG.ENTRY_FEE;
-            dom.prizeDisplay.textContent = prizePool.toLocaleString();
-            dom.lobbyPrize.textContent = prizePool.toLocaleString();
-            dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
-
-            dom.roundNumber.textContent = state.roundId;
-            renderPlayerList();
-
-            if (state.roundState === 'waiting') {
-                if (state.playerCount >= CONFIG.MIN_PLAYERS) {
-                    dom.statusMain.textContent = '✅ Ready to start!';
-                    dom.statusSub.textContent = `⏳ Starting in 5 seconds...`;
-                    dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) clearTimeout(state._startTimeout);
-                    state._startTimeout = setTimeout(() => {
-                        if (state.roundState === 'waiting') startRound();
-                        state._startTimeout = null;
-                    }, 5000);
-                } else {
-                    const needed = CONFIG.MIN_PLAYERS - state.playerCount;
-                    dom.statusMain.textContent = '⏳ Waiting for players...';
-                    dom.statusSub.textContent = `Need ${needed} more player${needed > 1 ? 's' : ''} to start`;
-                    dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) {
-                        clearTimeout(state._startTimeout);
-                        state._startTimeout = null;
-                    }
-                }
-            }
-        }
-
-        function updateLobbyUI() { updateUI(); }
-
-        // ============================================================
-        // RENDER PLAYER LIST
-        // ============================================================
-        function renderPlayerList() {
-            const players = getPlayersArray();
-
-            if (players.length === 0) {
-                dom.playersContainer.innerHTML =
-                    `<div class="player-item" style="color:var(--muted);">No players yet...</div>`;
-                return;
-            }
-
-            let html = '';
-            players.forEach((p) => {
-                const isMe = p.uid === state.user?.uid;
-                const statusColor = p.status === 'ready' ? 'ready' : 'waiting';
-                html += `
-                    <div class="player-item" style="${isMe ? 'color:var(--gold);' : ''}">
-                        <span class="player-name">
-                            <span class="status-dot ${statusColor}"></span>
-                            ${isMe ? '⭐ ' : ''}${p.username || 'Player'}
-                        </span>
-                        <span>${p.score || 0}</span>
-                    </div>
-                `;
-            });
-            dom.playersContainer.innerHTML = html;
-        }
-
-        // ============================================================
-        // SIMULATE PLAYERS FOR TESTING
-        // ============================================================
-        function simulatePlayers() {
-            setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
-
-            const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
-            botNames.forEach((name, index) => {
-                setTimeout(() => {
-                    if (state.playerCount < 8) {
-                        const fakeUid = `bot_${Date.now()}_${index}`;
-                        state.players.push({
-                            uid: fakeUid,
-                            username: name,
-                            joinedAt: Date.now(),
-                            score: Math.floor(Math.random() * 500),
-                            coins: Math.floor(Math.random() * 20),
-                            distance: Math.floor(Math.random() * 500),
-                            status: 'ready'
-                        });
-                        state.playerCount = state.players.length;
-                        updateUI();
-                    }
-                }, 2000 + (index * 1500));
-            });
-        }
-
-        // ============================================================
-        // INIT
-        // ============================================================
-        console.log('%c🏃 NINJARUN - TOURNAMENT MODE', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c📱 Fully responsive on all devices', 'color: #00E676;');
-        console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #FFD700;');
-        console.log('%c📊 Scores are being recorded in real-time!', 'color: #FF6B6B;');
-
-        loadGame();
-
-        window.state = state;
-        window.db = db;
+        console.log('🎮 Ninja Run Wrapper loaded');
+        console.log(`📋 Event: ${EVENT_ID}`);
+        console.log(`👤 User: ${USER_ID}`);
     </script>
 </body>
 </html>
