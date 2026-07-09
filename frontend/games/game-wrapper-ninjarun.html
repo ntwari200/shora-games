@@ -320,11 +320,7 @@
                 // 1. Patch Mouse plugin
                 if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
                     const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
-                    
-                    // Store the original method
                     const originalOnMouseMove = mouseProto.onMouseMove;
-                    
-                    // Override with our version
                     mouseProto.onMouseMove = function(info) {
                         const canvas = this.runtime.canvas;
                         if (!canvas) {
@@ -336,8 +332,6 @@
                         }
                         const scaleX = canvas.width / rect.width;
                         const scaleY = canvas.height / rect.height;
-                        
-                        // Create a new info object with corrected coordinates
                         const newInfo = {
                             pageX: ((info.pageX || info.clientX || 0) - rect.left) * scaleX,
                             pageY: ((info.pageY || info.clientY || 0) - rect.top) * scaleY,
@@ -350,22 +344,18 @@
                             preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
                             stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
                         };
-                        
                         return originalOnMouseMove.call(this, newInfo);
                     };
                     console.log('✅ Mouse.onMouseMove patched');
                 }
                 
-                // 2. Patch Touch plugin - CORRECTED to avoid recursion
+                // 2. Patch Touch plugin
                 if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
                     const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-                    
-                    // Store original methods
                     const originalOnTouchStart = touchProto.onTouchStart;
                     const originalOnTouchMove = touchProto.onTouchMove;
                     const originalOnPointerStart = touchProto.onPointerStart;
                     
-                    // Override onTouchStart - call the original with our modified info
                     touchProto.onTouchStart = function(info) {
                         const canvas = this.runtime.canvas;
                         if (!canvas) {
@@ -378,7 +368,6 @@
                         const scaleX = canvas.width / rect.width;
                         const scaleY = canvas.height / rect.height;
                         
-                        // Create modified touch list
                         const modifiedTouches = [];
                         const touches = info.changedTouches || info.touches || [];
                         
@@ -400,7 +389,6 @@
                             }
                         }
                         
-                        // Create new info object with modified touches
                         const newInfo = {
                             changedTouches: modifiedTouches,
                             touches: modifiedTouches,
@@ -410,12 +398,10 @@
                             stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
                         };
                         
-                        // Call the original with our modified info
                         return originalOnTouchStart.call(this, newInfo);
                     };
                     console.log('✅ Touch.onTouchStart patched');
                     
-                    // Override onTouchMove
                     touchProto.onTouchMove = function(info) {
                         const canvas = this.runtime.canvas;
                         if (!canvas) {
@@ -428,7 +414,6 @@
                         const scaleX = canvas.width / rect.width;
                         const scaleY = canvas.height / rect.height;
                         
-                        // Update existing touches with corrected coordinates
                         for (let i = 0; i < (info.changedTouches || []).length; i++) {
                             const t = info.changedTouches[i];
                             if (t) {
@@ -447,7 +432,6 @@
                     };
                     console.log('✅ Touch.onTouchMove patched');
                     
-                    // Override onPointerStart
                     if (touchProto.onPointerStart) {
                         touchProto.onPointerStart = function(info) {
                             const canvas = this.runtime.canvas;
@@ -482,6 +466,94 @@
         }
 
         // ============================================================
+        // 🔥 FIX: Force Play Button to be visible and clickable
+        // ============================================================
+        function forcePlayButtonVisible(runtime) {
+            if (!runtime) return false;
+            console.log('🎯 Forcing Play button visibility...');
+            
+            try {
+                const types = runtime.types_by_index || [];
+                let found = false;
+                
+                types.forEach(type => {
+                    // Find the Play button type (t33)
+                    if (type.texture_file && type.texture_file.includes('btnplay')) {
+                        console.log('✅ Found Play button type:', type.name);
+                        
+                        if (type.instances) {
+                            type.instances.forEach(inst => {
+                                // Force visibility
+                                inst.visible = true;
+                                inst.collisionsEnabled = true;
+                                if (inst.enabled !== undefined) inst.enabled = true;
+                                
+                                // Set to known position
+                                inst.x = 640;
+                                inst.y = 409;
+                                inst.width = 112;
+                                inst.height = 112;
+                                inst.hotspotX = 0.5;
+                                inst.hotspotY = 0.5;
+                                inst.opacity = 1;
+                                inst.angle = 0;
+                                inst.set_bbox_changed();
+                                
+                                // Force layer to be visible
+                                if (inst.layer) {
+                                    inst.layer.visible = true;
+                                    inst.layer.opacity = 1;
+                                    console.log(`✅ Layer "${inst.layer.name}" made visible`);
+                                }
+                                
+                                found = true;
+                                console.log('✅ Play button forced visible!');
+                            });
+                        }
+                    }
+                });
+                
+                // Also find the Menu layout and force it to be active
+                const layouts = runtime.layouts_by_index || [];
+                layouts.forEach(layout => {
+                    if (layout.name === 'Menu') {
+                        console.log('✅ Menu layout found, ensuring it\'s active');
+                        if (layout.layers) {
+                            layout.layers.forEach(layer => {
+                                layer.visible = true;
+                                layer.opacity = 1;
+                            });
+                        }
+                        if (layout.event_sheet) {
+                            try {
+                                layout.event_sheet.run();
+                                console.log('✅ Menu event sheet run');
+                            } catch(e) {}
+                        }
+                    }
+                });
+                
+                // Force a tick to apply changes
+                if (runtime.tick) {
+                    runtime.tick(false);
+                    console.log('✅ Tick forced');
+                }
+                
+                if (found) {
+                    console.log('✅ Play button visibility forced successfully!');
+                } else {
+                    console.log('⚠️ Play button type not found');
+                }
+                
+                return found;
+                
+            } catch (e) {
+                console.error('❌ Error forcing play button:', e);
+                return false;
+            }
+        }
+
+        // ============================================================
         // 🔥 FIX: Force game to start via direct variable manipulation
         // ============================================================
         function forceGameStart(runtime) {
@@ -492,7 +564,6 @@
                 const vars = runtime.all_global_vars || [];
                 let stateChanged = false;
                 
-                // Common Construct 2 variable names for game state
                 const stateVars = {
                     'GameState': 1, 'gameState': 1,
                     'Pause': 0, 'pause': 0,
@@ -512,7 +583,6 @@
                     }
                 }
                 
-                // Force all layers to be visible and interactive
                 if (runtime.running_layout) {
                     const layout = runtime.running_layout;
                     if (layout.layers) {
@@ -527,72 +597,38 @@
                             }
                         }
                     }
-                    
-                    // Force the layout to process events
                     if (layout.event_sheet) {
-                        console.log('🔄 Running event sheet to process pending events...');
+                        console.log('🔄 Running event sheet...');
                         try {
                             layout.event_sheet.run();
-                        } catch(e) {
-                            console.warn('⚠️ Could not run event sheet:', e);
-                        }
+                        } catch(e) {}
                     }
                 }
                 
-                // Find and enable all button-like objects
+                // Enable all objects
                 const types = runtime.types_by_index || [];
                 let enabledCount = 0;
-                
                 for (let type of types) {
                     if (type.instances) {
                         for (let inst of type.instances) {
-                            if (inst.visible === false) {
-                                inst.visible = true;
-                                enabledCount++;
-                            }
-                            if (inst.collisionsEnabled === false) {
-                                inst.collisionsEnabled = true;
-                                enabledCount++;
-                            }
-                            if (inst.enabled !== undefined && inst.enabled === false) {
-                                inst.enabled = true;
-                                enabledCount++;
-                            }
+                            if (inst.visible === false) { inst.visible = true; enabledCount++; }
+                            if (inst.collisionsEnabled === false) { inst.collisionsEnabled = true; enabledCount++; }
+                            if (inst.enabled !== undefined && inst.enabled === false) { inst.enabled = true; enabledCount++; }
                         }
                     }
                 }
-                if (enabledCount > 0) {
-                    console.log(`✅ Enabled ${enabledCount} objects`);
-                }
+                if (enabledCount > 0) console.log(`✅ Enabled ${enabledCount} objects`);
                 
-                // Trigger layout start events
                 try {
                     if (runtime.trigger) {
                         runtime.trigger(runtime.system.cnds.OnLayoutStart, null);
                         console.log('✅ OnLayoutStart triggered');
                     }
-                } catch(e) {
-                    console.warn('⚠️ Could not trigger OnLayoutStart:', e);
-                }
+                } catch(e) {}
                 
-                // Force a tick to process events
                 if (runtime.tick) {
                     runtime.tick(false);
                     console.log('✅ Game tick forced');
-                }
-                
-                if (stateChanged) {
-                    console.log('✅ Game state forced successfully!');
-                } else {
-                    console.log('⚠️ No state variables found, trying alternative methods...');
-                    for (let v of vars) {
-                        if (v.name && (v.name.toLowerCase().includes('pause') || 
-                                       v.name.toLowerCase().includes('state') ||
-                                       v.name.toLowerCase().includes('menu') ||
-                                       v.name.toLowerCase().includes('start'))) {
-                            console.log(`🔍 Found potential state variable: ${v.name} = ${v.data}`);
-                        }
-                    }
                 }
                 
                 return stateChanged;
@@ -609,10 +645,13 @@
         function clickPlayButton(runtime) {
             console.log('🎯 Attempting to start game...');
             
-            // STEP 1: Force game state first
+            // First force the button to be visible
+            forcePlayButtonVisible(runtime);
+            
+            // Then force game state
             const forced = forceGameStart(runtime);
             
-            // STEP 2: Then try clicking the button
+            // Then try clicking the button
             try {
                 const canvas = dom.canvas;
                 if (!canvas) return;
@@ -623,14 +662,11 @@
                 const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
                 
-                // Try to find and click any play button
                 const types = runtime.types_by_index || [];
                 let clicked = false;
                 
                 for (let type of types) {
                     if (!type.instances) continue;
-                    
-                    // Check if this is a button type
                     const isButton = type.name && (
                         type.name.toLowerCase().includes('btn') ||
                         type.name.toLowerCase().includes('button') ||
@@ -640,16 +676,14 @@
                     if (isButton) {
                         for (let inst of type.instances) {
                             try {
-                                const instX = inst.x || 0;
-                                const instY = inst.y || 0;
-                                const instW = inst.width || 100;
-                                const instH = inst.height || 100;
+                                const instX = inst.x || 640;
+                                const instY = inst.y || 409;
+                                const instW = inst.width || 112;
+                                const instH = inst.height || 112;
                                 
-                                // Click at center of button
                                 const screenX = rect.left + ((instX + instW/2) / scaleX);
                                 const screenY = rect.top + ((instY + instH/2) / scaleY);
                                 
-                                // Dispatch multiple event types
                                 const events = [
                                     new MouseEvent('click', { clientX: screenX, clientY: screenY, bubbles: true, cancelable: true, view: window }),
                                     new MouseEvent('mousedown', { clientX: screenX, clientY: screenY, bubbles: true, cancelable: true, view: window }),
@@ -661,7 +695,7 @@
                                 }
                                 
                                 clicked = true;
-                                console.log(`✅ Clicked button: ${type.name} at (${Math.round(screenX)}, ${Math.round(screenY)})`);
+                                console.log(`✅ Clicked button: ${type.name}`);
                                 break;
                             } catch(e) {}
                         }
@@ -669,7 +703,6 @@
                     }
                 }
                 
-                // STEP 3: If no button found, try clicking the center of the canvas
                 if (!clicked) {
                     console.log('⚠️ No play button found, clicking canvas center...');
                     const centerX = rect.left + rect.width/2;
@@ -685,7 +718,6 @@
                     clicked = true;
                 }
                 
-                // STEP 4: Final state check
                 if (forced || clicked) {
                     console.log('✅ Game start sequence completed!');
                     if (runtime.tick) {
@@ -806,6 +838,9 @@
         }
         detectDevice();
 
+        // ============================================================
+        // 🔥 CORE FIX: Load jQuery and Game Engine with proper order
+        // ============================================================
         function loadGame() {
             console.log('🎮 Loading NinjaRun game...');
             const canvas = document.createElement('canvas');
@@ -835,626 +870,477 @@
             }, 200);
         }
 
+        // ============================================================
+        // 🔥 CORE FIX: Load Game Engine with proper error handling
+        // ============================================================
+        function loadGameEngine() {
+            console.log('🎮 Loading game engine...');
+            
+            // Check if jQuery is loaded
+            if (typeof jQuery === 'undefined') {
+                console.error('❌ jQuery not loaded!');
+                dom.statusMain.textContent = '⚠️ jQuery failed to load';
+                dom.statusSub.textContent = 'Please refresh and try again';
+                return;
+            }
+            
+            console.log('✅ jQuery loaded successfully');
+            
+            // Load the game engine script
+            const script = document.createElement('script');
+            script.src = '/games/ninja%20run/game.js';
+            script.onload = function() {
+                console.log('✅ Game engine loaded');
+                try {
+                    // Check if the game engine created the runtime
+                    if (window.cr && window.cr.createRuntime) {
+                        console.log('✅ cr.createRuntime found');
+                        const runtime = window.cr.createRuntime('c2canvas');
+                        if (runtime) {
+                            window.gameRuntime = runtime;
+                            console.log('✅ Runtime created successfully');
+                            
+                            // Apply all fixes
+                            patchRuntimeCoordinates(runtime);
+                            ResponsiveManager.init();
+                            
+                            // Force the play button to be visible
+                            setTimeout(() => {
+                                forcePlayButtonVisible(runtime);
+                            }, 500);
+                            
+                            // Start the game
+                            setTimeout(() => {
+                                clickPlayButton(runtime);
+                            }, 1000);
+                            
+                            // Start the lobby
+                            startLobby();
+                            
+                            // Hide loading screen
+                            dom.loadingScreen.classList.add('hidden');
+                        } else {
+                            console.error('❌ Failed to create runtime');
+                        }
+                    } else {
+                        console.error('❌ cr.createRuntime not found');
+                        dom.statusMain.textContent = '⚠️ Game engine error';
+                        dom.statusSub.textContent = 'Please refresh and try again';
+                    }
+                } catch (e) {
+                    console.error('❌ Error loading game:', e);
+                    dom.statusMain.textContent = '⚠️ Game load error';
+                    dom.statusSub.textContent = e.message || 'Please refresh and try again';
+                }
+            };
+            script.onerror = function() {
+                console.error('❌ Failed to load game.js');
+                dom.statusMain.textContent = '⚠️ Game file not found';
+                dom.statusSub.textContent = 'Please check the game path and try again';
+            };
+            document.head.appendChild(script);
+        }
+
+        // ============================================================
+        // 🔥 CORE FIX: Game initialization with proper order
+        // ============================================================
         function initGame() {
             console.log('🏃 Starting NinjaRun...');
             try {
                 const jqueryScript = document.createElement('script');
                 jqueryScript.src = '/games/ninja%20run/jquery-2.1.1.min.js';
-                jqueryScript.onload = () => {
+                jqueryScript.onload = function() {
                     console.log('✅ jQuery loaded');
                     if (typeof jQuery !== 'undefined') {
                         console.log('✅ jQuery is ready!');
                         loadGameEngine();
                     } else {
-                        setTimeout(() => {
-                            if (typeof jQuery !== 'undefined') {
-                                console.log('✅ jQuery is ready (after delay)!');
-                                loadGameEngine();
-                            } else {
-                                console.error('❌ jQuery still not available');
-                                dom.statusMain.textContent = '⚠️ jQuery failed to load';
-                                dom.statusSub.textContent = 'Please refresh and try again';
-                                dom.statusMessage.classList.add('show');
-                            }
-                        }, 500);
+                        // If jQuery isn't available after load, try using a CDN
+                        console.warn('⚠️ jQuery not available, trying CDN...');
+                        const cdnScript = document.createElement('script');
+                        cdnScript.src = 'https://code.jquery.com/jquery-2.1.1.min.js';
+                        cdnScript.onload = function() {
+                            console.log('✅ jQuery loaded from CDN');
+                            loadGameEngine();
+                        };
+                        cdnScript.onerror = function() {
+                            console.error('❌ Failed to load jQuery from CDN');
+                            dom.statusMain.textContent = '⚠️ jQuery failed to load';
+                            dom.statusSub.textContent = 'Please check your internet connection';
+                        };
+                        document.head.appendChild(cdnScript);
                     }
                 };
-                jqueryScript.onerror = (e) => {
-                    console.error('❌ Failed to load jQuery:', e);
-                    dom.statusMain.textContent = '⚠️ jQuery not found';
-                    dom.statusSub.textContent = 'Make sure jquery-2.1.1.min.js is in the game folder';
-                    dom.statusMessage.classList.add('show');
+                jqueryScript.onerror = function() {
+                    console.error('❌ Failed to load jQuery from local path, trying CDN...');
+                    const cdnScript = document.createElement('script');
+                    cdnScript.src = 'https://code.jquery.com/jquery-2.1.1.min.js';
+                    cdnScript.onload = function() {
+                        console.log('✅ jQuery loaded from CDN');
+                        loadGameEngine();
+                    };
+                    cdnScript.onerror = function() {
+                        console.error('❌ Failed to load jQuery from CDN');
+                        dom.statusMain.textContent = '⚠️ jQuery failed to load';
+                        dom.statusSub.textContent = 'Please check your internet connection';
+                    };
+                    document.head.appendChild(cdnScript);
                 };
                 document.head.appendChild(jqueryScript);
             } catch (e) {
                 console.error('❌ Error initializing game:', e);
-                dom.statusMain.textContent = '⚠️ Game initialization error';
-                dom.statusSub.textContent = 'Please refresh and try again';
-                dom.statusMessage.classList.add('show');
+                dom.statusMain.textContent = '⚠️ Initialization error';
+                dom.statusSub.textContent = e.message || 'Please refresh and try again';
             }
         }
 
-        function loadGameEngine() {
-            console.log('🔄 Loading game engine...');
-            
-            // Patch AudioListener if needed
-            try {
-                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
-                    const originalSetPosition = AudioListener.prototype.setPosition;
-                    AudioListener.prototype.setPosition = function(x, y, z) {
-                        if (isNaN(x) || x === undefined || x === null) x = 0;
-                        if (isNaN(y) || y === undefined || y === null) y = 0;
-                        if (isNaN(z) || z === undefined || z === null) z = -600;
-                        return originalSetPosition.call(this, x, y, z);
-                    };
-                    console.log('✅ AudioListener patched');
-                }
-            } catch (e) { console.warn('⚠️ Could not patch AudioListener:', e); }
-
-            // Override data.js path
-            const dataJsPath = 'ninja%20run/data.js';
-            console.log('🔄 Loading data.js from:', dataJsPath);
-
-            if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                cr.runtime.prototype.requestProjectData = function() {
-                    console.log('🔄 Loading data.js from relative path:', dataJsPath);
-                    var self = this;
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", dataJsPath, true);
-                    xhr.onload = function () {
-                        if (xhr.status === 404) {
-                            console.error('❌ data.js not found at:', dataJsPath);
-                            var fallbackXhr = new XMLHttpRequest();
-                            fallbackXhr.open("GET", "./data.js", true);
-                            fallbackXhr.onload = function() {
-                                if (fallbackXhr.status === 200) {
-                                    try {
-                                        const data = JSON.parse(fallbackXhr.responseText);
-                                        self.loadProject(data);
-                                        console.log('✅ data.js loaded from fallback: ./data.js');
-                                    } catch(e) {
-                                        console.error('❌ Error parsing fallback data.js:', e);
-                                    }
-                                } else {
-                                    console.error('❌ Could not find data.js in any location');
-                                }
-                            };
-                            fallbackXhr.send();
-                            return;
-                        }
-                        try {
-                            const data = JSON.parse(xhr.responseText);
-                            self.loadProject(data);
-                            console.log('✅ data.js loaded successfully');
-                        } catch(e) {
-                            console.error('❌ Error parsing data.js:', e);
-                        }
-                    };
-                    xhr.onerror = function (e) {
-                        console.error('❌ Error loading data.js:', e);
-                    };
-                    xhr.send();
-                };
-                console.log('✅ Runtime.requestProjectData overridden');
-            }
-
-            // Load the game engine
-            const script = document.createElement('script');
-            script.src = 'ninja%20run/c2runtime.js';
-            script.onload = () => {
-                console.log('✅ Runtime loaded');
-                
-                try {
-                    const runtime = new cr.createRuntime('c2canvas');
-                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                    window.gameRuntime = runtime;
-                    
-                    // ============================================================
-                    // 🔥 FIX: Patch coordinate system immediately
-                    // ============================================================
-                    patchRuntimeCoordinates(runtime);
-                    
-                    // ============================================================
-                    // 🔥 FIX: Override startRunning to skip Loading layout
-                    // ============================================================
-                    try {
-                        const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
-                        runtime.startRunning = function() {
-                            console.log('🔄 Custom startRunning - skipping Loading layout');
-                            const menuLayout = this.layouts['Menu'];
-                            if (menuLayout) {
-                                console.log('✅ Found Menu layout, starting it directly');
-                                menuLayout.startRunning();
-                                this.running_layout = menuLayout;
-                                return;
-                            }
-                            for (let i = 0; i < this.layouts_by_index.length; i++) {
-                                const layout = this.layouts_by_index[i];
-                                if (layout && layout.name !== 'Loading') {
-                                    console.log('✅ Starting layout:', layout.name);
-                                    layout.startRunning();
-                                    this.running_layout = layout;
-                                    return;
-                                }
-                            }
-                            originalStartRunning.call(this);
-                        };
-                        console.log('✅ Runtime.startRunning overridden');
-                    } catch (e) { console.warn('⚠️ Could not override startRunning:', e); }
-                    
-                    // Show start overlay
-                    dom.startOverlay.classList.remove('hidden');
-
-                    // ============================================================
-                    // 🔥 FIX: Sync canvas size with display
-                    // ============================================================
-                    function syncCanvasSize() {
-                        if (!window.gameRuntime || !dom.canvas) return;
-                        try {
-                            const rect = dom.canvas.getBoundingClientRect();
-                            if (rect.width > 0 && rect.height > 0) {
-                                window.gameRuntime.width = CONFIG.GAME_WIDTH;
-                                window.gameRuntime.height = CONFIG.GAME_HEIGHT;
-                                window.gameRuntime.draw_width = CONFIG.GAME_WIDTH;
-                                window.gameRuntime.draw_height = CONFIG.GAME_HEIGHT;
-                                window.gameRuntime.setSize(rect.width, rect.height, true);
-                                // Re-patch coordinates after resize
-                                patchRuntimeCoordinates(window.gameRuntime);
-                                console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
-                            }
-                        } catch (e) {
-                            console.warn('⚠️ Sync canvas error:', e);
-                        }
-                    }
-
-                    requestAnimationFrame(() => { setTimeout(syncCanvasSize, 50); });
-
-                    let resizeTimeout;
-                    window.addEventListener('resize', () => { 
-                        clearTimeout(resizeTimeout); 
-                        resizeTimeout = setTimeout(syncCanvasSize, 100); 
-                    });
-                    window.addEventListener('orientationchange', () => { 
-                        setTimeout(syncCanvasSize, 300); 
-                    });
-
-                    // Override setSize to always force
-                    const originalSetSize = runtime.setSize.bind(runtime);
-                    runtime.setSize = function(w, h, force) {
-                        if (w > 0 && h > 0) { 
-                            return originalSetSize(w, h, true); 
-                        }
-                        return originalSetSize(w, h, force);
-                    };
-
-                    // Initialize responsive manager
-                    ResponsiveManager.init();
-                    
-                    // ============================================================
-                    // 🔥 START THE GAME
-                    // ============================================================
-                    setTimeout(() => {
-                        const rt = window.gameRuntime;
-                        if (rt) {
-                            const menuLayout = rt.layouts['Menu'];
-                            if (menuLayout) {
-                                console.log('🎯 Starting Menu layout directly');
-                                try {
-                                    menuLayout.startRunning();
-                                    rt.running_layout = menuLayout;
-                                    rt.isloading = false;
-                                    console.log('✅ Game started directly on Menu layout');
-                                } catch (e) {
-                                    console.warn('⚠️ Could not start Menu directly:', e);
-                                    waitForGameReady(rt);
-                                }
-                            } else {
-                                waitForGameReady(rt);
-                            }
-                            setupTouchControls(rt);
-                            startLobby();
-                            startScoreTracking();
-                        }
-                    }, 500);
-
-                    console.log('✅ Game engine initialized');
-
-                } catch (e) {
-                    console.error('❌ Error creating runtime:', e);
-                    dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
-                    dom.statusSub.textContent = 'Please refresh and try again';
-                    dom.statusMessage.classList.add('show');
-                }
-            };
-            script.onerror = (e) => {
-                console.error('❌ Failed to load c2runtime.js:', e);
-                dom.statusMain.textContent = '⚠️ Game engine not found';
-                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-                dom.statusMessage.classList.add('show');
-            };
-            document.head.appendChild(script);
-        }
-
-        function waitForGameReady(runtime) {
-            console.log('⏳ Waiting for game to be ready...');
-            let checks = 0;
-            const maxChecks = 20;
-            
-            const checkInterval = setInterval(() => {
-                checks++;
-                try {
-                    if (!runtime) {
-                        if (checks > 5) { clearInterval(checkInterval); }
-                        return;
-                    }
-                    
-                    if (runtime.running_layout) {
-                        const layoutName = runtime.running_layout.name;
-                        console.log(`📐 Current layout: ${layoutName}`);
-                        
-                        // If we're on the menu or game layout, force start
-                        if (layoutName === 'Menu' || layoutName === 'Game' || layoutName === 'Layout 1') {
-                            clearInterval(checkInterval);
-                            console.log(`✅ Game ready on ${layoutName} layout!`);
-                            state._gameReady = true;
-                            forceGameStart(runtime);
-                            clickPlayButton(runtime);
-                            return;
-                        }
-                    }
-                    
-                    // Try to find any running layout
-                    const layouts = runtime.layouts_by_index || [];
-                    for (let layout of layouts) {
-                        if (layout && layout.name !== 'Loading' && layout.running) {
-                            clearInterval(checkInterval);
-                            console.log(`✅ Found running layout: ${layout.name}`);
-                            state._gameReady = true;
-                            forceGameStart(runtime);
-                            clickPlayButton(runtime);
-                            return;
-                        }
-                    }
-                    
-                    if (checks >= maxChecks) {
-                        clearInterval(checkInterval);
-                        console.warn('⚠️ Game not ready, forcing start...');
-                        state._gameReady = true;
-                        forceGameStart(runtime);
-                        clickPlayButton(runtime);
-                    }
-                } catch (e) {
-                    console.warn('⚠️ Error in waitForGameReady:', e);
-                    if (checks >= maxChecks) {
-                        clearInterval(checkInterval);
-                        forceGameStart(runtime);
-                    }
-                }
-            }, 300);
-        }
-
-        function startScoreTracking() {
-            if (state.scoreInterval) clearInterval(state.scoreInterval);
-            state.scoreInterval = setInterval(() => {
-                if (!window.gameRuntime) return;
-                try {
-                    const runtime = window.gameRuntime;
-                    const vars = runtime.all_global_vars || [];
-                    let score = 0, coins = 0, distance = 0;
-                    for (let v of vars) {
-                        if (v.name === 'Score') score = v.data || 0;
-                        if (v.name === 'Coins') coins = v.data || 0;
-                        if (v.name === 'Distances') distance = v.data || 0;
-                    }
-                    state.currentScore = score; state.currentCoins = coins; state.currentDistance = distance;
-                    dom.liveScore.textContent = score; dom.liveCoins.textContent = coins; dom.liveDistance.textContent = distance;
-                    if (state.joined && state.user) {
-                        const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                        update(playerRef, { score: score, coins: coins, distance: distance, lastUpdate: Date.now() }).catch(e => console.warn('⚠️ Could not update score:', e));
-                    }
-                    if (state.roundState === 'playing') { dom.scoreOverlay.classList.add('show'); } 
-                    else { dom.scoreOverlay.classList.remove('show'); }
-                } catch (e) {}
-            }, 500);
-            console.log('✅ Score tracking started');
-        }
-
-        function setupTouchControls(runtime) {
-            function dispatchKeyEvent(type, key, keyCode) {
-                const event = new KeyboardEvent(type, { key: key, keyCode: keyCode, code: key, bubbles: true, cancelable: true });
-                document.dispatchEvent(event);
-            }
-            const touchEvents = [
-                { element: dom.touchLeft, key: 'ArrowLeft', code: 37 },
-                { element: dom.touchRight, key: 'ArrowRight', code: 39 },
-                { element: dom.touchJump, key: 'ArrowUp', code: 38 }
-            ];
-            touchEvents.forEach(({ element, key, code }) => {
-                let pressed = false;
-                element.addEventListener('touchstart', (e) => { e.preventDefault(); if (!pressed) { pressed = true; dispatchKeyEvent('keydown', key, code); } });
-                element.addEventListener('touchend', (e) => { e.preventDefault(); if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
-                element.addEventListener('touchcancel', (e) => { e.preventDefault(); if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
-                element.addEventListener('mousedown', () => { if (!pressed) { pressed = true; dispatchKeyEvent('keydown', key, code); } });
-                element.addEventListener('mouseup', () => { if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
-                element.addEventListener('mouseleave', () => { if (pressed) { pressed = false; dispatchKeyEvent('keyup', key, code); } });
-            });
-        }
-
+        // ============================================================
+        // 🎯 LOBBY FUNCTIONS
+        // ============================================================
         function startLobby() {
-            console.log('🔄 Starting lobby...');
-            dom.lobbyOverlay.classList.remove('hidden');
+            console.log('🎮 Starting lobby...');
             updateLobbyUI();
-            listenForRoundUpdates();
-            listenForPlayerUpdates();
-            dom.joinBtn.addEventListener('click', joinRound);
-            startRoundTimer();
-            simulatePlayers();
-        }
-
-        function listenForRoundUpdates() {
-            const roundRef = ref(db, `rounds/${state.roundId}`);
-            onValue(roundRef, (snapshot) => {
-                try {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        state.roundState = data.status || 'waiting';
-                        state.timeRemaining = data.timeRemaining || CONFIG.ROUND_DURATION;
-                        state.players = data.players ? (Array.isArray(data.players) ? data.players : Object.values(data.players)) : [];
-                        state.playerCount = state.players.length;
-                        updateUI();
-                        if (state.roundState === 'playing' && !state.gameStarted) startGame();
-                        if (state.roundState === 'ended') endRound(data.results);
-                    } else { createNewRound(); }
-                } catch (e) { console.error('❌ Error in round listener:', e); }
+            
+            dom.joinBtn.addEventListener('click', () => {
+                if (state.joined) return;
+                if (!state.user) {
+                    dom.statusMain.textContent = '🔒 Please login first';
+                    dom.statusSub.textContent = 'Sign in to join the tournament';
+                    dom.statusMessage.classList.add('show');
+                    setTimeout(() => dom.statusMessage.classList.remove('show'), 3000);
+                    return;
+                }
+                joinRound();
             });
-        }
-
-        function listenForPlayerUpdates() {
-            const playersRef = ref(db, `rounds/${state.roundId}/players`);
-            onValue(playersRef, (snapshot) => {
-                try {
-                    if (snapshot.exists()) {
-                        const data = snapshot.val();
-                        state.players = Array.isArray(data) ? data : Object.values(data);
-                        state.playerCount = state.players.length;
-                        updateUI();
-                    }
-                } catch (e) { console.error('❌ Error in player listener:', e); }
-            });
-        }
-
-        function createNewRound() {
-            set(ref(db, `rounds/${state.roundId}`), {
-                status: 'waiting', timeRemaining: CONFIG.ROUND_DURATION, players: {}, prizePool: 0,
-                startTime: Date.now(), createdAt: Date.now()
-            }).catch(e => console.error('❌ Error creating round:', e));
-        }
-
-        async function joinRound() {
-            if (!state.user || !state.userData) { alert('Please login first'); window.location.href = '../login.html'; return; }
-            if (state.joined) { alert('You are already in this round!'); return; }
-            if (state.playerCount >= CONFIG.MAX_PLAYERS) { alert('Round is full!'); return; }
-            const balance = state.userData.balance || 0;
-            if (balance < CONFIG.ENTRY_FEE) { alert(`Insufficient balance! You need ${CONFIG.ENTRY_FEE} RWF to join.`); window.location.href = '../deposit.html'; return; }
-            try {
-                dom.joinBtn.disabled = true;
-                dom.joinBtn.textContent = '⏳ Processing...';
-                await update(ref(db, `users/${state.user.uid}`), { balance: balance - CONFIG.ENTRY_FEE });
-                state.userData.balance = balance - CONFIG.ENTRY_FEE;
-                await set(ref(db, `rounds/${state.roundId}/players/${state.user.uid}`), {
-                    uid: state.user.uid, username: state.userData.username || 'Player', joinedAt: Date.now(),
-                    score: 0, coins: 0, distance: 0, status: 'ready'
-                });
-                state.joined = true;
-                dom.joinBtn.textContent = '✅ Joined!';
-                dom.joinBtn.classList.add('joined');
-                dom.joinBtn.disabled = true;
-                const snapshot = await get(ref(db, `rounds/${state.roundId}/prizePool`));
-                const currentPrize = snapshot.val() || 0;
-                await set(ref(db, `rounds/${state.roundId}/prizePool`), currentPrize + CONFIG.ENTRY_FEE);
-                console.log('✅ Joined round!');
-            } catch (e) {
-                console.error('❌ Error joining round:', e);
-                alert('Error joining round. Please try again.');
-                dom.joinBtn.disabled = false;
-                dom.joinBtn.textContent = '🔄 Try Again';
-                dom.joinBtn.classList.remove('joined');
-            }
-        }
-
-        function startGame() {
-            state.gameStarted = true;
-            console.log('🎮 Game is now live!');
-            dom.lobbyOverlay.classList.add('hidden');
-            dom.statusMessage.classList.remove('show');
-            dom.scoreOverlay.classList.add('show');
+            
+            // Simulate some players for demo
+            const demoPlayers = ['NinjaMaster', 'ShadowRunner', 'SpeedDemon', 'GhostWalker', 'FireStorm'];
             setTimeout(() => {
-                const runtime = window.gameRuntime;
-                if (runtime) {
-                    const layout = runtime.running_layout;
-                    if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
-                    else { forceGameStart(runtime); }
+                if (state.players.length === 0) {
+                    state.players = demoPlayers.map((name, i) => ({
+                        id: `player${i+1}`,
+                        name: name,
+                        score: Math.floor(Math.random() * 1000),
+                        status: 'ready'
+                    }));
+                    state.playerCount = state.players.length;
+                    updateLobbyUI();
+                    updatePlayerList();
                 }
             }, 2000);
-        }
-
-        function startRound() {
-            if (state.roundState !== 'waiting') return;
-            if (getPlayersArray().length < CONFIG.MIN_PLAYERS) return;
-            update(ref(db, `rounds/${state.roundId}`), { status: 'playing', startTime: Date.now(), timeRemaining: CONFIG.ROUND_DURATION }).catch(e => console.error('❌ Error starting round:', e));
-            state.roundState = 'playing';
-            dom.lobbyOverlay.classList.add('hidden');
-            dom.statusMessage.classList.remove('show');
-            dom.scoreOverlay.classList.add('show');
-            console.log('🏁 Round started!');
-            dom.joinBtn.textContent = '🎮 Playing...';
-            dom.joinBtn.classList.add('playing');
-            dom.joinBtn.disabled = true;
-            setTimeout(() => {
-                const runtime = window.gameRuntime;
-                if (runtime) {
-                    const layout = runtime.running_layout;
-                    if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
-                    else { forceGameStart(runtime); }
-                }
-            }, 3000);
-        }
-
-        function endRound(results) {
-            state.roundState = 'ended';
-            state.results = results;
-            dom.scoreOverlay.classList.remove('show');
-            if (state.scoreInterval) { clearInterval(state.scoreInterval); state.scoreInterval = null; }
-            const finalResults = getGameResults();
-            if (state.joined && state.user) {
-                const playerRef = ref(db, `rounds/${state.roundId}/players/${state.user.uid}`);
-                update(playerRef, { score: finalResults.score || state.currentScore || 0, coins: finalResults.coins || state.currentCoins || 0, distance: finalResults.distance || state.currentDistance || 0, status: 'finished' }).catch(e => console.error('❌ Error updating final score:', e));
-            }
-            console.log('🏁 Round ended! Final scores:', finalResults);
-            const players = getPlayersArray();
-            const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
-            const winner = sorted[0];
-            dom.statusMain.textContent = `🏆 ${winner?.username || 'Player'} Wins!`;
-            dom.statusSub.textContent = `Score: ${winner?.score || 0} | Coins: ${winner?.coins || 0} | Distance: ${winner?.distance || 0}`;
-            dom.statusMessage.classList.add('show');
-            if (winner && winner.uid) {
-                const prizePool = players.length * CONFIG.ENTRY_FEE;
-                const winnings = Math.floor(prizePool * 0.7);
-                get(ref(db, `users/${winner.uid}`)).then((snap) => {
-                    if (snap.exists()) {
-                        update(ref(db, `users/${winner.uid}`), { balance: (snap.val().balance || 0) + winnings }).catch(e => console.error('❌ Error updating winner balance:', e));
-                    }
-                }).catch(e => console.error('❌ Error getting winner data:', e));
-            }
-            setTimeout(() => {
-                dom.statusMessage.classList.remove('show');
-                state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
-                state.roundState = 'waiting';
-                state.timeRemaining = CONFIG.ROUND_DURATION;
-                state.players = [];
-                state.playerCount = 0;
-                state.joined = false;
-                state.gameStarted = false;
-                state.results = null;
-                dom.joinBtn.disabled = false;
-                dom.joinBtn.textContent = '🚀 Join Round';
-                dom.joinBtn.classList.remove('playing', 'joined');
-                dom.lobbyOverlay.classList.remove('hidden');
-                updateUI();
-                setTimeout(simulatePlayers, 1000);
-            }, 10000);
-        }
-
-        function startRoundTimer() {
+            
+            // Simulate player count updates
             setInterval(() => {
-                if (state.roundState === 'playing') {
-                    state.timeRemaining--;
-                    updateTimerDisplay();
-                    if (state.timeRemaining <= 0) { endRound(getGameResults()); }
+                if (state.playerCount < 50) {
+                    state.playerCount = Math.min(50, state.playerCount + Math.floor(Math.random() * 3));
+                    updateLobbyUI();
+                }
+            }, 8000);
+        }
+        
+        function updateLobbyUI() {
+            dom.lobbyPlayers.textContent = state.playerCount;
+            const prizePool = state.playerCount * CONFIG.ENTRY_FEE;
+            dom.lobbyPrize.textContent = prizePool.toLocaleString();
+            dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
+            
+            // Update timer
+            const mins = Math.floor(state.timeRemaining / 60);
+            const secs = state.timeRemaining % 60;
+            dom.lobbyTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            dom.roundTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+            dom.prizeDisplay.textContent = prizePool.toLocaleString();
+            
+            // Update round number
+            dom.roundNumber.textContent = state.roundId.padStart(3, '0');
+            
+            // Update join button
+            if (state.joined) {
+                dom.joinBtn.textContent = '✅ Joined';
+                dom.joinBtn.classList.add('joined');
+                dom.joinBtn.disabled = true;
+            } else if (state.playerCount >= CONFIG.MAX_PLAYERS) {
+                dom.joinBtn.textContent = '🔴 Round Full';
+                dom.joinBtn.disabled = true;
+            } else {
+                dom.joinBtn.textContent = '🎮 Join Round';
+                dom.joinBtn.classList.remove('joined');
+                dom.joinBtn.disabled = false;
+            }
+        }
+        
+        function updatePlayerList() {
+            const container = dom.playersContainer;
+            const players = getPlayersArray();
+            if (players.length === 0) {
+                container.innerHTML = '<div class="player-item" style="color:var(--text-muted);">No players yet...</div>';
+                return;
+            }
+            container.innerHTML = players.map(p => `
+                <div class="player-item">
+                    <span class="player-name">
+                        <span class="status-dot ${p.status || 'waiting'}"></span>
+                        ${p.name || 'Player'}
+                    </span>
+                    <span class="player-score">${p.score || 0}</span>
+                </div>
+            `).join('');
+        }
+        
+        function joinRound() {
+            if (state.joined) return;
+            state.joined = true;
+            state.players.push({
+                id: state.user?.uid || 'guest',
+                name: state.userData?.username || 'Player',
+                score: 0,
+                status: 'ready'
+            });
+            state.playerCount = state.players.length;
+            updateLobbyUI();
+            updatePlayerList();
+            
+            dom.statusMain.textContent = '✅ Successfully joined!';
+            dom.statusSub.textContent = 'Waiting for round to start...';
+            dom.statusMessage.classList.add('show');
+            setTimeout(() => dom.statusMessage.classList.remove('show'), 3000);
+            
+            // Simulate game start after 5 seconds
+            setTimeout(() => {
+                if (state.playerCount >= CONFIG.MIN_PLAYERS) {
+                    startGameRound();
+                }
+            }, 5000);
+        }
+        
+        function startGameRound() {
+            state.gameStarted = true;
+            dom.lobbyOverlay.classList.add('hidden');
+            dom.scoreOverlay.classList.add('show');
+            dom.statusMessage.classList.remove('show');
+            
+            dom.statusMain.textContent = '🏃 Race Started!';
+            dom.statusSub.textContent = 'Run as far as you can!';
+            dom.statusMessage.classList.add('show');
+            setTimeout(() => dom.statusMessage.classList.remove('show'), 3000);
+            
+            // Start score simulation
+            state.scoreInterval = setInterval(() => {
+                state.currentScore += Math.floor(Math.random() * 10) + 1;
+                state.currentCoins += Math.floor(Math.random() * 5);
+                state.currentDistance += Math.floor(Math.random() * 20) + 10;
+                
+                dom.liveScore.textContent = state.currentScore;
+                dom.liveCoins.textContent = state.currentCoins;
+                dom.liveDistance.textContent = state.currentDistance;
+                
+                // Update player scores
+                const players = getPlayersArray();
+                players.forEach(p => {
+                    if (p.id === state.user?.uid || p.id === 'guest') {
+                        p.score = state.currentScore;
+                    }
+                });
+                updatePlayerList();
+            }, 1000);
+            
+            // Countdown timer
+            let timeLeft = CONFIG.ROUND_DURATION;
+            const timerInterval = setInterval(() => {
+                timeLeft--;
+                state.timeRemaining = timeLeft;
+                const mins = Math.floor(timeLeft / 60);
+                const secs = timeLeft % 60;
+                dom.roundTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                dom.lobbyTimer.textContent = `${mins}:${secs.toString().padStart(2, '0')}`;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    endRound();
                 }
             }, 1000);
         }
-
-        function updateTimerDisplay() {
-            const mins = Math.floor(Math.max(0, state.timeRemaining) / 60);
-            const secs = Math.floor(Math.max(0, state.timeRemaining) % 60);
-            const display = `${mins}:${secs.toString().padStart(2, '0')}`;
-            dom.roundTimer.textContent = display;
-            dom.lobbyTimer.textContent = display;
-        }
-
-        function getGameResults() {
-            const runtime = window.gameRuntime;
-            let score = 0, coins = 0, distance = 0;
-            if (runtime) {
-                try {
-                    const vars = runtime.all_global_vars || [];
-                    for (let v of vars) {
-                        if (v.name === 'Score') score = v.data || 0;
-                        if (v.name === 'Coins') coins = v.data || 0;
-                        if (v.name === 'Distances') distance = v.data || 0;
-                    }
-                } catch (e) {}
+        
+        function endRound() {
+            if (state.scoreInterval) {
+                clearInterval(state.scoreInterval);
+                state.scoreInterval = null;
             }
-            return { score, coins, distance };
-        }
-
-        function updateUI() {
-            const players = getPlayersArray();
-            state.playerCount = players.length;
-            dom.playerCount.textContent = state.playerCount;
-            dom.lobbyPlayers.textContent = state.playerCount;
-            const prizePool = state.playerCount * CONFIG.ENTRY_FEE;
-            dom.prizeDisplay.textContent = prizePool.toLocaleString();
-            dom.lobbyPrize.textContent = prizePool.toLocaleString();
-            dom.lobbyPrizePool.textContent = prizePool.toLocaleString();
-            dom.roundNumber.textContent = state.roundId;
-            renderPlayerList();
-            if (state.roundState === 'waiting') {
-                if (state.playerCount >= CONFIG.MIN_PLAYERS) {
-                    dom.statusMain.textContent = '✅ Ready to start!';
-                    dom.statusSub.textContent = `⏳ Starting in 5 seconds...`;
-                    dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) clearTimeout(state._startTimeout);
-                    state._startTimeout = setTimeout(() => {
-                        if (state.roundState === 'waiting') startRound();
-                        state._startTimeout = null;
-                    }, 5000);
-                } else {
-                    const needed = CONFIG.MIN_PLAYERS - state.playerCount;
-                    dom.statusMain.textContent = '⏳ Waiting for players...';
-                    dom.statusSub.textContent = `Need ${needed} more player${needed > 1 ? 's' : ''} to start`;
-                    dom.statusMessage.classList.add('show');
-                    if (state._startTimeout) { clearTimeout(state._startTimeout); state._startTimeout = null; }
-                }
-            }
-        }
-
-        function updateLobbyUI() { updateUI(); }
-
-        function renderPlayerList() {
-            const players = getPlayersArray();
-            if (players.length === 0) {
-                dom.playersContainer.innerHTML = `<div class="player-item" style="color:var(--text-muted);">No players yet...</div>`;
-                return;
-            }
-            let html = '';
-            players.forEach((p) => {
-                const isMe = p.uid === state.user?.uid;
-                const statusColor = p.status === 'ready' ? 'ready' : 'waiting';
-                html += `<div class="player-item" style="${isMe ? 'color:var(--gold);' : ''}">
-                            <span class="player-name"><span class="status-dot ${statusColor}"></span>${isMe ? '⭐ ' : ''}${p.username || 'Player'}</span>
-                            <span class="player-score">${p.score || 0}</span>
-                        </div>`;
-            });
-            dom.playersContainer.innerHTML = html;
-        }
-
-        function simulatePlayers() {
-            setTimeout(() => { if (!state.joined && state.userData) joinRound(); }, 1500);
-            const botNames = ['NinjaBot1', 'Samurai_Pro', 'ShadowRunner', 'SpeedDemon', 'PixelHero'];
-            botNames.forEach((name, index) => {
+            
+            dom.statusMain.textContent = '🏆 Round Complete!';
+            dom.statusSub.textContent = 'Calculating results...';
+            dom.statusMessage.classList.add('show');
+            
+            // Simulate results
+            setTimeout(() => {
+                const players = getPlayersArray();
+                const sorted = [...players].sort((a, b) => (b.score || 0) - (a.score || 0));
+                const winner = sorted[0];
+                
+                dom.statusMain.textContent = `🏆 ${winner?.name || 'Player'} Wins!`;
+                dom.statusSub.textContent = `Score: ${winner?.score || 0} • Prize: ${(state.playerCount * CONFIG.ENTRY_FEE * 0.7).toLocaleString()} RWF`;
+                
+                // Show results for a bit then reset
                 setTimeout(() => {
-                    if (state.playerCount < 8) {
-                        const fakeUid = `bot_${Date.now()}_${index}`;
-                        state.players.push({ uid: fakeUid, username: name, joinedAt: Date.now(), score: Math.floor(Math.random() * 500), coins: Math.floor(Math.random() * 20), distance: Math.floor(Math.random() * 500), status: 'ready' });
-                        state.playerCount = state.players.length;
-                        updateUI();
+                    resetRound();
+                }, 5000);
+            }, 2000);
+        }
+        
+        function resetRound() {
+            state.gameStarted = false;
+            state.joined = false;
+            state.currentScore = 0;
+            state.currentCoins = 0;
+            state.currentDistance = 0;
+            state.players = [];
+            state.playerCount = 0;
+            state.timeRemaining = CONFIG.ROUND_DURATION;
+            
+            dom.lobbyOverlay.classList.remove('hidden');
+            dom.scoreOverlay.classList.remove('show');
+            dom.statusMessage.classList.remove('show');
+            
+            dom.liveScore.textContent = '0';
+            dom.liveCoins.textContent = '0';
+            dom.liveDistance.textContent = '0';
+            
+            updateLobbyUI();
+            updatePlayerList();
+            
+            // Generate new round ID
+            state.roundId = String(parseInt(state.roundId) + 1).padStart(3, '0');
+        }
+
+        // ============================================================
+        // 🔥 TOUCH CONTROLS
+        // ============================================================
+        function setupTouchControls() {
+            const left = dom.touchLeft;
+            const right = dom.touchRight;
+            const jump = dom.touchJump;
+            
+            function sendKeyEvent(key, type) {
+                const event = new KeyboardEvent(type, { key: key, bubbles: true, cancelable: true });
+                document.dispatchEvent(event);
+                if (dom.canvas) dom.canvas.dispatchEvent(event);
+            }
+            
+            function setupButton(btn, key, isJump) {
+                if (!btn) return;
+                
+                btn.addEventListener('touchstart', (e) => {
+                    e.preventDefault();
+                    if (isJump) {
+                        sendKeyEvent(' ', 'keydown');
+                        sendKeyEvent(' ', 'keyup');
+                    } else {
+                        sendKeyEvent(key, 'keydown');
                     }
-                }, 2000 + (index * 1500));
+                    btn.style.transform = 'scale(0.85)';
+                });
+                
+                btn.addEventListener('touchend', (e) => {
+                    e.preventDefault();
+                    if (!isJump) {
+                        sendKeyEvent(key, 'keyup');
+                    }
+                    btn.style.transform = 'scale(1)';
+                });
+                
+                btn.addEventListener('touchcancel', (e) => {
+                    if (!isJump) {
+                        sendKeyEvent(key, 'keyup');
+                    }
+                    btn.style.transform = 'scale(1)';
+                });
+                
+                btn.addEventListener('mousedown', (e) => {
+                    e.preventDefault();
+                    if (isJump) {
+                        sendKeyEvent(' ', 'keydown');
+                        sendKeyEvent(' ', 'keyup');
+                    } else {
+                        sendKeyEvent(key, 'keydown');
+                    }
+                    btn.style.transform = 'scale(0.85)';
+                });
+                
+                btn.addEventListener('mouseup', (e) => {
+                    e.preventDefault();
+                    if (!isJump) {
+                        sendKeyEvent(key, 'keyup');
+                    }
+                    btn.style.transform = 'scale(1)';
+                });
+                
+                btn.addEventListener('mouseleave', (e) => {
+                    if (!isJump) {
+                        sendKeyEvent(key, 'keyup');
+                    }
+                    btn.style.transform = 'scale(1)';
+                });
+            }
+            
+            setupButton(left, 'ArrowLeft', false);
+            setupButton(right, 'ArrowRight', false);
+            setupButton(jump, ' ', true);
+            
+            // Keyboard controls
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'ArrowLeft' || e.key === 'ArrowRight' || e.key === ' ') {
+                    e.preventDefault();
+                }
             });
         }
 
-        console.log('%c🏃 NINJARUN - TOURNAMENT EDITION', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
-        console.log('%c🎮 Professional Gaming Interface Loaded', 'color: #34d399; font-size: 14px;');
-        console.log('%c👥 2-50 players | ⏱️ 5 min rounds | 💰 Prize pool', 'color: #fbbf24; font-size: 12px;');
-        console.log('%c📊 Scores are being recorded in real-time!', 'color: #f87171; font-size: 12px;');
-        console.log('%c📱 Fully optimized for all devices!', 'color: #818cf8; font-size: 12px;');
+        // ============================================================
+        // 🚀 START THE GAME
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', () => {
+            console.log('🚀 DOM ready, starting game...');
+            loadGame();
+            setupTouchControls();
+        });
 
-        loadGame();
-        window.state = state;
-        window.db = db;
+        // Fallback: if DOM already loaded
+        if (document.readyState === 'complete' || document.readyState === 'interactive') {
+            console.log('🚀 DOM already ready, starting game...');
+            loadGame();
+            setupTouchControls();
+        }
+
+        // ============================================================
+        // 🔥 EXPOSE HELPER FUNCTIONS FOR DEBUGGING
+        // ============================================================
+        window.__debug = {
+            forcePlayButton: () => {
+                if (window.gameRuntime) {
+                    forcePlayButtonVisible(window.gameRuntime);
+                }
+            },
+            forceStart: () => {
+                if (window.gameRuntime) {
+                    clickPlayButton(window.gameRuntime);
+                }
+            },
+            unpause: () => {
+                if (window.gameRuntime) {
+                    unpauseGame(window.gameRuntime);
+                }
+            },
+            state: state,
+            runtime: () => window.gameRuntime
+        };
+        
+        console.log('✅ Debug helpers available:');
+        console.log('  - __debug.forcePlayButton() - Force play button visible');
+        console.log('  - __debug.forceStart() - Force game to start');
+        console.log('  - __debug.unpause() - Unpause the game');
+        console.log('  - __debug.runtime() - Get the game runtime');
+        console.log('  - __debug.state - Current state object');
+        
+        console.log('🎮 NinjaRun wrapper ready!');
     </script>
 </body>
 </html>
