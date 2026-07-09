@@ -448,10 +448,7 @@
             }
         }
 
-        // ============================================================
-        // 🔥 COMPLETE FIXED GAME ENGINE LOADER
-        // ============================================================
-       function loadGameEngine() {
+     function loadGameEngine() {
     console.log('🔄 Loading game engine...');
     
     try {
@@ -467,14 +464,24 @@
         }
     } catch (e) { console.warn('⚠️ Could not patch AudioListener:', e); }
 
+    // ============================================================
+    // 🔥 FIXED: Patch input coordinate calculations
+    // ============================================================
     function patchInputCoordinates() {
-        if (typeof cr === 'undefined' || !cr.plugins_) { setTimeout(patchInputCoordinates, 100); return; }
+        if (typeof cr === 'undefined' || !cr.plugins_) { 
+            setTimeout(patchInputCoordinates, 100); 
+            return; 
+        }
+        
+        // Patch Mouse plugin
         if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
             const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
             if (mouseProto.onMouseMove) {
                 const originalOnMouseMove = mouseProto.onMouseMove;
                 mouseProto.onMouseMove = function(info) {
-                    if (!this.runtime || !this.runtime.canvas) { return originalOnMouseMove.call(this, info); }
+                    if (!this.runtime || !this.runtime.canvas) { 
+                        return originalOnMouseMove.call(this, info); 
+                    }
                     const rect = this.runtime.canvas.getBoundingClientRect();
                     const scaleX = this.runtime.canvas.width / rect.width;
                     const scaleY = this.runtime.canvas.height / rect.height;
@@ -484,16 +491,44 @@
                 console.log('✅ Mouse coordinates patched');
             }
         }
+        
+        // Patch Touch plugin - FIXED
         if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
             const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
             if (touchProto.onTouchStart) {
                 const originalOnTouchStart = touchProto.onTouchStart;
                 touchProto.onTouchStart = function(info) {
-                    if (!this.runtime || !this.runtime.canvas) { return originalOnTouchStart.call(this, info); }
+                    if (!this.runtime || !this.runtime.canvas) { 
+                        return originalOnTouchStart.call(this, info); 
+                    }
+                    
+                    // Handle case where changedTouches is not an array
+                    let touches = info.changedTouches;
+                    if (!touches || typeof touches.map !== 'function') {
+                        if (touches && typeof touches.length !== 'undefined') {
+                            touches = Array.from(touches);
+                        } else if (info.touches && info.touches.length > 0) {
+                            touches = Array.from(info.touches);
+                        } else {
+                            return originalOnTouchStart.call(this, info);
+                        }
+                    }
+                    
                     const rect = this.runtime.canvas.getBoundingClientRect();
                     const scaleX = this.runtime.canvas.width / rect.width;
                     const scaleY = this.runtime.canvas.height / rect.height;
-                    const adjustedInfo = { ...info, changedTouches: info.changedTouches.map(t => ({ ...t, pageX: (t.pageX - rect.left) * scaleX, pageY: (t.pageY - rect.top) * scaleY })) };
+                    
+                    const adjustedInfo = {
+                        ...info,
+                        changedTouches: touches.map(t => ({
+                            ...t,
+                            pageX: (t.pageX - rect.left) * scaleX,
+                            pageY: (t.pageY - rect.top) * scaleY,
+                            clientX: (t.clientX - rect.left) * scaleX,
+                            clientY: (t.clientY - rect.top) * scaleY
+                        }))
+                    };
+                    
                     return originalOnTouchStart.call(this, adjustedInfo);
                 };
                 console.log('✅ Touch coordinates patched');
