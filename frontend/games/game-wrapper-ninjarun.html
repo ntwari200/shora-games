@@ -451,204 +451,193 @@
         // ============================================================
         // 🔥 COMPLETE FIXED GAME ENGINE LOADER
         // ============================================================
-        function loadGameEngine() {
-            console.log('🔄 Loading game engine...');
-            
-            try {
-                if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
-                    const originalSetPosition = AudioListener.prototype.setPosition;
-                    AudioListener.prototype.setPosition = function(x, y, z) {
-                        if (isNaN(x) || x === undefined || x === null) x = 0;
-                        if (isNaN(y) || y === undefined || y === null) y = 0;
-                        if (isNaN(z) || z === undefined || z === null) z = -600;
-                        return originalSetPosition.call(this, x, y, z);
-                    };
-                    console.log('✅ AudioListener patched');
-                }
-            } catch (e) { console.warn('⚠️ Could not patch AudioListener:', e); }
-
-            function patchInputCoordinates() {
-                if (typeof cr === 'undefined' || !cr.plugins_) { setTimeout(patchInputCoordinates, 100); return; }
-                if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
-                    const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
-                    if (mouseProto.onMouseMove) {
-                        const originalOnMouseMove = mouseProto.onMouseMove;
-                        mouseProto.onMouseMove = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) { return originalOnMouseMove.call(this, info); }
-                            const rect = this.runtime.canvas.getBoundingClientRect();
-                            const scaleX = this.runtime.canvas.width / rect.width;
-                            const scaleY = this.runtime.canvas.height / rect.height;
-                            this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
-                            this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
-                        };
-                        console.log('✅ Mouse coordinates patched');
-                    }
-                }
-                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-                    if (touchProto.onTouchStart) {
-                        const originalOnTouchStart = touchProto.onTouchStart;
-                        touchProto.onTouchStart = function(info) {
-                            if (!this.runtime || !this.runtime.canvas) { return originalOnTouchStart.call(this, info); }
-                            const rect = this.runtime.canvas.getBoundingClientRect();
-                            const scaleX = this.runtime.canvas.width / rect.width;
-                            const scaleY = this.runtime.canvas.height / rect.height;
-                            const adjustedInfo = { ...info, changedTouches: info.changedTouches.map(t => ({ ...t, pageX: (t.pageX - rect.left) * scaleX, pageY: (t.pageY - rect.top) * scaleY })) };
-                            return originalOnTouchStart.call(this, adjustedInfo);
-                        };
-                        console.log('✅ Touch coordinates patched');
-                    }
-                }
-            }
-
-            // 🔥 FIX: Override data.js path
-            if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
-                const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
-                cr.runtime.prototype.requestProjectData = function() {
-                    console.log('🔄 Loading data.js from: /games/ninja%20run/data.js');
-                    var self = this;
-                    var xhr = new XMLHttpRequest();
-                    xhr.open("GET", "/games/ninja%20run/data.js", true);
-                    var supportsJsonResponse = false;
-                    if (!this.isDomFree && ("response" in xhr) && ("responseType" in xhr)) {
-                        try {
-                            xhr["responseType"] = "json";
-                            supportsJsonResponse = (xhr["responseType"] === "json");
-                        } catch (e) { supportsJsonResponse = false; }
-                    }
-                    if (!supportsJsonResponse && ("responseType" in xhr)) {
-                        try { xhr["responseType"] = "text"; } catch (e) {}
-                    }
-                    if ("overrideMimeType" in xhr) {
-                        try { xhr["overrideMimeType"]("application/json; charset=utf-8"); } catch (e) {}
-                    }
-                    xhr.onload = function () {
-                        if (supportsJsonResponse) {
-                            self.loadProject(xhr["response"]);
-                        } else {
-                            try {
-                                self.loadProject(JSON.parse(xhr["responseText"]));
-                                console.log('✅ data.js loaded successfully');
-                            } catch(e) {
-                                console.error('❌ Error parsing data.js:', e);
-                            }
-                        }
-                    };
-                    xhr.onerror = function (e) {
-                        cr.logerror("Error requesting data.js:");
-                        cr.logerror(e);
-                    };
-                    xhr.send();
-                };
-                console.log('✅ Runtime.requestProjectData overridden');
-            }
-
-            const script = document.createElement('script');
-            script.src = '/games/ninja%20run/c2runtime.js';
-            script.onload = () => {
-                console.log('✅ Runtime loaded');
-                
-                try {
-                    const runtime = new cr.createRuntime('c2canvas');
-                    runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
-                    window.gameRuntime = runtime;
-                    
-                    // Override startRunning to skip Loading layout
-                    try {
-                        const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
-                        runtime.startRunning = function() {
-                            console.log('🔄 Custom startRunning - skipping Loading layout');
-                            const menuLayout = this.layouts['Menu'];
-                            if (menuLayout) {
-                                console.log('✅ Found Menu layout, starting it directly');
-                                menuLayout.startRunning();
-                                this.running_layout = menuLayout;
-                                return;
-                            }
-                            for (let i = 0; i < this.layouts_by_index.length; i++) {
-                                const layout = this.layouts_by_index[i];
-                                if (layout && layout.name !== 'Loading') {
-                                    console.log('✅ Starting layout:', layout.name);
-                                    layout.startRunning();
-                                    this.running_layout = layout;
-                                    return;
-                                }
-                            }
-                            originalStartRunning.call(this);
-                        };
-                        console.log('✅ Runtime.startRunning overridden');
-                    } catch (e) { console.warn('⚠️ Could not override startRunning:', e); }
-                    
-                    dom.startOverlay.classList.remove('hidden');
-
-                    function syncCanvasSize() {
-                        if (!window.gameRuntime || !dom.canvas) return;
-                        try {
-                            const rect = dom.canvas.getBoundingClientRect();
-                            if (rect.width > 0 && rect.height > 0) {
-                                window.gameRuntime.setSize(rect.width, rect.height, true);
-                                console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
-                            }
-                        } catch (e) {}
-                    }
-
-                    requestAnimationFrame(() => { setTimeout(syncCanvasSize, 50); });
-
-                    let resizeTimeout;
-                    window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(syncCanvasSize, 100); });
-                    window.addEventListener('orientationchange', () => { setTimeout(syncCanvasSize, 300); });
-
-                    const originalSetSize = runtime.setSize.bind(runtime);
-                    runtime.setSize = function(w, h, force) {
-                        if (w > 0 && h > 0) { return originalSetSize(w, h, true); }
-                        return originalSetSize(w, h, force);
-                    };
-
-                    patchInputCoordinates();
-                    ResponsiveManager.init();
-                    
-                    setTimeout(() => {
-                        const rt = window.gameRuntime;
-                        if (rt) {
-                            const menuLayout = rt.layouts['Menu'];
-                            if (menuLayout) {
-                                console.log('🎯 Starting Menu layout directly');
-                                try {
-                                    menuLayout.startRunning();
-                                    rt.running_layout = menuLayout;
-                                    rt.isloading = false;
-                                    console.log('✅ Game started directly on Menu layout');
-                                } catch (e) {
-                                    console.warn('⚠️ Could not start Menu directly:', e);
-                                    waitForGameReady(rt);
-                                }
-                            } else {
-                                waitForGameReady(rt);
-                            }
-                            setupTouchControls(rt);
-                            startLobby();
-                            startScoreTracking();
-                        }
-                    }, 500);
-
-                    console.log('✅ Game engine initialized');
-
-                } catch (e) {
-                    console.error('❌ Error creating runtime:', e);
-                    dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
-                    dom.statusSub.textContent = 'Please refresh and try again';
-                    dom.statusMessage.classList.add('show');
-                }
+       function loadGameEngine() {
+    console.log('🔄 Loading game engine...');
+    
+    try {
+        if (typeof AudioListener !== 'undefined' && AudioListener.prototype.setPosition) {
+            const originalSetPosition = AudioListener.prototype.setPosition;
+            AudioListener.prototype.setPosition = function(x, y, z) {
+                if (isNaN(x) || x === undefined || x === null) x = 0;
+                if (isNaN(y) || y === undefined || y === null) y = 0;
+                if (isNaN(z) || z === undefined || z === null) z = -600;
+                return originalSetPosition.call(this, x, y, z);
             };
-            script.onerror = (e) => {
-                console.error('❌ Failed to load c2runtime.js:', e);
-                dom.statusMain.textContent = '⚠️ Game engine not found';
-                dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
-                dom.statusMessage.classList.add('show');
-            };
-            document.head.appendChild(script);
+            console.log('✅ AudioListener patched');
         }
+    } catch (e) { console.warn('⚠️ Could not patch AudioListener:', e); }
 
+    function patchInputCoordinates() {
+        if (typeof cr === 'undefined' || !cr.plugins_) { setTimeout(patchInputCoordinates, 100); return; }
+        if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
+            const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
+            if (mouseProto.onMouseMove) {
+                const originalOnMouseMove = mouseProto.onMouseMove;
+                mouseProto.onMouseMove = function(info) {
+                    if (!this.runtime || !this.runtime.canvas) { return originalOnMouseMove.call(this, info); }
+                    const rect = this.runtime.canvas.getBoundingClientRect();
+                    const scaleX = this.runtime.canvas.width / rect.width;
+                    const scaleY = this.runtime.canvas.height / rect.height;
+                    this.mouseXcanvas = (info.pageX - rect.left) * scaleX;
+                    this.mouseYcanvas = (info.pageY - rect.top) * scaleY;
+                };
+                console.log('✅ Mouse coordinates patched');
+            }
+        }
+        if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
+            const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
+            if (touchProto.onTouchStart) {
+                const originalOnTouchStart = touchProto.onTouchStart;
+                touchProto.onTouchStart = function(info) {
+                    if (!this.runtime || !this.runtime.canvas) { return originalOnTouchStart.call(this, info); }
+                    const rect = this.runtime.canvas.getBoundingClientRect();
+                    const scaleX = this.runtime.canvas.width / rect.width;
+                    const scaleY = this.runtime.canvas.height / rect.height;
+                    const adjustedInfo = { ...info, changedTouches: info.changedTouches.map(t => ({ ...t, pageX: (t.pageX - rect.left) * scaleX, pageY: (t.pageY - rect.top) * scaleY })) };
+                    return originalOnTouchStart.call(this, adjustedInfo);
+                };
+                console.log('✅ Touch coordinates patched');
+            }
+        }
+    }
+
+    // 🔥 FIX: Use the correct path - relative to the current page
+    const dataJsPath = 'ninja%20run/data.js';
+    console.log('🔄 Loading data.js from:', dataJsPath);
+
+    if (typeof cr !== 'undefined' && cr.runtime && cr.runtime.prototype) {
+        const originalRequestProjectData = cr.runtime.prototype.requestProjectData;
+        cr.runtime.prototype.requestProjectData = function() {
+            console.log('🔄 Loading data.js from relative path:', dataJsPath);
+            var self = this;
+            var xhr = new XMLHttpRequest();
+            xhr.open("GET", dataJsPath, true);
+            xhr.onload = function () {
+                if (xhr.status === 404) {
+                    console.error('❌ data.js not found at:', dataJsPath);
+                    return;
+                }
+                try {
+                    const data = JSON.parse(xhr.responseText);
+                    self.loadProject(data);
+                    console.log('✅ data.js loaded successfully');
+                } catch(e) {
+                    console.error('❌ Error parsing data.js:', e);
+                }
+            };
+            xhr.onerror = function (e) {
+                console.error('❌ Error loading data.js:', e);
+            };
+            xhr.send();
+        };
+        console.log('✅ Runtime.requestProjectData overridden');
+    }
+
+    const script = document.createElement('script');
+    script.src = 'ninja%20run/c2runtime.js';
+    script.onload = () => {
+        console.log('✅ Runtime loaded');
+        
+        try {
+            const runtime = new cr.createRuntime('c2canvas');
+            runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
+            window.gameRuntime = runtime;
+            
+            // Override startRunning to skip Loading layout
+            try {
+                const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
+                runtime.startRunning = function() {
+                    console.log('🔄 Custom startRunning - skipping Loading layout');
+                    const menuLayout = this.layouts['Menu'];
+                    if (menuLayout) {
+                        console.log('✅ Found Menu layout, starting it directly');
+                        menuLayout.startRunning();
+                        this.running_layout = menuLayout;
+                        return;
+                    }
+                    for (let i = 0; i < this.layouts_by_index.length; i++) {
+                        const layout = this.layouts_by_index[i];
+                        if (layout && layout.name !== 'Loading') {
+                            console.log('✅ Starting layout:', layout.name);
+                            layout.startRunning();
+                            this.running_layout = layout;
+                            return;
+                        }
+                    }
+                    originalStartRunning.call(this);
+                };
+                console.log('✅ Runtime.startRunning overridden');
+            } catch (e) { console.warn('⚠️ Could not override startRunning:', e); }
+            
+            dom.startOverlay.classList.remove('hidden');
+
+            function syncCanvasSize() {
+                if (!window.gameRuntime || !dom.canvas) return;
+                try {
+                    const rect = dom.canvas.getBoundingClientRect();
+                    if (rect.width > 0 && rect.height > 0) {
+                        window.gameRuntime.setSize(rect.width, rect.height, true);
+                        console.log(`📐 Canvas synced: ${Math.round(rect.width)}×${Math.round(rect.height)}`);
+                    }
+                } catch (e) {}
+            }
+
+            requestAnimationFrame(() => { setTimeout(syncCanvasSize, 50); });
+
+            let resizeTimeout;
+            window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(syncCanvasSize, 100); });
+            window.addEventListener('orientationchange', () => { setTimeout(syncCanvasSize, 300); });
+
+            const originalSetSize = runtime.setSize.bind(runtime);
+            runtime.setSize = function(w, h, force) {
+                if (w > 0 && h > 0) { return originalSetSize(w, h, true); }
+                return originalSetSize(w, h, force);
+            };
+
+            patchInputCoordinates();
+            ResponsiveManager.init();
+            
+            setTimeout(() => {
+                const rt = window.gameRuntime;
+                if (rt) {
+                    const menuLayout = rt.layouts['Menu'];
+                    if (menuLayout) {
+                        console.log('🎯 Starting Menu layout directly');
+                        try {
+                            menuLayout.startRunning();
+                            rt.running_layout = menuLayout;
+                            rt.isloading = false;
+                            console.log('✅ Game started directly on Menu layout');
+                        } catch (e) {
+                            console.warn('⚠️ Could not start Menu directly:', e);
+                            waitForGameReady(rt);
+                        }
+                    } else {
+                        waitForGameReady(rt);
+                    }
+                    setupTouchControls(rt);
+                    startLobby();
+                    startScoreTracking();
+                }
+            }, 500);
+
+            console.log('✅ Game engine initialized');
+
+        } catch (e) {
+            console.error('❌ Error creating runtime:', e);
+            dom.statusMain.textContent = '⚠️ Game engine error: ' + e.message;
+            dom.statusSub.textContent = 'Please refresh and try again';
+            dom.statusMessage.classList.add('show');
+        }
+    };
+    script.onerror = (e) => {
+        console.error('❌ Failed to load c2runtime.js:', e);
+        dom.statusMain.textContent = '⚠️ Game engine not found';
+        dom.statusSub.textContent = 'Make sure c2runtime.js is in the game folder';
+        dom.statusMessage.classList.add('show');
+    };
+    document.head.appendChild(script);
+}
         // ============================================================
         // 🔥 FIXED: Find buttons by texture filename
         // ============================================================
