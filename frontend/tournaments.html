@@ -1,0 +1,1304 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <meta name="theme-color" content="#06111F">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Tournaments - Shora Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --bg: #06111F;
+            --bg2: #0B1F36;
+            --primary: #00BFFF;
+            --secondary: #6C63FF;
+            --success: #00E676;
+            --danger: #FF4D6D;
+            --gold: #FFD700;
+            --text: #F5F7FA;
+            --muted: #A7B5C5;
+            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+            --radius: 16px;
+            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .bg-layer::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0D1B2A 100%); }
+        .bg-layer::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%); transform: translate(-50%, -50%); animation: glowPulse 8s ease-in-out infinite; }
+        @keyframes glowPulse { 0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); } }
+
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 1; }
+
+        /* ===== NAVBAR ===== */
+        .navbar {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+            padding: 10px 0;
+        }
+
+        .nav-row {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .logo i { font-size: 1.4rem; -webkit-text-fill-color: var(--primary); }
+
+        .nav-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-right .balance-display { display: flex; align-items: center; gap: 6px; font-family: 'Orbitron', monospace; font-weight: 700; color: var(--success); font-size: 0.95rem; background: rgba(0, 230, 118, 0.05); padding: 4px 12px; border-radius: 8px; border: 1px solid rgba(0, 230, 118, 0.1); }
+        .nav-right .balance-display i { font-size: 0.9rem; color: var(--gold); }
+        .nav-right .username-display { color: var(--text); font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+        .nav-right .username-display i { color: var(--primary); font-size: 0.9rem; }
+        .nav-right .logout-btn { color: var(--muted); text-decoration: none; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); cursor: pointer; }
+        .nav-right .logout-btn:hover { background: rgba(255, 77, 109, 0.1); border-color: var(--danger); color: var(--danger); }
+
+        /* ===== USER NAVIGATION ===== */
+        .user-nav {
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.08);
+            padding: 8px 0;
+            position: sticky;
+            top: 60px;
+            z-index: 99;
+        }
+
+        .user-nav-row {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .user-nav-row::-webkit-scrollbar { display: none; }
+
+        .user-nav-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 30px;
+            color: var(--muted);
+            text-decoration: none;
+            font-size: 0.75rem;
+            font-weight: 500;
+            transition: var(--transition);
+            white-space: nowrap;
+            border: 1px solid transparent;
+            flex-shrink: 0;
+        }
+
+        .user-nav-link i { font-size: 0.9rem; width: 18px; text-align: center; }
+        .user-nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); border-color: rgba(0, 191, 255, 0.1); }
+        .user-nav-link.active { color: var(--primary); background: rgba(0, 191, 255, 0.08); border-color: rgba(0, 191, 255, 0.2); box-shadow: 0 0 20px rgba(0, 191, 255, 0.05); }
+        .user-nav-link .badge { background: var(--danger); color: #fff; font-size: 0.5rem; padding: 1px 6px; border-radius: 20px; margin-left: 2px; font-weight: 700; }
+
+        @media (max-width: 480px) {
+            .user-nav { top: 56px; padding: 6px 0; }
+            .user-nav-link { padding: 6px 12px; font-size: 0.65rem; gap: 4px; }
+            .user-nav-link i { font-size: 0.75rem; width: 14px; }
+            .user-nav-link span { font-size: 0.6rem; }
+        }
+
+        /* ===== CONTAINER ===== */
+        .container { max-width: 1280px; margin: 0 auto; padding: 16px 16px 40px; position: relative; z-index: 2; }
+
+        /* ===== PAGE HEADER ===== */
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .page-header h1 { font-family: 'Orbitron', monospace; font-size: 1.3rem; }
+        .page-header h1 span { color: var(--primary); }
+        .page-header .subtitle { color: var(--muted); font-size: 0.8rem; }
+
+        /* ===== EVENT CARD ===== */
+        .event-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            overflow: hidden;
+            margin-bottom: 24px;
+            transition: var(--transition);
+        }
+        .event-card:hover { border-color: rgba(0, 191, 255, 0.2); }
+
+        .event-cover {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+            overflow: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .event-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .event-cover .placeholder-icon {
+            font-size: 4rem;
+            opacity: 0.3;
+            color: var(--primary);
+        }
+        .event-cover .event-status-badge {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .event-cover .event-status-badge.live { color: var(--success); border-color: rgba(0, 230, 118, 0.3); }
+        .event-cover .event-status-badge.ended { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
+        .event-cover .event-status-badge.upcoming { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
+
+        .event-cover .upload-btn {
+            position: absolute;
+            bottom: 16px;
+            right: 16px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--text);
+            padding: 8px 16px;
+            border-radius: 30px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .event-cover .upload-btn:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+        .event-cover .upload-btn input[type="file"] {
+            display: none;
+        }
+
+        .event-body {
+            padding: 20px 24px;
+        }
+
+        .event-title-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        .event-title-row h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+        }
+        .event-title-row .prize-pool {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            color: var(--gold);
+        }
+        .event-title-row .prize-pool i { margin-right: 6px; }
+
+        .event-meta {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 12px;
+            margin: 12px 0 16px;
+        }
+        .event-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .event-meta .meta-item i { color: var(--primary); width: 18px; }
+        .event-meta .meta-item strong { color: var(--text); font-weight: 600; }
+
+        /* ===== COUNTDOWN ===== */
+        .countdown-container {
+            background: rgba(0, 191, 255, 0.05);
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            border-radius: 12px;
+            padding: 16px 20px;
+            margin: 12px 0 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+        .countdown-container .label {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+        .countdown-container .timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .countdown-container .timer.urgent { color: var(--danger); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        .players-progress {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin: 8px 0;
+        }
+        .players-progress .progress-bar {
+            flex: 1;
+            height: 6px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        .players-progress .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+        .players-progress .count {
+            font-size: 0.85rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .players-progress .count strong { color: var(--text); }
+
+        /* ===== ACTION BUTTONS ===== */
+        .event-actions {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+        .event-actions .btn {
+            padding: 12px 28px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex: 1;
+            justify-content: center;
+            min-width: 140px;
+        }
+        .btn-join {
+            background: linear-gradient(135deg, var(--success), #00C853);
+            color: #000;
+        }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
+        .btn-join:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .btn-play {
+            background: linear-gradient(135deg, var(--gold), #FFA000);
+            color: #000;
+        }
+        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
+        .btn-play:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
+        .btn-blocked {
+            background: rgba(255, 77, 109, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            cursor: not-allowed;
+        }
+        .btn-view-rankings {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        .btn-view-rankings:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
+
+        /* ===== RANKINGS ===== */
+        .rankings-section {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius);
+            padding: 20px 24px;
+            margin-top: 16px;
+        }
+        .rankings-section h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .rankings-section h3 i { color: var(--gold); }
+
+        .ranking-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-bottom: 1px solid rgba(255,255,255,0.03);
+            transition: var(--transition);
+        }
+        .ranking-item:hover { background: rgba(255,255,255,0.02); }
+        .ranking-item:last-child { border-bottom: none; }
+
+        .ranking-item .rank {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--muted);
+            width: 30px;
+            text-align: center;
+        }
+        .ranking-item .rank.gold { color: var(--gold); }
+        .ranking-item .rank.silver { color: #C0C0C0; }
+        .ranking-item .rank.bronze { color: #CD7F32; }
+
+        .ranking-item .avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #000;
+        }
+        .ranking-item .info {
+            flex: 1;
+        }
+        .ranking-item .info .name {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+        .ranking-item .info .score {
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .ranking-item .score-value {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            color: var(--gold);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 30px 20px;
+            color: var(--muted);
+        }
+        .empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: 12px; display: block; }
+        .empty-state h3 { color: var(--text); margin-bottom: 6px; }
+
+        /* ===== TOAST ===== */
+        .toast-cyber {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: var(--primary);
+            font-size: 0.8rem;
+            z-index: 2000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .toast-cyber.error { border-color: var(--danger); color: var(--danger); }
+        .toast-cyber.success { border-color: var(--success); color: var(--success); }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
+            .nav-right { justify-content: space-between; }
+            .event-cover { height: 150px; }
+            .event-body { padding: 16px; }
+            .event-title-row h2 { font-size: 1rem; }
+            .countdown-container .timer { font-size: 1.5rem; }
+            .event-meta { grid-template-columns: 1fr 1fr; }
+            .event-actions .btn { min-width: 100px; font-size: 0.75rem; padding: 10px 16px; }
+            .page-header h1 { font-size: 1rem; }
+        }
+
+        @media (max-width: 480px) {
+            .container { padding: 10px 10px 30px; }
+            .event-meta { grid-template-columns: 1fr; }
+            .event-actions { flex-direction: column; }
+            .event-actions .btn { width: 100%; }
+            .countdown-container .timer { font-size: 1.2rem; }
+            .ranking-item { padding: 8px 10px; }
+            .ranking-item .info .name { font-size: 0.8rem; }
+            .event-cover { height: 120px; }
+            .event-cover .upload-btn { font-size: 0.6rem; padding: 4px 12px; }
+            .event-title-row .prize-pool { font-size: 1rem; }
+        }
+
+        @media (max-width: 360px) {
+            .nav-right { flex-wrap: wrap; justify-content: center; }
+            .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
+            .countdown-container .timer { font-size: 1rem; }
+            .ranking-item .rank { width: 24px; font-size: 0.75rem; }
+        }
+
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: rgba(0, 191, 255, 0.3); border-radius: 2px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 191, 255, 0.5); }
+    </style>
+</head>
+<body>
+
+    <!-- ===== BACKGROUND ===== -->
+    <div class="bg-layer"></div>
+    <div class="grid-overlay"></div>
+
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar">
+        <div class="nav-row">
+            <div class="logo" onclick="window.location.href='dashboard.html'">
+                <i class="fas fa-gamepad"></i> SHORA
+            </div>
+            <div class="nav-right">
+                <span class="username-display" id="usernameDisplay">
+                    <i class="fas fa-user"></i> <span id="navUsername">Player</span>
+                </span>
+                <span class="balance-display">
+                    <i class="fas fa-coins"></i>
+                    <span id="balanceDisplay">0</span> RWF
+                </span>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- ===== USER NAVIGATION ===== -->
+    <nav class="user-nav">
+        <div class="user-nav-row">
+            <a href="dashboard.html" class="user-nav-link">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="game-lobby.html" class="user-nav-link">
+                <i class="fas fa-gamepad"></i>
+                <span>Games</span>
+                <span class="badge">12</span>
+            </a>
+            <a href="tournaments.html" class="user-nav-link active">
+                <i class="fas fa-trophy"></i>
+                <span>Tournaments</span>
+                <span class="badge" id="eventBadge">1</span>
+            </a>
+            <a href="leaderboard.html" class="user-nav-link">
+                <i class="fas fa-ranking-star"></i>
+                <span>Leaderboard</span>
+            </a>
+            <a href="profile.html" class="user-nav-link">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="deposit.html" class="user-nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>Wallet</span>
+            </a>
+            <a href="withdraw.html" class="user-nav-link">
+                <i class="fas fa-arrow-up"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="support.html" class="user-nav-link">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
+            </a>
+        </div>
+    </nav>
+
+    <!-- ===== MAIN CONTENT ===== -->
+    <div class="container">
+
+        <!-- Page Header -->
+        <div class="page-header">
+            <div>
+                <h1>🏆 <span>Tournaments</span></h1>
+                <div class="subtitle">Compete in live events and win prizes!</div>
+            </div>
+            <div id="eventCounter" style="font-size:0.8rem;color:var(--muted);">
+                <i class="fas fa-users"></i> <span id="totalPlayers">0</span> players competing
+            </div>
+        </div>
+
+        <!-- ===== EVENT CARD ===== -->
+        <div class="event-card" id="eventCard">
+            
+            <!-- Event Cover / Profile Picture -->
+            <div class="event-cover" id="eventCover">
+                <img id="eventImage" src="" alt="Event Image" style="display:none;">
+                <span class="placeholder-icon" id="placeholderIcon"><i class="fas fa-trophy"></i></span>
+                
+                <!-- Status Badge -->
+                <span class="event-status-badge live" id="statusBadge">🟢 LIVE</span>
+                
+                <!-- Upload Button (Admin only) -->
+                <label class="upload-btn" id="uploadBtn">
+                    <i class="fas fa-camera"></i> Upload Image
+                    <input type="file" id="imageUpload" accept="image/*">
+                </label>
+            </div>
+
+            <!-- Event Body -->
+            <div class="event-body">
+                
+                <!-- Title & Prize -->
+                <div class="event-title-row">
+                    <h2 id="eventName">Ninja Run Championship</h2>
+                    <span class="prize-pool">
+                        <i class="fas fa-coins"></i> <span id="prizePool">0</span> RWF
+                    </span>
+                </div>
+
+                <!-- Meta Info -->
+                <div class="event-meta">
+                    <div class="meta-item">
+                        <i class="fas fa-gamepad"></i>
+                        Game: <strong id="gameName">Ninja Run</strong>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        Entry Fee: <strong id="entryFee">500 RWF</strong>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-user-friends"></i>
+                        Players: <strong id="playerCount">0 / 50</strong>
+                    </div>
+                    <div class="meta-item">
+                        <i class="fas fa-clock"></i>
+                        Status: <strong id="eventStatus">Loading...</strong>
+                    </div>
+                </div>
+
+                <!-- Countdown Timer -->
+                <div class="countdown-container">
+                    <span class="label"><i class="fas fa-hourglass-half"></i> Time Remaining</span>
+                    <span class="timer" id="countdownTimer">--:--:--</span>
+                </div>
+
+                <!-- Players Progress -->
+                <div class="players-progress">
+                    <span style="font-size:0.7rem;color:var(--muted);">Progress</span>
+                    <div class="progress-bar">
+                        <div class="fill" id="progressFill" style="width:0%;"></div>
+                    </div>
+                    <span class="count"><strong id="currentPlayers">0</strong> / 50</span>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="event-actions" id="actionButtons">
+                    <!-- Will be dynamically rendered -->
+                </div>
+
+                <!-- ===== RANKINGS ===== -->
+                <div class="rankings-section" id="rankingsSection" style="display:none;">
+                    <h3><i class="fas fa-trophy"></i> Final Rankings</h3>
+                    <div id="rankingsList">
+                        <div class="empty-state">
+                            <i class="fas fa-users"></i>
+                            <h3>No Rankings Yet</h3>
+                            <p>Players will appear here after the event ends.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- ===== PAST EVENTS ===== -->
+        <div style="margin-top:24px;">
+            <h3 style="font-family:'Orbitron',monospace;font-size:0.9rem;color:var(--muted);margin-bottom:12px;">
+                📜 Past Events
+            </h3>
+            <div id="pastEvents">
+                <div style="text-align:center;color:var(--muted);padding:20px;font-size:0.8rem;">
+                    <i class="fas fa-history"></i> No past events yet
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast-cyber">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Message</span>
+    </div>
+
+    <!-- ===== FIREBASE IMPORTS ===== -->
+    <script type="importmap">
+        {
+            "imports": {
+                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
+                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js",
+                "firebase/storage": "https://www.gstatic.com/firebasejs/10.10.0/firebase-storage.js"
+            }
+        }
+    </script>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script type="module">
+        // ========================================
+        // IMPORTS
+        // ========================================
+
+        import { initializeApp } from "firebase/app";
+        import { getDatabase, ref, onValue, get, update, push, set } from "firebase/database";
+        import { getAuth, onAuthStateChanged } from "firebase/auth";
+        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
+
+        // ========================================
+        // FIREBASE CONFIG
+        // ========================================
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+            authDomain: "shora-games.firebaseapp.com",
+            projectId: "shora-games",
+            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+        const auth = getAuth(app);
+        const storage = getStorage(app);
+
+        // ========================================
+        // STATE
+        // ========================================
+
+        let currentUser = null;
+        let userData = { balance: 0, username: 'Player' };
+        let currentEvent = null;
+        let eventId = null;
+        let countdownInterval = null;
+        let isAdmin = false; // Set this based on your admin check
+
+        // ========================================
+        // AUTH STATE
+        // ========================================
+
+        onAuthStateChanged(auth, async (user) => {
+            if (user) {
+                currentUser = user;
+                await loadUserData(user.uid);
+                loadEventData();
+                updateUI();
+            } else {
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ========================================
+        // LOAD USER DATA
+        // ========================================
+
+        async function loadUserData(uid) {
+            try {
+                const userRef = ref(db, `users/${uid}`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    userData = {
+                        balance: data.balance || 0,
+                        username: data.username || 'Player',
+                        email: data.email || '',
+                        phone: data.phone || '',
+                        hasPlayedCurrentEvent: data.hasPlayedCurrentEvent || false,
+                        currentEventId: data.currentEventId || null
+                    };
+                }
+                document.getElementById('navUsername').textContent = userData.username;
+                document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // ========================================
+        // LOAD EVENT DATA
+        // ========================================
+
+        function loadEventData() {
+            const eventRef = ref(db, 'tournaments/current_event');
+            onValue(eventRef, (snapshot) => {
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    currentEvent = data;
+                    eventId = data.id || 'event_001';
+                    
+                    // Update UI with event data
+                    updateEventUI(data);
+                    
+                    // Start countdown if event is live
+                    if (data.status === 'live' && data.countdown > 0) {
+                        startCountdown(data.countdown);
+                    } else if (data.status === 'ended') {
+                        showRankings(data);
+                    }
+                } else {
+                    // No event found - create default
+                    createDefaultEvent();
+                }
+                updateUI();
+            });
+        }
+
+        // ========================================
+        // CREATE DEFAULT EVENT
+        // ========================================
+
+        async function createDefaultEvent() {
+            const defaultEvent = {
+                id: 'event_001',
+                name: 'Ninja Run Championship',
+                game: 'Ninja Run',
+                entryFee: 500,
+                minPlayers: 2,
+                maxPlayers: 50,
+                currentPlayers: 0,
+                status: 'live',
+                countdown: 7200, // 2 hours
+                prizePool: 0,
+                imageUrl: '',
+                players: {},
+                startTime: new Date().toISOString(),
+                endTime: new Date(Date.now() + 7200000).toISOString()
+            };
+            
+            try {
+                await set(ref(db, 'tournaments/current_event'), defaultEvent);
+                currentEvent = defaultEvent;
+                eventId = defaultEvent.id;
+                updateEventUI(defaultEvent);
+                startCountdown(defaultEvent.countdown);
+            } catch (error) {
+                console.error('Error creating default event:', error);
+            }
+        }
+
+        // ========================================
+        // UPDATE EVENT UI
+        // ========================================
+
+        function updateEventUI(event) {
+            // Event Name
+            document.getElementById('eventName').textContent = event.name || 'Ninja Run Championship';
+            document.getElementById('gameName').textContent = event.game || 'Ninja Run';
+            
+            // Entry Fee
+            document.getElementById('entryFee').textContent = `${event.entryFee || 500} RWF`;
+            
+            // Players
+            const playerCount = event.players ? Object.keys(event.players).length : 0;
+            document.getElementById('playerCount').textContent = `${playerCount} / ${event.maxPlayers || 50}`;
+            document.getElementById('currentPlayers').textContent = playerCount;
+            document.getElementById('totalPlayers').textContent = playerCount;
+            
+            // Progress
+            const progress = (playerCount / (event.maxPlayers || 50)) * 100;
+            document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
+            
+            // Prize Pool
+            const prizePool = event.prizePool || (playerCount * (event.entryFee || 500));
+            document.getElementById('prizePool').textContent = prizePool.toLocaleString();
+            
+            // Status
+            const statusBadge = document.getElementById('statusBadge');
+            const statusText = document.getElementById('eventStatus');
+            if (event.status === 'live') {
+                statusBadge.textContent = '🟢 LIVE';
+                statusBadge.className = 'event-status-badge live';
+                statusText.textContent = 'Live Now!';
+                statusText.style.color = 'var(--success)';
+            } else if (event.status === 'ended') {
+                statusBadge.textContent = '🔴 ENDED';
+                statusBadge.className = 'event-status-badge ended';
+                statusText.textContent = 'Event Ended';
+                statusText.style.color = 'var(--danger)';
+            } else {
+                statusBadge.textContent = '🟡 UPCOMING';
+                statusBadge.className = 'event-status-badge upcoming';
+                statusText.textContent = 'Coming Soon';
+                statusText.style.color = 'var(--gold)';
+            }
+            
+            // Event Image
+            if (event.imageUrl) {
+                document.getElementById('eventImage').src = event.imageUrl;
+                document.getElementById('eventImage').style.display = 'block';
+                document.getElementById('placeholderIcon').style.display = 'none';
+            } else {
+                document.getElementById('eventImage').style.display = 'none';
+                document.getElementById('placeholderIcon').style.display = 'block';
+            }
+            
+            // Update action buttons
+            updateActionButtons(event);
+            
+            // Update badge
+            document.getElementById('eventBadge').textContent = event.status === 'live' ? '1' : '0';
+        }
+
+        // ========================================
+        // UPDATE ACTION BUTTONS
+        // ========================================
+
+        function updateActionButtons(event) {
+            const container = document.getElementById('actionButtons');
+            const playerCount = event.players ? Object.keys(event.players).length : 0;
+            const userHasJoined = event.players && event.players[currentUser?.uid];
+            const userHasPlayed = userData.hasPlayedCurrentEvent;
+            const isFull = playerCount >= (event.maxPlayers || 50);
+            const isEnded = event.status === 'ended';
+            const isLive = event.status === 'live';
+            
+            container.innerHTML = '';
+            
+            if (isEnded) {
+                // Show rankings only
+                container.innerHTML = `
+                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-trophy"></i> View Rankings
+                    </button>
+                `;
+                document.getElementById('rankingsSection').style.display = 'block';
+                return;
+            }
+            
+            if (!isLive) {
+                container.innerHTML = `
+                    <button class="btn btn-blocked" disabled>
+                        <i class="fas fa-clock"></i> Event Not Started
+                    </button>
+                `;
+                return;
+            }
+            
+            if (userHasPlayed) {
+                container.innerHTML = `
+                    <button class="btn btn-blocked" disabled>
+                        <i class="fas fa-ban"></i> Already Played - Wait for Next Event
+                    </button>
+                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-trophy"></i> View Rankings
+                    </button>
+                `;
+                return;
+            }
+            
+            if (userHasJoined) {
+                // User joined but hasn't played - show Play button
+                container.innerHTML = `
+                    <button class="btn btn-play" onclick="playGame()">
+                        <i class="fas fa-play"></i> Play Ninja Run
+                    </button>
+                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
+                        <i class="fas fa-trophy"></i> View Rankings
+                    </button>
+                `;
+                return;
+            }
+            
+            if (isFull) {
+                container.innerHTML = `
+                    <button class="btn btn-blocked" disabled>
+                        <i class="fas fa-users"></i> Event is Full (${playerCount}/50)
+                    </button>
+                `;
+                return;
+            }
+            
+            // Show Join button
+            container.innerHTML = `
+                <button class="btn btn-join" onclick="joinEvent()">
+                    <i class="fas fa-ticket-alt"></i> Join Event (${event.entryFee || 500} RWF)
+                </button>
+                <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
+                    <i class="fas fa-trophy"></i> View Rankings
+                </button>
+            `;
+        }
+
+        // ========================================
+        // JOIN EVENT
+        // ========================================
+
+        window.joinEvent = async function() {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            if (!currentEvent || currentEvent.status !== 'live') {
+                showToast('Event is not available', 'error');
+                return;
+            }
+            
+            const entryFee = currentEvent.entryFee || 500;
+            
+            if (userData.balance < entryFee) {
+                showToast(`Insufficient balance! Need ${entryFee} RWF`, 'error');
+                return;
+            }
+            
+            const playerCount = currentEvent.players ? Object.keys(currentEvent.players).length : 0;
+            if (playerCount >= (currentEvent.maxPlayers || 50)) {
+                showToast('Event is full!', 'error');
+                return;
+            }
+            
+            if (currentEvent.players && currentEvent.players[currentUser.uid]) {
+                showToast('You already joined this event!', 'error');
+                return;
+            }
+            
+            try {
+                // Deduct balance
+                const newBalance = userData.balance - entryFee;
+                await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
+                userData.balance = newBalance;
+                document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
+                
+                // Add player to event
+                const playerData = {
+                    username: userData.username,
+                    joinedAt: new Date().toISOString(),
+                    hasPlayed: false,
+                    score: 0,
+                    rank: 0
+                };
+                
+                const eventRef = ref(db, `tournaments/current_event/players/${currentUser.uid}`);
+                await set(eventRef, playerData);
+                
+                // Update player count
+                const newCount = playerCount + 1;
+                await update(ref(db, 'tournaments/current_event'), {
+                    currentPlayers: newCount,
+                    prizePool: newCount * entryFee
+                });
+                
+                // Update user's current event
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    currentEventId: eventId
+                });
+                
+                showToast(`✅ Joined event! Entry fee: ${entryFee} RWF`, 'success');
+                
+                // Reload event data
+                loadEventData();
+                
+            } catch (error) {
+                console.error('Error joining event:', error);
+                showToast('Error joining event. Please try again.', 'error');
+            }
+        };
+
+        // ========================================
+        // PLAY GAME
+        // ========================================
+
+        window.playGame = function() {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            if (!currentEvent || currentEvent.status !== 'live') {
+                showToast('Event is not available', 'error');
+                return;
+            }
+            
+            if (userData.hasPlayedCurrentEvent) {
+                showToast('You already played! Wait for the next event.', 'error');
+                return;
+            }
+            
+            if (!currentEvent.players || !currentEvent.players[currentUser.uid]) {
+                showToast('Please join the event first!', 'error');
+                return;
+            }
+            
+            // Mark user as played
+            update(ref(db, `users/${currentUser.uid}`), {
+                hasPlayedCurrentEvent: true
+            });
+            
+            update(ref(db, `tournaments/current_event/players/${currentUser.uid}`), {
+                hasPlayed: true
+            });
+            
+            showToast('🎮 Launching Ninja Run... Good luck!', 'success');
+            
+            // Redirect to game
+            setTimeout(() => {
+                window.location.href = 'game-wrapper.html?game=ninja-run&event=' + eventId;
+            }, 1500);
+        };
+
+        // ========================================
+        // START COUNTDOWN
+        // ========================================
+
+        function startCountdown(seconds) {
+            if (countdownInterval) clearInterval(countdownInterval);
+            
+            const timerElement = document.getElementById('countdownTimer');
+            
+            countdownInterval = setInterval(() => {
+                seconds--;
+                
+                if (seconds <= 0) {
+                    clearInterval(countdownInterval);
+                    timerElement.textContent = '00:00:00';
+                    timerElement.className = 'timer urgent';
+                    
+                    // Mark event as ended
+                    update(ref(db, 'tournaments/current_event'), {
+                        status: 'ended',
+                        countdown: 0
+                    });
+                    
+                    showToast('🏁 Event has ended! Check rankings.', 'info');
+                    return;
+                }
+                
+                const hours = Math.floor(seconds / 3600);
+                const minutes = Math.floor((seconds % 3600) / 60);
+                const secs = seconds % 60;
+                
+                timerElement.textContent = 
+                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                
+                // Update countdown in Firebase
+                update(ref(db, 'tournaments/current_event'), {
+                    countdown: seconds
+                });
+                
+                // Add urgent class when less than 5 minutes
+                if (seconds < 300) {
+                    timerElement.className = 'timer urgent';
+                } else {
+                    timerElement.className = 'timer';
+                }
+                
+            }, 1000);
+        }
+
+        // ========================================
+        // SHOW RANKINGS
+        // ========================================
+
+        function showRankings(event) {
+            const section = document.getElementById('rankingsSection');
+            section.style.display = 'block';
+            
+            const list = document.getElementById('rankingsList');
+            
+            if (!event.players || Object.keys(event.players).length === 0) {
+                list.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-users"></i>
+                        <h3>No Players</h3>
+                        <p>No players participated in this event.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            // Sort players by score (descending)
+            const players = Object.entries(event.players)
+                .map(([uid, data]) => ({ uid, ...data }))
+                .sort((a, b) => (b.score || 0) - (a.score || 0));
+            
+            // Assign ranks
+            players.forEach((player, index) => {
+                player.rank = index + 1;
+            });
+            
+            list.innerHTML = players.map((player, index) => {
+                const rankClass = player.rank === 1 ? 'gold' : player.rank === 2 ? 'silver' : player.rank === 3 ? 'bronze' : '';
+                const medal = player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : `#${player.rank}`;
+                
+                return `
+                    <div class="ranking-item">
+                        <span class="rank ${rankClass}">${medal}</span>
+                        <div class="avatar">${(player.username || 'P').charAt(0).toUpperCase()}</div>
+                        <div class="info">
+                            <div class="name">${player.username || 'Anonymous'}</div>
+                            <div class="score">Score: <span class="score-value">${player.score || 0}</span></div>
+                        </div>
+                        <div style="font-size:0.75rem;color:var(--muted);">
+                            ${player.hasPlayed ? '✅ Played' : '⏳ Pending'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // ========================================
+        // UPLOAD EVENT IMAGE
+        // ========================================
+
+        document.getElementById('imageUpload')?.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            // Check if admin (you can implement proper admin check)
+            if (!isAdmin) {
+                showToast('Only admins can upload images', 'error');
+                return;
+            }
+            
+            try {
+                const storagePath = `events/${eventId}/cover_${Date.now()}.jpg`;
+                const storageRef = storageRef(storage, storagePath);
+                await uploadBytes(storageRef, file);
+                const url = await getDownloadURL(storageRef);
+                
+                // Update event with image URL
+                await update(ref(db, 'tournaments/current_event'), { imageUrl: url });
+                
+                showToast('✅ Event image uploaded successfully!', 'success');
+                loadEventData();
+                
+            } catch (error) {
+                console.error('Error uploading image:', error);
+                showToast('Error uploading image', 'error');
+            }
+        });
+
+        // ========================================
+        // UPDATE UI
+        // ========================================
+
+        function updateUI() {
+            // Update balance in navbar
+            document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
+            document.getElementById('navUsername').textContent = userData.username;
+        }
+
+        // ========================================
+        // TOAST
+        // ========================================
+
+        function showToast(message, type = 'info') {
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMessage');
+            msg.textContent = message;
+            toast.className = 'toast-cyber';
+            if (type === 'error') toast.classList.add('error');
+            if (type === 'success') toast.classList.add('success');
+            toast.style.display = 'flex';
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
+        }
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('shora_user');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ========================================
+        // CONSOLE
+        // ========================================
+
+        console.log('%c🏆 SHORA GAMES - TOURNAMENTS', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%c🎮 Game: Ninja Run', 'color: #00BFFF;');
+        console.log('%c💰 Entry Fee: 500 RWF', 'color: #00E676;');
+        console.log('%c👥 Max Players: 50', 'color: #FFC857;');
+        console.log('%c🔄 Real-time countdown active', 'color: #FF4D6D;');
+        console.log('%c📸 Event image upload ready', 'color: #A7B5C5;');
+
+        // Make functions available globally for onclick
+        window.joinEvent = joinEvent;
+        window.playGame = playGame;
+    </script>
+
+</body>
+</html>
