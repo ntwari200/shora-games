@@ -309,153 +309,177 @@
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
         setupAudioAutoplayFix();
 
-        // ============================================================
-        // 🔥 FIX: Patch the runtime's coordinate system
-        // ============================================================
-        function patchRuntimeCoordinates(runtime) {
-            if (!runtime) return;
-            console.log('🛠️ Patching coordinate system...');
+      // ============================================================
+// 🔥 FIX: Patch the runtime's coordinate system (CORRECTED)
+// ============================================================
+function patchRuntimeCoordinates(runtime) {
+    if (!runtime) return;
+    console.log('🛠️ Patching coordinate system...');
+    
+    try {
+        // 1. Patch Mouse plugin
+        if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
+            const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
             
-            try {
-                // 1. Patch Mouse plugin - FIXED for all cases
-                if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
-                    const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
-                    
-                    mouseProto.onMouseMove = function(info) {
-                        const canvas = this.runtime.canvas;
-                        if (!canvas) {
-                            this.mouseXcanvas = info.pageX || 0;
-                            this.mouseYcanvas = info.pageY || 0;
-                            return;
-                        }
-                        const rect = canvas.getBoundingClientRect();
-                        if (rect.width === 0 || rect.height === 0) {
-                            this.mouseXcanvas = info.pageX || 0;
-                            this.mouseYcanvas = info.pageY || 0;
-                            return;
-                        }
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        this.mouseXcanvas = ((info.pageX || info.clientX || 0) - rect.left) * scaleX;
-                        this.mouseYcanvas = ((info.pageY || info.clientY || 0) - rect.top) * scaleY;
-                    };
-                    console.log('✅ Mouse.onMouseMove patched');
+            // Store the original method
+            const originalOnMouseMove = mouseProto.onMouseMove;
+            
+            // Override with our version
+            mouseProto.onMouseMove = function(info) {
+                const canvas = this.runtime.canvas;
+                if (!canvas) {
+                    return originalOnMouseMove.call(this, info);
+                }
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    return originalOnMouseMove.call(this, info);
+                }
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                // Create a new info object with corrected coordinates
+                const newInfo = {
+                    pageX: ((info.pageX || info.clientX || 0) - rect.left) * scaleX,
+                    pageY: ((info.pageY || info.clientY || 0) - rect.top) * scaleY,
+                    clientX: ((info.clientX || info.pageX || 0) - rect.left) * scaleX,
+                    clientY: ((info.clientY || info.pageY || 0) - rect.top) * scaleY,
+                    which: info.which,
+                    button: info.button,
+                    buttons: info.buttons,
+                    target: info.target,
+                    preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
+                    stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
+                };
+                
+                return originalOnMouseMove.call(this, newInfo);
+            };
+            console.log('✅ Mouse.onMouseMove patched');
+        }
+        
+        // 2. Patch Touch plugin - CORRECTED to avoid recursion
+        if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
+            const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
+            
+            // Store original methods
+            const originalOnTouchStart = touchProto.onTouchStart;
+            const originalOnTouchMove = touchProto.onTouchMove;
+            const originalOnPointerStart = touchProto.onPointerStart;
+            
+            // Override onTouchStart - call the original with our modified info
+            touchProto.onTouchStart = function(info) {
+                const canvas = this.runtime.canvas;
+                if (!canvas) {
+                    return originalOnTouchStart.call(this, info);
+                }
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    return originalOnTouchStart.call(this, info);
+                }
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                // Create modified touch list
+                const modifiedTouches = [];
+                const touches = info.changedTouches || info.touches || [];
+                
+                for (let i = 0; i < (touches.length || 0); i++) {
+                    const t = touches[i];
+                    if (t) {
+                        modifiedTouches.push({
+                            identifier: t.identifier || i,
+                            pageX: ((t.pageX || t.clientX || 0) - rect.left) * scaleX,
+                            pageY: ((t.pageY || t.clientY || 0) - rect.top) * scaleY,
+                            clientX: ((t.clientX || t.pageX || 0) - rect.left) * scaleX,
+                            clientY: ((t.clientY || t.pageY || 0) - rect.top) * scaleY,
+                            target: t.target || canvas,
+                            radiusX: t.radiusX || 1,
+                            radiusY: t.radiusY || 1,
+                            rotationAngle: t.rotationAngle || 0,
+                            force: t.force || 1
+                        });
+                    }
                 }
                 
-                // 2. Patch Touch plugin - FIXED for all cases
-                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-                    
-                    // Patch onTouchStart
-                    const origTouchStart = touchProto.onTouchStart;
-                    touchProto.onTouchStart = function(info) {
-                        const canvas = this.runtime.canvas;
-                        if (!canvas) {
-                            return origTouchStart.call(this, info);
-                        }
-                        const rect = canvas.getBoundingClientRect();
-                        if (rect.width === 0 || rect.height === 0) {
-                            return origTouchStart.call(this, info);
-                        }
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        
-                        let touches = info.changedTouches;
-                        if (!touches || typeof touches.map !== 'function') {
-                            if (touches && typeof touches.length !== 'undefined') {
-                                touches = Array.from(touches);
-                            } else if (info.touches && info.touches.length > 0) {
-                                touches = Array.from(info.touches);
-                            } else {
-                                touches = [];
-                            }
-                        }
-                        
-                        const newInfo = {
-                            changedTouches: [],
-                            preventDefault: info.preventDefault || function() {},
-                            target: info.target || this.runtime.canvas
-                        };
-                        
-                        for (let i = 0; i < touches.length; i++) {
-                            const t = touches[i];
-                            newInfo.changedTouches.push({
-                                identifier: t.identifier || i,
-                                pageX: ((t.pageX || t.clientX || 0) - rect.left) * scaleX,
-                                pageY: ((t.pageY || t.clientY || 0) - rect.top) * scaleY,
-                                clientX: ((t.clientX || t.pageX || 0) - rect.left) * scaleX,
-                                clientY: ((t.clientY || t.pageY || 0) - rect.top) * scaleY
-                            });
-                        }
-                        return origTouchStart.call(this, newInfo);
-                    };
-                    console.log('✅ Touch.onTouchStart patched');
-                    
-                    // Patch onTouchMove
-                    const origTouchMove = touchProto.onTouchMove;
-                    touchProto.onTouchMove = function(info) {
-                        const canvas = this.runtime.canvas;
-                        if (!canvas) {
-                            return origTouchMove.call(this, info);
-                        }
-                        const rect = canvas.getBoundingClientRect();
-                        if (rect.width === 0 || rect.height === 0) {
-                            return origTouchMove.call(this, info);
-                        }
-                        const scaleX = canvas.width / rect.width;
-                        const scaleY = canvas.height / rect.height;
-                        
-                        for (let i = 0; i < info.changedTouches.length; i++) {
-                            const t = info.changedTouches[i];
-                            const j = this.findTouch(t.identifier);
-                            if (j >= 0) {
-                                const touch = this.touches[j];
+                // Create new info object with modified touches
+                const newInfo = {
+                    changedTouches: modifiedTouches,
+                    touches: modifiedTouches,
+                    targetTouches: modifiedTouches,
+                    target: info.target || canvas,
+                    preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
+                    stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
+                };
+                
+                // Call the original with our modified info
+                return originalOnTouchStart.call(this, newInfo);
+            };
+            console.log('✅ Touch.onTouchStart patched');
+            
+            // Override onTouchMove
+            touchProto.onTouchMove = function(info) {
+                const canvas = this.runtime.canvas;
+                if (!canvas) {
+                    return originalOnTouchMove.call(this, info);
+                }
+                const rect = canvas.getBoundingClientRect();
+                if (rect.width === 0 || rect.height === 0) {
+                    return originalOnTouchMove.call(this, info);
+                }
+                const scaleX = canvas.width / rect.width;
+                const scaleY = canvas.height / rect.height;
+                
+                // Update existing touches with corrected coordinates
+                for (let i = 0; i < (info.changedTouches || []).length; i++) {
+                    const t = info.changedTouches[i];
+                    if (t) {
+                        const j = this.findTouch(t.identifier);
+                        if (j >= 0) {
+                            const touch = this.touches[j];
+                            if (touch) {
                                 touch.x = ((t.clientX || t.pageX || 0) - rect.left) * scaleX;
                                 touch.y = ((t.clientY || t.pageY || 0) - rect.top) * scaleY;
                             }
                         }
-                        return origTouchMove.call(this, info);
-                    };
-                    console.log('✅ Touch.onTouchMove patched');
-                }
-                
-                // 3. Also patch onPointerStart if it exists (for pointer events)
-                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-                    if (touchProto.onPointerStart) {
-                        const origPointerStart = touchProto.onPointerStart;
-                        touchProto.onPointerStart = function(info) {
-                            const canvas = this.runtime.canvas;
-                            if (!canvas) {
-                                return origPointerStart.call(this, info);
-                            }
-                            const rect = canvas.getBoundingClientRect();
-                            if (rect.width === 0 || rect.height === 0) {
-                                return origPointerStart.call(this, info);
-                            }
-                            const scaleX = canvas.width / rect.width;
-                            const scaleY = canvas.height / rect.height;
-                            
-                            // Patch the info object
-                            const newInfo = {
-                                ...info,
-                                pageX: (info.pageX - rect.left) * scaleX,
-                                pageY: (info.pageY - rect.top) * scaleY,
-                                clientX: (info.clientX - rect.left) * scaleX,
-                                clientY: (info.clientY - rect.top) * scaleY
-                            };
-                            return origPointerStart.call(this, newInfo);
-                        };
-                        console.log('✅ Touch.onPointerStart patched');
                     }
                 }
                 
-                console.log('✅ Coordinate system patched successfully!');
-            } catch (e) {
-                console.warn('⚠️ Error patching coordinates:', e);
+                return originalOnTouchMove.call(this, info);
+            };
+            console.log('✅ Touch.onTouchMove patched');
+            
+            // Override onPointerStart
+            if (touchProto.onPointerStart) {
+                touchProto.onPointerStart = function(info) {
+                    const canvas = this.runtime.canvas;
+                    if (!canvas) {
+                        return originalOnPointerStart.call(this, info);
+                    }
+                    const rect = canvas.getBoundingClientRect();
+                    if (rect.width === 0 || rect.height === 0) {
+                        return originalOnPointerStart.call(this, info);
+                    }
+                    const scaleX = canvas.width / rect.width;
+                    const scaleY = canvas.height / rect.height;
+                    
+                    const newInfo = {
+                        ...info,
+                        pageX: (info.pageX - rect.left) * scaleX,
+                        pageY: (info.pageY - rect.top) * scaleY,
+                        clientX: (info.clientX - rect.left) * scaleX,
+                        clientY: (info.clientY - rect.top) * scaleY
+                    };
+                    
+                    return originalOnPointerStart.call(this, newInfo);
+                };
+                console.log('✅ Touch.onPointerStart patched');
             }
         }
-
+        
+        console.log('✅ Coordinate system patched successfully!');
+    } catch (e) {
+        console.warn('⚠️ Error patching coordinates:', e);
+    }
+}
         // ============================================================
         // 🔥 FIX: Click Play Button with multiple methods
         // ============================================================
