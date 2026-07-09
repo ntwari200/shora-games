@@ -309,372 +309,369 @@
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
         setupAudioAutoplayFix();
 
-      // ============================================================
-// 🔥 FIX: Patch the runtime's coordinate system (CORRECTED)
-// ============================================================
-function patchRuntimeCoordinates(runtime) {
-    if (!runtime) return;
-    console.log('🛠️ Patching coordinate system...');
-    
-    try {
-        // 1. Patch Mouse plugin
-        if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
-            const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
+        // ============================================================
+        // 🔥 FIX: Patch the runtime's coordinate system (CORRECTED)
+        // ============================================================
+        function patchRuntimeCoordinates(runtime) {
+            if (!runtime) return;
+            console.log('🛠️ Patching coordinate system...');
             
-            // Store the original method
-            const originalOnMouseMove = mouseProto.onMouseMove;
-            
-            // Override with our version
-            mouseProto.onMouseMove = function(info) {
-                const canvas = this.runtime.canvas;
-                if (!canvas) {
-                    return originalOnMouseMove.call(this, info);
+            try {
+                // 1. Patch Mouse plugin
+                if (cr.plugins_.Mouse && cr.plugins_.Mouse.prototype.Instance) {
+                    const mouseProto = cr.plugins_.Mouse.prototype.Instance.prototype;
+                    
+                    // Store the original method
+                    const originalOnMouseMove = mouseProto.onMouseMove;
+                    
+                    // Override with our version
+                    mouseProto.onMouseMove = function(info) {
+                        const canvas = this.runtime.canvas;
+                        if (!canvas) {
+                            return originalOnMouseMove.call(this, info);
+                        }
+                        const rect = canvas.getBoundingClientRect();
+                        if (rect.width === 0 || rect.height === 0) {
+                            return originalOnMouseMove.call(this, info);
+                        }
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        
+                        // Create a new info object with corrected coordinates
+                        const newInfo = {
+                            pageX: ((info.pageX || info.clientX || 0) - rect.left) * scaleX,
+                            pageY: ((info.pageY || info.clientY || 0) - rect.top) * scaleY,
+                            clientX: ((info.clientX || info.pageX || 0) - rect.left) * scaleX,
+                            clientY: ((info.clientY || info.pageY || 0) - rect.top) * scaleY,
+                            which: info.which,
+                            button: info.button,
+                            buttons: info.buttons,
+                            target: info.target,
+                            preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
+                            stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
+                        };
+                        
+                        return originalOnMouseMove.call(this, newInfo);
+                    };
+                    console.log('✅ Mouse.onMouseMove patched');
                 }
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
-                    return originalOnMouseMove.call(this, info);
-                }
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
                 
-                // Create a new info object with corrected coordinates
-                const newInfo = {
-                    pageX: ((info.pageX || info.clientX || 0) - rect.left) * scaleX,
-                    pageY: ((info.pageY || info.clientY || 0) - rect.top) * scaleY,
-                    clientX: ((info.clientX || info.pageX || 0) - rect.left) * scaleX,
-                    clientY: ((info.clientY || info.pageY || 0) - rect.top) * scaleY,
-                    which: info.which,
-                    button: info.button,
-                    buttons: info.buttons,
-                    target: info.target,
-                    preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
-                    stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
-                };
-                
-                return originalOnMouseMove.call(this, newInfo);
-            };
-            console.log('✅ Mouse.onMouseMove patched');
-        }
-        
-        // 2. Patch Touch plugin - CORRECTED to avoid recursion
-        if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
-            const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
-            
-            // Store original methods
-            const originalOnTouchStart = touchProto.onTouchStart;
-            const originalOnTouchMove = touchProto.onTouchMove;
-            const originalOnPointerStart = touchProto.onPointerStart;
-            
-            // Override onTouchStart - call the original with our modified info
-            touchProto.onTouchStart = function(info) {
-                const canvas = this.runtime.canvas;
-                if (!canvas) {
-                    return originalOnTouchStart.call(this, info);
-                }
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
-                    return originalOnTouchStart.call(this, info);
-                }
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
-                
-                // Create modified touch list
-                const modifiedTouches = [];
-                const touches = info.changedTouches || info.touches || [];
-                
-                for (let i = 0; i < (touches.length || 0); i++) {
-                    const t = touches[i];
-                    if (t) {
-                        modifiedTouches.push({
-                            identifier: t.identifier || i,
-                            pageX: ((t.pageX || t.clientX || 0) - rect.left) * scaleX,
-                            pageY: ((t.pageY || t.clientY || 0) - rect.top) * scaleY,
-                            clientX: ((t.clientX || t.pageX || 0) - rect.left) * scaleX,
-                            clientY: ((t.clientY || t.pageY || 0) - rect.top) * scaleY,
-                            target: t.target || canvas,
-                            radiusX: t.radiusX || 1,
-                            radiusY: t.radiusY || 1,
-                            rotationAngle: t.rotationAngle || 0,
-                            force: t.force || 1
-                        });
+                // 2. Patch Touch plugin - CORRECTED to avoid recursion
+                if (cr.plugins_.Touch && cr.plugins_.Touch.prototype.Instance) {
+                    const touchProto = cr.plugins_.Touch.prototype.Instance.prototype;
+                    
+                    // Store original methods
+                    const originalOnTouchStart = touchProto.onTouchStart;
+                    const originalOnTouchMove = touchProto.onTouchMove;
+                    const originalOnPointerStart = touchProto.onPointerStart;
+                    
+                    // Override onTouchStart - call the original with our modified info
+                    touchProto.onTouchStart = function(info) {
+                        const canvas = this.runtime.canvas;
+                        if (!canvas) {
+                            return originalOnTouchStart.call(this, info);
+                        }
+                        const rect = canvas.getBoundingClientRect();
+                        if (rect.width === 0 || rect.height === 0) {
+                            return originalOnTouchStart.call(this, info);
+                        }
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        
+                        // Create modified touch list
+                        const modifiedTouches = [];
+                        const touches = info.changedTouches || info.touches || [];
+                        
+                        for (let i = 0; i < (touches.length || 0); i++) {
+                            const t = touches[i];
+                            if (t) {
+                                modifiedTouches.push({
+                                    identifier: t.identifier || i,
+                                    pageX: ((t.pageX || t.clientX || 0) - rect.left) * scaleX,
+                                    pageY: ((t.pageY || t.clientY || 0) - rect.top) * scaleY,
+                                    clientX: ((t.clientX || t.pageX || 0) - rect.left) * scaleX,
+                                    clientY: ((t.clientY || t.pageY || 0) - rect.top) * scaleY,
+                                    target: t.target || canvas,
+                                    radiusX: t.radiusX || 1,
+                                    radiusY: t.radiusY || 1,
+                                    rotationAngle: t.rotationAngle || 0,
+                                    force: t.force || 1
+                                });
+                            }
+                        }
+                        
+                        // Create new info object with modified touches
+                        const newInfo = {
+                            changedTouches: modifiedTouches,
+                            touches: modifiedTouches,
+                            targetTouches: modifiedTouches,
+                            target: info.target || canvas,
+                            preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
+                            stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
+                        };
+                        
+                        // Call the original with our modified info
+                        return originalOnTouchStart.call(this, newInfo);
+                    };
+                    console.log('✅ Touch.onTouchStart patched');
+                    
+                    // Override onTouchMove
+                    touchProto.onTouchMove = function(info) {
+                        const canvas = this.runtime.canvas;
+                        if (!canvas) {
+                            return originalOnTouchMove.call(this, info);
+                        }
+                        const rect = canvas.getBoundingClientRect();
+                        if (rect.width === 0 || rect.height === 0) {
+                            return originalOnTouchMove.call(this, info);
+                        }
+                        const scaleX = canvas.width / rect.width;
+                        const scaleY = canvas.height / rect.height;
+                        
+                        // Update existing touches with corrected coordinates
+                        for (let i = 0; i < (info.changedTouches || []).length; i++) {
+                            const t = info.changedTouches[i];
+                            if (t) {
+                                const j = this.findTouch(t.identifier);
+                                if (j >= 0) {
+                                    const touch = this.touches[j];
+                                    if (touch) {
+                                        touch.x = ((t.clientX || t.pageX || 0) - rect.left) * scaleX;
+                                        touch.y = ((t.clientY || t.pageY || 0) - rect.top) * scaleY;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        return originalOnTouchMove.call(this, info);
+                    };
+                    console.log('✅ Touch.onTouchMove patched');
+                    
+                    // Override onPointerStart
+                    if (touchProto.onPointerStart) {
+                        touchProto.onPointerStart = function(info) {
+                            const canvas = this.runtime.canvas;
+                            if (!canvas) {
+                                return originalOnPointerStart.call(this, info);
+                            }
+                            const rect = canvas.getBoundingClientRect();
+                            if (rect.width === 0 || rect.height === 0) {
+                                return originalOnPointerStart.call(this, info);
+                            }
+                            const scaleX = canvas.width / rect.width;
+                            const scaleY = canvas.height / rect.height;
+                            
+                            const newInfo = {
+                                ...info,
+                                pageX: (info.pageX - rect.left) * scaleX,
+                                pageY: (info.pageY - rect.top) * scaleY,
+                                clientX: (info.clientX - rect.left) * scaleX,
+                                clientY: (info.clientY - rect.top) * scaleY
+                            };
+                            
+                            return originalOnPointerStart.call(this, newInfo);
+                        };
+                        console.log('✅ Touch.onPointerStart patched');
                     }
                 }
                 
-                // Create new info object with modified touches
-                const newInfo = {
-                    changedTouches: modifiedTouches,
-                    touches: modifiedTouches,
-                    targetTouches: modifiedTouches,
-                    target: info.target || canvas,
-                    preventDefault: info.preventDefault ? info.preventDefault.bind(info) : function() {},
-                    stopPropagation: info.stopPropagation ? info.stopPropagation.bind(info) : function() {}
+                console.log('✅ Coordinate system patched successfully!');
+            } catch (e) {
+                console.warn('⚠️ Error patching coordinates:', e);
+            }
+        }
+
+        // ============================================================
+        // 🔥 FIX: Force game to start via direct variable manipulation
+        // ============================================================
+        function forceGameStart(runtime) {
+            if (!runtime) return false;
+            console.log('🎯 Forcing game to start...');
+            
+            try {
+                const vars = runtime.all_global_vars || [];
+                let stateChanged = false;
+                
+                // Common Construct 2 variable names for game state
+                const stateVars = {
+                    'GameState': 1, 'gameState': 1,
+                    'Pause': 0, 'pause': 0,
+                    'Menu': 0, 'menu': 0,
+                    'IsPaused': 0, 'isPaused': 0,
+                    'GameRunning': 1, 'gameRunning': 1,
+                    'CanStart': 1, 'canStart': 1,
+                    'InputEnabled': 1, 'inputEnabled': 1
                 };
                 
-                // Call the original with our modified info
-                return originalOnTouchStart.call(this, newInfo);
-            };
-            console.log('✅ Touch.onTouchStart patched');
-            
-            // Override onTouchMove
-            touchProto.onTouchMove = function(info) {
-                const canvas = this.runtime.canvas;
-                if (!canvas) {
-                    return originalOnTouchMove.call(this, info);
+                for (let v of vars) {
+                    const name = v.name || '';
+                    if (stateVars.hasOwnProperty(name)) {
+                        v.data = stateVars[name];
+                        stateChanged = true;
+                        console.log(`✅ ${name} set to ${stateVars[name]}`);
+                    }
                 }
-                const rect = canvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
-                    return originalOnTouchMove.call(this, info);
-                }
-                const scaleX = canvas.width / rect.width;
-                const scaleY = canvas.height / rect.height;
                 
-                // Update existing touches with corrected coordinates
-                for (let i = 0; i < (info.changedTouches || []).length; i++) {
-                    const t = info.changedTouches[i];
-                    if (t) {
-                        const j = this.findTouch(t.identifier);
-                        if (j >= 0) {
-                            const touch = this.touches[j];
-                            if (touch) {
-                                touch.x = ((t.clientX || t.pageX || 0) - rect.left) * scaleX;
-                                touch.y = ((t.clientY || t.pageY || 0) - rect.top) * scaleY;
+                // Force all layers to be visible and interactive
+                if (runtime.running_layout) {
+                    const layout = runtime.running_layout;
+                    if (layout.layers) {
+                        for (let layer of layout.layers) {
+                            if (layer.visible === false) {
+                                layer.visible = true;
+                                console.log(`✅ Layer "${layer.name}" made visible`);
                             }
+                            if (layer.opacity !== 1) {
+                                layer.opacity = 1;
+                                console.log(`✅ Layer "${layer.name}" opacity set to 1`);
+                            }
+                        }
+                    }
+                    
+                    // Force the layout to process events
+                    if (layout.event_sheet) {
+                        console.log('🔄 Running event sheet to process pending events...');
+                        try {
+                            layout.event_sheet.run();
+                        } catch(e) {
+                            console.warn('⚠️ Could not run event sheet:', e);
                         }
                     }
                 }
                 
-                return originalOnTouchMove.call(this, info);
-            };
-            console.log('✅ Touch.onTouchMove patched');
-            
-            // Override onPointerStart
-            if (touchProto.onPointerStart) {
-                touchProto.onPointerStart = function(info) {
-                    const canvas = this.runtime.canvas;
-                    if (!canvas) {
-                        return originalOnPointerStart.call(this, info);
+                // Find and enable all button-like objects
+                const types = runtime.types_by_index || [];
+                let enabledCount = 0;
+                
+                for (let type of types) {
+                    if (type.instances) {
+                        for (let inst of type.instances) {
+                            if (inst.visible === false) {
+                                inst.visible = true;
+                                enabledCount++;
+                            }
+                            if (inst.collisionsEnabled === false) {
+                                inst.collisionsEnabled = true;
+                                enabledCount++;
+                            }
+                            if (inst.enabled !== undefined && inst.enabled === false) {
+                                inst.enabled = true;
+                                enabledCount++;
+                            }
+                        }
                     }
-                    const rect = canvas.getBoundingClientRect();
-                    if (rect.width === 0 || rect.height === 0) {
-                        return originalOnPointerStart.call(this, info);
+                }
+                if (enabledCount > 0) {
+                    console.log(`✅ Enabled ${enabledCount} objects`);
+                }
+                
+                // Trigger layout start events
+                try {
+                    if (runtime.trigger) {
+                        runtime.trigger(runtime.system.cnds.OnLayoutStart, null);
+                        console.log('✅ OnLayoutStart triggered');
                     }
-                    const scaleX = canvas.width / rect.width;
-                    const scaleY = canvas.height / rect.height;
-                    
-                    const newInfo = {
-                        ...info,
-                        pageX: (info.pageX - rect.left) * scaleX,
-                        pageY: (info.pageY - rect.top) * scaleY,
-                        clientX: (info.clientX - rect.left) * scaleX,
-                        clientY: (info.clientY - rect.top) * scaleY
-                    };
-                    
-                    return originalOnPointerStart.call(this, newInfo);
-                };
-                console.log('✅ Touch.onPointerStart patched');
+                } catch(e) {
+                    console.warn('⚠️ Could not trigger OnLayoutStart:', e);
+                }
+                
+                // Force a tick to process events
+                if (runtime.tick) {
+                    runtime.tick(false);
+                    console.log('✅ Game tick forced');
+                }
+                
+                if (stateChanged) {
+                    console.log('✅ Game state forced successfully!');
+                } else {
+                    console.log('⚠️ No state variables found, trying alternative methods...');
+                    for (let v of vars) {
+                        if (v.name && (v.name.toLowerCase().includes('pause') || 
+                                       v.name.toLowerCase().includes('state') ||
+                                       v.name.toLowerCase().includes('menu') ||
+                                       v.name.toLowerCase().includes('start'))) {
+                            console.log(`🔍 Found potential state variable: ${v.name} = ${v.data}`);
+                        }
+                    }
+                }
+                
+                return stateChanged;
+                
+            } catch (e) {
+                console.error('❌ Error forcing game start:', e);
+                return false;
             }
         }
-        
-        console.log('✅ Coordinate system patched successfully!');
-    } catch (e) {
-        console.warn('⚠️ Error patching coordinates:', e);
-    }
-}
+
         // ============================================================
         // 🔥 FIX: Click Play Button with multiple methods
         // ============================================================
         function clickPlayButton(runtime) {
-            console.log('🎯 Looking for Play button...');
+            console.log('🎯 Attempting to start game...');
+            
+            // STEP 1: Force game state first
+            const forced = forceGameStart(runtime);
+            
+            // STEP 2: Then try clicking the button
             try {
-                const types = runtime.types_by_index || [];
                 const canvas = dom.canvas;
-                if (!canvas) {
-                    console.log('⚠️ No canvas found');
-                    return;
-                }
+                if (!canvas) return;
                 
                 const rect = canvas.getBoundingClientRect();
-                if (rect.width === 0 || rect.height === 0) {
-                    console.log('⚠️ Canvas not visible yet');
-                    return;
-                }
+                if (rect.width === 0 || rect.height === 0) return;
                 
                 const scaleX = canvas.width / rect.width;
                 const scaleY = canvas.height / rect.height;
-                let found = false;
-                let clickedTypes = 0;
-
-                // Try each type that might be a button
-                types.forEach(type => {
-                    let isPlayButton = false;
+                
+                // Try to find and click any play button
+                const types = runtime.types_by_index || [];
+                let clicked = false;
+                
+                for (let type of types) {
+                    if (!type.instances) continue;
                     
-                    // Check texture_file
-                    if (type.texture_file && type.texture_file.includes('btnplay')) {
-                        isPlayButton = true;
-                        console.log('🎯 Found Play button by texture:', type.texture_file);
-                    }
+                    // Check if this is a button type
+                    const isButton = type.name && (
+                        type.name.toLowerCase().includes('btn') ||
+                        type.name.toLowerCase().includes('button') ||
+                        type.name.toLowerCase().includes('play')
+                    );
                     
-                    // Check animations - FIXED for all formats
-                    if (!isPlayButton && type.animations) {
-                        try {
-                            let frames = [];
-                            // Handle array format
-                            if (Array.isArray(type.animations)) {
-                                for (let anim of type.animations) {
-                                    if (anim.frames) {
-                                        if (Array.isArray(anim.frames)) {
-                                            frames = frames.concat(anim.frames);
-                                        } else if (typeof anim.frames === 'object') {
-                                            frames = frames.concat(Object.values(anim.frames));
-                                        }
-                                    }
-                                }
-                            } 
-                            // Handle object format
-                            else if (typeof type.animations === 'object') {
-                                for (let key of Object.keys(type.animations)) {
-                                    const anim = type.animations[key];
-                                    if (anim && anim.frames) {
-                                        if (Array.isArray(anim.frames)) {
-                                            frames = frames.concat(anim.frames);
-                                        } else if (typeof anim.frames === 'object') {
-                                            frames = frames.concat(Object.values(anim.frames));
-                                        }
-                                    }
-                                }
-                            }
-                            
-                            for (let frame of frames) {
-                                if (frame && frame.texture_file && frame.texture_file.includes('btnplay')) {
-                                    isPlayButton = true;
-                                    console.log('🎯 Found Play button in animation');
-                                    break;
-                                }
-                            }
-                        } catch (e) {}
-                    }
-
-                    if (isPlayButton && type.instances) {
-                        type.instances.forEach(inst => {
+                    if (isButton) {
+                        for (let inst of type.instances) {
                             try {
                                 const instX = inst.x || 0;
                                 const instY = inst.y || 0;
-                                const instW = inst.width || 112;
-                                const instH = inst.height || 112;
+                                const instW = inst.width || 100;
+                                const instH = inst.height || 100;
                                 
-                                // Click at center of the button
+                                // Click at center of button
                                 const screenX = rect.left + ((instX + instW/2) / scaleX);
                                 const screenY = rect.top + ((instY + instH/2) / scaleY);
                                 
-                                // ============================================================
-                                // Multiple click methods for maximum compatibility
-                                // ============================================================
+                                // Dispatch multiple event types
+                                const events = [
+                                    new MouseEvent('click', { clientX: screenX, clientY: screenY, bubbles: true, cancelable: true, view: window }),
+                                    new MouseEvent('mousedown', { clientX: screenX, clientY: screenY, bubbles: true, cancelable: true, view: window }),
+                                    new MouseEvent('mouseup', { clientX: screenX, clientY: screenY, bubbles: true, cancelable: true, view: window })
+                                ];
                                 
-                                // Method 1: Mouse Click
-                                const clickEvent = new MouseEvent('click', {
-                                    clientX: screenX,
-                                    clientY: screenY,
-                                    bubbles: true,
-                                    cancelable: true,
-                                    view: window
-                                });
-                                canvas.dispatchEvent(clickEvent);
+                                for (let evt of events) {
+                                    canvas.dispatchEvent(evt);
+                                }
                                 
-                                // Method 2: Touch Event (for mobile)
-                                try {
-                                    const touch = new Touch({
-                                        identifier: 0,
-                                        target: canvas,
-                                        clientX: screenX,
-                                        clientY: screenY,
-                                        pageX: screenX,
-                                        pageY: screenY,
-                                        radiusX: 1,
-                                        radiusY: 1,
-                                        rotationAngle: 0,
-                                        force: 1
-                                    });
-                                    const touchEvent = new TouchEvent('touchstart', {
-                                        touches: [touch],
-                                        changedTouches: [touch],
-                                        targetTouches: [touch],
-                                        bubbles: true,
-                                        cancelable: true,
-                                        view: window
-                                    });
-                                    canvas.dispatchEvent(touchEvent);
-                                    
-                                    // Send touchend after a short delay
-                                    setTimeout(() => {
-                                        try {
-                                            const touchEnd = new TouchEvent('touchend', {
-                                                touches: [],
-                                                changedTouches: [touch],
-                                                targetTouches: [],
-                                                bubbles: true,
-                                                cancelable: true,
-                                                view: window
-                                            });
-                                            canvas.dispatchEvent(touchEnd);
-                                        } catch (e) {}
-                                    }, 50);
-                                } catch (e) {}
-                                
-                                // Method 3: Pointer Event
-                                try {
-                                    const pointerEvent = new PointerEvent('pointerdown', {
-                                        clientX: screenX,
-                                        clientY: screenY,
-                                        pointerId: 1,
-                                        pointerType: 'touch',
-                                        isPrimary: true,
-                                        bubbles: true,
-                                        cancelable: true,
-                                        view: window
-                                    });
-                                    canvas.dispatchEvent(pointerEvent);
-                                } catch (e) {}
-                                
-                                found = true;
-                                clickedTypes++;
-                                console.log(`✅ Clicked button: ${type.name || 'unknown'} at (${Math.round(screenX)}, ${Math.round(screenY)})`);
-                            } catch (e) {
-                                console.warn('⚠️ Could not click instance:', e);
-                            }
-                        });
-                    }
-                });
-
-                // If no button found, try forcing game state
-                if (!found) {
-                    console.log('⚠️ No play button found, forcing game state...');
-                    try {
-                        const vars = runtime.all_global_vars || [];
-                        let changed = false;
-                        vars.forEach(v => {
-                            if (v.name === 'GameState' || v.name === 'gameState') {
-                                v.data = 1;
-                                changed = true;
-                            }
-                            if (v.name === 'Pause' || v.name === 'pause') {
-                                v.data = 0;
-                                changed = true;
-                            }
-                            if (v.name === 'Menu' || v.name === 'menu') {
-                                v.data = 0;
-                                changed = true;
-                            }
-                        });
-                        if (changed) {
-                            console.log('✅ Game state forced via variables');
-                            found = true;
+                                clicked = true;
+                                console.log(`✅ Clicked button: ${type.name} at (${Math.round(screenX)}, ${Math.round(screenY)})`);
+                                break;
+                            } catch(e) {}
                         }
-                    } catch (e) {}
+                        if (clicked) break;
+                    }
                 }
-
-                // Also try clicking any button at a reasonable position
-                if (!found) {
-                    console.log('⚠️ Trying fallback click on screen center...');
+                
+                // STEP 3: If no button found, try clicking the center of the canvas
+                if (!clicked) {
+                    console.log('⚠️ No play button found, clicking canvas center...');
                     const centerX = rect.left + rect.width/2;
                     const centerY = rect.top + rect.height/2;
                     const clickEvent = new MouseEvent('click', {
@@ -685,25 +682,19 @@ function patchRuntimeCoordinates(runtime) {
                         view: window
                     });
                     canvas.dispatchEvent(clickEvent);
-                    found = true;
-                    console.log('✅ Fallback click sent');
+                    clicked = true;
                 }
-
-                if (found) {
-                    console.log('🎯 Play button click completed');
-                } else {
-                    console.log('⚠️ Could not trigger play button');
+                
+                // STEP 4: Final state check
+                if (forced || clicked) {
+                    console.log('✅ Game start sequence completed!');
+                    if (runtime.tick) {
+                        setTimeout(() => runtime.tick(false), 100);
+                    }
                 }
+                
             } catch (e) {
-                console.error('❌ Error clicking play button:', e);
-                // Try unpause as last resort
-                try {
-                    const vars = runtime.all_global_vars || [];
-                    vars.forEach(v => {
-                        if (v.name === 'Pause' || v.name === 'pause') { v.data = 0; }
-                        if (v.name === 'GameState' || v.name === 'gameState') { v.data = 1; }
-                    });
-                } catch (e2) {}
+                console.error('❌ Error in clickPlayButton:', e);
             }
         }
 
@@ -1086,36 +1077,61 @@ function patchRuntimeCoordinates(runtime) {
         }
 
         function waitForGameReady(runtime) {
-            console.log('⏳ Fallback: Waiting for game to be ready...');
+            console.log('⏳ Waiting for game to be ready...');
             let checks = 0;
-            const maxChecks = 30;
+            const maxChecks = 20;
+            
             const checkInterval = setInterval(() => {
                 checks++;
                 try {
-                    if (!runtime) { if (checks > 5) { clearInterval(checkInterval); console.error('❌ Runtime not available'); } return; }
+                    if (!runtime) {
+                        if (checks > 5) { clearInterval(checkInterval); }
+                        return;
+                    }
+                    
                     if (runtime.running_layout) {
                         const layoutName = runtime.running_layout.name;
-                        console.log('📐 Game layout:', layoutName);
-                        if (layoutName === 'Game' || layoutName === 'Menu') {
+                        console.log(`📐 Current layout: ${layoutName}`);
+                        
+                        // If we're on the menu or game layout, force start
+                        if (layoutName === 'Menu' || layoutName === 'Game' || layoutName === 'Layout 1') {
                             clearInterval(checkInterval);
-                            console.log('✅ Game is ready on', layoutName, 'layout!');
+                            console.log(`✅ Game ready on ${layoutName} layout!`);
                             state._gameReady = true;
-                            if (layoutName === 'Menu') { clickPlayButton(runtime); } 
-                            else { unpauseGame(runtime); }
+                            forceGameStart(runtime);
+                            clickPlayButton(runtime);
                             return;
                         }
                     }
+                    
+                    // Try to find any running layout
+                    const layouts = runtime.layouts_by_index || [];
+                    for (let layout of layouts) {
+                        if (layout && layout.name !== 'Loading' && layout.running) {
+                            clearInterval(checkInterval);
+                            console.log(`✅ Found running layout: ${layout.name}`);
+                            state._gameReady = true;
+                            forceGameStart(runtime);
+                            clickPlayButton(runtime);
+                            return;
+                        }
+                    }
+                    
                     if (checks >= maxChecks) {
                         clearInterval(checkInterval);
-                        console.warn('⚠️ Game not ready, forcing unpause...');
+                        console.warn('⚠️ Game not ready, forcing start...');
                         state._gameReady = true;
-                        unpauseGame(runtime);
+                        forceGameStart(runtime);
+                        clickPlayButton(runtime);
                     }
                 } catch (e) {
                     console.warn('⚠️ Error in waitForGameReady:', e);
-                    if (checks >= maxChecks) { clearInterval(checkInterval); state._gameReady = true; unpauseGame(runtime); }
+                    if (checks >= maxChecks) {
+                        clearInterval(checkInterval);
+                        forceGameStart(runtime);
+                    }
                 }
-            }, 500);
+            }, 300);
         }
 
         function startScoreTracking() {
@@ -1258,7 +1274,7 @@ function patchRuntimeCoordinates(runtime) {
                 if (runtime) {
                     const layout = runtime.running_layout;
                     if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
-                    else { unpauseGame(runtime); }
+                    else { forceGameStart(runtime); }
                 }
             }, 2000);
         }
@@ -1280,7 +1296,7 @@ function patchRuntimeCoordinates(runtime) {
                 if (runtime) {
                     const layout = runtime.running_layout;
                     if (layout && layout.name === 'Menu') { clickPlayButton(runtime); } 
-                    else { unpauseGame(runtime); }
+                    else { forceGameStart(runtime); }
                 }
             }, 3000);
         }
