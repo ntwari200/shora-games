@@ -276,8 +276,56 @@
             liveScore: document.getElementById('liveScore'), liveCoins: document.getElementById('liveCoins'),
             liveDistance: document.getElementById('liveDistance'), scoreOverlay: document.getElementById('scoreOverlay')
         };
+        // ============================================================
+// 🔥 FIX: Audio Autoplay Prevention
+// ============================================================
+function setupAudioAutoplayFix() {
+    console.log('🎵 Setting up audio autoplay fix...');
+    
+    // Patch the AudioContext constructor
+    const originalAudioContext = window.AudioContext || window.webkitAudioContext;
+    if (originalAudioContext) {
+        window.AudioContext = function() {
+            const ctx = new originalAudioContext();
+            console.log('🎵 AudioContext created, state:', ctx.state);
+            
+            // Resume on any user interaction
+            const resumeAudio = () => {
+                if (ctx.state === 'suspended') {
+                    ctx.resume().then(() => {
+                        console.log('🎵 AudioContext resumed successfully');
+                    }).catch(e => {
+                        console.log('🎵 AudioContext resume failed:', e);
+                    });
+                }
+            };
+            
+            // Listen for user interactions
+            document.addEventListener('click', resumeAudio, { once: false });
+            document.addEventListener('touchstart', resumeAudio, { once: false });
+            document.addEventListener('keydown', resumeAudio, { once: false });
+            
+            return ctx;
+        };
+        console.log('✅ AudioContext patched for autoplay');
+    }
+    
+    // Store a global resume function
+    window.__resumeAudioContext = function() {
+        if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance.context) {
+            const ctx = window.gameRuntime.audioInstance.context;
+            if (ctx.state === 'suspended') {
+                ctx.resume().then(() => {
+                    console.log('🎵 Runtime audio context resumed');
+                }).catch(e => {
+                    console.log('🎵 Runtime audio resume failed:', e);
+                });
+            }
+        }
+    };
+}
         dom.entryFeeDisplay.textContent = CONFIG.ENTRY_FEE;
-
+setupAudioAutoplayFix(); 
         function getPlayersArray() {
             if (Array.isArray(state.players)) return state.players;
             if (typeof state.players === 'object' && state.players !== null) return Object.values(state.players);
@@ -311,13 +359,26 @@
             }
         });
 
-        dom.startBtn.addEventListener('click', () => {
-            dom.startOverlay.classList.add('hidden');
-            if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance.context) {
-                window.gameRuntime.audioInstance.context.resume();
-            }
-            console.log('🎵 Audio context resumed');
-        });
+     dom.startBtn.addEventListener('click', () => {
+    dom.startOverlay.classList.add('hidden');
+    
+    // Resume audio context if it exists
+    if (window.gameRuntime && window.gameRuntime.audioInstance && window.gameRuntime.audioInstance.context) {
+        try {
+            window.gameRuntime.audioInstance.context.resume();
+            console.log('🎵 Runtime audio context resumed');
+        } catch(e) {
+            console.log('🎵 Audio resume failed:', e);
+        }
+    }
+    
+    // Resume via global function
+    if (window.__resumeAudioContext) {
+        window.__resumeAudioContext();
+    }
+    
+    console.log('🎵 Audio context resumed');
+});
 
         const ResponsiveManager = {
             aspectRatio: CONFIG.GAME_ASPECT_RATIO, currentWidth: 0, currentHeight: 0, scale: 1, offsetX: 0, offsetY: 0, _timeout: null,
@@ -448,7 +509,7 @@
             }
         }
 
-     function loadGameEngine() {
+   function loadGameEngine() {
     console.log('🔄 Loading game engine...');
     
     try {
@@ -536,7 +597,9 @@
         }
     }
 
+    // ============================================================
     // 🔥 FIX: Use the correct path - relative to the current page
+    // ============================================================
     const dataJsPath = 'ninja%20run/data.js';
     console.log('🔄 Loading data.js from:', dataJsPath);
 
@@ -550,6 +613,23 @@
             xhr.onload = function () {
                 if (xhr.status === 404) {
                     console.error('❌ data.js not found at:', dataJsPath);
+                    // Try fallback path
+                    var fallbackXhr = new XMLHttpRequest();
+                    fallbackXhr.open("GET", "./data.js", true);
+                    fallbackXhr.onload = function() {
+                        if (fallbackXhr.status === 200) {
+                            try {
+                                const data = JSON.parse(fallbackXhr.responseText);
+                                self.loadProject(data);
+                                console.log('✅ data.js loaded from fallback: ./data.js');
+                            } catch(e) {
+                                console.error('❌ Error parsing fallback data.js:', e);
+                            }
+                        } else {
+                            console.error('❌ Could not find data.js in any location');
+                        }
+                    };
+                    fallbackXhr.send();
                     return;
                 }
                 try {
@@ -568,6 +648,9 @@
         console.log('✅ Runtime.requestProjectData overridden');
     }
 
+    // ============================================================
+    // 🔥 LOAD THE GAME ENGINE
+    // ============================================================
     const script = document.createElement('script');
     script.src = 'ninja%20run/c2runtime.js';
     script.onload = () => {
@@ -578,7 +661,9 @@
             runtime.setSize(CONFIG.GAME_WIDTH, CONFIG.GAME_HEIGHT);
             window.gameRuntime = runtime;
             
-            // Override startRunning to skip Loading layout
+            // ============================================================
+            // 🔥 FIX: Override startRunning to skip Loading layout
+            // ============================================================
             try {
                 const originalStartRunning = Object.getPrototypeOf(runtime).startRunning;
                 runtime.startRunning = function() {
@@ -604,8 +689,12 @@
                 console.log('✅ Runtime.startRunning overridden');
             } catch (e) { console.warn('⚠️ Could not override startRunning:', e); }
             
+            // Show start overlay
             dom.startOverlay.classList.remove('hidden');
 
+            // ============================================================
+            // 🔥 FIX: Sync canvas size with display
+            // ============================================================
             function syncCanvasSize() {
                 if (!window.gameRuntime || !dom.canvas) return;
                 try {
@@ -620,18 +709,32 @@
             requestAnimationFrame(() => { setTimeout(syncCanvasSize, 50); });
 
             let resizeTimeout;
-            window.addEventListener('resize', () => { clearTimeout(resizeTimeout); resizeTimeout = setTimeout(syncCanvasSize, 100); });
-            window.addEventListener('orientationchange', () => { setTimeout(syncCanvasSize, 300); });
+            window.addEventListener('resize', () => { 
+                clearTimeout(resizeTimeout); 
+                resizeTimeout = setTimeout(syncCanvasSize, 100); 
+            });
+            window.addEventListener('orientationchange', () => { 
+                setTimeout(syncCanvasSize, 300); 
+            });
 
+            // Override setSize to always force
             const originalSetSize = runtime.setSize.bind(runtime);
             runtime.setSize = function(w, h, force) {
-                if (w > 0 && h > 0) { return originalSetSize(w, h, true); }
+                if (w > 0 && h > 0) { 
+                    return originalSetSize(w, h, true); 
+                }
                 return originalSetSize(w, h, force);
             };
 
+            // Patch input coordinates
             patchInputCoordinates();
+            
+            // Initialize responsive manager
             ResponsiveManager.init();
             
+            // ============================================================
+            // 🔥 START THE GAME
+            // ============================================================
             setTimeout(() => {
                 const rt = window.gameRuntime;
                 if (rt) {
@@ -676,86 +779,169 @@
         // ============================================================
         // 🔥 FIXED: Find buttons by texture filename
         // ============================================================
-        function clickPlayButton(runtime) {
-            console.log('🎯 Looking for Play button by texture...');
-            try {
-                const types = runtime.types_by_index || [];
-                let found = false;
+       function clickPlayButton(runtime) {
+    console.log('🎯 Looking for Play button by texture...');
+    try {
+        const types = runtime.types_by_index || [];
+        let found = false;
 
-                types.forEach(type => {
-                    let isPlayButton = false;
-                    
-                    // Check texture_file directly
-                    if (type.texture_file && type.texture_file.includes('btnplay')) {
-                        isPlayButton = true;
-                        console.log('🎯 Found Play button by texture:', type.texture_file);
-                    }
-                    
-                    // Check animations
-                    if (!isPlayButton && type.animations) {
-                        for (let anim of type.animations) {
-                            for (let frame of anim.frames) {
-                                if (frame.texture_file && frame.texture_file.includes('btnplay')) {
-                                    isPlayButton = true;
-                                    console.log('🎯 Found Play button in animation:', frame.texture_file);
-                                    break;
-                                }
-                            }
-                            if (isPlayButton) break;
+        types.forEach(type => {
+            let isPlayButton = false;
+            
+            // Check texture_file directly
+            if (type.texture_file && type.texture_file.includes('btnplay')) {
+                isPlayButton = true;
+                console.log('🎯 Found Play button by texture:', type.texture_file);
+            }
+            
+            // Check animations
+            if (!isPlayButton && type.animations) {
+                for (let anim of type.animations) {
+                    for (let frame of anim.frames) {
+                        if (frame.texture_file && frame.texture_file.includes('btnplay')) {
+                            isPlayButton = true;
+                            console.log('🎯 Found Play button in animation:', frame.texture_file);
+                            break;
                         }
                     }
+                    if (isPlayButton) break;
+                }
+            }
 
-                    if (isPlayButton && type.instances) {
-                        type.instances.forEach(inst => {
+            if (isPlayButton && type.instances) {
+                type.instances.forEach(inst => {
+                    try {
+                        const canvas = dom.canvas;
+                        if (canvas) {
+                            const rect = canvas.getBoundingClientRect();
+                            const scaleX = canvas.width / rect.width;
+                            const scaleY = canvas.height / rect.height;
+                            
+                            const instX = inst.x || 0;
+                            const instY = inst.y || 0;
+                            
+                            const screenX = rect.left + (instX / scaleX);
+                            const screenY = rect.top + (instY / scaleY);
+                            
+                            // ============================================================
+                            // 🔥 METHOD 1: Mouse Click (works on desktop & laptop)
+                            // ============================================================
+                            const clickEvent = new MouseEvent('click', {
+                                clientX: screenX,
+                                clientY: screenY,
+                                bubbles: true,
+                                cancelable: true,
+                                view: window
+                            });
+                            canvas.dispatchEvent(clickEvent);
+                            found = true;
+                            console.log('✅ Play button clicked via Mouse event at', Math.round(screenX), Math.round(screenY));
+                            
+                            // ============================================================
+                            // 🔥 METHOD 2: Touch Event (works on mobile & tablet)
+                            // ============================================================
                             try {
-                                const canvas = dom.canvas;
-                                if (canvas) {
-                                    const rect = canvas.getBoundingClientRect();
-                                    const scaleX = canvas.width / rect.width;
-                                    const scaleY = canvas.height / rect.height;
-                                    
-                                    const instX = inst.x || 0;
-                                    const instY = inst.y || 0;
-                                    
-                                    const screenX = rect.left + (instX / scaleX);
-                                    const screenY = rect.top + (instY / scaleY);
-                                    
-                                    // Mouse click
-                                    const clickEvent = new MouseEvent('click', {
+                                // Create proper Touch object
+                                const touch = new Touch({
+                                    identifier: 0,
+                                    target: canvas,
+                                    clientX: screenX,
+                                    clientY: screenY,
+                                    pageX: screenX,
+                                    pageY: screenY,
+                                    radiusX: 1,
+                                    radiusY: 1,
+                                    rotationAngle: 0,
+                                    force: 1
+                                });
+                                
+                                const touchStartEvent = new TouchEvent('touchstart', {
+                                    touches: [touch],
+                                    changedTouches: [touch],
+                                    targetTouches: [touch],
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                canvas.dispatchEvent(touchStartEvent);
+                                console.log('✅ Play button triggered via TouchStart event');
+                                
+                                // Also send touchend to complete the gesture
+                                setTimeout(() => {
+                                    const touchEndEvent = new TouchEvent('touchend', {
+                                        touches: [],
+                                        changedTouches: [touch],
+                                        targetTouches: [],
+                                        bubbles: true,
+                                        cancelable: true,
+                                        view: window
+                                    });
+                                    canvas.dispatchEvent(touchEndEvent);
+                                }, 50);
+                                
+                            } catch (touchError) {
+                                // Touch not supported on this device (desktop)
+                                console.log('ℹ️ Touch event not supported, using mouse event only');
+                            }
+                            
+                            // ============================================================
+                            // 🔥 METHOD 3: Pointer Event (works on all devices)
+                            // ============================================================
+                            try {
+                                const pointerEvent = new PointerEvent('pointerdown', {
+                                    clientX: screenX,
+                                    clientY: screenY,
+                                    pointerId: 1,
+                                    pointerType: 'touch',
+                                    isPrimary: true,
+                                    bubbles: true,
+                                    cancelable: true,
+                                    view: window
+                                });
+                                canvas.dispatchEvent(pointerEvent);
+                                console.log('✅ Play button triggered via Pointer event');
+                            } catch (pointerError) {
+                                // Pointer events not supported
+                                console.log('ℹ️ Pointer event not supported');
+                            }
+                            
+                            // ============================================================
+                            // 🔥 METHOD 4: Direct Event Trigger (fallback for all devices)
+                            // ============================================================
+                            try {
+                                // Create a custom event that simulates a click
+                                const customEvent = new CustomEvent('click', {
+                                    detail: {
                                         clientX: screenX,
                                         clientY: screenY,
-                                        bubbles: true,
-                                        cancelable: true
-                                    });
-                                    canvas.dispatchEvent(clickEvent);
-                                    found = true;
-                                    console.log('✅ Play button clicked via Mouse event at', screenX, screenY);
-                                    
-                                    // Touch event for mobile
-                                    const touchEvent = new TouchEvent('touchstart', {
-                                        touches: [{ clientX: screenX, clientY: screenY, identifier: 0 }],
-                                        changedTouches: [{ clientX: screenX, clientY: screenY, identifier: 0 }],
-                                        bubbles: true
-                                    });
-                                    canvas.dispatchEvent(touchEvent);
-                                    console.log('✅ Play button triggered via Touch event');
-                                }
-                            } catch (e) {
-                                console.warn('Could not trigger button:', e);
+                                        pageX: screenX,
+                                        pageY: screenY
+                                    },
+                                    bubbles: true,
+                                    cancelable: true
+                                });
+                                canvas.dispatchEvent(customEvent);
+                                console.log('✅ Play button triggered via Custom event');
+                            } catch (customError) {
+                                console.log('ℹ️ Custom event not supported');
                             }
-                        });
+                        }
+                    } catch (e) {
+                        console.warn('Could not trigger button:', e);
                     }
                 });
-
-                if (!found) {
-                    console.log('⚠️ No play button found, trying unpause...');
-                    unpauseGame(runtime);
-                }
-            } catch (e) {
-                console.error('❌ Error clicking play button:', e);
-                unpauseGame(runtime);
             }
+        });
+
+        if (!found) {
+            console.log('⚠️ No play button found, trying unpause...');
+            unpauseGame(runtime);
         }
+    } catch (e) {
+        console.error('❌ Error clicking play button:', e);
+        unpauseGame(runtime);
+    }
+}
 
         function waitForGameReady(runtime) {
             console.log('⏳ Fallback: Waiting for game to be ready...');
@@ -790,20 +976,29 @@
             }, 500);
         }
 
-        function unpauseGame(runtime) {
-            try {
-                const vars = runtime.all_global_vars || [];
-                let unpaused = false;
-                vars.forEach(v => {
-                    if (v.name === 'Pause') { v.data = 0; unpaused = true; console.log('✅ Pause set to 0'); }
-                    if (v.name === 'GameState') { v.data = 1; console.log('✅ GameState set to 1'); }
-                });
-                if (runtime.tick) runtime.tick(false);
-                if (!unpaused) console.log('⚠️ Pause variable not found, continuing...');
-                state._gameStarted = true;
-                console.log('✅ Game unpaused successfully!');
-            } catch (e) { console.warn('⚠️ Could not unpause game:', e); }
-        }
+      function unpauseGame(runtime) {
+    try {
+        const vars = runtime.all_global_vars || [];
+        let unpaused = false;
+        vars.forEach(v => {
+            if (v.name === 'Pause') { 
+                v.data = 0; 
+                unpaused = true; 
+                console.log('✅ Pause set to 0'); 
+            }
+            if (v.name === 'GameState') { 
+                v.data = 1; 
+                console.log('✅ GameState set to 1'); 
+            }
+        });
+        if (runtime.tick) runtime.tick(false);
+        if (!unpaused) console.log('⚠️ Pause variable not found, continuing...');
+        state._gameStarted = true;
+        console.log('✅ Game unpaused successfully!');
+    } catch (e) { 
+        console.warn('⚠️ Could not unpause game:', e); 
+    }
+}
 
         function startScoreTracking() {
             if (state.scoreInterval) clearInterval(state.scoreInterval);
