@@ -1,724 +1,410 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Ninja Run - Shora Games</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
+// ========================================
+// NINJA RUN - BRIDGE SCRIPT
+// Connects Construct 2 game to Shora Games
+// ========================================
+
+(function() {
+    'use strict';
+
+    console.log('🏃 Ninja Run Bridge loaded');
+
+    // ========================================
+    // CONFIG
+    // ========================================
+
+    const CONFIG = {
+        eventId: getParam('event'),
+        userId: getParam('user'),
+    };
+
+    function getParam(name) {
+        const url = new URL(window.location.href);
+        return url.searchParams.get(name);
+    }
+
+    // ========================================
+    // STATE
+    // ========================================
+
+    let gameScore = 0;
+    let scoreSubmitted = false;
+    let gameStarted = false;
+    let checkInterval = null;
+    let runtime = null;
+
+    // ========================================
+    // SCORE HANDLING
+    // ========================================
+
+    window.ninjaRunComplete = function(score) {
+        console.log('🎮 Game Complete! Score:', score);
         
-        body {
-            background: #06111F;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            height: 100vh;
-            overflow: hidden;
-            margin: 0;
-            padding: 0;
+        if (scoreSubmitted) {
+            console.log('⚠️ Score already submitted');
+            return;
+        }
+
+        gameScore = score || 0;
+        sendScoreToParent(gameScore);
+    };
+
+    function sendScoreToParent(score) {
+        console.log('📤 Sending score to parent:', score);
+        
+        // Store in session storage
+        sessionStorage.setItem('ninjaRunScore', score.toString());
+        sessionStorage.setItem('ninjaRunPlayed', 'true');
+        
+        // Send to parent via postMessage
+        if (window.parent && window.parent !== window) {
+            try {
+                window.parent.postMessage({
+                    type: 'NINJA_RUN_COMPLETE',
+                    score: score,
+                    eventId: CONFIG.eventId,
+                    userId: CONFIG.userId
+                }, '*');
+                console.log('✅ Score sent to parent via postMessage');
+            } catch (e) {
+                console.log('⚠️ Could not send to parent:', e);
+            }
+        }
+
+        // Try calling parent function
+        if (window.parent && window.parent.onNinjaRunComplete) {
+            try {
+                window.parent.onNinjaRunComplete(score, CONFIG.eventId, CONFIG.userId);
+                console.log('✅ Score sent to parent via direct function');
+            } catch (e) {
+                console.log('⚠️ Could not call parent function:', e);
+            }
+        }
+
+        scoreSubmitted = true;
+        showCompletionMessage(score);
+    }
+
+    function showCompletionMessage(score) {
+        const overlay = document.createElement('div');
+        overlay.id = 'ninjaRunCompleteOverlay';
+        overlay.style.cssText = `
             position: fixed;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
-        }
-
-        #gameContainer {
-            width: 100%;
-            height: 100vh;
-            height: 100dvh;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* ===== HEADER / NAVIGATION BAR ===== */
-        .game-header {
-            position: relative;
-            z-index: 100;
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(16px);
-            padding: 6px 12px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
-            flex-shrink: 0;
-            min-height: 48px;
-            gap: 8px;
-            flex-wrap: wrap;
-        }
-
-        .game-header .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            color: #00BFFF;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            white-space: nowrap;
-        }
-        .game-header .title i { 
-            color: #FFD700; 
-            font-size: 0.9rem;
-        }
-        .game-header .title .sub {
-            font-size: 0.55rem;
-            color: #A7B5C5;
-            font-family: 'Inter', sans-serif;
-            font-weight: 300;
-        }
-
-        /* ===== SCORE DISPLAY ===== */
-        .score-display {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(0, 191, 255, 0.08);
-            border: 1px solid rgba(0, 191, 255, 0.15);
-            border-radius: 20px;
-            padding: 4px 14px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            color: #FFD700;
-            white-space: nowrap;
-        }
-        .score-display i {
-            color: #FFD700;
-            font-size: 0.7rem;
-        }
-        .score-display .score-value {
-            font-weight: 700;
-            min-width: 30px;
-            text-align: center;
-            color: #00E676;
-        }
-
-        /* ===== STATUS ===== */
-        .status-display {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.65rem;
-            color: #A7B5C5;
-            white-space: nowrap;
-        }
-        .status-display .dot {
-            width: 6px;
-            height: 6px;
-            border-radius: 50%;
-            background: #00E676;
-            animation: pulse 1.5s infinite;
-            display: inline-block;
-        }
-        .status-display .dot.complete {
-            background: #FFD700;
-            animation: none;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-
-        /* ===== DESKTOP SITE TOGGLE ===== */
-        .desktop-toggle {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.55rem;
-            color: #A7B5C5;
-            white-space: nowrap;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.02);
-            transition: all 0.3s ease;
-            user-select: none;
-        }
-        .desktop-toggle:hover {
-            border-color: rgba(0, 191, 255, 0.3);
-            background: rgba(0, 191, 255, 0.05);
-        }
-        .desktop-toggle .toggle-track {
-            width: 32px;
-            height: 16px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            position: relative;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        .desktop-toggle .toggle-track .toggle-thumb {
-            width: 12px;
-            height: 12px;
-            background: #A7B5C5;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
-        .desktop-toggle.active .toggle-track {
-            background: rgba(0, 191, 255, 0.3);
-        }
-        .desktop-toggle.active .toggle-track .toggle-thumb {
-            left: 18px;
-            background: #00BFFF;
-        }
-        .desktop-toggle .toggle-label {
-            font-weight: 500;
-        }
-        .desktop-toggle.active .toggle-label {
-            color: #00BFFF;
-        }
-
-        /* ===== GAME FRAME ===== */
-        #gameFrame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #000;
-            min-height: 0;
-        }
-
-        /* ===== LOADING OVERLAY ===== */
-        #loadingOverlay {
-            position: fixed;
-            inset: 0;
-            background: #06111F;
+            background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-        }
-        #loadingOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #loadingOverlay .spinner {
-            width: 40px;
-            height: 40px;
-            border: 3px solid rgba(0, 191, 255, 0.1);
-            border-top-color: #00BFFF;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-        #loadingOverlay .text {
-            margin-top: 16px;
-            color: #A7B5C5;
-            font-size: 0.8rem;
-            font-family: 'Orbitron', monospace;
-        }
-        #loadingOverlay .progress-bar {
-            margin-top: 12px;
-            width: 160px;
-            height: 3px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        #loadingOverlay .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00BFFF, #6C63FF);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-cyber {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 230, 118, 0.3);
-            border-radius: 50px;
-            padding: 10px 20px;
-            color: #00E676;
-            font-size: 0.8rem;
             z-index: 9999;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 90%;
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* ===== RESPONSIVE ===== */
-        @media (max-width: 768px) {
-            .game-header {
-                padding: 4px 8px;
-                min-height: 40px;
-                gap: 4px;
-            }
-            .game-header .title {
-                font-size: 0.7rem;
-                gap: 4px;
-            }
-            .game-header .title .sub {
-                font-size: 0.45rem;
-            }
-            .score-display {
-                font-size: 0.7rem;
-                padding: 2px 10px;
-            }
-            .score-display i {
-                font-size: 0.6rem;
-            }
-            .status-display {
-                font-size: 0.55rem;
-            }
-            .desktop-toggle {
-                font-size: 0.5rem;
-                padding: 2px 8px;
-            }
-            .desktop-toggle .toggle-track {
-                width: 26px;
-                height: 14px;
-            }
-            .desktop-toggle .toggle-track .toggle-thumb {
-                width: 10px;
-                height: 10px;
-                top: 2px;
-                left: 2px;
-            }
-            .desktop-toggle.active .toggle-track .toggle-thumb {
-                left: 14px;
-            }
-            #loadingOverlay .spinner {
-                width: 30px;
-                height: 30px;
-            }
-            #loadingOverlay .text {
-                font-size: 0.7rem;
-            }
-            #loadingOverlay .progress-bar {
-                width: 120px;
-            }
-        }
-
-        @media (max-width: 480px) {
-            .game-header .title {
-                font-size: 0.6rem;
-            }
-            .game-header .title i {
-                font-size: 0.7rem;
-            }
-            .score-display {
-                font-size: 0.6rem;
-                padding: 2px 8px;
-            }
-            .status-display {
-                font-size: 0.5rem;
-            }
-            .desktop-toggle {
-                font-size: 0.45rem;
-                padding: 2px 6px;
-            }
-            .desktop-toggle .toggle-track {
-                width: 22px;
-                height: 12px;
-            }
-            .desktop-toggle .toggle-track .toggle-thumb {
-                width: 8px;
-                height: 8px;
-                top: 2px;
-                left: 2px;
-            }
-            .desktop-toggle.active .toggle-track .toggle-thumb {
-                left: 12px;
-            }
-        }
-
-        @media (max-width: 400px) {
-            .game-header {
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 2px;
-                padding: 3px 4px;
-            }
-            .game-header .title {
-                font-size: 0.55rem;
-            }
-            .score-display {
-                font-size: 0.55rem;
-                padding: 1px 6px;
-            }
-            .status-display {
-                font-size: 0.45rem;
-            }
-            .desktop-toggle {
-                font-size: 0.4rem;
-                padding: 1px 4px;
-            }
-        }
-
-        /* ===== DESKTOP MODE (when toggle is ON) ===== */
-        body.desktop-mode {
-            background: #000;
-        }
-        body.desktop-mode #gameFrame {
-            max-width: 1280px;
-            margin: 0 auto;
-            height: calc(100vh - 48px);
-        }
-        body.desktop-mode .game-header {
-            max-width: 1280px;
-            margin: 0 auto;
-            border-left: 1px solid rgba(0, 191, 255, 0.1);
-            border-right: 1px solid rgba(0, 191, 255, 0.1);
-        }
-
-        @media (max-width: 768px) {
-            body.desktop-mode #gameFrame {
-                max-width: 100%;
-                height: calc(100vh - 40px);
-            }
-            body.desktop-mode .game-header {
-                max-width: 100%;
-            }
-        }
-    </style>
-</head>
-<body>
-
-    <!-- ===== LOADING OVERLAY ===== -->
-    <div id="loadingOverlay">
-        <div class="spinner"></div>
-        <div class="text">🏃 Loading Ninja Run...</div>
-        <div class="progress-bar">
-            <div class="fill" id="progressFill"></div>
-        </div>
-    </div>
-
-    <!-- ===== GAME CONTAINER ===== -->
-    <div id="gameContainer">
-
-        <!-- ===== NAVIGATION BAR ===== -->
-        <div class="game-header" id="gameHeader">
-            
-            <!-- Left: Title -->
-            <div class="title">
-                <i class="fas fa-gamepad"></i>
-                <span>Ninja Run</span>
-                <span class="sub">| Tournament</span>
+            font-family: 'Orbitron', monospace;
+            color: #fff;
+            animation: fadeIn 0.5s ease;
+        `;
+        overlay.innerHTML = `
+            <div style="
+                background: linear-gradient(135deg, #06111F, #0B1F36);
+                border: 2px solid #00BFFF;
+                border-radius: 20px;
+                padding: 30px 40px;
+                text-align: center;
+                max-width: 400px;
+                box-shadow: 0 0 60px rgba(0, 191, 255, 0.2);
+            ">
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">🏆</div>
+                <h2 style="
+                    font-family: 'Orbitron', monospace;
+                    color: #FFD700;
+                    font-size: 1.3rem;
+                    margin-bottom: 6px;
+                ">Game Complete!</h2>
+                <div style="
+                    font-size: 2.5rem;
+                    color: #00E676;
+                    font-weight: 700;
+                    margin: 8px 0;
+                ">${score}</div>
+                <div style="color: #A7B5C5; font-size: 0.8rem;">points</div>
+                <button onclick="window.close()" style="
+                    margin-top: 20px;
+                    background: linear-gradient(135deg, #00BFFF, #6C63FF);
+                    border: none;
+                    color: #000;
+                    padding: 10px 25px;
+                    border-radius: 10px;
+                    font-family: 'Orbitron', monospace;
+                    font-weight: 700;
+                    cursor: pointer;
+                    font-size: 0.75rem;
+                    transition: all 0.3s ease;
+                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                    Close & View Rankings
+                </button>
             </div>
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: scale(0.9); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+            </style>
+        `;
+        document.body.appendChild(overlay);
 
-            <!-- Center/Right: Score Display -->
-            <div class="score-display">
-                <i class="fas fa-star"></i>
-                <span>Score:</span>
-                <span class="score-value" id="scoreDisplay">0</span>
-            </div>
-
-            <!-- Status -->
-            <div class="status-display">
-                <span class="dot" id="statusDot"></span>
-                <span id="statusText">Playing...</span>
-            </div>
-
-            <!-- Desktop Site Toggle -->
-            <div class="desktop-toggle active" id="desktopToggle" onclick="toggleDesktopMode()">
-                <span class="toggle-label">🖥️ Desktop</span>
-                <span class="toggle-track">
-                    <span class="toggle-thumb"></span>
-                </span>
-            </div>
-
-        </div>
-
-        <!-- ===== GAME FRAME ===== -->
-        <iframe id="gameFrame" src="games/ninja run/index.html?event=%%EVENT_ID%%&user=%%USER_ID%%&t=%%TIMESTAMP%%"></iframe>
-    </div>
-
-    <script>
-        // ========================================
-        // CONFIG
-        // ========================================
-
-        const params = new URLSearchParams(window.location.search);
-        const EVENT_ID = params.get('event') || 'event_001';
-        const USER_ID = params.get('user') || 'user_001';
-        const STORAGE_KEY = 'shora_desktop_mode';
-
-        // ========================================
-        // DESKTOP MODE TOGGLE
-        // ========================================
-
-        let desktopMode = true; // default: ON
-
-        function loadDesktopMode() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved !== null) {
-                desktopMode = saved === 'true';
-            } else {
-                // Default to ON for all devices
-                desktopMode = true;
-                localStorage.setItem(STORAGE_KEY, 'true');
-            }
-            applyDesktopMode();
-        }
-
-        function applyDesktopMode() {
-            const toggle = document.getElementById('desktopToggle');
-            const frame = document.getElementById('gameFrame');
-            const body = document.body;
-            
-            if (desktopMode) {
-                body.classList.add('desktop-mode');
-                toggle.classList.add('active');
-                // Remove viewport restrictions for desktop mode
-                frame.style.width = '100%';
-                frame.style.maxWidth = '1280px';
-                frame.style.margin = '0 auto';
-            } else {
-                body.classList.remove('desktop-mode');
-                toggle.classList.remove('active');
-                frame.style.width = '100%';
-                frame.style.maxWidth = '100%';
-                frame.style.margin = '0';
-            }
-            
-            // Save preference
-            localStorage.setItem(STORAGE_KEY, String(desktopMode));
-            
-            // Force iframe refresh to apply new size
-            const src = frame.src;
-            frame.src = '';
-            setTimeout(() => {
-                frame.src = src;
-            }, 100);
-        }
-
-        function toggleDesktopMode() {
-            desktopMode = !desktopMode;
-            applyDesktopMode();
-            showToast(desktopMode ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
-        }
-
-        // ========================================
-        // LOADING PROGRESS
-        // ========================================
-
-        let progress = 0;
-        const progressFill = document.getElementById('progressFill');
-        const loadingOverlay = document.getElementById('loadingOverlay');
-
-        const loadingInterval = setInterval(() => {
-            progress += Math.random() * 12;
-            if (progress > 100) progress = 100;
-            progressFill.style.width = progress + '%';
-            if (progress >= 100) {
-                clearInterval(loadingInterval);
+        // Auto-close after 4 seconds
+        setTimeout(() => {
+            if (overlay.parentNode) {
+                overlay.style.opacity = '0';
+                overlay.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => {
-                    loadingOverlay.classList.add('hidden');
-                }, 400);
+                    if (overlay.parentNode) overlay.remove();
+                    window.close();
+                }, 500);
             }
-        }, 150);
+        }, 4000);
+    }
 
-        // ========================================
-        // SCORE UPDATES
-        // ========================================
+    // ========================================
+    // HOOK INTO CONSTRUCT 2 GAME
+    // ========================================
 
-        let currentScore = 0;
-        const scoreDisplay = document.getElementById('scoreDisplay');
-
-        // Function to update score from game
-        function updateScore(score) {
-            currentScore = score || 0;
-            scoreDisplay.textContent = currentScore.toLocaleString();
-            
-            // Animate score change
-            scoreDisplay.style.transition = 'transform 0.2s ease';
-            scoreDisplay.style.transform = 'scale(1.3)';
-            setTimeout(() => {
-                scoreDisplay.style.transform = 'scale(1)';
-            }, 200);
-        }
-
-        // Listen for score updates from game
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
-                updateScore(event.data.score);
-            }
-            if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
-                updateScore(event.data.score);
-                document.getElementById('statusText').textContent = '✅ Complete!';
-                document.getElementById('statusDot').className = 'dot complete';
-                window.onNinjaRunComplete(event.data.score, event.data.eventId, event.data.userId);
-            }
-        });
-
-        // ========================================
-        // GAME COMPLETION
-        // ========================================
-
-        window.onNinjaRunComplete = function(score, eventId, userId) {
-            console.log('🎯 Game Complete! Score:', score);
-            updateScore(score);
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-cyber';
-            toast.textContent = `🏆 Score: ${score} points!`;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 4000);
-
-            setTimeout(() => {
-                window.close();
-            }, 3000);
-        };
-
-        // ========================================
-        // TOAST
-        // ========================================
-
-        function showToast(message, type = 'info') {
-            const existing = document.querySelector('.toast-cyber');
-            if (existing) existing.remove();
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-cyber';
-            toast.style.borderColor = type === 'info' ? 'rgba(0, 191, 255, 0.3)' : 'rgba(0, 230, 118, 0.3)';
-            toast.style.color = type === 'info' ? '#00BFFF' : '#00E676';
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
-        // ========================================
-        // IFRAME SETUP
-        // ========================================
-
-        const frame = document.getElementById('gameFrame');
-        const timestamp = Date.now();
-        frame.src = frame.src
-            .replace('%%EVENT_ID%%', EVENT_ID)
-            .replace('%%USER_ID%%', USER_ID)
-            .replace('%%TIMESTAMP%%', timestamp);
-
-        // ========================================
-        // INJECT BRIDGE INTO IFRAME
-        // ========================================
-
-        frame.addEventListener('load', function() {
-            console.log('📄 Game iframe loaded');
-            loadDesktopMode();
+    function waitForRuntime() {
+        console.log('⏳ Waiting for Construct 2 runtime...');
+        
+        let attempts = 0;
+        const maxAttempts = 30;
+        
+        const checkRuntime = setInterval(() => {
+            attempts++;
             
             try {
-                const frameDoc = document.getElementById('gameFrame').contentDocument;
-                if (frameDoc) {
-                    const bridgeScript = document.createElement('script');
-                    bridgeScript.src = '../js/ninja-run-bridge.js';
-                    bridgeScript.onerror = function() {
-                        console.log('⚠️ Bridge script failed, using fallback');
-                        startFallbackMonitor();
-                    };
-                    frameDoc.head.appendChild(bridgeScript);
-                    console.log('✅ Bridge script injected');
-                } else {
-                    console.log('⚠️ Cannot access iframe, using fallback');
-                    startFallbackMonitor();
+                const canvas = document.getElementById('c2canvas');
+                if (canvas && canvas.c2runtime) {
+                    clearInterval(checkRuntime);
+                    runtime = canvas.c2runtime;
+                    console.log('✅ Construct 2 Runtime detected');
+                    hookIntoGame(runtime);
+                    return;
                 }
             } catch (e) {
-                console.log('⚠️ Error injecting bridge:', e);
-                startFallbackMonitor();
+                // Ignore
             }
-        });
+            
+            if (attempts >= maxAttempts) {
+                clearInterval(checkRuntime);
+                console.log('⚠️ Runtime detection timed out, using fallback');
+                startFallbackMonitoring();
+            }
+        }, 500);
+    }
 
-        // ========================================
-        // FALLBACK MONITOR
-        // ========================================
+    function hookIntoGame(runtime) {
+        console.log('🔗 Hooking into game...');
 
-        function startFallbackMonitor() {
-            console.log('📊 Starting fallback monitor');
-            const checkInterval = setInterval(() => {
-                const played = sessionStorage.getItem('ninjaRunPlayed');
-                const score = sessionStorage.getItem('ninjaRunScore');
-                const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
+        // Hook into runtime tick
+        const originalTick = runtime.tick;
+        runtime.tick = function() {
+            originalTick.call(this);
+            
+            try {
+                // Look for score in game
+                let currentScore = 0;
                 
-                // Update live score
-                if (liveScore !== null) {
-                    updateScore(parseInt(liveScore));
+                // Check global variables
+                if (runtime.globalVars) {
+                    for (const key in runtime.globalVars) {
+                        if (key.toLowerCase().includes('score') || key.toLowerCase().includes('distance')) {
+                            const val = runtime.globalVars[key];
+                            if (typeof val === 'number' && val > currentScore) {
+                                currentScore = val;
+                            }
+                        }
+                    }
                 }
                 
-                if (played === 'true' && score !== null) {
-                    clearInterval(checkInterval);
-                    console.log('🎯 Game completion detected via session storage');
-                    updateScore(parseInt(score));
-                    window.onNinjaRunComplete(parseInt(score), EVENT_ID, USER_ID);
+                // Check window variables
+                const possibleVars = ['score', 'Score', 'playerScore', 'gameScore', 'distance', 'Distance'];
+                for (const varName of possibleVars) {
+                    if (typeof window[varName] !== 'undefined' && window[varName] > currentScore) {
+                        currentScore = window[varName];
+                    }
                 }
-            }, 500);
+                
+                // Update score if changed
+                if (currentScore > gameScore) {
+                    gameScore = currentScore;
+                    // Send live score update to parent
+                    if (window.parent && window.parent !== window) {
+                        try {
+                            window.parent.postMessage({
+                                type: 'NINJA_RUN_SCORE',
+                                score: gameScore
+                            }, '*');
+                        } catch (e) {}
+                    }
+                    // Store in session storage for fallback
+                    sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                }
+                
+                // Check for game over
+                if (runtime.globalVars && runtime.globalVars['GameOver'] === true) {
+                    if (gameScore > 0 && !scoreSubmitted) {
+                        console.log('🎯 Game Over detected');
+                        window.ninjaRunComplete(gameScore);
+                    }
+                }
+            } catch (e) {
+                // Ignore
+            }
+        };
 
-            setTimeout(() => {
+        // Hook into trigger for game end detection
+        const originalTrigger = runtime.trigger;
+        runtime.trigger = function(method, inst, value) {
+            const result = originalTrigger.call(this, method, inst, value);
+            
+            try {
+                if (method && method.name) {
+                    const methodName = method.name;
+                    if (methodName === 'OnLayoutEnd' || 
+                        methodName === 'OnDestroyed' ||
+                        methodName.includes('GameOver') ||
+                        methodName.includes('End')) {
+                        if (gameScore > 0 && !scoreSubmitted) {
+                            console.log('🎯 Game end detected via trigger:', methodName);
+                            window.ninjaRunComplete(gameScore);
+                        }
+                    }
+                }
+            } catch (e) {
+                // Ignore
+            }
+            
+            return result;
+        };
+
+        gameStarted = true;
+        console.log('✅ Game hook installed');
+    }
+
+    // ========================================
+    // FALLBACK MONITORING
+    // ========================================
+
+    function startFallbackMonitoring() {
+        console.log('📊 Starting fallback monitoring');
+        
+        let lastScore = 0;
+        let noChangeCount = 0;
+        
+        checkInterval = setInterval(() => {
+            try {
+                // Check if game is still running
+                if (runtime && runtime.globalVars) {
+                    // Check for game over
+                    if (runtime.globalVars['GameOver'] === true) {
+                        if (gameScore > 0 && !scoreSubmitted) {
+                            window.ninjaRunComplete(gameScore);
+                        }
+                        return;
+                    }
+                    
+                    // Look for score updates
+                    for (const key in runtime.globalVars) {
+                        if (key.toLowerCase().includes('distance') || key.toLowerCase().includes('score')) {
+                            const val = runtime.globalVars[key];
+                            if (typeof val === 'number' && val > gameScore) {
+                                gameScore = val;
+                                sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                            }
+                        }
+                    }
+                }
+                
+                // If score hasn't changed for a while and game seems to have ended
+                if (gameScore === lastScore) {
+                    noChangeCount++;
+                    if (noChangeCount > 30 && gameScore > 0 && !scoreSubmitted && gameStarted) {
+                        // Check if game is still responsive
+                        if (runtime && runtime.isRunning) {
+                            noChangeCount = 0;
+                        } else {
+                            console.log('🎯 Game ended (score unchanged, runtime stopped)');
+                            window.ninjaRunComplete(gameScore);
+                        }
+                    }
+                } else {
+                    lastScore = gameScore;
+                    noChangeCount = 0;
+                }
+            } catch (e) {
+                // Ignore
+            }
+        }, 100);
+
+        // Timeout after 2 minutes
+        setTimeout(() => {
+            if (checkInterval) {
                 clearInterval(checkInterval);
-            }, 300000);
-        }
-
-        // ========================================
-        // INIT
-        // ========================================
-
-        console.log('🎮 Ninja Run Wrapper loaded');
-        console.log(`📋 Event: ${EVENT_ID}`);
-        console.log(`👤 User: ${USER_ID}`);
-        console.log(`🖥️ Desktop mode: ${desktopMode ? 'ON' : 'OFF'}`);
-
-        // Set initial desktop mode
-        loadDesktopMode();
-
-        // ========================================
-        // KEYBOARD SHORTCUTS
-        // ========================================
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'd' || e.key === 'D') {
-                toggleDesktopMode();
-            }
-            if (e.key === 'Escape') {
-                if (confirm('Close game and return to tournaments?')) {
-                    window.close();
+                if (gameScore > 0 && !scoreSubmitted) {
+                    console.log('⏰ Game timeout, submitting score');
+                    window.ninjaRunComplete(gameScore);
                 }
             }
-        });
+        }, 120000);
+    }
 
-        // ========================================
-        // PREVENT SCROLLING ON MOBILE
-        // ========================================
+    // ========================================
+    // MANUAL SCORE SUBMISSION
+    // ========================================
 
-        document.addEventListener('touchmove', function(e) {
-            if (e.target === document.body || e.target === document.getElementById('gameContainer')) {
-                e.preventDefault();
-            }
-        }, { passive: false });
+    window.submitNinjaRunScore = function(score) {
+        window.ninjaRunComplete(score || gameScore);
+    };
 
-        console.log('✅ Press "D" to toggle desktop mode');
-        console.log('✅ Press "ESC" to close game');
-    </script>
+    window.getNinjaRunScore = function() {
+        return gameScore;
+    };
 
-</body>
-</html>
+    // ========================================
+    // LISTEN FOR MESSAGES
+    // ========================================
+
+    window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
+            console.log('📨 Received message:', event.data);
+            window.ninjaRunComplete(event.data.score);
+        }
+        if (event.data && event.data.type === 'GET_NINJA_RUN_SCORE') {
+            event.source.postMessage({
+                type: 'NINJA_RUN_SCORE_RESPONSE',
+                score: gameScore
+            }, '*');
+        }
+    });
+
+    // ========================================
+    // CLEANUP
+    // ========================================
+
+    window.addEventListener('beforeunload', function() {
+        if (checkInterval) {
+            clearInterval(checkInterval);
+        }
+    });
+
+    // ========================================
+    // INIT
+    // ========================================
+
+    console.log('🚀 Ninja Run Bridge initializing...');
+    console.log(`📋 Event ID: ${CONFIG.eventId}`);
+    console.log(`👤 User ID: ${CONFIG.userId}`);
+
+    // Start waiting for runtime
+    waitForRuntime();
+
+    console.log('✅ Ninja Run Bridge ready');
+
+})();
