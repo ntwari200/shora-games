@@ -9,18 +9,12 @@
     console.log('🏃 Ninja Run Bridge loaded');
 
     // ========================================
-    // CONFIGURATION
+    // CONFIG
     // ========================================
 
     const CONFIG = {
         eventId: getParam('event'),
         userId: getParam('user'),
-        firebase: {
-            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
-            authDomain: "shora-games.firebaseapp.com",
-            projectId: "shora-games",
-            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
-        }
     };
 
     function getParam(name) {
@@ -33,7 +27,6 @@
     // ========================================
 
     let gameScore = 0;
-    let gameComplete = false;
     let scoreSubmitted = false;
     let gameStarted = false;
     let checkInterval = null;
@@ -52,9 +45,6 @@
         }
 
         gameScore = score || 0;
-        gameComplete = true;
-
-        // Send score to parent
         sendScoreToParent(gameScore);
     };
 
@@ -94,10 +84,6 @@
         showCompletionMessage(score);
     }
 
-    // ========================================
-    // UI Helpers
-    // ========================================
-
     function showCompletionMessage(score) {
         const overlay = document.createElement('div');
         overlay.id = 'ninjaRunCompleteOverlay';
@@ -122,47 +108,36 @@
                 background: linear-gradient(135deg, #06111F, #0B1F36);
                 border: 2px solid #00BFFF;
                 border-radius: 20px;
-                padding: 40px 50px;
+                padding: 30px 40px;
                 text-align: center;
                 max-width: 400px;
                 box-shadow: 0 0 60px rgba(0, 191, 255, 0.2);
             ">
-                <div style="font-size: 4rem; margin-bottom: 10px;">🏆</div>
+                <div style="font-size: 3.5rem; margin-bottom: 8px;">🏆</div>
                 <h2 style="
                     font-family: 'Orbitron', monospace;
                     color: #FFD700;
-                    font-size: 1.5rem;
-                    margin-bottom: 8px;
+                    font-size: 1.3rem;
+                    margin-bottom: 6px;
                 ">Game Complete!</h2>
                 <div style="
-                    font-size: 3rem;
+                    font-size: 2.5rem;
                     color: #00E676;
                     font-weight: 700;
-                    margin: 10px 0;
+                    margin: 8px 0;
                 ">${score}</div>
-                <div style="color: #A7B5C5; font-size: 0.9rem;">points</div>
-                <div style="
-                    margin-top: 20px;
-                    padding: 12px;
-                    background: rgba(0, 191, 255, 0.05);
-                    border-radius: 10px;
-                    color: #00BFFF;
-                    font-size: 0.8rem;
-                ">
-                    <i class="fas fa-sync fa-spin"></i> 
-                    Submitting score...
-                </div>
+                <div style="color: #A7B5C5; font-size: 0.8rem;">points</div>
                 <button onclick="window.close()" style="
                     margin-top: 20px;
                     background: linear-gradient(135deg, #00BFFF, #6C63FF);
                     border: none;
                     color: #000;
-                    padding: 12px 30px;
+                    padding: 10px 25px;
                     border-radius: 10px;
                     font-family: 'Orbitron', monospace;
                     font-weight: 700;
                     cursor: pointer;
-                    font-size: 0.85rem;
+                    font-size: 0.75rem;
                     transition: all 0.3s ease;
                 " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
                     Close & View Rankings
@@ -177,7 +152,7 @@
         `;
         document.body.appendChild(overlay);
 
-        // Auto-close after 5 seconds
+        // Auto-close after 4 seconds
         setTimeout(() => {
             if (overlay.parentNode) {
                 overlay.style.opacity = '0';
@@ -187,7 +162,7 @@
                     window.close();
                 }, 500);
             }
-        }, 5000);
+        }, 4000);
     }
 
     // ========================================
@@ -197,45 +172,46 @@
     function waitForRuntime() {
         console.log('⏳ Waiting for Construct 2 runtime...');
         
+        let attempts = 0;
+        const maxAttempts = 30;
+        
         const checkRuntime = setInterval(() => {
-            const canvas = document.getElementById('c2canvas');
-            if (canvas && canvas.c2runtime) {
-                clearInterval(checkRuntime);
-                runtime = canvas.c2runtime;
-                console.log('✅ Construct 2 Runtime detected');
-                hookIntoGame(runtime);
+            attempts++;
+            
+            try {
+                const canvas = document.getElementById('c2canvas');
+                if (canvas && canvas.c2runtime) {
+                    clearInterval(checkRuntime);
+                    runtime = canvas.c2runtime;
+                    console.log('✅ Construct 2 Runtime detected');
+                    hookIntoGame(runtime);
+                    return;
+                }
+            } catch (e) {
+                // Ignore
             }
-        }, 100);
-
-        // Timeout after 10 seconds
-        setTimeout(() => {
-            clearInterval(checkRuntime);
-            console.log('⚠️ Runtime detection timed out, using fallback');
-            startFallbackMonitoring();
-        }, 10000);
+            
+            if (attempts >= maxAttempts) {
+                clearInterval(checkRuntime);
+                console.log('⚠️ Runtime detection timed out, using fallback');
+                startFallbackMonitoring();
+            }
+        }, 500);
     }
 
     function hookIntoGame(runtime) {
         console.log('🔗 Hooking into game...');
 
-        // Track score by monitoring game variables
+        // Hook into runtime tick
         const originalTick = runtime.tick;
         runtime.tick = function() {
             originalTick.call(this);
             
             try {
                 // Look for score in game
-                const possibleScoreVars = ['score', 'Score', 'playerScore', 'gameScore', 'distance'];
                 let currentScore = 0;
                 
-                for (const varName of possibleScoreVars) {
-                    if (typeof window[varName] !== 'undefined') {
-                        currentScore = window[varName];
-                        break;
-                    }
-                }
-                
-                // Also check if there's a global variable in C2
+                // Check global variables
                 if (runtime.globalVars) {
                     for (const key in runtime.globalVars) {
                         if (key.toLowerCase().includes('score') || key.toLowerCase().includes('distance')) {
@@ -247,11 +223,31 @@
                     }
                 }
                 
-                if (currentScore > gameScore) {
-                    gameScore = currentScore;
+                // Check window variables
+                const possibleVars = ['score', 'Score', 'playerScore', 'gameScore', 'distance', 'Distance'];
+                for (const varName of possibleVars) {
+                    if (typeof window[varName] !== 'undefined' && window[varName] > currentScore) {
+                        currentScore = window[varName];
+                    }
                 }
                 
-                // Check for game over state
+                // Update score if changed
+                if (currentScore > gameScore) {
+                    gameScore = currentScore;
+                    // Send live score update to parent
+                    if (window.parent && window.parent !== window) {
+                        try {
+                            window.parent.postMessage({
+                                type: 'NINJA_RUN_SCORE',
+                                score: gameScore
+                            }, '*');
+                        } catch (e) {}
+                    }
+                    // Store in session storage for fallback
+                    sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                }
+                
+                // Check for game over
                 if (runtime.globalVars && runtime.globalVars['GameOver'] === true) {
                     if (gameScore > 0 && !scoreSubmitted) {
                         console.log('🎯 Game Over detected');
@@ -263,19 +259,22 @@
             }
         };
 
-        // Override trigger to detect game end
+        // Hook into trigger for game end detection
         const originalTrigger = runtime.trigger;
         runtime.trigger = function(method, inst, value) {
             const result = originalTrigger.call(this, method, inst, value);
             
             try {
-                const methodName = method ? method.name : '';
-                if (methodName === 'OnLayoutEnd' || 
-                    methodName === 'OnDestroyed' ||
-                    (method && method.toString && method.toString().includes('GameOver'))) {
-                    if (gameScore > 0 && !scoreSubmitted) {
-                        console.log('🎯 Game end detected via trigger');
-                        window.ninjaRunComplete(gameScore);
+                if (method && method.name) {
+                    const methodName = method.name;
+                    if (methodName === 'OnLayoutEnd' || 
+                        methodName === 'OnDestroyed' ||
+                        methodName.includes('GameOver') ||
+                        methodName.includes('End')) {
+                        if (gameScore > 0 && !scoreSubmitted) {
+                            console.log('🎯 Game end detected via trigger:', methodName);
+                            window.ninjaRunComplete(gameScore);
+                        }
                     }
                 }
             } catch (e) {
@@ -285,8 +284,8 @@
             return result;
         };
 
-        console.log('✅ Game hook installed');
         gameStarted = true;
+        console.log('✅ Game hook installed');
     }
 
     // ========================================
@@ -301,8 +300,9 @@
         
         checkInterval = setInterval(() => {
             try {
-                // Check for game over state
+                // Check if game is still running
                 if (runtime && runtime.globalVars) {
+                    // Check for game over
                     if (runtime.globalVars['GameOver'] === true) {
                         if (gameScore > 0 && !scoreSubmitted) {
                             window.ninjaRunComplete(gameScore);
@@ -310,24 +310,24 @@
                         return;
                     }
                     
-                    // Check for distance/score
+                    // Look for score updates
                     for (const key in runtime.globalVars) {
                         if (key.toLowerCase().includes('distance') || key.toLowerCase().includes('score')) {
                             const val = runtime.globalVars[key];
                             if (typeof val === 'number' && val > gameScore) {
                                 gameScore = val;
+                                sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                             }
                         }
                     }
                 }
                 
-                // If score hasn't changed in 5 seconds and game is running, check if game ended
+                // If score hasn't changed for a while and game seems to have ended
                 if (gameScore === lastScore) {
                     noChangeCount++;
-                    if (noChangeCount > 50 && gameScore > 0 && !scoreSubmitted && gameStarted) {
-                        // Check if game is still running
+                    if (noChangeCount > 30 && gameScore > 0 && !scoreSubmitted && gameStarted) {
+                        // Check if game is still responsive
                         if (runtime && runtime.isRunning) {
-                            // Still running, don't submit
                             noChangeCount = 0;
                         } else {
                             console.log('🎯 Game ended (score unchanged, runtime stopped)');
@@ -343,7 +343,7 @@
             }
         }, 100);
 
-        // Timeout after 3 minutes
+        // Timeout after 2 minutes
         setTimeout(() => {
             if (checkInterval) {
                 clearInterval(checkInterval);
@@ -352,7 +352,7 @@
                     window.ninjaRunComplete(gameScore);
                 }
             }
-        }, 180000);
+        }, 120000);
     }
 
     // ========================================
@@ -373,8 +373,14 @@
 
     window.addEventListener('message', function(event) {
         if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
-            console.log('📨 Received message from game:', event.data);
+            console.log('📨 Received message:', event.data);
             window.ninjaRunComplete(event.data.score);
+        }
+        if (event.data && event.data.type === 'GET_NINJA_RUN_SCORE') {
+            event.source.postMessage({
+                type: 'NINJA_RUN_SCORE_RESPONSE',
+                score: gameScore
+            }, '*');
         }
     });
 
