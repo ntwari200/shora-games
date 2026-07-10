@@ -2,11 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ninja Run - Shora Games</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+        }
+        
         body {
             background: #06111F;
             color: #fff;
@@ -14,59 +19,173 @@
             height: 100vh;
             overflow: hidden;
             margin: 0;
+            padding: 0;
+            position: fixed;
+            width: 100%;
+            height: 100%;
         }
+
         #gameContainer {
             width: 100%;
             height: 100vh;
+            height: 100dvh;
             position: relative;
+            display: flex;
+            flex-direction: column;
         }
-        #gameFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #000;
-        }
+
+        /* ===== HEADER / NAVIGATION BAR ===== */
         .game-header {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            position: relative;
             z-index: 100;
-            background: rgba(6, 17, 31, 0.85);
+            background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(16px);
-            padding: 8px 20px;
+            padding: 6px 12px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+            flex-shrink: 0;
+            min-height: 48px;
+            gap: 8px;
+            flex-wrap: wrap;
         }
+
         .game-header .title {
             font-family: 'Orbitron', monospace;
-            font-size: 1rem;
+            font-size: 0.85rem;
             color: #00BFFF;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            white-space: nowrap;
         }
-        .game-header .title i { color: #FFD700; }
-        .game-header .status {
-            font-size: 0.75rem;
+        .game-header .title i { 
+            color: #FFD700; 
+            font-size: 0.9rem;
+        }
+        .game-header .title .sub {
+            font-size: 0.55rem;
             color: #A7B5C5;
+            font-family: 'Inter', sans-serif;
+            font-weight: 300;
+        }
+
+        /* ===== SCORE DISPLAY ===== */
+        .score-display {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 6px;
+            background: rgba(0, 191, 255, 0.08);
+            border: 1px solid rgba(0, 191, 255, 0.15);
+            border-radius: 20px;
+            padding: 4px 14px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.85rem;
+            color: #FFD700;
+            white-space: nowrap;
         }
-        .game-header .status .dot {
-            width: 8px;
-            height: 8px;
+        .score-display i {
+            color: #FFD700;
+            font-size: 0.7rem;
+        }
+        .score-display .score-value {
+            font-weight: 700;
+            min-width: 30px;
+            text-align: center;
+            color: #00E676;
+        }
+
+        /* ===== STATUS ===== */
+        .status-display {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.65rem;
+            color: #A7B5C5;
+            white-space: nowrap;
+        }
+        .status-display .dot {
+            width: 6px;
+            height: 6px;
             border-radius: 50%;
             background: #00E676;
             animation: pulse 1.5s infinite;
+            display: inline-block;
         }
+        .status-display .dot.complete {
+            background: #FFD700;
+            animation: none;
+        }
+
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.8); }
         }
+
+        /* ===== DESKTOP SITE TOGGLE ===== */
+        .desktop-toggle {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.55rem;
+            color: #A7B5C5;
+            white-space: nowrap;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.3s ease;
+            user-select: none;
+        }
+        .desktop-toggle:hover {
+            border-color: rgba(0, 191, 255, 0.3);
+            background: rgba(0, 191, 255, 0.05);
+        }
+        .desktop-toggle .toggle-track {
+            width: 32px;
+            height: 16px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .desktop-toggle .toggle-track .toggle-thumb {
+            width: 12px;
+            height: 12px;
+            background: #A7B5C5;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .desktop-toggle.active .toggle-track {
+            background: rgba(0, 191, 255, 0.3);
+        }
+        .desktop-toggle.active .toggle-track .toggle-thumb {
+            left: 18px;
+            background: #00BFFF;
+        }
+        .desktop-toggle .toggle-label {
+            font-weight: 500;
+        }
+        .desktop-toggle.active .toggle-label {
+            color: #00BFFF;
+        }
+
+        /* ===== GAME FRAME ===== */
+        #gameFrame {
+            flex: 1;
+            width: 100%;
+            border: none;
+            background: #000;
+            min-height: 0;
+        }
+
+        /* ===== LOADING OVERLAY ===== */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -83,9 +202,9 @@
             pointer-events: none;
         }
         #loadingOverlay .spinner {
-            width: 50px;
-            height: 50px;
-            border: 4px solid rgba(0, 191, 255, 0.1);
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(0, 191, 255, 0.1);
             border-top-color: #00BFFF;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
@@ -94,15 +213,15 @@
             to { transform: rotate(360deg); }
         }
         #loadingOverlay .text {
-            margin-top: 20px;
+            margin-top: 16px;
             color: #A7B5C5;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             font-family: 'Orbitron', monospace;
         }
         #loadingOverlay .progress-bar {
-            margin-top: 15px;
-            width: 200px;
-            height: 4px;
+            margin-top: 12px;
+            width: 160px;
+            height: 3px;
             background: rgba(255,255,255,0.05);
             border-radius: 2px;
             overflow: hidden;
@@ -114,18 +233,20 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
+        /* ===== TOAST ===== */
         .toast-cyber {
             position: fixed;
-            bottom: 30px;
+            bottom: 20px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 230, 118, 0.3);
             border-radius: 50px;
-            padding: 12px 24px;
+            padding: 10px 20px;
             color: #00E676;
-            font-size: 0.9rem;
+            font-size: 0.8rem;
             z-index: 9999;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
@@ -137,10 +258,146 @@
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .game-header {
+                padding: 4px 8px;
+                min-height: 40px;
+                gap: 4px;
+            }
+            .game-header .title {
+                font-size: 0.7rem;
+                gap: 4px;
+            }
+            .game-header .title .sub {
+                font-size: 0.45rem;
+            }
+            .score-display {
+                font-size: 0.7rem;
+                padding: 2px 10px;
+            }
+            .score-display i {
+                font-size: 0.6rem;
+            }
+            .status-display {
+                font-size: 0.55rem;
+            }
+            .desktop-toggle {
+                font-size: 0.5rem;
+                padding: 2px 8px;
+            }
+            .desktop-toggle .toggle-track {
+                width: 26px;
+                height: 14px;
+            }
+            .desktop-toggle .toggle-track .toggle-thumb {
+                width: 10px;
+                height: 10px;
+                top: 2px;
+                left: 2px;
+            }
+            .desktop-toggle.active .toggle-track .toggle-thumb {
+                left: 14px;
+            }
+            #loadingOverlay .spinner {
+                width: 30px;
+                height: 30px;
+            }
+            #loadingOverlay .text {
+                font-size: 0.7rem;
+            }
+            #loadingOverlay .progress-bar {
+                width: 120px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-header .title {
+                font-size: 0.6rem;
+            }
+            .game-header .title i {
+                font-size: 0.7rem;
+            }
+            .score-display {
+                font-size: 0.6rem;
+                padding: 2px 8px;
+            }
+            .status-display {
+                font-size: 0.5rem;
+            }
+            .desktop-toggle {
+                font-size: 0.45rem;
+                padding: 2px 6px;
+            }
+            .desktop-toggle .toggle-track {
+                width: 22px;
+                height: 12px;
+            }
+            .desktop-toggle .toggle-track .toggle-thumb {
+                width: 8px;
+                height: 8px;
+                top: 2px;
+                left: 2px;
+            }
+            .desktop-toggle.active .toggle-track .toggle-thumb {
+                left: 12px;
+            }
+        }
+
+        @media (max-width: 400px) {
+            .game-header {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 2px;
+                padding: 3px 4px;
+            }
+            .game-header .title {
+                font-size: 0.55rem;
+            }
+            .score-display {
+                font-size: 0.55rem;
+                padding: 1px 6px;
+            }
+            .status-display {
+                font-size: 0.45rem;
+            }
+            .desktop-toggle {
+                font-size: 0.4rem;
+                padding: 1px 4px;
+            }
+        }
+
+        /* ===== DESKTOP MODE (when toggle is ON) ===== */
+        body.desktop-mode {
+            background: #000;
+        }
+        body.desktop-mode #gameFrame {
+            max-width: 1280px;
+            margin: 0 auto;
+            height: calc(100vh - 48px);
+        }
+        body.desktop-mode .game-header {
+            max-width: 1280px;
+            margin: 0 auto;
+            border-left: 1px solid rgba(0, 191, 255, 0.1);
+            border-right: 1px solid rgba(0, 191, 255, 0.1);
+        }
+
+        @media (max-width: 768px) {
+            body.desktop-mode #gameFrame {
+                max-width: 100%;
+                height: calc(100vh - 40px);
+            }
+            body.desktop-mode .game-header {
+                max-width: 100%;
+            }
+        }
     </style>
 </head>
 <body>
 
+    <!-- ===== LOADING OVERLAY ===== -->
     <div id="loadingOverlay">
         <div class="spinner"></div>
         <div class="text">🏃 Loading Ninja Run...</div>
@@ -149,44 +406,171 @@
         </div>
     </div>
 
+    <!-- ===== GAME CONTAINER ===== -->
     <div id="gameContainer">
-        <div class="game-header">
+
+        <!-- ===== NAVIGATION BAR ===== -->
+        <div class="game-header" id="gameHeader">
+            
+            <!-- Left: Title -->
             <div class="title">
                 <i class="fas fa-gamepad"></i>
                 <span>Ninja Run</span>
+                <span class="sub">| Tournament</span>
             </div>
-            <div class="status">
-                <span class="dot"></span>
+
+            <!-- Center/Right: Score Display -->
+            <div class="score-display">
+                <i class="fas fa-star"></i>
+                <span>Score:</span>
+                <span class="score-value" id="scoreDisplay">0</span>
+            </div>
+
+            <!-- Status -->
+            <div class="status-display">
+                <span class="dot" id="statusDot"></span>
                 <span id="statusText">Playing...</span>
             </div>
+
+            <!-- Desktop Site Toggle -->
+            <div class="desktop-toggle active" id="desktopToggle" onclick="toggleDesktopMode()">
+                <span class="toggle-label">🖥️ Desktop</span>
+                <span class="toggle-track">
+                    <span class="toggle-thumb"></span>
+                </span>
+            </div>
+
         </div>
+
+        <!-- ===== GAME FRAME ===== -->
         <iframe id="gameFrame" src="games/ninja run/index.html?event=%%EVENT_ID%%&user=%%USER_ID%%&t=%%TIMESTAMP%%"></iframe>
     </div>
 
     <script>
+        // ========================================
+        // CONFIG
+        // ========================================
+
         const params = new URLSearchParams(window.location.search);
         const EVENT_ID = params.get('event') || 'event_001';
         const USER_ID = params.get('user') || 'user_001';
+        const STORAGE_KEY = 'shora_desktop_mode';
+
+        // ========================================
+        // DESKTOP MODE TOGGLE
+        // ========================================
+
+        let desktopMode = true; // default: ON
+
+        function loadDesktopMode() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved !== null) {
+                desktopMode = saved === 'true';
+            } else {
+                // Default to ON for all devices
+                desktopMode = true;
+                localStorage.setItem(STORAGE_KEY, 'true');
+            }
+            applyDesktopMode();
+        }
+
+        function applyDesktopMode() {
+            const toggle = document.getElementById('desktopToggle');
+            const frame = document.getElementById('gameFrame');
+            const body = document.body;
+            
+            if (desktopMode) {
+                body.classList.add('desktop-mode');
+                toggle.classList.add('active');
+                // Remove viewport restrictions for desktop mode
+                frame.style.width = '100%';
+                frame.style.maxWidth = '1280px';
+                frame.style.margin = '0 auto';
+            } else {
+                body.classList.remove('desktop-mode');
+                toggle.classList.remove('active');
+                frame.style.width = '100%';
+                frame.style.maxWidth = '100%';
+                frame.style.margin = '0';
+            }
+            
+            // Save preference
+            localStorage.setItem(STORAGE_KEY, String(desktopMode));
+            
+            // Force iframe refresh to apply new size
+            const src = frame.src;
+            frame.src = '';
+            setTimeout(() => {
+                frame.src = src;
+            }, 100);
+        }
+
+        function toggleDesktopMode() {
+            desktopMode = !desktopMode;
+            applyDesktopMode();
+            showToast(desktopMode ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
+        }
+
+        // ========================================
+        // LOADING PROGRESS
+        // ========================================
 
         let progress = 0;
         const progressFill = document.getElementById('progressFill');
         const loadingOverlay = document.getElementById('loadingOverlay');
 
         const loadingInterval = setInterval(() => {
-            progress += Math.random() * 15;
+            progress += Math.random() * 12;
             if (progress > 100) progress = 100;
             progressFill.style.width = progress + '%';
             if (progress >= 100) {
                 clearInterval(loadingInterval);
                 setTimeout(() => {
                     loadingOverlay.classList.add('hidden');
-                }, 500);
+                }, 400);
             }
-        }, 200);
+        }, 150);
+
+        // ========================================
+        // SCORE UPDATES
+        // ========================================
+
+        let currentScore = 0;
+        const scoreDisplay = document.getElementById('scoreDisplay');
+
+        // Function to update score from game
+        function updateScore(score) {
+            currentScore = score || 0;
+            scoreDisplay.textContent = currentScore.toLocaleString();
+            
+            // Animate score change
+            scoreDisplay.style.transition = 'transform 0.2s ease';
+            scoreDisplay.style.transform = 'scale(1.3)';
+            setTimeout(() => {
+                scoreDisplay.style.transform = 'scale(1)';
+            }, 200);
+        }
+
+        // Listen for score updates from game
+        window.addEventListener('message', function(event) {
+            if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
+                updateScore(event.data.score);
+            }
+            if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
+                updateScore(event.data.score);
+                document.getElementById('statusText').textContent = '✅ Complete!';
+                document.getElementById('statusDot').className = 'dot complete';
+                window.onNinjaRunComplete(event.data.score, event.data.eventId, event.data.userId);
+            }
+        });
+
+        // ========================================
+        // GAME COMPLETION
+        // ========================================
 
         window.onNinjaRunComplete = function(score, eventId, userId) {
             console.log('🎯 Game Complete! Score:', score);
-            document.getElementById('statusText').textContent = '✅ Complete!';
+            updateScore(score);
             
             const toast = document.createElement('div');
             toast.className = 'toast-cyber';
@@ -204,11 +588,31 @@
             }, 3000);
         };
 
-        window.addEventListener('message', function(event) {
-            if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
-                window.onNinjaRunComplete(event.data.score, event.data.eventId, event.data.userId);
-            }
-        });
+        // ========================================
+        // TOAST
+        // ========================================
+
+        function showToast(message, type = 'info') {
+            const existing = document.querySelector('.toast-cyber');
+            if (existing) existing.remove();
+            
+            const toast = document.createElement('div');
+            toast.className = 'toast-cyber';
+            toast.style.borderColor = type === 'info' ? 'rgba(0, 191, 255, 0.3)' : 'rgba(0, 230, 118, 0.3)';
+            toast.style.color = type === 'info' ? '#00BFFF' : '#00E676';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ========================================
+        // IFRAME SETUP
+        // ========================================
 
         const frame = document.getElementById('gameFrame');
         const timestamp = Date.now();
@@ -217,9 +621,13 @@
             .replace('%%USER_ID%%', USER_ID)
             .replace('%%TIMESTAMP%%', timestamp);
 
-        // Inject bridge into iframe
+        // ========================================
+        // INJECT BRIDGE INTO IFRAME
+        // ========================================
+
         frame.addEventListener('load', function() {
             console.log('📄 Game iframe loaded');
+            loadDesktopMode();
             
             try {
                 const frameDoc = document.getElementById('gameFrame').contentDocument;
@@ -242,26 +650,75 @@
             }
         });
 
+        // ========================================
+        // FALLBACK MONITOR
+        // ========================================
+
         function startFallbackMonitor() {
             console.log('📊 Starting fallback monitor');
             const checkInterval = setInterval(() => {
                 const played = sessionStorage.getItem('ninjaRunPlayed');
                 const score = sessionStorage.getItem('ninjaRunScore');
+                const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
+                
+                // Update live score
+                if (liveScore !== null) {
+                    updateScore(parseInt(liveScore));
+                }
+                
                 if (played === 'true' && score !== null) {
                     clearInterval(checkInterval);
                     console.log('🎯 Game completion detected via session storage');
+                    updateScore(parseInt(score));
                     window.onNinjaRunComplete(parseInt(score), EVENT_ID, USER_ID);
                 }
-            }, 1000);
+            }, 500);
 
             setTimeout(() => {
                 clearInterval(checkInterval);
             }, 300000);
         }
 
+        // ========================================
+        // INIT
+        // ========================================
+
         console.log('🎮 Ninja Run Wrapper loaded');
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
+        console.log(`🖥️ Desktop mode: ${desktopMode ? 'ON' : 'OFF'}`);
+
+        // Set initial desktop mode
+        loadDesktopMode();
+
+        // ========================================
+        // KEYBOARD SHORTCUTS
+        // ========================================
+
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'd' || e.key === 'D') {
+                toggleDesktopMode();
+            }
+            if (e.key === 'Escape') {
+                if (confirm('Close game and return to tournaments?')) {
+                    window.close();
+                }
+            }
+        });
+
+        // ========================================
+        // PREVENT SCROLLING ON MOBILE
+        // ========================================
+
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === document.body || e.target === document.getElementById('gameContainer')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
+
+        console.log('✅ Press "D" to toggle desktop mode');
+        console.log('✅ Press "ESC" to close game');
     </script>
+
 </body>
 </html>
