@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ===== ALL STYLES (same as before) ===== */
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -603,7 +604,7 @@
         // ========================================
 
         import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, update, set } from "firebase/database";
+        import { getDatabase, ref, onValue, get, update, set, remove } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
         // ========================================
@@ -626,7 +627,7 @@
         // ========================================
 
         let currentUser = null;
-        let userData = { balance: 0, username: 'Player' };
+        let userData = { balance: 0, username: 'Player', hasPlayedCurrentEvent: false, currentEventId: null };
         let allTournaments = [];
         let countdownIntervals = {};
         let tournamentTimers = {};
@@ -664,6 +665,22 @@
                         hasPlayedCurrentEvent: data.hasPlayedCurrentEvent || false,
                         currentEventId: data.currentEventId || null
                     };
+                    
+                    // IMPORTANT FIX: Check if the stored event ID is still valid
+                    // If the user played in a tournament that no longer exists or is ended, reset their status
+                    if (userData.hasPlayedCurrentEvent && userData.currentEventId) {
+                        const eventRef = ref(db, `tournaments/${userData.currentEventId}`);
+                        const eventSnapshot = await get(eventRef);
+                        if (!eventSnapshot.exists() || eventSnapshot.val().status === 'ended') {
+                            // Reset user's played status
+                            await update(ref(db, `users/${uid}`), {
+                                hasPlayedCurrentEvent: false,
+                                currentEventId: null
+                            });
+                            userData.hasPlayedCurrentEvent = false;
+                            userData.currentEventId = null;
+                        }
+                    }
                 }
                 document.getElementById('navUsername').textContent = userData.username;
                 document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
@@ -711,6 +728,15 @@
                 
                 const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
                 
+                // Calculate start time based on duration and status
+                let startTime = tournament.startTime || new Date().toISOString();
+                let endTime = tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
+                
+                // If tournament is live but no end time, calculate it
+                if (tournament.status === 'live' && !tournament.endTime) {
+                    endTime = new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
+                }
+                
                 tournaments.push({
                     id: id,
                     name: tournament.name || 'Unnamed Tournament',
@@ -728,9 +754,8 @@
                     players: tournament.players || {},
                     createdAt: tournament.createdAt || new Date().toISOString(),
                     updatedAt: tournament.updatedAt || new Date().toISOString(),
-                    // Calculate tournament status based on time
-                    startTime: tournament.startTime || new Date().toISOString(),
-                    endTime: tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString()
+                    startTime: startTime,
+                    endTime: endTime
                 });
                 
                 totalPlayers += playerCount;
@@ -853,9 +878,15 @@
                 // Get status display
                 const statusDisplay = getStatusDisplay(tournament.status, isLocked, timeRemaining);
                 
-                // Check if user has joined
+                // IMPORTANT FIX: Check if user has played in THIS SPECIFIC tournament
                 const userHasJoined = currentUser && tournament.players && tournament.players[currentUser.uid];
-                const userHasPlayed = userData.hasPlayedCurrentEvent;
+                const userHasPlayedThisTournament = currentUser && tournament.players && tournament.players[currentUser.uid] && tournament.players[currentUser.uid].hasPlayed === true;
+                
+                // Check if user has played ANY tournament (global flag) - but we check specific tournament first
+                const hasPlayedAny = userData.hasPlayedCurrentEvent;
+                
+                // User can play if they haven't played THIS tournament and tournament is live
+                const canPlay = isLive && !isLocked && !userHasPlayedThisTournament && userHasJoined;
                 const isFull = playerCount >= maxPlayers;
                 
                 // Determine button
@@ -874,13 +905,15 @@
                         </button>
                     `;
                 } else if (isLive && !isLocked) {
-                    if (userHasPlayed) {
+                    if (userHasPlayedThisTournament) {
+                        // User already played this specific tournament
                         buttonHtml = `
                             <button class="btn btn-card-blocked" disabled>
                                 <i class="fas fa-ban"></i> Already Played
                             </button>
                         `;
                     } else if (userHasJoined) {
+                        // User joined but hasn't played yet - show Play button
                         buttonHtml = `
                             <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
                                 <i class="fas fa-play"></i> Play Now
@@ -1050,13 +1083,32 @@
                         });
                         showToast(`🏆 ${tournament.name} is now LIVE!`, 'success');
                     } else if (isLive) {
-                        // Live -> Ended
-                        update(ref(db, `tournaments/${timerId}`), { 
-                            status: 'ended'
+                        // Live -> Ended - CRITICAL FIX: Reset all user data for this tournament
+                        const tournamentRef = ref(db, `tournaments/${timerId}`);
+                        const playersRef = ref(db, `tournaments/${timerId}/players`);
+                        
+                        // Get all players who played and reset their global flags
+                        get(playersRef).then(async (snapshot) => {
+                            const players = snapshot.val() || {};
+                            for (const [uid, playerData] of Object.entries(players)) {
+                                // Reset user's global played status
+                                await update(ref(db, `users/${uid}`), {
+                                    hasPlayedCurrentEvent: false,
+                                    currentEventId: null
+                                });
+                            }
+                        }).catch(err => console.error('Error resetting players:', err));
+                        
+                        // Update tournament status to ended
+                        await update(tournamentRef, { 
+                            status: 'ended',
+                            updatedAt: new Date().toISOString()
                         });
-                        update(ref(db, `shora-games/tournaments/${timerId}`), { 
-                            status: 'ended'
+                        await update(ref(db, `shora-games/tournaments/${timerId}`), { 
+                            status: 'ended',
+                            updatedAt: new Date().toISOString()
                         });
+                        
                         showToast(`⏰ ${tournament.name} has ended!`, 'info');
                     }
                     
@@ -1209,7 +1261,8 @@
                 return;
             }
             
-            if (userData.hasPlayedCurrentEvent) {
+            // IMPORTANT FIX: Check if user has already played THIS specific tournament
+            if (tournament.players && tournament.players[currentUser.uid] && tournament.players[currentUser.uid].hasPlayed === true) {
                 showToast('❌ You already played in this tournament!', 'error');
                 return;
             }
@@ -1224,16 +1277,19 @@
                 return;
             }
             
-            await update(ref(db, `users/${currentUser.uid}`), {
-                hasPlayedCurrentEvent: true
-            });
-            
+            // Mark user as played in this specific tournament
             await update(ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`), {
                 hasPlayed: true
             });
             
             await update(ref(db, `shora-games/tournaments/${tournamentId}/players/${currentUser.uid}`), {
                 hasPlayed: true
+            });
+            
+            // Also update global flag for this user
+            await update(ref(db, `users/${currentUser.uid}`), {
+                hasPlayedCurrentEvent: true,
+                currentEventId: tournamentId
             });
             
             const userId = currentUser.uid;
@@ -1286,7 +1342,8 @@
         async function updateUserPlayed(tournamentId, userId, score) {
             try {
                 await update(ref(db, `users/${userId}`), {
-                    hasPlayedCurrentEvent: true
+                    hasPlayedCurrentEvent: true,
+                    currentEventId: tournamentId
                 });
                 
                 await update(ref(db, `tournaments/${tournamentId}/players/${userId}`), {
@@ -1300,6 +1357,7 @@
                 });
                 
                 userData.hasPlayedCurrentEvent = true;
+                userData.currentEventId = tournamentId;
                 updateUI();
                 showToast(`✅ Score: ${score} points submitted!`, 'success');
                 loadTournaments();
@@ -1398,7 +1456,7 @@
         console.log('%c⏱️ Dynamic Countdown System Active', 'color: #00BFFF; font-size: 14px;');
         console.log('%c🔄 Auto-status switching (Upcoming → Live → Ended)', 'color: #00E676;');
         console.log('%c📊 Real-time player tracking', 'color: #FFC857;');
-        console.log('%c🎯 Live/Upcoming/Ended status with countdowns', 'color: #A7B5C5;');
+        console.log('%c🔄 Tournament Reset: Users can play again when tournament restarts', 'color: #FF6B6B; font-weight: bold;');
         
         // Make functions available globally
         window.joinTournament = joinTournament;
