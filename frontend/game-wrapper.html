@@ -8,26 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ============================================================
-           RESET & BASE
-           ============================================================ */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        :root {
-            --header-height: 56px;
-            --header-padding: 8px 16px;
-            --font-size-title: 0.9rem;
-            --font-size-score: 0.85rem;
-            --font-size-status: 0.65rem;
-            --gap: 8px;
-            --border-radius: 12px;
-            --padding-score: 4px 12px;
-        }
-
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
             height: 100%;
@@ -41,14 +23,8 @@
             top: 0;
             left: 0;
             touch-action: none;
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
         }
 
-        /* ============================================================
-           GAME CONTAINER
-           ============================================================ */
         #gameWrapper {
             width: 100%;
             height: 100vh;
@@ -58,55 +34,44 @@
             background: #000;
             position: relative;
             overflow: hidden;
-            margin: 0 auto;
         }
 
         /* ============================================================
-           WARNING BANNER - Professional Red Alert
+           WARNING BANNER - ALWAYS VISIBLE (FOR TESTING)
            ============================================================ */
         .warning-banner {
-            display: none;
+            display: block !important;
             flex-shrink: 0;
             position: relative;
             z-index: 101;
-            background: linear-gradient(135deg, rgba(255, 0, 0, 0.15), rgba(200, 0, 0, 0.08));
-            border-bottom: 2px solid rgba(255, 50, 50, 0.4);
-            padding: 10px 16px;
+            background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(200, 0, 0, 0.1));
+            border-bottom: 3px solid #FF4D6D;
+            padding: 12px 16px;
             overflow: hidden;
             animation: bannerSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
 
-        .warning-banner.show {
-            display: block;
-        }
-
         @keyframes bannerSlideDown {
-            0% {
-                opacity: 0;
-                transform: translateY(-30px) scale(0.95);
-            }
-            100% {
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
+            0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Glow effect behind banner */
+        /* Red glow pulse */
         .warning-banner::before {
             content: '';
             position: absolute;
             inset: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(255, 50, 50, 0.08), transparent 70%);
-            animation: bannerGlow 3s ease-in-out infinite;
+            background: radial-gradient(ellipse at 30% 50%, rgba(255, 50, 50, 0.1), transparent 70%);
+            animation: bannerGlow 2s ease-in-out infinite;
             pointer-events: none;
         }
 
         @keyframes bannerGlow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.05); }
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
         }
 
-        /* Pulse line animation */
+        /* Sweeping light */
         .warning-banner::after {
             content: '';
             position: absolute;
@@ -140,8 +105,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
-            height: 36px;
+            width: 38px;
+            height: 38px;
             border-radius: 50%;
             background: rgba(255, 50, 50, 0.15);
             border: 2px solid rgba(255, 50, 50, 0.3);
@@ -171,7 +136,7 @@
 
         .warning-banner .warning-icon {
             color: #FF4D6D;
-            font-size: 1.1rem;
+            font-size: 1.2rem;
             animation: iconShake 2s ease-in-out infinite;
         }
 
@@ -197,10 +162,10 @@
         .warning-banner .warning-text .highlight {
             color: #FF4D6D;
             font-weight: 700;
-            background: rgba(255, 50, 50, 0.1);
-            padding: 2px 10px;
+            background: rgba(255, 50, 50, 0.15);
+            padding: 2px 12px;
             border-radius: 4px;
-            border: 1px solid rgba(255, 50, 50, 0.1);
+            border: 1px solid rgba(255, 50, 50, 0.2);
         }
 
         .warning-banner .warning-text .emoji {
@@ -213,7 +178,7 @@
             50% { transform: translateY(-3px); }
         }
 
-        /* ===== ACTION BUTTONS ===== */
+        /* ===== BUTTONS ===== */
         .warning-banner .warning-actions {
             display: flex;
             align-items: center;
@@ -223,12 +188,11 @@
 
         .warning-banner .warning-link {
             color: #fff;
-            text-decoration: none;
             font-weight: 600;
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            padding: 6px 16px;
+            padding: 6px 18px;
             border-radius: 30px;
             background: linear-gradient(135deg, #FF4D6D, #D50000);
             border: none;
@@ -278,7 +242,7 @@
             cursor: pointer;
             font-size: clamp(0.6rem, 1vw, 0.75rem);
             transition: all 0.3s ease;
-            padding: 4px 10px;
+            padding: 4px 12px;
             border-radius: 30px;
             display: flex;
             align-items: center;
@@ -301,41 +265,30 @@
             z-index: 100;
             background: rgba(6, 17, 31, 0.92);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            padding: var(--header-padding);
+            padding: 8px 16px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(0, 191, 255, 0.08);
             flex-shrink: 0;
-            min-height: var(--header-height);
-            height: var(--header-height);
-            gap: var(--gap);
-            flex-wrap: nowrap;
-            width: 100%;
+            min-height: 56px;
+            gap: 8px;
         }
 
         .game-header .title {
             font-family: 'Orbitron', monospace;
-            font-size: var(--font-size-title);
+            font-size: 0.9rem;
             color: #00BFFF;
             display: flex;
             align-items: center;
             gap: 6px;
             white-space: nowrap;
-            flex-shrink: 1;
-            min-width: 0;
         }
-        .game-header .title i {
-            color: #FFD700;
-            font-size: calc(var(--font-size-title) * 0.9);
-        }
+        .game-header .title i { color: #FFD700; }
         .game-header .title .sub {
-            font-size: calc(var(--font-size-title) * 0.5);
+            font-size: 0.5rem;
             color: #A7B5C5;
             font-family: 'Inter', sans-serif;
-            font-weight: 300;
-            display: none;
         }
 
         .score-display {
@@ -344,46 +297,26 @@
             gap: 4px;
             background: rgba(0, 191, 255, 0.06);
             border: 1px solid rgba(0, 191, 255, 0.1);
-            border-radius: var(--border-radius);
-            padding: var(--padding-score);
+            border-radius: 12px;
+            padding: 4px 12px;
             font-family: 'Orbitron', monospace;
-            font-size: var(--font-size-score);
+            font-size: 0.85rem;
             color: #FFD700;
-            white-space: nowrap;
-            flex-shrink: 1;
-            min-width: 0;
         }
-        .score-display i {
-            color: #FFD700;
-            font-size: calc(var(--font-size-score) * 0.8);
-        }
+        .score-display i { color: #FFD700; font-size: 0.8rem; }
         .score-display .score-value {
             font-weight: 700;
             min-width: 30px;
             text-align: center;
             color: #00E676;
-            transition: all 0.3s ease;
-        }
-        .score-display .score-value.pulse {
-            animation: scorePulse 0.3s ease;
-        }
-        .score-display .label {
-            display: none;
-        }
-
-        @keyframes scorePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); color: #FFD700; }
         }
 
         .status-display {
             display: flex;
             align-items: center;
             gap: 6px;
-            font-size: var(--font-size-status);
+            font-size: 0.65rem;
             color: #A7B5C5;
-            white-space: nowrap;
-            flex-shrink: 0;
         }
         .status-display .dot {
             width: 8px;
@@ -392,28 +325,12 @@
             background: #00E676;
             animation: pulse 1.5s infinite;
             display: inline-block;
-            flex-shrink: 0;
         }
-        .status-display .dot.complete {
-            background: #FFD700;
-            animation: none;
-        }
-        .status-display .dot.error {
-            background: #FF4D6D;
-            animation: none;
-        }
-        .status-display .status-text {
-            display: none;
-        }
-
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.8); }
         }
 
-        /* ============================================================
-           HELP BUTTON
-           ============================================================ */
         .help-btn {
             display: flex;
             align-items: center;
@@ -436,9 +353,6 @@
             transform: scale(1.1);
         }
 
-        /* ============================================================
-           GAME FRAME
-           ============================================================ */
         #gameFrame {
             flex: 1;
             width: 100%;
@@ -446,384 +360,12 @@
             background: #000;
             min-height: 0;
             position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-
         #gameFrame iframe {
             width: 100%;
             height: 100%;
             border: none;
             background: #000;
-        }
-
-        /* ============================================================
-           DESKTOP SITE GUIDE - MODAL
-           ============================================================ */
-        .guide-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(6, 17, 31, 0.92);
-            backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .guide-overlay.active {
-            display: flex;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .guide-modal {
-            max-width: 480px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: linear-gradient(145deg, #0B1F36, #06111F);
-            border: 1px solid rgba(0, 191, 255, 0.15);
-            border-radius: 20px;
-            padding: 28px 24px;
-            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
-            position: relative;
-        }
-
-        .guide-modal::-webkit-scrollbar {
-            width: 4px;
-        }
-        .guide-modal::-webkit-scrollbar-track {
-            background: transparent;
-        }
-        .guide-modal::-webkit-scrollbar-thumb {
-            background: rgba(0, 191, 255, 0.3);
-            border-radius: 2px;
-        }
-
-        .guide-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: #A7B5C5;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 4px 8px;
-            border-radius: 8px;
-        }
-        .guide-close:hover {
-            color: #fff;
-            background: rgba(255,255,255,0.05);
-        }
-
-        .guide-header {
-            text-align: center;
-            margin-bottom: 24px;
-        }
-
-        .guide-header .icon {
-            font-size: 3rem;
-            display: block;
-            margin-bottom: 8px;
-            animation: bounce 2s ease-in-out infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-8px); }
-        }
-
-        .guide-header h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            color: #00BFFF;
-            margin-bottom: 4px;
-        }
-
-        .guide-header p {
-            color: #A7B5C5;
-            font-size: 0.85rem;
-        }
-
-        /* ============================================================
-           STEP LIST
-           ============================================================ */
-        .step-list {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            margin: 20px 0;
-        }
-
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.04);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
-
-        .step-item:hover {
-            background: rgba(255,255,255,0.04);
-            border-color: rgba(0, 191, 255, 0.1);
-        }
-
-        .step-item .step-number {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(108, 99, 255, 0.2));
-            border: 1px solid rgba(0, 191, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #00BFFF;
-            flex-shrink: 0;
-        }
-
-        .step-item .step-content {
-            flex: 1;
-        }
-
-        .step-item .step-content .step-title {
-            font-weight: 600;
-            font-size: 0.9rem;
-            color: #fff;
-            margin-bottom: 2px;
-        }
-
-        .step-item .step-content .step-desc {
-            font-size: 0.75rem;
-            color: #A7B5C5;
-            line-height: 1.4;
-        }
-
-        .step-item .step-content .step-desc strong {
-            color: #FFD700;
-        }
-
-        .step-item .step-icon {
-            font-size: 1.2rem;
-            opacity: 0.6;
-            flex-shrink: 0;
-            align-self: center;
-        }
-
-        /* ============================================================
-           CHROME SIMULATION VISUAL
-           ============================================================ */
-        .chrome-sim {
-            background: rgba(255,255,255,0.03);
-            border-radius: 12px;
-            padding: 16px;
-            margin: 16px 0 20px;
-            border: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .chrome-sim::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            right: -50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 191, 255, 0.03), transparent 70%);
-            animation: pulseGlow 3s ease-in-out infinite;
-        }
-
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.5; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.1); }
-        }
-
-        .chrome-sim .sim-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            padding-bottom: 10px;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-            position: relative;
-            z-index: 1;
-        }
-
-        .chrome-sim .sim-header .dot {
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            display: inline-block;
-        }
-        .chrome-sim .sim-header .dot.red { background: #ff5f57; }
-        .chrome-sim .sim-header .dot.yellow { background: #ffbd2e; }
-        .chrome-sim .sim-header .dot.green { background: #28c840; }
-
-        .chrome-sim .sim-header .sim-url {
-            flex: 1;
-            background: rgba(255,255,255,0.05);
-            border-radius: 6px;
-            padding: 4px 12px;
-            font-size: 0.6rem;
-            color: #A7B5C5;
-            text-align: center;
-            font-family: monospace;
-        }
-
-        .chrome-sim .sim-body {
-            padding-top: 12px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .chrome-sim .sim-body .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .chrome-sim .sim-body .menu-item:hover {
-            background: rgba(0, 191, 255, 0.05);
-        }
-
-        .chrome-sim .sim-body .menu-item .item-icon {
-            width: 24px;
-            text-align: center;
-            font-size: 0.9rem;
-        }
-
-        .chrome-sim .sim-body .menu-item .item-text {
-            font-size: 0.75rem;
-            color: #fff;
-            flex: 1;
-        }
-
-        .chrome-sim .sim-body .menu-item .item-shortcut {
-            font-size: 0.55rem;
-            color: #A7B5C5;
-            font-family: monospace;
-        }
-
-        .chrome-sim .sim-body .menu-item .checkmark {
-            color: #00E676;
-            font-size: 0.7rem;
-            display: none;
-        }
-
-        .chrome-sim .sim-body .menu-item.active .checkmark {
-            display: inline;
-        }
-
-        .chrome-sim .sim-body .menu-item.active {
-            background: rgba(0, 230, 118, 0.05);
-            border: 1px solid rgba(0, 230, 118, 0.1);
-        }
-
-        .chrome-sim .sim-body .menu-item.highlight {
-            animation: highlightPulse 1.5s ease-in-out infinite;
-            border: 1px solid rgba(0, 191, 255, 0.2);
-            background: rgba(0, 191, 255, 0.05);
-        }
-
-        @keyframes highlightPulse {
-            0%, 100% { border-color: rgba(0, 191, 255, 0.2); box-shadow: 0 0 20px rgba(0, 191, 255, 0.05); }
-            50% { border-color: rgba(0, 191, 255, 0.4); box-shadow: 0 0 30px rgba(0, 191, 255, 0.1); }
-        }
-
-        /* ============================================================
-           PROGRESS INDICATOR
-           ============================================================ */
-        .guide-progress {
-            display: flex;
-            justify-content: center;
-            gap: 8px;
-            margin: 20px 0 16px;
-        }
-
-        .guide-progress .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .guide-progress .dot.active {
-            background: #00BFFF;
-            box-shadow: 0 0 15px rgba(0, 191, 255, 0.3);
-        }
-
-        .guide-progress .dot.done {
-            background: #00E676;
-            box-shadow: 0 0 15px rgba(0, 230, 118, 0.3);
-        }
-
-        /* ============================================================
-           NAVIGATION BUTTONS
-           ============================================================ */
-        .guide-nav {
-            display: flex;
-            gap: 10px;
-            margin-top: 16px;
-        }
-
-        .guide-nav button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .guide-nav .btn-prev {
-            background: rgba(255,255,255,0.05);
-            color: #A7B5C5;
-            border: 1px solid rgba(255,255,255,0.05);
-        }
-
-        .guide-nav .btn-prev:hover {
-            background: rgba(255,255,255,0.08);
-        }
-
-        .guide-nav .btn-next {
-            background: linear-gradient(135deg, #00BFFF, #6C63FF);
-            color: #000;
-        }
-
-        .guide-nav .btn-next:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3);
-        }
-
-        .guide-nav .btn-next:disabled {
-            opacity: 0.4;
-            cursor: not-allowed;
-            transform: none !important;
-            box-shadow: none !important;
         }
 
         /* ============================================================
@@ -841,7 +383,6 @@
             transition: opacity 0.5s ease;
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(20px);
-            -webkit-backdrop-filter: blur(20px);
             padding: 20px;
         }
         #loadingOverlay.hidden {
@@ -856,21 +397,12 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         #loadingOverlay .text {
             margin-top: 16px;
             color: #A7B5C5;
             font-size: clamp(0.7rem, 2vw, 1rem);
             font-family: 'Orbitron', monospace;
-            text-align: center;
-        }
-        #loadingOverlay .error-text {
-            color: #FF4D6D;
-            margin-top: 8px;
-            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
-            display: none;
             text-align: center;
         }
         #loadingOverlay .progress-bar {
@@ -888,28 +420,6 @@
             width: 0%;
             transition: width 0.3s ease;
         }
-        #loadingOverlay .retry-btn {
-            margin-top: 16px;
-            background: linear-gradient(135deg, #00BFFF, #6C63FF);
-            border: none;
-            color: #000;
-            padding: clamp(8px, 1.5vh, 12px) clamp(20px, 4vw, 36px);
-            border-radius: 10px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
-            display: none;
-            transition: all 0.3s ease;
-        }
-        #loadingOverlay .retry-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
-        }
-
-        /* ============================================================
-           TOAST
-           ============================================================ */
         .toast-cyber {
             position: fixed;
             bottom: clamp(16px, 3vh, 40px);
@@ -917,7 +427,6 @@
             transform: translateX(-50%);
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 230, 118, 0.3);
             border-radius: 50px;
             padding: clamp(8px, 1.5vh, 14px) clamp(16px, 3vw, 28px);
@@ -939,137 +448,161 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* ============================================================
-           RESPONSIVE
-           ============================================================ */
-        @media (max-width: 480px) {
-            .guide-modal {
-                padding: 20px 16px;
-            }
-            .step-item {
-                padding: 12px 14px;
-            }
-            .step-item .step-content .step-title {
-                font-size: 0.8rem;
-            }
-            .step-item .step-content .step-desc {
-                font-size: 0.7rem;
-            }
-            .guide-header h2 {
-                font-size: 1rem;
-            }
-            .guide-header .icon {
-                font-size: 2.5rem;
-            }
-            .warning-banner .warning-content {
-                font-size: 0.6rem;
-                gap: 6px;
-            }
-            .warning-banner .warning-link {
-                font-size: 0.55rem;
-                padding: 4px 12px;
-            }
-            .warning-banner .warning-icon-wrapper {
-                width: 28px;
-                height: 28px;
-            }
-            .warning-banner .warning-icon {
-                font-size: 0.85rem;
-            }
+        /* ===== GUIDE MODAL ===== */
+        .guide-overlay {
+            position: fixed;
+            inset: 0;
+            z-index: 9999;
+            background: rgba(6, 17, 31, 0.92);
+            backdrop-filter: blur(20px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: fadeIn 0.4s ease;
         }
+        .guide-overlay.active { display: flex; }
+        @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
 
-        @media (max-height: 600px) {
-            .guide-modal {
-                max-height: 95vh;
-                padding: 16px;
-            }
-            .step-list {
-                gap: 10px;
-                margin: 12px 0;
-            }
-            .step-item {
-                padding: 10px 12px;
-            }
-            .guide-header {
-                margin-bottom: 12px;
-            }
-            .guide-header .icon {
-                font-size: 2rem;
-                margin-bottom: 4px;
-            }
-            .chrome-sim {
-                padding: 10px;
-                margin: 10px 0;
-            }
+        .guide-modal {
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            background: linear-gradient(145deg, #0B1F36, #06111F);
+            border: 1px solid rgba(0, 191, 255, 0.15);
+            border-radius: 20px;
+            padding: 28px 24px;
+            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+            position: relative;
         }
+        .guide-close {
+            position: absolute;
+            top: 12px;
+            right: 16px;
+            background: none;
+            border: none;
+            color: #A7B5C5;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 4px 8px;
+            border-radius: 8px;
+        }
+        .guide-close:hover { color: #fff; background: rgba(255,255,255,0.05); }
+        .guide-header { text-align: center; margin-bottom: 24px; }
+        .guide-header .icon { font-size: 3rem; display: block; margin-bottom: 8px; animation: bounce 2s ease-in-out infinite; }
+        @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
+        .guide-header h2 { font-family: 'Orbitron', monospace; font-size: 1.2rem; color: #00BFFF; margin-bottom: 4px; }
+        .guide-header p { color: #A7B5C5; font-size: 0.85rem; }
 
-        /* ============================================================
-           SCROLLBAR
-           ============================================================ */
-        ::-webkit-scrollbar {
-            width: 0px;
-            height: 0px;
+        .step-list { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
+        .step-item {
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            padding: 14px 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.04);
+            transition: all 0.3s ease;
+            cursor: pointer;
         }
+        .step-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(0, 191, 255, 0.1); }
+        .step-item .step-number {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(108, 99, 255, 0.2));
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: #00BFFF;
+            flex-shrink: 0;
+        }
+        .step-item .step-content { flex: 1; }
+        .step-item .step-content .step-title { font-weight: 600; font-size: 0.9rem; color: #fff; margin-bottom: 2px; }
+        .step-item .step-content .step-desc { font-size: 0.75rem; color: #A7B5C5; line-height: 1.4; }
+        .step-item .step-content .step-desc strong { color: #FFD700; }
+        .step-item .step-icon { font-size: 1.2rem; opacity: 0.6; flex-shrink: 0; align-self: center; }
+
+        .guide-progress { display: flex; justify-content: center; gap: 8px; margin: 20px 0 16px; }
+        .guide-progress .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+            transition: all 0.3s ease;
+        }
+        .guide-progress .dot.active { background: #00BFFF; box-shadow: 0 0 15px rgba(0, 191, 255, 0.3); }
+        .guide-progress .dot.done { background: #00E676; box-shadow: 0 0 15px rgba(0, 230, 118, 0.3); }
+
+        .guide-nav { display: flex; gap: 10px; margin-top: 16px; }
+        .guide-nav button {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .guide-nav .btn-prev { background: rgba(255,255,255,0.05); color: #A7B5C5; border: 1px solid rgba(255,255,255,0.05); }
+        .guide-nav .btn-prev:hover { background: rgba(255,255,255,0.08); }
+        .guide-nav .btn-next { background: linear-gradient(135deg, #00BFFF, #6C63FF); color: #000; }
+        .guide-nav .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
+
+        ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
 </head>
 <body>
 
-    <!-- ============================================================
-       LOADING OVERLAY
-       ============================================================ -->
+    <!-- ===== LOADING OVERLAY ===== -->
     <div id="loadingOverlay">
         <div class="spinner"></div>
         <div class="text" id="loadingText">🏃 Loading Ninja Run...</div>
-        <div class="error-text" id="errorText">⚠️ Error loading game. Please try again.</div>
         <div class="progress-bar">
             <div class="fill" id="progressFill"></div>
         </div>
-        <button class="retry-btn" id="retryBtn" onclick="location.reload()">
-            🔄 Retry
-        </button>
     </div>
 
-    <!-- ============================================================
-       GAME WRAPPER
-       ============================================================ -->
+    <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
 
         <!-- ============================================================
-           WARNING BANNER - Professional Red Alert
+           WARNING BANNER - ALWAYS VISIBLE
            ============================================================ -->
         <div class="warning-banner" id="warningBanner">
             <div class="warning-content">
-                
-                <!-- Animated Warning Icon -->
                 <div class="warning-icon-wrapper">
                     <span class="warning-icon">
                         <i class="fas fa-exclamation-triangle"></i>
                     </span>
                 </div>
-
-                <!-- Warning Text -->
                 <span class="warning-text">
                     <span class="emoji">📱</span> 
                     <strong>Mobile User?</strong> 
                     Switch to <span class="highlight">Desktop Site</span> 
                     for the <strong>best experience</strong>!
                 </span>
-
-                <!-- Action Buttons -->
                 <div class="warning-actions">
                     <button class="warning-link" onclick="openGuide()">
                         <i class="fas fa-question-circle"></i> How to?
                     </button>
-                    <button class="warning-close" onclick="closeWarning()" title="Dismiss">
+                    <button class="warning-close" onclick="closeWarning()">
                         <i class="fas fa-times"></i> Dismiss
                     </button>
                 </div>
-
             </div>
         </div>
 
-        <!-- Header -->
-        <div class="game-header" id="gameHeader">
+        <!-- ===== HEADER ===== -->
+        <div class="game-header">
             <div class="title">
                 <i class="fas fa-gamepad"></i>
                 <span>Ninja Run</span>
@@ -1077,88 +610,34 @@
             </div>
             <div class="score-display">
                 <i class="fas fa-star"></i>
-                <span class="label">Score:</span>
                 <span class="score-value" id="scoreDisplay">0</span>
             </div>
             <div class="status-display">
                 <span class="dot" id="statusDot"></span>
-                <span class="status-text" id="statusText">Loading...</span>
+                <span id="statusText">Loading...</span>
             </div>
-            <!-- ===== HELP BUTTON ===== -->
-            <button class="help-btn" id="helpBtn" onclick="openGuide()" title="How to enable Desktop Site on Chrome">
+            <button class="help-btn" onclick="openGuide()">
                 <i class="fas fa-question"></i>
             </button>
         </div>
 
-        <!-- Game Frame -->
+        <!-- ===== GAME FRAME ===== -->
         <div id="gameFrame">
             <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
         </div>
     </div>
 
-    <!-- ============================================================
-       DESKTOP SITE GUIDE MODAL
-       ============================================================ -->
+    <!-- ===== GUIDE MODAL ===== -->
     <div class="guide-overlay" id="guideOverlay">
         <div class="guide-modal">
-
-            <!-- Close Button -->
-            <button class="guide-close" onclick="closeGuide()">
-                <i class="fas fa-times"></i>
-            </button>
-
-            <!-- Header -->
+            <button class="guide-close" onclick="closeGuide()"><i class="fas fa-times"></i></button>
             <div class="guide-header">
                 <span class="icon">🌐</span>
                 <h2>Enable Desktop Site</h2>
                 <p>Follow these steps to switch to desktop view on Chrome</p>
             </div>
-
-            <!-- Chrome Simulation -->
-            <div class="chrome-sim">
-                <div class="sim-header">
-                    <span class="dot red"></span>
-                    <span class="dot yellow"></span>
-                    <span class="dot green"></span>
-                    <span class="sim-url">chrome://shora-games</span>
-                </div>
-                <div class="sim-body" id="simBody">
-                    <!-- Step 1: Tap the menu -->
-                    <div class="menu-item highlight" id="step1">
-                        <span class="item-icon">⋮</span>
-                        <span class="item-text">Tap the <strong>Three Dots</strong> menu</span>
-                        <span class="item-shortcut">top-right</span>
-                    </div>
-                    <!-- Step 2: Scroll to find Desktop Site -->
-                    <div class="menu-item" id="step2">
-                        <span class="item-icon">🖥️</span>
-                        <span class="item-text">Scroll down & find <strong>"Desktop Site"</strong></span>
-                        <span class="item-shortcut">checkbox</span>
-                    </div>
-                    <!-- Step 3: Tick the checkbox -->
-                    <div class="menu-item active" id="step3">
-                        <span class="item-icon">✅</span>
-                        <span class="item-text">Tick the <strong>Desktop Site</strong> checkbox</span>
-                        <span class="checkmark"><i class="fas fa-check-circle"></i></span>
-                    </div>
-                    <!-- Step 4: Page reloads automatically -->
-                    <div class="menu-item" id="step4">
-                        <span class="item-icon">🔄</span>
-                        <span class="item-text">Page will <strong>reload</strong> in desktop view</span>
-                        <span class="item-shortcut">auto</span>
-                    </div>
-                    <!-- Step 5: Enjoy desktop view -->
-                    <div class="menu-item" id="step5" style="border-color: rgba(0, 230, 118, 0.2);">
-                        <span class="item-icon">🎮</span>
-                        <span class="item-text" style="color: #00E676;">Enjoy <strong>Desktop View</strong> on your phone!</span>
-                        <span class="item-shortcut">✨</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Step List -->
             <div class="step-list">
-                <div class="step-item" onclick="scrollToStep(0)">
+                <div class="step-item">
                     <span class="step-number">1</span>
                     <div class="step-content">
                         <div class="step-title">📍 Tap the Chrome Menu</div>
@@ -1166,8 +645,7 @@
                     </div>
                     <span class="step-icon">⋮</span>
                 </div>
-
-                <div class="step-item" onclick="scrollToStep(1)">
+                <div class="step-item">
                     <span class="step-number">2</span>
                     <div class="step-content">
                         <div class="step-title">📱 Find "Desktop Site"</div>
@@ -1175,8 +653,7 @@
                     </div>
                     <span class="step-icon">🖥️</span>
                 </div>
-
-                <div class="step-item" onclick="scrollToStep(2)">
+                <div class="step-item">
                     <span class="step-number">3</span>
                     <div class="step-content">
                         <div class="step-title">✅ Tap the Checkbox</div>
@@ -1184,8 +661,7 @@
                     </div>
                     <span class="step-icon">✅</span>
                 </div>
-
-                <div class="step-item" onclick="scrollToStep(3)">
+                <div class="step-item">
                     <span class="step-number">4</span>
                     <div class="step-content">
                         <div class="step-title">🔄 Wait for Reload</div>
@@ -1193,8 +669,7 @@
                     </div>
                     <span class="step-icon">🔄</span>
                 </div>
-
-                <div class="step-item" onclick="scrollToStep(4)" style="border-color: rgba(0, 230, 118, 0.2);">
+                <div class="step-item" style="border-color: rgba(0, 230, 118, 0.2);">
                     <span class="step-number" style="background: rgba(0, 230, 118, 0.2); border-color: rgba(0, 230, 118, 0.3); color: #00E676;">5</span>
                     <div class="step-content">
                         <div class="step-title" style="color: #00E676;">🎮 Play in Desktop View!</div>
@@ -1203,88 +678,44 @@
                     <span class="step-icon">🎮</span>
                 </div>
             </div>
-
-            <!-- Progress Dots -->
-            <div class="guide-progress" id="guideProgress">
+            <div class="guide-progress">
                 <span class="dot active"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
             </div>
-
-            <!-- Navigation -->
             <div class="guide-nav">
-                <button class="btn-prev" onclick="prevStep()">
-                    <i class="fas fa-arrow-left"></i> Back
-                </button>
-                <button class="btn-next" id="guideNextBtn" onclick="nextStep()">
-                    Next <i class="fas fa-arrow-right"></i>
-                </button>
+                <button class="btn-prev" onclick="prevStep()"><i class="fas fa-arrow-left"></i> Back</button>
+                <button class="btn-next" id="guideNextBtn" onclick="nextStep()">Next <i class="fas fa-arrow-right"></i></button>
             </div>
-
         </div>
     </div>
 
     <script>
         // ============================================================
-        // WARNING BANNER - Professional Red Alert
+        // WARNING BANNER - Always visible (no detection)
         // ============================================================
-
-        function showWarning() {
-            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
-            const hasSeenWarning = localStorage.getItem('shora_warning_seen');
-            const isDesktopMode = window.innerWidth >= 768;
-            
-            // Show warning only on mobile, if not seen before, and not in desktop mode
-            if (isMobile && !hasSeenWarning && !isDesktopMode) {
-                const banner = document.getElementById('warningBanner');
-                banner.classList.add('show');
-                
-                // Auto-hide after 10 seconds (with fade)
-                setTimeout(() => {
-                    banner.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                    banner.style.opacity = '0';
-                    banner.style.transform = 'translateY(-20px)';
-                    setTimeout(() => {
-                        banner.classList.remove('show');
-                        banner.style.opacity = '1';
-                        banner.style.transform = 'translateY(0)';
-                    }, 500);
-                }, 10000);
-            }
-        }
-
         function closeWarning() {
             const banner = document.getElementById('warningBanner');
             banner.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             banner.style.opacity = '0';
             banner.style.transform = 'translateY(-20px)';
             setTimeout(() => {
-                banner.classList.remove('show');
-                banner.style.opacity = '1';
-                banner.style.transform = 'translateY(0)';
-                localStorage.setItem('shora_warning_seen', 'true');
+                banner.style.display = 'none';
             }, 400);
         }
 
         // ============================================================
-        // GUIDE STATE
+        // GUIDE FUNCTIONS
         // ============================================================
         let currentStep = 0;
         const totalSteps = 5;
 
-        // ============================================================
-        // GUIDE FUNCTIONS
-        // ============================================================
-
         function openGuide() {
-            const overlay = document.getElementById('guideOverlay');
-            overlay.classList.add('active');
+            document.getElementById('guideOverlay').classList.add('active');
             currentStep = 0;
             updateGuide();
-            // Close warning when guide opens
-            closeWarning();
         }
 
         function closeGuide() {
@@ -1305,13 +736,7 @@
             }
         }
 
-        function scrollToStep(step) {
-            currentStep = step;
-            updateGuide();
-        }
-
         function updateGuide() {
-            // Update progress dots
             const dots = document.querySelectorAll('.guide-progress .dot');
             dots.forEach((dot, index) => {
                 dot.className = 'dot';
@@ -1319,17 +744,6 @@
                 if (index === currentStep) dot.classList.add('active');
             });
 
-            // Update step highlights in the Chrome simulation
-            const items = document.querySelectorAll('.sim-body .menu-item');
-            items.forEach((item, index) => {
-                item.classList.remove('highlight');
-                if (index === currentStep) {
-                    item.classList.add('highlight');
-                    item.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                }
-            });
-
-            // Update step items
             const stepItems = document.querySelectorAll('.step-item');
             stepItems.forEach((item, index) => {
                 item.style.borderColor = 'rgba(255,255,255,0.04)';
@@ -1338,18 +752,12 @@
                     item.style.borderColor = 'rgba(0, 191, 255, 0.3)';
                     item.style.background = 'rgba(0, 191, 255, 0.05)';
                 }
-                if (index < currentStep) {
-                    item.style.borderColor = 'rgba(0, 230, 118, 0.1)';
-                }
             });
 
-            // Update navigation buttons
             const prevBtn = document.querySelector('.btn-prev');
             const nextBtn = document.getElementById('guideNextBtn');
-
             prevBtn.style.opacity = currentStep === 0 ? '0.3' : '1';
             prevBtn.style.pointerEvents = currentStep === 0 ? 'none' : 'auto';
-
             if (currentStep === totalSteps - 1) {
                 nextBtn.textContent = '🎮 Got it!';
                 nextBtn.style.background = 'linear-gradient(135deg, #00E676, #00C853)';
@@ -1394,10 +802,6 @@
         const USER_ID = params.get('user') || 'user_001';
         const GAME_URL = 'games/ninja run/index.html';
 
-        console.log('🎮 Ninja Run Wrapper loaded');
-        console.log(`📋 Event: ${EVENT_ID}`);
-        console.log(`👤 User: ${USER_ID}`);
-
         // ============================================================
         // TOAST
         // ============================================================
@@ -1425,18 +829,14 @@
 
         function startScoreTracking() {
             if (scoreInterval) clearInterval(scoreInterval);
-            console.log('📊 Starting score tracking...');
-
             scoreInterval = setInterval(() => {
                 try {
                     const frame = document.getElementById('gameIframe');
                     if (!frame) return;
                     const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                     if (!frameDoc) return;
-                    
                     const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
                     if (!runtime) return;
-
                     let score = 0;
                     const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
@@ -1445,12 +845,10 @@
                                 score = v.data || 0;
                             }
                             if ((v.name === 'GameOver' || v.name === 'gameOver') && v.data === true && score > 0 && !scoreSubmitted) {
-                                console.log('🎯 Game Over detected');
                                 submitScore(score);
                             }
                         }
                     }
-
                     if (runtime.globalVars) {
                         for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
@@ -1459,40 +857,28 @@
                                 if (typeof val === 'number' && val > score) score = val;
                             }
                             if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
-                                if (score > 0 && !scoreSubmitted) {
-                                    console.log('🎯 Game Over detected from globalVars');
-                                    submitScore(score);
-                                }
+                                if (score > 0 && !scoreSubmitted) submitScore(score);
                             }
                         }
                     }
-
                     if (score > gameScore) {
                         gameScore = score;
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                     }
-
-                } catch (e) { /* Silent */ }
+                } catch (e) {}
             }, 300);
         }
 
-        // ============================================================
-        // SUBMIT SCORE
-        // ============================================================
         function submitScore(score) {
             if (scoreSubmitted) return;
             const finalScore = parseInt(score) || gameScore || 0;
             if (finalScore === 0) return;
-
-            console.log('🏆 Submitting score:', finalScore);
             scoreSubmitted = true;
-
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunComplete', 'true');
-
             if (window.parent && window.parent !== window) {
                 try {
                     window.parent.postMessage({
@@ -1502,20 +888,17 @@
                         userId: USER_ID,
                         timestamp: Date.now()
                     }, '*');
-                    console.log('✅ Score sent to parent');
                 } catch (e) {}
             }
-
             document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
             document.getElementById('statusText').textContent = '✅ Complete!';
             document.getElementById('statusDot').className = 'dot complete';
-
             showToast(`🏆 Score: ${finalScore} points!`, 'success');
             setTimeout(() => window.close(), 3000);
         }
 
         // ============================================================
-        // INJECT BRIDGE INTO GAME
+        // INJECT BRIDGE
         // ============================================================
         function injectBridge() {
             try {
@@ -1523,7 +906,6 @@
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return;
                 if (frameDoc.getElementById('ninjaBridgeScript')) return;
-
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
@@ -1531,7 +913,6 @@
                     (function() {
                         console.log('🏃 Ninja Run Bridge loaded');
                         let gameScore = 0, scoreSubmitted = false, runtime = null, scoreInterval = null;
-
                         function startScoreTracking() {
                             if (scoreInterval) clearInterval(scoreInterval);
                             scoreInterval = setInterval(() => {
@@ -1572,7 +953,6 @@
                                 } catch(e) {}
                             }, 300);
                         }
-
                         function submitScore(score) {
                             if (scoreSubmitted) return;
                             const finalScore = parseInt(score) || gameScore || 0;
@@ -1599,7 +979,6 @@
                             document.body.appendChild(overlay);
                             setTimeout(() => window.close(), 4000);
                         }
-
                         function waitForRuntime() {
                             let attempts = 0;
                             const checkRuntime = setInterval(() => {
@@ -1626,21 +1005,17 @@
                                 }
                             }, 500);
                         }
-
                         window.__ninjaDebug = {
                             score: () => gameScore,
                             status: () => ({ score: gameScore, submitted: scoreSubmitted, runtime: !!runtime }),
                             submit: (s) => submitScore(s)
                         };
-
                         waitForRuntime();
                         console.log('✅ Bridge ready');
                     })();
                 `;
-
                 frameDoc.head.appendChild(script);
                 console.log('✅ Bridge injected');
-
             } catch (e) {
                 console.log('⚠️ Error injecting bridge:', e);
             }
@@ -1654,19 +1029,7 @@
             const loadingOverlay = document.getElementById('loadingOverlay');
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
-            const errorText = document.getElementById('errorText');
-            const retryBtn = document.getElementById('retryBtn');
-            const statusText = document.getElementById('statusText');
-            const statusDot = document.getElementById('statusDot');
 
-            errorText.style.display = 'none';
-            retryBtn.style.display = 'none';
-            loadingText.textContent = '🏃 Loading Ninja Run...';
-            progressFill.style.width = '0%';
-            statusText.textContent = 'Loading...';
-            statusDot.className = 'dot';
-
-            // Build game URL
             const timestamp = Date.now();
             const gameUrl = `${GAME_URL}?event=${EVENT_ID}&user=${USER_ID}&t=${timestamp}`;
             frame.src = gameUrl;
@@ -1695,8 +1058,8 @@
                             loadingText.textContent = '✅ Game Loaded!';
                             setTimeout(() => {
                                 loadingOverlay.classList.add('hidden');
-                                statusText.textContent = 'Playing...';
-                                statusDot.className = 'dot';
+                                document.getElementById('statusText').textContent = 'Playing...';
+                                document.getElementById('statusDot').className = 'dot';
                             }, 400);
                             setTimeout(() => injectBridge(), 1500);
                             setTimeout(() => startScoreTracking(), 2000);
@@ -1709,11 +1072,7 @@
                 if (loadAttempts >= maxAttempts) {
                     clearInterval(progressInterval);
                     clearInterval(loadCheck);
-                    errorText.style.display = 'block';
-                    retryBtn.style.display = 'block';
                     loadingText.textContent = '⚠️ Game taking too long to load';
-                    statusText.textContent = '⚠️ Error';
-                    statusDot.className = 'dot error';
                     showToast('⚠️ Game failed to load. Please try again.', 'error');
                 }
             }, 200);
@@ -1731,16 +1090,11 @@
         // ============================================================
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
-                const display = document.getElementById('scoreDisplay');
-                const score = event.data.score || 0;
-                display.textContent = score.toLocaleString();
-                display.className = 'score-value pulse';
-                setTimeout(() => { display.className = 'score-value'; }, 300);
-                gameScore = score;
+                document.getElementById('scoreDisplay').textContent = (event.data.score || 0).toLocaleString();
+                gameScore = event.data.score || 0;
             }
             if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
-                const display = document.getElementById('scoreDisplay');
-                display.textContent = (event.data.score || 0).toLocaleString();
+                document.getElementById('scoreDisplay').textContent = (event.data.score || 0).toLocaleString();
                 document.getElementById('statusText').textContent = '✅ Complete!';
                 document.getElementById('statusDot').className = 'dot complete';
                 submitScore(event.data.score);
@@ -1748,7 +1102,7 @@
         });
 
         // ============================================================
-        // PREVENT TOUCH SCROLL & ZOOM
+        // PREVENT SCROLL
         // ============================================================
         document.addEventListener('touchmove', function(e) {
             if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
@@ -1756,48 +1110,19 @@
             }
         }, { passive: false });
 
-        document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
-
-        // ============================================================
-        // DEBUG
-        // ============================================================
-        window.__ninjaParentDebug = {
-            getStatus: function() {
-                return {
-                    score: gameScore,
-                    submitted: scoreSubmitted,
-                    sessionScore: sessionStorage.getItem('ninjaRunScore'),
-                    liveScore: sessionStorage.getItem('ninjaRunLiveScore')
-                };
-            },
-            submitScore: function(score) {
-                window.submitScore(score);
-            },
-            openGuide: openGuide,
-            closeGuide: closeGuide,
-            showWarning: showWarning,
-            closeWarning: closeWarning
-        };
-
         // ============================================================
         // INIT
         // ============================================================
         loadGame();
 
-        // Show warning after game loads
-        setTimeout(showWarning, 3000);
-
         console.log('');
         console.log('🖥️ ===========================================');
-        console.log('🖥️ NINJA RUN - PROFESSIONAL WARNING BANNER');
+        console.log('🖥️ NINJA RUN - WARNING BANNER ACTIVE');
         console.log('🖥️ ===========================================');
-        console.log('⚠️ Professional red warning banner with animations');
+        console.log('⚠️ Red warning banner is ALWAYS visible');
         console.log('❓ Click "How to?" or "?" button for guide');
         console.log('⌨️  Press "?" to open guide');
         console.log('⌨️  Press "ESC" to close guide');
-        console.log('');
-        console.log('🔍 DEBUG: __ninjaParentDebug.openGuide()');
-        console.log('🔍 DEBUG: __ninjaParentDebug.showWarning()');
     </script>
 
 </body>
