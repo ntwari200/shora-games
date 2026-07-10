@@ -62,6 +62,113 @@
         }
 
         /* ============================================================
+           WARNING BANNER - Mobile Desktop Site Alert
+           ============================================================ */
+        .warning-banner {
+            display: none;
+            background: rgba(255, 77, 109, 0.12);
+            border-bottom: 2px solid rgba(255, 77, 109, 0.3);
+            padding: 8px 16px;
+            text-align: center;
+            flex-shrink: 0;
+            animation: slideDown 0.5s ease;
+            position: relative;
+            z-index: 101;
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .warning-banner.show {
+            display: block;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .warning-banner .warning-content {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+            font-size: clamp(0.65rem, 1.4vw, 0.85rem);
+        }
+
+        .warning-banner .warning-icon {
+            color: #FF4D6D;
+            font-size: clamp(0.8rem, 1.5vw, 1rem);
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .warning-banner .warning-text {
+            color: #FFB3B3;
+            font-weight: 500;
+        }
+
+        .warning-banner .warning-text strong {
+            color: #FF6B8A;
+        }
+
+        .warning-banner .warning-link {
+            color: #00BFFF;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            padding: 3px 12px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(0, 191, 255, 0.05);
+            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
+        }
+
+        .warning-banner .warning-link:hover {
+            background: rgba(0, 191, 255, 0.15);
+            border-color: rgba(0, 191, 255, 0.4);
+            transform: scale(1.05);
+        }
+
+        .warning-banner .warning-link i {
+            font-size: clamp(0.5rem, 1vw, 0.65rem);
+        }
+
+        .warning-banner .warning-close {
+            background: none;
+            border: none;
+            color: rgba(255, 255, 255, 0.3);
+            cursor: pointer;
+            font-size: clamp(0.7rem, 1.2vw, 0.85rem);
+            transition: all 0.3s ease;
+            padding: 2px 8px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .warning-banner .warning-close:hover {
+            color: #fff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* ============================================================
            HEADER
            ============================================================ */
         .game-header {
@@ -729,6 +836,14 @@
             .guide-header .icon {
                 font-size: 2.5rem;
             }
+            .warning-banner .warning-content {
+                font-size: 0.6rem;
+                gap: 6px;
+            }
+            .warning-banner .warning-link {
+                font-size: 0.55rem;
+                padding: 2px 10px;
+            }
         }
 
         @media (max-height: 600px) {
@@ -786,6 +901,27 @@
        GAME WRAPPER
        ============================================================ -->
     <div id="gameWrapper">
+
+        <!-- ============================================================
+           WARNING BANNER - Mobile Desktop Site Alert
+           ============================================================ -->
+        <div class="warning-banner" id="warningBanner">
+            <div class="warning-content">
+                <span class="warning-icon">
+                    <i class="fas fa-exclamation-triangle"></i>
+                </span>
+                <span class="warning-text">
+                    <strong>📱 Mobile User?</strong> For the best experience, switch to <strong>Desktop Site</strong> in your browser
+                </span>
+                <button class="warning-link" onclick="openGuide()">
+                    <i class="fas fa-question-circle"></i> How?
+                </button>
+                <button class="warning-close" onclick="closeWarning()" title="Dismiss">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
         <!-- Header -->
         <div class="game-header" id="gameHeader">
             <div class="title">
@@ -946,6 +1082,30 @@
 
     <script>
         // ============================================================
+        // WARNING BANNER
+        // ============================================================
+
+        function showWarning() {
+            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
+            const hasSeenWarning = localStorage.getItem('shora_warning_seen');
+            const isDesktopMode = window.innerWidth >= 768;
+            
+            // Show warning only on mobile, if not seen before, and not in desktop mode
+            if (isMobile && !hasSeenWarning && !isDesktopMode) {
+                document.getElementById('warningBanner').classList.add('show');
+                // Auto-hide after 8 seconds
+                setTimeout(() => {
+                    closeWarning();
+                }, 8000);
+            }
+        }
+
+        function closeWarning() {
+            document.getElementById('warningBanner').classList.remove('show');
+            localStorage.setItem('shora_warning_seen', 'true');
+        }
+
+        // ============================================================
         // GUIDE STATE
         // ============================================================
         let currentStep = 0;
@@ -960,6 +1120,8 @@
             overlay.classList.add('active');
             currentStep = 0;
             updateGuide();
+            // Close warning when guide opens
+            closeWarning();
         }
 
         function closeGuide() {
@@ -1000,7 +1162,6 @@
                 item.classList.remove('highlight');
                 if (index === currentStep) {
                     item.classList.add('highlight');
-                    // Scroll to the highlighted item
                     item.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
             });
@@ -1036,7 +1197,7 @@
         }
 
         // ============================================================
-        // KEYBOARD SHORTCUT - Press ? to open guide
+        // KEYBOARD SHORTCUTS
         // ============================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === '?' || (e.shiftKey && e.key === '/')) {
@@ -1044,7 +1205,9 @@
                 openGuide();
             }
             if (e.key === 'Escape') {
-                closeGuide();
+                if (document.getElementById('guideOverlay').classList.contains('active')) {
+                    closeGuide();
+                }
             }
             if (e.key === 'ArrowRight' || e.key === ' ') {
                 if (document.getElementById('guideOverlay').classList.contains('active')) {
@@ -1053,27 +1216,12 @@
                 }
             }
             if (e.key === 'ArrowLeft') {
-                if (document.getElementById('guideOverlay').classlist.contains('active')) {
+                if (document.getElementById('guideOverlay').classList.contains('active')) {
                     e.preventDefault();
                     prevStep();
                 }
             }
         });
-
-        // ============================================================
-        // AUTO-OPEN GUIDE ON MOBILE (First visit)
-        // ============================================================
-        function checkFirstVisit() {
-            const hasSeenGuide = localStorage.getItem('shora_guide_seen');
-            const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
-            
-            if (isMobile && !hasSeenGuide) {
-                setTimeout(() => {
-                    openGuide();
-                    localStorage.setItem('shora_guide_seen', 'true');
-                }, 3000);
-            }
-        }
 
         // ============================================================
         // CONFIG
@@ -1437,19 +1585,6 @@
         });
 
         // ============================================================
-        // KEYBOARD SHORTCUTS
-        // ============================================================
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) {
-                    closeGuide();
-                } else if (confirm('Close game and return to tournaments?')) {
-                    window.close();
-                }
-            }
-        });
-
-        // ============================================================
         // PREVENT TOUCH SCROLL & ZOOM
         // ============================================================
         document.addEventListener('touchmove', function(e) {
@@ -1476,7 +1611,9 @@
                 window.submitScore(score);
             },
             openGuide: openGuide,
-            closeGuide: closeGuide
+            closeGuide: closeGuide,
+            showWarning: showWarning,
+            closeWarning: closeWarning
         };
 
         // ============================================================
@@ -1484,18 +1621,20 @@
         // ============================================================
         loadGame();
 
-        // Check if user is on mobile and show guide
-        setTimeout(checkFirstVisit, 2000);
+        // Show warning after game loads
+        setTimeout(showWarning, 3000);
 
         console.log('');
         console.log('🖥️ ===========================================');
         console.log('🖥️ NINJA RUN - DESKTOP SITE GUIDE');
         console.log('🖥️ ===========================================');
-        console.log('❓ Click the "?" button for help');
+        console.log('⚠️ Warning banner shows on mobile');
+        console.log('❓ Click the "?" button or banner link for help');
         console.log('⌨️  Press "?" to open guide');
         console.log('⌨️  Press "ESC" to close guide');
         console.log('');
         console.log('🔍 DEBUG: __ninjaParentDebug.openGuide()');
+        console.log('🔍 DEBUG: __ninjaParentDebug.showWarning()');
     </script>
 
 </body>
