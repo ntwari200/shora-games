@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ===== ALL STYLES (same as before - keeping it concise) ===== */
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -603,7 +604,7 @@
         // ========================================
 
         import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, update, set } from "firebase/database";
+        import { getDatabase, ref, onValue, get, update, set, remove } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
         // ========================================
@@ -629,7 +630,6 @@
         let userData = { balance: 0, username: 'Player' };
         let allTournaments = [];
         let countdownIntervals = {};
-        let tournamentTimers = {};
 
         // ========================================
         // AUTH STATE
@@ -664,6 +664,21 @@
                         hasPlayedCurrentEvent: data.hasPlayedCurrentEvent || false,
                         currentEventId: data.currentEventId || null
                     };
+                    
+                    // IMPORTANT: Check if the stored event is still valid
+                    if (userData.hasPlayedCurrentEvent && userData.currentEventId) {
+                        const eventRef = ref(db, `tournaments/${userData.currentEventId}`);
+                        const eventSnapshot = await get(eventRef);
+                        if (!eventSnapshot.exists() || eventSnapshot.val().status === 'ended') {
+                            // Reset user's played status if tournament ended or doesn't exist
+                            await update(ref(db, `users/${uid}`), {
+                                hasPlayedCurrentEvent: false,
+                                currentEventId: null
+                            });
+                            userData.hasPlayedCurrentEvent = false;
+                            userData.currentEventId = null;
+                        }
+                    }
                 }
                 document.getElementById('navUsername').textContent = userData.username;
                 document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
@@ -728,7 +743,6 @@
                     players: tournament.players || {},
                     createdAt: tournament.createdAt || new Date().toISOString(),
                     updatedAt: tournament.updatedAt || new Date().toISOString(),
-                    // Calculate tournament status based on time
                     startTime: tournament.startTime || new Date().toISOString(),
                     endTime: tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString()
                 });
@@ -834,34 +848,34 @@
                 const maxPlayers = tournament.maxPlayers || 50;
                 const progress = (playerCount / maxPlayers) * 100;
                 
-                // Calculate time remaining for upcoming
                 let timeRemaining = null;
                 let countdownDisplay = '';
                 
                 if (isSoon) {
-                    // For upcoming: countdown to start time
                     const startTime = tournament.startTime || new Date(Date.now() + 3600000).toISOString();
                     timeRemaining = getTimeRemaining(startTime);
                     countdownDisplay = formatCountdown(timeRemaining, timeRemaining.days > 0);
                 } else if (isLive) {
-                    // For live: countdown to end time
                     const endTime = tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
                     timeRemaining = getTimeRemaining(endTime);
                     countdownDisplay = formatCountdown(timeRemaining, false);
                 }
                 
-                // Get status display
                 const statusDisplay = getStatusDisplay(tournament.status, isLocked, timeRemaining);
                 
-                // Check if user has joined
+                // CRITICAL FIX: Check if user has joined THIS tournament
                 const userHasJoined = currentUser && tournament.players && tournament.players[currentUser.uid];
-                const userHasPlayed = userData.hasPlayedCurrentEvent;
+                // Check if user has played THIS tournament
+                const userHasPlayedThisTournament = currentUser && tournament.players && 
+                    tournament.players[currentUser.uid] && 
+                    tournament.players[currentUser.uid].hasPlayed === true;
+                
                 const isFull = playerCount >= maxPlayers;
                 
-                // Determine button
                 let buttonHtml = '';
                 
                 if (isEnded) {
+                    // For ended tournaments, show view rankings button
                     buttonHtml = `
                         <button class="btn btn-card-view" onclick="viewTournamentDetails('${tournament.id}')">
                             <i class="fas fa-trophy"></i> View Rankings
@@ -874,13 +888,15 @@
                         </button>
                     `;
                 } else if (isLive && !isLocked) {
-                    if (userHasPlayed) {
+                    if (userHasPlayedThisTournament) {
+                        // User already played THIS tournament
                         buttonHtml = `
                             <button class="btn btn-card-blocked" disabled>
                                 <i class="fas fa-ban"></i> Already Played
                             </button>
                         `;
                     } else if (userHasJoined) {
+                        // User joined but hasn't played yet
                         buttonHtml = `
                             <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
                                 <i class="fas fa-play"></i> Play Now
@@ -900,7 +916,6 @@
                         `;
                     }
                 } else if (isSoon) {
-                    // Show waiting button with countdown
                     buttonHtml = `
                         <button class="btn btn-card-waiting" disabled>
                             <i class="fas fa-clock"></i> ${countdownDisplay || 'Coming Soon'}
@@ -908,7 +923,6 @@
                     `;
                 }
 
-                // Lock badge
                 let lockBadgeHtml = '';
                 if (isLocked && !isEnded) {
                     lockBadgeHtml = `<span class="card-lock-badge">🔒 Locked</span>`;
@@ -916,7 +930,6 @@
                     lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
                 }
 
-                // Image
                 const imageHtml = tournament.image ? 
                     `<img src="${tournament.image}" alt="${tournament.name}" onerror="this.style.display='none';this.parentElement.querySelector('.placeholder-icon').style.display='flex';">` :
                     '';
@@ -929,7 +942,6 @@
                             <span class="card-status-badge ${statusDisplay.class}">${statusDisplay.text}</span>
                             ${lockBadgeHtml}
                             
-                            <!-- Countdown Overlay -->
                             ${(isLive || isSoon) ? `
                             <div class="card-countdown">
                                 <span class="countdown-label">
@@ -987,7 +999,6 @@
                 `;
             }).join('');
 
-            // Start countdown timers for each tournament
             tournaments.forEach(t => {
                 if (t.status === 'live' || t.status === 'soon' || t.status === 'upcoming') {
                     startCountdown(t);
@@ -1002,7 +1013,6 @@
         function startCountdown(tournament) {
             const timerId = tournament.id;
             
-            // Clear existing interval
             if (countdownIntervals[timerId]) {
                 clearInterval(countdownIntervals[timerId]);
             }
@@ -1010,7 +1020,6 @@
             const isLive = tournament.status === 'live';
             const isSoon = tournament.status === 'soon' || tournament.status === 'upcoming';
             
-            // Determine target time
             let targetTime;
             if (isLive) {
                 targetTime = tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
@@ -1020,13 +1029,11 @@
                 return;
             }
             
-            // Update countdown every second
-            countdownIntervals[timerId] = setInterval(() => {
+            countdownIntervals[timerId] = setInterval(async () => {
                 const timeRemaining = getTimeRemaining(targetTime);
                 const timerElement = document.querySelector(`[data-timer="${timerId}"]`);
                 
                 if (!timerElement) {
-                    // Timer element removed, cleanup
                     clearInterval(countdownIntervals[timerId]);
                     return;
                 }
@@ -1034,46 +1041,73 @@
                 if (timeRemaining.total <= 0) {
                     clearInterval(countdownIntervals[timerId]);
                     
-                    // Update tournament status
                     if (isSoon) {
                         // Upcoming -> Live
-                        update(ref(db, `tournaments/${timerId}`), { 
+                        await update(ref(db, `tournaments/${timerId}`), { 
                             status: 'live',
                             startTime: new Date().toISOString(),
                             endTime: new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString()
                         });
-                        // Also update shora-games path
-                        update(ref(db, `shora-games/tournaments/${timerId}`), { 
+                        await update(ref(db, `shora-games/tournaments/${timerId}`), { 
                             status: 'live',
                             startTime: new Date().toISOString(),
                             endTime: new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString()
                         });
                         showToast(`🏆 ${tournament.name} is now LIVE!`, 'success');
                     } else if (isLive) {
-                        // Live -> Ended
-                        update(ref(db, `tournaments/${timerId}`), { 
-                            status: 'ended'
-                        });
-                        update(ref(db, `shora-games/tournaments/${timerId}`), { 
-                            status: 'ended'
-                        });
-                        showToast(`⏰ ${tournament.name} has ended!`, 'info');
+                        // CRITICAL FIX: When tournament ends, DELETE ALL PLAYER DATA
+                        const playersRef = ref(db, `tournaments/${timerId}/players`);
+                        
+                        try {
+                            // Delete all players data
+                            await remove(playersRef);
+                            
+                            // Reset tournament current players count
+                            await update(ref(db, `tournaments/${timerId}`), { 
+                                status: 'ended',
+                                currentPlayers: 0,
+                                prizePool: tournament.entryFee || 500,
+                                updatedAt: new Date().toISOString()
+                            });
+                            await update(ref(db, `shora-games/tournaments/${timerId}`), { 
+                                status: 'ended',
+                                currentPlayers: 0,
+                                prizePool: tournament.entryFee || 500,
+                                updatedAt: new Date().toISOString()
+                            });
+                            
+                            // Reset ALL users who played this tournament
+                            const usersRef = ref(db, 'users');
+                            const usersSnapshot = await get(usersRef);
+                            if (usersSnapshot.exists()) {
+                                const users = usersSnapshot.val();
+                                for (const [uid, user] of Object.entries(users)) {
+                                    if (user.currentEventId === timerId || user.hasPlayedCurrentEvent === true) {
+                                        await update(ref(db, `users/${uid}`), {
+                                            hasPlayedCurrentEvent: false,
+                                            currentEventId: null
+                                        });
+                                    }
+                                }
+                            }
+                            
+                            showToast(`⏰ ${tournament.name} has ended! Data cleared for new round.`, 'info');
+                        } catch (error) {
+                            console.error('Error clearing tournament data:', error);
+                        }
                     }
                     
                     timerElement.textContent = isLive ? '00:00' : 'LIVE!';
                     timerElement.className = 'countdown-timer live-text';
                     
-                    // Reload tournaments
                     loadTournaments();
                     return;
                 }
                 
-                // Update display
                 if (isSoon) {
                     const display = formatCountdown(timeRemaining, timeRemaining.days > 0);
                     timerElement.textContent = display;
                     
-                    // Update status badge to show countdown
                     const card = timerElement.closest('.tournament-card');
                     if (card) {
                         const badge = card.querySelector('.card-status-badge');
@@ -1086,11 +1120,9 @@
                         }
                     }
                 } else if (isLive) {
-                    // Show minutes:seconds for live events
                     const display = formatCountdown(timeRemaining, false);
                     timerElement.textContent = display;
                     
-                    // Add urgent class when less than 5 minutes
                     if (timeRemaining.total < 300000) {
                         timerElement.className = 'countdown-timer urgent';
                     } else {
@@ -1209,7 +1241,9 @@
                 return;
             }
             
-            if (userData.hasPlayedCurrentEvent) {
+            // Check if user already played THIS tournament
+            if (tournament.players && tournament.players[currentUser.uid] && 
+                tournament.players[currentUser.uid].hasPlayed === true) {
                 showToast('❌ You already played in this tournament!', 'error');
                 return;
             }
@@ -1225,7 +1259,8 @@
             }
             
             await update(ref(db, `users/${currentUser.uid}`), {
-                hasPlayedCurrentEvent: true
+                hasPlayedCurrentEvent: true,
+                currentEventId: tournamentId
             });
             
             await update(ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`), {
@@ -1286,7 +1321,8 @@
         async function updateUserPlayed(tournamentId, userId, score) {
             try {
                 await update(ref(db, `users/${userId}`), {
-                    hasPlayedCurrentEvent: true
+                    hasPlayedCurrentEvent: true,
+                    currentEventId: tournamentId
                 });
                 
                 await update(ref(db, `tournaments/${tournamentId}/players/${userId}`), {
@@ -1300,6 +1336,7 @@
                 });
                 
                 userData.hasPlayedCurrentEvent = true;
+                userData.currentEventId = tournamentId;
                 updateUI();
                 showToast(`✅ Score: ${score} points submitted!`, 'success');
                 loadTournaments();
@@ -1394,13 +1431,11 @@
         // CONSOLE
         // ========================================
 
-        console.log('%c🏆 SHORA GAMES - PROFESSIONAL TOURNAMENTS', 'color: #FFD700; font-size: 20px; font-weight: bold;');
-        console.log('%c⏱️ Dynamic Countdown System Active', 'color: #00BFFF; font-size: 14px;');
-        console.log('%c🔄 Auto-status switching (Upcoming → Live → Ended)', 'color: #00E676;');
-        console.log('%c📊 Real-time player tracking', 'color: #FFC857;');
-        console.log('%c🎯 Live/Upcoming/Ended status with countdowns', 'color: #A7B5C5;');
+        console.log('%c🏆 SHORA GAMES - TOURNAMENTS WITH AUTO-RESET', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%c🔄 When tournament ends, ALL player data is DELETED automatically', 'color: #FF6B6B; font-size: 14px; font-weight: bold;');
+        console.log('%c✅ Users can join and play again when tournament restarts', 'color: #00E676; font-size: 14px;');
+        console.log('%c📊 Real-time player tracking with auto-cleanup', 'color: #FFC857;');
         
-        // Make functions available globally
         window.joinTournament = joinTournament;
         window.playGame = playGame;
         window.viewTournamentDetails = viewTournamentDetails;
