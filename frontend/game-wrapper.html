@@ -580,6 +580,7 @@
             // DEBUG HELPERS
             // ========================================
             
+            // Expose debug to both iframe and parent
             window.__ninjaDebug = {
                 score: () => gameScore,
                 status: () => ({
@@ -591,6 +592,24 @@
                 submit: (s) => window.ninjaRunComplete(s)
             };
             
+            // Also expose to parent window via postMessage
+            window.addEventListener('message', function(event) {
+                if (event.data && event.data.type === 'GET_NINJA_DEBUG') {
+                    event.source.postMessage({
+                        type: 'NINJA_DEBUG_RESPONSE',
+                        data: {
+                            score: gameScore,
+                            submitted: scoreSubmitted,
+                            started: gameStarted,
+                            runtime: !!runtime
+                        }
+                    }, '*');
+                }
+                if (event.data && event.data.type === 'NINJA_SUBMIT_SCORE') {
+                    window.ninjaRunComplete(event.data.score);
+                }
+            });
+            
             // ========================================
             // INIT
             // ========================================
@@ -598,7 +617,7 @@
             console.log('🚀 Embedded Ninja Run Bridge initializing...');
             waitForRuntime();
             console.log('✅ Embedded bridge ready');
-            console.log('📊 Type __ninjaDebug.status() for status');
+            console.log('📊 Type __ninjaDebug.status() in the GAME CONSOLE (not parent)');
         })();
         `;
 
@@ -632,11 +651,78 @@
                 frameDoc.head.appendChild(script);
                 console.log('✅ Bridge injected successfully (embedded)');
                 
+                // Also inject a small helper to bridge debug to parent
+                const debugHelper = frameDoc.createElement('script');
+                debugHelper.textContent = `
+                    // Helper to allow parent to access debug
+                    window.addEventListener('message', function(e) {
+                        if (e.data && e.data.type === 'GET_DEBUG_FROM_PARENT') {
+                            if (window.__ninjaDebug) {
+                                e.source.postMessage({
+                                    type: 'DEBUG_FROM_CHILD',
+                                    data: window.__ninjaDebug.status()
+                                }, '*');
+                            }
+                        }
+                    });
+                    console.log('🔍 Debug helper ready');
+                `;
+                frameDoc.head.appendChild(debugHelper);
+                
             } catch (e) {
                 console.log('⚠️ Error injecting bridge:', e);
                 startFallbackMonitor();
             }
         }
+
+        // ========================================
+        // PARENT DEBUG HELPER
+        // ========================================
+
+        window.__ninjaParentDebug = {
+            getStatus: function() {
+                return new Promise((resolve) => {
+                    const frame = document.getElementById('gameFrame');
+                    if (!frame) {
+                        resolve({ error: 'Frame not found' });
+                        return;
+                    }
+                    
+                    // Check session storage first
+                    const played = sessionStorage.getItem('ninjaRunPlayed');
+                    const score = sessionStorage.getItem('ninjaRunScore');
+                    const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
+                    
+                    resolve({
+                        sessionStorage: {
+                            played: played,
+                            score: score,
+                            liveScore: liveScore
+                        },
+                        displayScore: document.getElementById('scoreDisplay')?.textContent || '0',
+                        statusText: document.getElementById('statusText')?.textContent || 'Unknown'
+                    });
+                });
+            },
+            submitScore: function(score) {
+                sessionStorage.setItem('ninjaRunScore', score.toString());
+                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                sessionStorage.setItem('ninjaRunFinalScore', score.toString());
+                sessionStorage.setItem('ninjaRunComplete', 'true');
+                
+                // Try to send to iframe
+                const frame = document.getElementById('gameFrame');
+                if (frame && frame.contentWindow) {
+                    frame.contentWindow.postMessage({
+                        type: 'NINJA_SUBMIT_SCORE',
+                        score: score
+                    }, '*');
+                }
+                
+                console.log(`📤 Manually submitted score: ${score}`);
+                showToast(`✅ Score ${score} submitted!`, 'success');
+            }
+        };
 
         // ========================================
         // TOAST
@@ -845,6 +931,13 @@
         console.log('🖥️ Desktop mode is FORCED');
         console.log('✅ Press "ESC" to close game');
         console.log('📄 Bridge is EMBEDDED - no external file needed');
+        console.log('');
+        console.log('🔍 DEBUG COMMANDS (in parent console):');
+        console.log('  __ninjaParentDebug.getStatus()  - Check game status');
+        console.log('  __ninjaParentDebug.submitScore(1000)  - Manually submit score');
+        console.log('');
+        console.log('🔍 To debug from game console:');
+        console.log('  Switch to iframe console and type: __ninjaDebug.status()');
     </script>
 
 </body>
