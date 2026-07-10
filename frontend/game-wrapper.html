@@ -23,16 +23,6 @@
             position: fixed;
             width: 100%;
             height: 100%;
-            /* FORCE DESKTOP MODE - prevents mobile zoom */
-            min-width: 1024px;
-            min-height: 768px;
-        }
-
-        @media (max-width: 1024px) {
-            body {
-                min-width: unset;
-                min-height: unset;
-            }
         }
 
         #gameContainer {
@@ -452,10 +442,9 @@
         const USER_ID = params.get('user') || 'user_001';
         const GAME_URL = 'games/ninja run/index.html';
 
-        console.log('🎮 Ninja Run Wrapper loaded (DESKTOP MODE FORCED)');
+        console.log('🎮 Ninja Run Wrapper loaded');
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
-        console.log('🖥️ Desktop mode: ALWAYS ON');
 
         // ========================================
         // TOAST
@@ -479,7 +468,7 @@
         }
 
         // ========================================
-        // INJECT BRIDGE - CORRECTED PATH
+        // INJECT BRIDGE - CORRECT PATH
         // ========================================
 
         function injectBridge() {
@@ -499,42 +488,45 @@
                     return;
                 }
                 
-                // Create script element with CORRECT path
+                // ========================================
+                // FIX: Use correct path - /js/ninja-run-bridge.js
+                // NOT /games/js/ or ../js/
+                // ========================================
+                
                 const bridgeScript = frameDoc.createElement('script');
                 bridgeScript.id = 'ninjaBridgeScript';
                 bridgeScript.type = 'text/javascript';
                 
-                // OPTION 1: Try to load from js folder (relative to game)
-                bridgeScript.src = '../js/ninja-run-bridge.js';
+                // CORRECT PATH: From root /js/ninja-run-bridge.js
+                // Since the game is in /games/ninja run/, we need to go up two levels
+                // ../../js/ninja-run-bridge.js
+                bridgeScript.src = '../../js/ninja-run-bridge.js';
                 
                 bridgeScript.onload = function() {
-                    console.log('✅ Bridge script injected successfully');
+                    console.log('✅ Bridge script injected successfully from ../../js/');
                 };
                 
                 bridgeScript.onerror = function() {
-                    console.log('⚠️ Bridge script failed to load from ../js/, trying alternative path...');
-                    // OPTION 2: Try absolute path
-                    bridgeScript.src = '/js/ninja-run-bridge.js';
+                    console.log('⚠️ Bridge script failed from ../../js/, trying absolute path...');
                     
-                    // Re-append with new src
-                    const newScript = frameDoc.createElement('script');
-                    newScript.id = 'ninjaBridgeScript';
-                    newScript.type = 'text/javascript';
-                    newScript.src = '/js/ninja-run-bridge.js';
-                    newScript.onload = function() {
+                    // Try absolute path from root
+                    const absoluteScript = frameDoc.createElement('script');
+                    absoluteScript.id = 'ninjaBridgeScript';
+                    absoluteScript.type = 'text/javascript';
+                    absoluteScript.src = '/js/ninja-run-bridge.js';
+                    absoluteScript.onload = function() {
                         console.log('✅ Bridge script loaded from /js/');
                     };
-                    newScript.onerror = function() {
-                        console.log('⚠️ Bridge script failed from /js/, using fallback');
-                        // OPTION 3: Inject inline bridge code
+                    absoluteScript.onerror = function() {
+                        console.log('⚠️ Bridge script failed from both paths, using inline fallback');
                         injectInlineBridge(frameDoc);
                     };
-                    frameDoc.head.appendChild(newScript);
+                    frameDoc.head.appendChild(absoluteScript);
                 };
                 
                 // Append to iframe head
                 frameDoc.head.appendChild(bridgeScript);
-                console.log('📄 Bridge script injection attempted');
+                console.log('📄 Bridge script injection attempted with path: ../../js/ninja-run-bridge.js');
                 
             } catch (e) {
                 console.log('⚠️ Error injecting bridge:', e);
@@ -543,7 +535,7 @@
         }
 
         // ========================================
-        // INLINE BRIDGE (Fallback)
+        // INLINE BRIDGE (Final Fallback)
         // ========================================
 
         function injectInlineBridge(frameDoc) {
@@ -563,6 +555,7 @@
                     let gameScore = 0;
                     let scoreSubmitted = false;
                     let runtime = null;
+                    let checkInterval = null;
                     
                     // Score handling
                     window.ninjaRunComplete = function(score) {
@@ -575,6 +568,7 @@
                         sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                         sessionStorage.setItem('ninjaRunPlayed', 'true');
                         sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                        sessionStorage.setItem('ninjaRunComplete', 'true');
                         
                         // Send to parent
                         if (window.parent && window.parent !== window) {
@@ -636,10 +630,33 @@
                                         } catch(e) {}
                                     };
                                     console.log('✅ Game hooked');
+                                    startFallbackMonitor();
                                 }
                             } catch(e) {}
-                            if (attempts > 50) clearInterval(checkRuntime);
+                            if (attempts > 50) {
+                                clearInterval(checkRuntime);
+                                console.log('⚠️ Runtime not found, using fallback');
+                                startFallbackMonitor();
+                            }
                         }, 500);
+                    }
+                    
+                    function startFallbackMonitor() {
+                        console.log('📊 Fallback monitor started');
+                        checkInterval = setInterval(() => {
+                            try {
+                                const played = sessionStorage.getItem('ninjaRunPlayed');
+                                const score = sessionStorage.getItem('ninjaRunScore');
+                                if (played === 'true' && score !== null && !scoreSubmitted) {
+                                    clearInterval(checkInterval);
+                                    window.ninjaRunComplete(parseInt(score));
+                                }
+                            } catch(e) {}
+                        }, 1000);
+                        
+                        setTimeout(() => {
+                            if (checkInterval) clearInterval(checkInterval);
+                        }, 120000);
                     }
                     
                     waitForRuntime();
@@ -717,8 +734,8 @@
                                 statusDot.className = 'dot';
                             }, 400);
                             
-                            // Inject bridge AFTER game loads
-                            setTimeout(() => injectBridge(), 1000);
+                            // Inject bridge AFTER game loads with delay
+                            setTimeout(() => injectBridge(), 1500);
                             return;
                         }
                     }
@@ -751,11 +768,11 @@
         }
 
         // ========================================
-        // FALLBACK MONITOR
+        // FALLBACK MONITOR (for parent)
         // ========================================
 
         function startFallbackMonitor() {
-            console.log('📊 Starting fallback monitor');
+            console.log('📊 Starting parent fallback monitor');
             
             const checkInterval = setInterval(() => {
                 try {
@@ -850,9 +867,9 @@
         // Start loading
         loadGame();
 
-        console.log('🖥️ Desktop mode is FORCED - No mobile toggle available');
+        console.log('🖥️ Desktop mode is FORCED');
         console.log('✅ Press "ESC" to close game');
-        console.log('📄 Bridge will be injected after game loads');
+        console.log('📄 Bridge path: ../../js/ninja-run-bridge.js');
     </script>
 
 </body>
