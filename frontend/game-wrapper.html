@@ -2,27 +2,68 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ninja Run - Shora Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ============================================================
+           FORCE DESKTOP MODE - OVERRIDE ALL MOBILE SETTINGS
+           ============================================================ */
         
+        /* Reset everything to desktop */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        /* Force desktop viewport - prevents mobile zoom/resize */
+        html {
+            min-width: 1024px;
+            min-height: 768px;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            position: fixed;
+            top: 0;
+            left: 0;
+        }
+
         body {
             background: #06111F;
             color: #fff;
             font-family: 'Inter', sans-serif;
-            height: 100vh;
+            min-width: 1024px;
+            min-height: 768px;
+            width: 100%;
+            height: 100%;
             overflow: hidden;
             margin: 0;
             padding: 0;
             position: fixed;
-            width: 100%;
-            height: 100%;
+            top: 0;
+            left: 0;
+            /* Prevent any mobile scaling */
+            -webkit-text-size-adjust: 100%;
+            -ms-text-size-adjust: 100%;
+            -moz-text-size-adjust: 100%;
+            transform: none !important;
+            -webkit-transform: none !important;
         }
 
+        /* Block any mobile zoom/scale */
+        * {
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
+            touch-action: manipulation;
+        }
+
+        /* ============================================================
+           DESKTOP CONTAINER - Fixed size
+           ============================================================ */
         #gameContainer {
             width: 100%;
             height: 100vh;
@@ -34,22 +75,27 @@
             margin: 0 auto;
             background: #000;
             box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+            min-height: 768px;
+            min-width: 1024px;
         }
 
+        /* ============================================================
+           HEADER - Desktop style
+           ============================================================ */
         .game-header {
             position: relative;
             z-index: 100;
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(16px);
-            padding: 8px 20px;
+            padding: 10px 24px;
             display: flex;
             justify-content: space-between;
             align-items: center;
             border-bottom: 1px solid rgba(0, 191, 255, 0.1);
             flex-shrink: 0;
-            min-height: 56px;
-            gap: 12px;
-            flex-wrap: wrap;
+            min-height: 60px;
+            gap: 16px;
+            flex-wrap: nowrap;
             max-width: 1280px;
             margin: 0 auto;
             width: 100%;
@@ -59,16 +105,20 @@
 
         .game-header .title {
             font-family: 'Orbitron', monospace;
-            font-size: 1rem;
+            font-size: 1.1rem;
             color: #00BFFF;
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 12px;
             white-space: nowrap;
+            flex-shrink: 0;
         }
-        .game-header .title i { color: #FFD700; font-size: 1rem; }
+        .game-header .title i {
+            color: #FFD700;
+            font-size: 1.1rem;
+        }
         .game-header .title .sub {
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #A7B5C5;
             font-family: 'Inter', sans-serif;
             font-weight: 300;
@@ -77,20 +127,24 @@
         .score-display {
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
             background: rgba(0, 191, 255, 0.08);
             border: 1px solid rgba(0, 191, 255, 0.15);
             border-radius: 20px;
-            padding: 4px 16px;
+            padding: 6px 20px;
             font-family: 'Orbitron', monospace;
-            font-size: 0.95rem;
+            font-size: 1rem;
             color: #FFD700;
             white-space: nowrap;
+            flex-shrink: 0;
         }
-        .score-display i { color: #FFD700; font-size: 0.8rem; }
+        .score-display i {
+            color: #FFD700;
+            font-size: 0.9rem;
+        }
         .score-display .score-value {
             font-weight: 700;
-            min-width: 40px;
+            min-width: 50px;
             text-align: center;
             color: #00E676;
             transition: all 0.3s ease;
@@ -100,34 +154,57 @@
         }
 
         @keyframes scorePulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.3); color: #FFD700; }
+            0%,
+            100% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.3);
+                color: #FFD700;
+            }
         }
 
         .status-display {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-size: 0.7rem;
+            gap: 10px;
+            font-size: 0.75rem;
             color: #A7B5C5;
             white-space: nowrap;
+            flex-shrink: 0;
         }
         .status-display .dot {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
             background: #00E676;
             animation: pulse 1.5s infinite;
             display: inline-block;
         }
-        .status-display .dot.complete { background: #FFD700; animation: none; }
-        .status-display .dot.error { background: #FF4D6D; animation: none; }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
+        .status-display .dot.complete {
+            background: #FFD700;
+            animation: none;
+        }
+        .status-display .dot.error {
+            background: #FF4D6D;
+            animation: none;
         }
 
+        @keyframes pulse {
+            0%,
+            100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.3;
+                transform: scale(0.8);
+            }
+        }
+
+        /* ============================================================
+           GAME FRAME - Desktop size
+           ============================================================ */
         #gameFrame {
             flex: 1;
             width: 100%;
@@ -136,9 +213,13 @@
             min-height: 0;
             max-width: 1280px;
             margin: 0 auto;
-            height: calc(100vh - 56px);
+            height: calc(100vh - 60px);
+            min-height: 708px;
         }
 
+        /* ============================================================
+           LOADING OVERLAY - Desktop style
+           ============================================================ */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -151,37 +232,43 @@
             transition: opacity 0.5s ease;
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(20px);
+            min-width: 1024px;
+            min-height: 768px;
         }
         #loadingOverlay.hidden {
             opacity: 0;
             pointer-events: none;
         }
         #loadingOverlay .spinner {
-            width: 50px;
-            height: 50px;
-            border: 3px solid rgba(0, 191, 255, 0.1);
+            width: 60px;
+            height: 60px;
+            border: 4px solid rgba(0, 191, 255, 0.1);
             border-top-color: #00BFFF;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
         #loadingOverlay .text {
-            margin-top: 20px;
+            margin-top: 24px;
             color: #A7B5C5;
-            font-size: 0.9rem;
+            font-size: 1rem;
             font-family: 'Orbitron', monospace;
         }
         #loadingOverlay .error-text {
             color: #FF4D6D;
-            margin-top: 10px;
-            font-size: 0.8rem;
+            margin-top: 12px;
+            font-size: 0.9rem;
             display: none;
         }
         #loadingOverlay .progress-bar {
-            margin-top: 16px;
-            width: 200px;
+            margin-top: 20px;
+            width: 250px;
             height: 4px;
-            background: rgba(255,255,255,0.05);
+            background: rgba(255, 255, 255, 0.05);
             border-radius: 2px;
             overflow: hidden;
         }
@@ -193,16 +280,16 @@
             transition: width 0.3s ease;
         }
         #loadingOverlay .retry-btn {
-            margin-top: 20px;
+            margin-top: 24px;
             background: linear-gradient(135deg, #00BFFF, #6C63FF);
             border: none;
             color: #000;
-            padding: 10px 30px;
+            padding: 12px 36px;
             border-radius: 10px;
             font-family: 'Orbitron', monospace;
             font-weight: 700;
             cursor: pointer;
-            font-size: 0.8rem;
+            font-size: 0.9rem;
             display: none;
             transition: all 0.3s ease;
         }
@@ -211,72 +298,135 @@
             box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
         }
 
+        /* ============================================================
+           TOAST - Desktop style
+           ============================================================ */
         .toast-cyber {
             position: fixed;
-            bottom: 30px;
+            bottom: 40px;
             left: 50%;
             transform: translateX(-50%);
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 230, 118, 0.3);
             border-radius: 50px;
-            padding: 12px 24px;
+            padding: 14px 28px;
             color: #00E676;
-            font-size: 0.9rem;
+            font-size: 1rem;
             z-index: 9999;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             max-width: 90%;
             text-align: center;
             animation: slideUp 0.3s ease;
+            white-space: nowrap;
         }
         .toast-cyber.error {
             border-color: rgba(255, 77, 109, 0.3);
             color: #FF4D6D;
         }
         @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        @media (max-width: 1280px) {
-            #gameContainer, .game-header, #gameFrame { max-width: 100%; }
-            .game-header { border-left: none; border-right: none; }
-        }
-
-        @media (max-width: 768px) {
-            .game-header {
-                padding: 6px 12px;
-                min-height: 48px;
-                gap: 8px;
-                flex-wrap: wrap;
-                justify-content: center;
+            from {
+                opacity: 0;
+                transform: translateX(-50%) translateY(20px);
             }
-            .game-header .title { font-size: 0.8rem; }
-            .game-header .title .sub { font-size: 0.5rem; }
-            .score-display { font-size: 0.8rem; padding: 3px 12px; }
-            .status-display { font-size: 0.6rem; }
-            #gameFrame { height: calc(100vh - 48px); }
-            body { min-width: unset; min-height: unset; }
-        }
-
-        @media (max-width: 480px) {
-            .game-header {
-                padding: 4px 8px;
-                min-height: 42px;
-                gap: 4px;
+            to {
+                opacity: 1;
+                transform: translateX(-50%) translateY(0);
             }
-            .game-header .title { font-size: 0.7rem; }
-            .game-header .title .sub { font-size: 0.45rem; }
-            .score-display { font-size: 0.7rem; padding: 2px 10px; }
-            .status-display { font-size: 0.5rem; }
-            #gameFrame { height: calc(100vh - 42px); }
-            #loadingOverlay .spinner { width: 35px; height: 35px; }
-            #loadingOverlay .text { font-size: 0.75rem; }
-            #loadingOverlay .progress-bar { width: 140px; }
         }
 
-        ::-webkit-scrollbar { width: 0px; height: 0px; }
+        /* ============================================================
+           DESKTOP ONLY - No responsive breakpoints allowed
+           ============================================================ */
+        /* ALL breakpoints are removed - Desktop ONLY */
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar {
+            width: 0px;
+            height: 0px;
+        }
+
+        /* ============================================================
+           FORCE DESKTOP MODE OVERRIDES - Prevent any mobile scaling
+           ============================================================ */
+        
+        /* Block any viewport changes on mobile */
+        @media (max-width: 1023px) {
+            html, body {
+                min-width: 1024px !important;
+                min-height: 768px !important;
+                width: 1024px !important;
+                height: 768px !important;
+                overflow: hidden !important;
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                transform: none !important;
+                -webkit-transform: none !important;
+                zoom: 1 !important;
+                -webkit-zoom: 1 !important;
+                -moz-transform: none !important;
+                -o-transform: none !important;
+            }
+            
+            #gameContainer {
+                min-width: 1024px !important;
+                min-height: 768px !important;
+                width: 1024px !important;
+                height: 768px !important;
+                transform: none !important;
+                -webkit-transform: none !important;
+                margin: 0 auto !important;
+            }
+            
+            #gameFrame {
+                min-height: 708px !important;
+                height: 708px !important;
+            }
+            
+            .game-header {
+                min-height: 60px !important;
+                height: 60px !important;
+            }
+            
+            #loadingOverlay {
+                min-width: 1024px !important;
+                min-height: 768px !important;
+                width: 1024px !important;
+                height: 768px !important;
+            }
+        }
+
+        /* Block any zoom gestures */
+        body {
+            touch-action: none !important;
+            -webkit-touch-callout: none !important;
+            -webkit-user-select: none !important;
+            user-select: none !important;
+        }
+
+        /* Prevent double-tap zoom */
+        * {
+            touch-action: manipulation !important;
+        }
+
+        /* Force hardware acceleration */
+        #gameContainer,
+        #gameFrame,
+        .game-header {
+            -webkit-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-perspective: 1000;
+            perspective: 1000;
+        }
+
+        /* Desktop only - no mobile styles */
+        .desktop-only {
+            display: block !important;
+        }
     </style>
 </head>
 <body>
@@ -315,6 +465,63 @@
 
     <script>
         // ============================================================
+        // DESKTOP FORCE - BLOCK ANY MOBILE CHANGES
+        // ============================================================
+        
+        // Force desktop viewport
+        (function forceDesktop() {
+            // Block viewport changes
+            const metaViewport = document.querySelector('meta[name=viewport]');
+            if (metaViewport) {
+                metaViewport.content = 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+            }
+            
+            // Block device orientation changes
+            window.addEventListener('orientationchange', function(e) {
+                e.preventDefault();
+                // Force back to desktop
+                document.documentElement.style.transform = 'none';
+                document.body.style.transform = 'none';
+                document.documentElement.style.zoom = '1';
+                document.body.style.zoom = '1';
+                return false;
+            }, true);
+            
+            // Block resize events from changing layout
+            let lastWidth = window.innerWidth;
+            window.addEventListener('resize', function(e) {
+                if (window.innerWidth < 1024 || window.innerHeight < 768) {
+                    // Force back to desktop size
+                    document.documentElement.style.minWidth = '1024px';
+                    document.documentElement.style.minHeight = '768px';
+                    document.body.style.minWidth = '1024px';
+                    document.body.style.minHeight = '768px';
+                }
+            }, true);
+            
+            // Block touch events from zooming
+            document.addEventListener('touchstart', function(e) {
+                if (e.touches.length > 1) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+            
+            document.addEventListener('gesturestart', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('gesturechange', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            document.addEventListener('gestureend', function(e) {
+                e.preventDefault();
+            }, { passive: false });
+            
+            console.log('🖥️ Desktop mode FORCED - All mobile features blocked');
+        })();
+
+        // ============================================================
         // CONFIG
         // ============================================================
         const params = new URLSearchParams(window.location.search);
@@ -322,18 +529,10 @@
         const USER_ID = params.get('user') || 'user_001';
         const GAME_URL = 'games/ninja run/index.html';
 
-        console.log('🎮 Ninja Run Wrapper loaded');
+        console.log('🎮 Ninja Run Wrapper loaded (DESKTOP ONLY)');
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
-
-        // ============================================================
-        // STATE
-        // ============================================================
-        let gameScore = 0;
-        let scoreSubmitted = false;
-        let runtime = null;
-        let scoreInterval = null;
-        let gameLoaded = false;
+        console.log('🖥️ Desktop mode: FORCED - No mobile views allowed');
 
         // ============================================================
         // TOAST
@@ -350,108 +549,70 @@
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            }, 4000);
         }
 
         // ============================================================
-        // SCORE TRACKING (FROM YOUR OLD FILE)
+        // SCORE TRACKING (From working version)
         // ============================================================
+        let gameScore = 0;
+        let scoreSubmitted = false;
+        let scoreInterval = null;
+
         function startScoreTracking() {
             if (scoreInterval) clearInterval(scoreInterval);
-
             console.log('📊 Starting score tracking...');
 
             scoreInterval = setInterval(() => {
                 if (!window.gameRuntime) return;
-
                 try {
                     const rt = window.gameRuntime;
-                    
-                    // ==== METHOD 1: Check global variables (from your old file) ====
-                    const vars = rt.all_global_vars || [];
-                    let score = 0,
-                        coins = 0,
-                        distance = 0;
+                    let score = 0;
 
+                    // Check global variables
+                    const vars = rt.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
                             if (v.name === 'Score' || v.name === 'score') {
                                 score = v.data || 0;
                             }
-                            if (v.name === 'Coins' || v.name === 'coins') {
-                                coins = v.data || 0;
-                            }
-                            if (v.name === 'Distances' || v.name === 'distance' || v.name === 'Distance') {
-                                distance = v.data || 0;
-                            }
-                        }
-                    }
-
-                    // ==== METHOD 2: Check runtime globalVars ====
-                    if (rt.globalVars) {
-                        const gv = rt.globalVars;
-                        for (const key in gv) {
-                            const lowerKey = key.toLowerCase();
-                            if (lowerKey.includes('score') && !lowerKey.includes('coins')) {
-                                const val = gv[key];
-                                if (typeof val === 'number' && val > score) score = val;
-                            }
-                            if (lowerKey.includes('coin')) {
-                                const val = gv[key];
-                                if (typeof val === 'number' && val > coins) coins = val;
-                            }
-                            if (lowerKey.includes('distance')) {
-                                const val = gv[key];
-                                if (typeof val === 'number' && val > distance) distance = val;
-                            }
-                            if (lowerKey === 'gameover' || lowerKey === 'game_over') {
-                                if (gv[key] === true) {
-                                    console.log('🎯 Game Over detected from globalVars');
-                                    submitScore(Math.max(score, gameScore));
+                            if (v.name === 'GameOver' || v.name === 'gameOver') {
+                                if (v.data === true && score > 0 && !scoreSubmitted) {
+                                    console.log('🎯 Game Over detected');
+                                    submitScore(score);
                                 }
                             }
                         }
                     }
 
-                    // ==== METHOD 3: Check window variables ====
-                    const windowVars = ['score', 'Score', 'playerScore', 'gameScore', 'distance', 'Distance'];
-                    for (const varName of windowVars) {
-                        if (typeof window[varName] !== 'undefined') {
-                            const val = window[varName];
-                            if (typeof val === 'number' && val > score) {
-                                score = val;
+                    // Check runtime globalVars
+                    if (rt.globalVars) {
+                        for (const key in rt.globalVars) {
+                            const lowerKey = key.toLowerCase();
+                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes(
+                                'coins')) {
+                                const val = rt.globalVars[key];
+                                if (typeof val === 'number' && val > score) score = val;
+                            }
+                            if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
+                                if (score > 0 && !scoreSubmitted) {
+                                    console.log('🎯 Game Over detected from globalVars');
+                                    submitScore(score);
+                                }
                             }
                         }
                     }
 
-                    // Update if score changed
+                    // Update score
                     if (score > gameScore) {
                         gameScore = score;
-                        console.log(`📊 Score updated: ${gameScore}`);
+                        console.log('📊 Score updated:', gameScore);
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
-                        
-                        // Store in session storage
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                     }
 
-                    // Check for game over (from your old file)
-                    if (rt.all_global_vars) {
-                        for (let v of rt.all_global_vars) {
-                            if (v && v.name && (v.name === 'GameOver' || v.name === 'gameOver')) {
-                                if (v.data === true) {
-                                    console.log('🎯 Game Over detected from all_global_vars');
-                                    submitScore(Math.max(gameScore, score));
-                                }
-                            }
-                        }
-                    }
-
-                } catch (e) {
-                    // Silent fail - prevents console spam
-                }
-            }, 300); // Check every 300ms (from your old file)
-
-            console.log('✅ Score tracking started');
+                } catch (e) { /* Silent */ }
+            }, 300);
         }
 
         // ============================================================
@@ -462,16 +623,14 @@
             const finalScore = parseInt(score) || gameScore || 0;
             if (finalScore === 0) return;
 
-            console.log(`🏆 Submitting score: ${finalScore}`);
+            console.log('🏆 Submitting score:', finalScore);
             scoreSubmitted = true;
 
-            // Store in session storage
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunComplete', 'true');
 
-            // Send to parent
             if (window.parent && window.parent !== window) {
                 try {
                     window.parent.postMessage({
@@ -481,13 +640,10 @@
                         userId: USER_ID,
                         timestamp: Date.now()
                     }, '*');
-                    console.log('✅ Score sent to parent via postMessage');
-                } catch (e) {
-                    console.log('⚠️ Could not send to parent:', e);
-                }
+                    console.log('✅ Score sent to parent');
+                } catch (e) {}
             }
 
-            // Update display
             document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
             document.getElementById('statusText').textContent = '✅ Complete!';
             document.getElementById('statusDot').className = 'dot complete';
@@ -497,68 +653,40 @@
         }
 
         // ============================================================
-        // INJECT BRIDGE (Embedded)
+        // INJECT BRIDGE
         // ============================================================
         function injectBridge() {
             try {
                 const frame = document.getElementById('gameFrame');
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                if (!frameDoc) {
-                    console.log('⚠️ Cannot access iframe document');
-                    return;
-                }
+                if (!frameDoc) return;
 
-                if (frameDoc.getElementById('ninjaBridgeScript')) {
-                    console.log('✅ Bridge already injected');
-                    return;
-                }
+                if (frameDoc.getElementById('ninjaBridgeScript')) return;
 
-                // Create script with score tracking
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
                 script.textContent = `
-                    // ============================================================
-                    // NINJA RUN BRIDGE - With Score Tracking
-                    // ============================================================
                     (function() {
                         console.log('🏃 Ninja Run Bridge loaded');
+                        let gameScore = 0, scoreSubmitted = false, runtime = null, scoreInterval = null;
 
-                        let gameScore = 0;
-                        let scoreSubmitted = false;
-                        let runtime = null;
-                        let scoreInterval = null;
-
-                        // ============================================================
-                        // SCORE TRACKING (From working version)
-                        // ============================================================
                         function startScoreTracking() {
                             if (scoreInterval) clearInterval(scoreInterval);
-                            console.log('📊 Starting score tracking...');
-
                             scoreInterval = setInterval(() => {
                                 if (!window.gameRuntime) return;
                                 try {
                                     const rt = window.gameRuntime;
                                     let score = 0;
-
-                                    // Check global variables
                                     const vars = rt.all_global_vars || [];
                                     for (let v of vars) {
                                         if (v && v.name) {
-                                            if (v.name === 'Score' || v.name === 'score') {
-                                                score = v.data || 0;
-                                            }
-                                            if (v.name === 'GameOver' || v.name === 'gameOver') {
-                                                if (v.data === true && score > 0 && !scoreSubmitted) {
-                                                    console.log('🎯 Game Over detected');
-                                                    submitScore(score);
-                                                }
+                                            if (v.name === 'Score' || v.name === 'score') score = v.data || 0;
+                                            if ((v.name === 'GameOver' || v.name === 'gameOver') && v.data === true && score > 0 && !scoreSubmitted) {
+                                                submitScore(score);
                                             }
                                         }
                                     }
-
-                                    // Check runtime globalVars
                                     if (rt.globalVars) {
                                         for (const key in rt.globalVars) {
                                             const lowerKey = key.toLowerCase();
@@ -567,50 +695,32 @@
                                                 if (typeof val === 'number' && val > score) score = val;
                                             }
                                             if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
-                                                if (score > 0 && !scoreSubmitted) {
-                                                    console.log('🎯 Game Over detected from globalVars');
-                                                    submitScore(score);
-                                                }
+                                                if (score > 0 && !scoreSubmitted) submitScore(score);
                                             }
                                         }
                                     }
-
-                                    // Update score
                                     if (score > gameScore) {
                                         gameScore = score;
-                                        console.log('📊 Score updated:', gameScore);
-                                        // Send live update
+                                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                                         if (window.parent && window.parent !== window) {
                                             try {
-                                                window.parent.postMessage({
-                                                    type: 'NINJA_RUN_SCORE',
-                                                    score: gameScore
-                                                }, '*');
+                                                window.parent.postMessage({ type: 'NINJA_RUN_SCORE', score: gameScore }, '*');
                                             } catch(e) {}
                                         }
-                                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                                     }
-
-                                } catch(e) { /* Silent */ }
+                                } catch(e) {}
                             }, 300);
                         }
 
-                        // ============================================================
-                        // SUBMIT SCORE
-                        // ============================================================
                         function submitScore(score) {
                             if (scoreSubmitted) return;
                             const finalScore = parseInt(score) || gameScore || 0;
                             if (finalScore === 0) return;
-
-                            console.log('🏆 Submitting score:', finalScore);
                             scoreSubmitted = true;
-
                             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunPlayed', 'true');
                             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunComplete', 'true');
-
                             if (window.parent && window.parent !== window) {
                                 try {
                                     window.parent.postMessage({
@@ -620,11 +730,8 @@
                                         userId: '${USER_ID}',
                                         timestamp: Date.now()
                                     }, '*');
-                                    console.log('✅ Score sent to parent');
                                 } catch(e) {}
                             }
-
-                            // Show completion
                             const overlay = document.createElement('div');
                             overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Orbitron,monospace;color:#fff;';
                             overlay.innerHTML = '<div style="background:linear-gradient(135deg,#06111F,#0B1F36);border:2px solid #00BFFF;border-radius:20px;padding:30px 40px;text-align:center;max-width:400px;"><div style="font-size:3.5rem;">🏆</div><h2 style="color:#FFD700;font-size:1.3rem;">Game Complete!</h2><div style="font-size:2.5rem;color:#00E676;font-weight:700;margin:8px 0;">' + finalScore + '</div><div style="color:#A7B5C5;">points</div><button onclick="window.close()" style="margin-top:20px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;color:#000;padding:10px 25px;border-radius:10px;font-family:Orbitron,monospace;font-weight:700;cursor:pointer;">Close</button></div>';
@@ -632,9 +739,6 @@
                             setTimeout(() => window.close(), 4000);
                         }
 
-                        // ============================================================
-                        // HOOK INTO RUNTIME
-                        // ============================================================
                         function waitForRuntime() {
                             let attempts = 0;
                             const checkRuntime = setInterval(() => {
@@ -645,7 +749,6 @@
                                         clearInterval(checkRuntime);
                                         runtime = canvas.c2runtime;
                                         window.gameRuntime = runtime;
-                                        console.log('✅ Runtime detected');
                                         startScoreTracking();
                                         return;
                                     }
@@ -653,60 +756,29 @@
                                         clearInterval(checkRuntime);
                                         runtime = window.c2runtime;
                                         window.gameRuntime = runtime;
-                                        console.log('✅ Runtime detected via window');
                                         startScoreTracking();
                                         return;
                                     }
                                 } catch(e) {}
                                 if (attempts > 50) {
                                     clearInterval(checkRuntime);
-                                    console.log('⚠️ Runtime not found, using fallback');
-                                    startFallbackMonitor();
                                 }
                             }, 500);
                         }
 
-                        // ============================================================
-                        // FALLBACK MONITOR
-                        // ============================================================
-                        function startFallbackMonitor() {
-                            console.log('📊 Fallback monitor started');
-                            setInterval(() => {
-                                try {
-                                    const played = sessionStorage.getItem('ninjaRunPlayed');
-                                    const score = sessionStorage.getItem('ninjaRunScore');
-                                    const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
-                                    if (liveScore !== null) {
-                                        const val = parseInt(liveScore);
-                                        if (val > gameScore) gameScore = val;
-                                    }
-                                    if (played === 'true' && score !== null && !scoreSubmitted) {
-                                        submitScore(parseInt(score));
-                                    }
-                                } catch(e) {}
-                            }, 1000);
-                        }
-
-                        // ============================================================
-                        // EXPOSE DEBUG
-                        // ============================================================
                         window.__ninjaDebug = {
                             score: () => gameScore,
                             status: () => ({ score: gameScore, submitted: scoreSubmitted, runtime: !!runtime }),
                             submit: (s) => submitScore(s)
                         };
 
-                        // ============================================================
-                        // INIT
-                        // ============================================================
-                        console.log('🚀 Bridge initializing...');
                         waitForRuntime();
                         console.log('✅ Bridge ready');
                     })();
                 `;
 
                 frameDoc.head.appendChild(script);
-                console.log('✅ Bridge injected successfully');
+                console.log('✅ Bridge injected');
 
             } catch (e) {
                 console.log('⚠️ Error injecting bridge:', e);
@@ -813,25 +885,7 @@
         });
 
         // ============================================================
-        // SUBMIT SCORE (Parent)
-        // ============================================================
-        window.submitScore = function(score) {
-            const finalScore = parseInt(score) || gameScore || 0;
-            if (finalScore === 0 || scoreSubmitted) return;
-            scoreSubmitted = true;
-            sessionStorage.setItem('ninjaRunScore', finalScore.toString());
-            sessionStorage.setItem('ninjaRunPlayed', 'true');
-            sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
-            sessionStorage.setItem('ninjaRunComplete', 'true');
-            document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
-            document.getElementById('statusText').textContent = '✅ Complete!';
-            document.getElementById('statusDot').className = 'dot complete';
-            showToast(`🏆 Score: ${finalScore} points!`, 'success');
-            setTimeout(() => window.close(), 3000);
-        };
-
-        // ============================================================
-        // PREVENT SCROLLING
+        // PREVENT ALL TOUCH/MOBILE INTERACTIONS
         // ============================================================
         document.addEventListener('touchmove', function(e) {
             if (e.target === document.body || e.target === document.getElementById('gameContainer')) {
@@ -839,7 +893,16 @@
             }
         }, { passive: false });
 
-        document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
+        document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
+        document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
+        document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
+
+        // Block pinch zoom
+        document.addEventListener('touchstart', function(e) {
+            if (e.touches && e.touches.length > 1) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         // ============================================================
         // DEBUG (Parent)
@@ -850,7 +913,8 @@
                     score: gameScore,
                     submitted: scoreSubmitted,
                     sessionScore: sessionStorage.getItem('ninjaRunScore'),
-                    liveScore: sessionStorage.getItem('ninjaRunLiveScore')
+                    liveScore: sessionStorage.getItem('ninjaRunLiveScore'),
+                    desktopMode: 'FORCED'
                 };
             },
             submitScore: function(score) {
@@ -863,15 +927,18 @@
         // ============================================================
         loadGame();
 
-        console.log('🖥️ Desktop mode is FORCED');
+        console.log('');
+        console.log('🖥️ ===========================================');
+        console.log('🖥️ DESKTOP MODE - FORCED & LOCKED');
+        console.log('🖥️ ===========================================');
+        console.log('📱 Mobile/Tablet views are BLOCKED');
+        console.log('🔒 Device toolbar changes are OVERRIDDEN');
+        console.log('📐 Always displays at 1280x720+ resolution');
         console.log('✅ Press "ESC" to close game');
         console.log('');
-        console.log('🔍 DEBUG COMMANDS (in parent console):');
+        console.log('🔍 DEBUG COMMANDS (in console):');
         console.log('  __ninjaParentDebug.getStatus()  - Check game status');
         console.log('  __ninjaParentDebug.submitScore(1000)  - Manually submit score');
-        console.log('');
-        console.log('🔍 To debug from game console:');
-        console.log('  Switch to iframe console and type: __ninjaDebug.status()');
     </script>
 
 </body>
