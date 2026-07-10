@@ -28,7 +28,13 @@
             min-height: 768px;
         }
 
-        /* Desktop mode forced for all devices */
+        @media (max-width: 1024px) {
+            body {
+                min-width: unset;
+                min-height: unset;
+            }
+        }
+
         #gameContainer {
             width: 100%;
             height: 100vh;
@@ -265,13 +271,7 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* ===== DESKTOP MODE (FORCED) ===== */
-        /* This ensures desktop mode is always applied */
-        .desktop-forced {
-            display: block !important;
-        }
-
-        /* ===== RESPONSIVE - Keep desktop feel on all devices ===== */
+        /* ===== RESPONSIVE ===== */
         @media (max-width: 1280px) {
             #gameContainer {
                 max-width: 100%;
@@ -389,7 +389,6 @@
             }
         }
 
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 0px;
             height: 0px;
@@ -480,6 +479,179 @@
         }
 
         // ========================================
+        // INJECT BRIDGE - CORRECTED PATH
+        // ========================================
+
+        function injectBridge() {
+            try {
+                const frame = document.getElementById('gameFrame');
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                
+                if (!frameDoc) {
+                    console.log('⚠️ Cannot access iframe document');
+                    startFallbackMonitor();
+                    return;
+                }
+                
+                // Check if bridge already exists
+                if (frameDoc.getElementById('ninjaBridgeScript')) {
+                    console.log('✅ Bridge already injected');
+                    return;
+                }
+                
+                // Create script element with CORRECT path
+                const bridgeScript = frameDoc.createElement('script');
+                bridgeScript.id = 'ninjaBridgeScript';
+                bridgeScript.type = 'text/javascript';
+                
+                // OPTION 1: Try to load from js folder (relative to game)
+                bridgeScript.src = '../js/ninja-run-bridge.js';
+                
+                bridgeScript.onload = function() {
+                    console.log('✅ Bridge script injected successfully');
+                };
+                
+                bridgeScript.onerror = function() {
+                    console.log('⚠️ Bridge script failed to load from ../js/, trying alternative path...');
+                    // OPTION 2: Try absolute path
+                    bridgeScript.src = '/js/ninja-run-bridge.js';
+                    
+                    // Re-append with new src
+                    const newScript = frameDoc.createElement('script');
+                    newScript.id = 'ninjaBridgeScript';
+                    newScript.type = 'text/javascript';
+                    newScript.src = '/js/ninja-run-bridge.js';
+                    newScript.onload = function() {
+                        console.log('✅ Bridge script loaded from /js/');
+                    };
+                    newScript.onerror = function() {
+                        console.log('⚠️ Bridge script failed from /js/, using fallback');
+                        // OPTION 3: Inject inline bridge code
+                        injectInlineBridge(frameDoc);
+                    };
+                    frameDoc.head.appendChild(newScript);
+                };
+                
+                // Append to iframe head
+                frameDoc.head.appendChild(bridgeScript);
+                console.log('📄 Bridge script injection attempted');
+                
+            } catch (e) {
+                console.log('⚠️ Error injecting bridge:', e);
+                startFallbackMonitor();
+            }
+        }
+
+        // ========================================
+        // INLINE BRIDGE (Fallback)
+        // ========================================
+
+        function injectInlineBridge(frameDoc) {
+            console.log('📝 Injecting inline bridge code...');
+            
+            const inlineScript = frameDoc.createElement('script');
+            inlineScript.id = 'ninjaBridgeScript';
+            inlineScript.type = 'text/javascript';
+            inlineScript.textContent = `
+                // ========================================
+                // INLINE NINJA RUN BRIDGE
+                // ========================================
+                
+                (function() {
+                    console.log('🏃 Inline Ninja Run Bridge loaded');
+                    
+                    let gameScore = 0;
+                    let scoreSubmitted = false;
+                    let runtime = null;
+                    
+                    // Score handling
+                    window.ninjaRunComplete = function(score) {
+                        console.log('🎮 Game Complete! Score:', score);
+                        if (scoreSubmitted) return;
+                        const finalScore = parseInt(score) || gameScore || 0;
+                        gameScore = finalScore;
+                        
+                        // Store in session storage
+                        sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                        sessionStorage.setItem('ninjaRunPlayed', 'true');
+                        sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                        
+                        // Send to parent
+                        if (window.parent && window.parent !== window) {
+                            try {
+                                window.parent.postMessage({
+                                    type: 'NINJA_RUN_COMPLETE',
+                                    score: finalScore,
+                                    eventId: '${EVENT_ID}',
+                                    userId: '${USER_ID}',
+                                    timestamp: Date.now()
+                                }, '*');
+                                console.log('✅ Score sent to parent');
+                            } catch (e) {}
+                        }
+                        
+                        scoreSubmitted = true;
+                        
+                        // Show completion
+                        const overlay = document.createElement('div');
+                        overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Orbitron,monospace;color:#fff;';
+                        overlay.innerHTML = '<div style="background:linear-gradient(135deg,#06111F,#0B1F36);border:2px solid #00BFFF;border-radius:20px;padding:30px 40px;text-align:center;max-width:400px;"><div style="font-size:3.5rem;">🏆</div><h2 style="color:#FFD700;font-size:1.3rem;">Game Complete!</h2><div style="font-size:2.5rem;color:#00E676;font-weight:700;margin:8px 0;">' + finalScore + '</div><div style="color:#A7B5C5;">points</div><button onclick="window.close()" style="margin-top:20px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;color:#000;padding:10px 25px;border-radius:10px;font-family:Orbitron,monospace;font-weight:700;cursor:pointer;">Close</button></div>';
+                        document.body.appendChild(overlay);
+                        
+                        setTimeout(() => window.close(), 4000);
+                    };
+                    
+                    // Monitor for runtime
+                    function waitForRuntime() {
+                        let attempts = 0;
+                        const checkRuntime = setInterval(() => {
+                            attempts++;
+                            try {
+                                const canvas = document.getElementById('c2canvas');
+                                if (canvas && canvas.c2runtime) {
+                                    clearInterval(checkRuntime);
+                                    runtime = canvas.c2runtime;
+                                    console.log('✅ Runtime detected');
+                                    
+                                    // Hook into tick
+                                    const originalTick = runtime.tick;
+                                    runtime.tick = function() {
+                                        originalTick.call(this);
+                                        try {
+                                            if (runtime.globalVars) {
+                                                for (const key in runtime.globalVars) {
+                                                    const lowerKey = key.toLowerCase();
+                                                    if (lowerKey.includes('score') || lowerKey.includes('distance')) {
+                                                        const val = runtime.globalVars[key];
+                                                        if (typeof val === 'number' && val > gameScore) {
+                                                            gameScore = val;
+                                                            sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                                                        }
+                                                    }
+                                                }
+                                                if (runtime.globalVars['GameOver'] === true && gameScore > 0 && !scoreSubmitted) {
+                                                    window.ninjaRunComplete(gameScore);
+                                                }
+                                            }
+                                        } catch(e) {}
+                                    };
+                                    console.log('✅ Game hooked');
+                                }
+                            } catch(e) {}
+                            if (attempts > 50) clearInterval(checkRuntime);
+                        }, 500);
+                    }
+                    
+                    waitForRuntime();
+                    console.log('✅ Inline bridge ready');
+                })();
+            `;
+            
+            frameDoc.head.appendChild(inlineScript);
+            console.log('✅ Inline bridge injected');
+        }
+
+        // ========================================
         // LOAD GAME
         // ========================================
 
@@ -545,8 +717,8 @@
                                 statusDot.className = 'dot';
                             }, 400);
                             
-                            // Inject bridge
-                            injectBridge();
+                            // Inject bridge AFTER game loads
+                            setTimeout(() => injectBridge(), 1000);
                             return;
                         }
                     }
@@ -576,41 +748,6 @@
                     clearInterval(loadCheck);
                 }
             }, 10000);
-        }
-
-        // ========================================
-        // INJECT BRIDGE
-        // ========================================
-
-        function injectBridge() {
-            try {
-                const frame = document.getElementById('gameFrame');
-                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                
-                if (!frameDoc) {
-                    startFallbackMonitor();
-                    return;
-                }
-                
-                if (frameDoc.getElementById('ninjaBridgeScript')) {
-                    return;
-                }
-                
-                const bridgeScript = document.createElement('script');
-                bridgeScript.id = 'ninjaBridgeScript';
-                bridgeScript.src = '../js/ninja-run-bridge.js';
-                bridgeScript.onload = function() {
-                    console.log('✅ Bridge script injected');
-                };
-                bridgeScript.onerror = function() {
-                    startFallbackMonitor();
-                };
-                
-                frameDoc.head.appendChild(bridgeScript);
-                
-            } catch (e) {
-                startFallbackMonitor();
-            }
         }
 
         // ========================================
@@ -702,7 +839,6 @@
             }
         }, { passive: false });
 
-        // Prevent zoom with pinch
         document.addEventListener('gesturestart', function(e) {
             e.preventDefault();
         });
@@ -716,6 +852,7 @@
 
         console.log('🖥️ Desktop mode is FORCED - No mobile toggle available');
         console.log('✅ Press "ESC" to close game');
+        console.log('📄 Bridge will be injected after game loads');
     </script>
 
 </body>
