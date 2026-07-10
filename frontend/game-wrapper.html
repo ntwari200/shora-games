@@ -2,27 +2,15 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <!-- ============================================================
-         VIEWPORT - Supports both mobile and desktop site modes
-         When user ticks "Desktop Site" in Chrome, this adapts
-         ============================================================ -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
-    
-    <!-- ============================================================
-         FORCE DESKTOP SITE MODE - Chrome Desktop Site Toggle
-         ============================================================ -->
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ninja Run - Shora Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ============================================================
-           RESPONSIVE DESIGN - Auto-detects Chrome Desktop Site mode
+           RESET & BASE
            ============================================================ */
-        
         * {
             margin: 0;
             padding: 0;
@@ -46,20 +34,21 @@
             overflow: hidden;
             background: #06111F;
             color: #fff;
-            font-family: 'Inter', 'Space Grotesk', sans-serif;
+            font-family: 'Inter', sans-serif;
             margin: 0;
             padding: 0;
             position: fixed;
             top: 0;
             left: 0;
+            touch-action: none;
+            -webkit-touch-callout: none;
+            -webkit-user-select: none;
+            user-select: none;
         }
 
         /* ============================================================
-           CHROME DESKTOP SITE DETECTION
-           When user ticks "Desktop Site" in Chrome, width is > 768px
+           GAME CONTAINER
            ============================================================ */
-        
-        /* Default: Mobile view */
         #gameWrapper {
             width: 100%;
             height: 100vh;
@@ -69,98 +58,7 @@
             background: #000;
             position: relative;
             overflow: hidden;
-        }
-
-        /* ============================================================
-           DESKTOP SITE MODE - Activates when Chrome Desktop Site is ticked
-           ============================================================ */
-        @media (min-width: 768px) {
-            /* When screen is 768px+, treat as desktop site */
-            :root {
-                --header-height: 60px;
-                --header-padding: 10px 24px;
-                --font-size-title: 1.1rem;
-                --font-size-score: 0.95rem;
-                --font-size-status: 0.75rem;
-                --gap: 14px;
-                --border-radius: 14px;
-                --padding-score: 5px 16px;
-            }
-            
-            #gameWrapper {
-                max-width: 1280px;
-                margin: 0 auto;
-                box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
-            }
-            
-            .game-header {
-                border-left: 1px solid rgba(0, 191, 255, 0.08);
-                border-right: 1px solid rgba(0, 191, 255, 0.08);
-            }
-            
-            #gameFrame {
-                max-width: 1280px;
-                margin: 0 auto;
-            }
-            
-            .game-header .title .sub {
-                display: inline;
-            }
-            .score-display .label {
-                display: inline;
-            }
-            .status-display .status-text {
-                display: inline;
-            }
-            .desktop-toggle .toggle-label {
-                display: inline;
-            }
-        }
-
-        /* ============================================================
-           DETECT IF USER MANUALLY SELECTED DESKTOP SITE
-           Chrome sends width > 768px even on mobile when desktop mode is ON
-           ============================================================ */
-        
-        /* When Chrome Desktop Site is active on mobile, width is 980px+ */
-        @media (min-width: 768px) and (max-width: 1024px) {
-            /* This is the sweet spot - Chrome desktop site on mobile */
-            :root {
-                --header-height: 56px;
-                --header-padding: 8px 20px;
-                --font-size-title: 1rem;
-                --font-size-score: 0.9rem;
-                --font-size-status: 0.7rem;
-                --gap: 12px;
-                --border-radius: 14px;
-                --padding-score: 5px 16px;
-            }
-            
-            #gameWrapper {
-                max-width: 100%;
-                margin: 0;
-                box-shadow: none;
-            }
-            
-            .game-header {
-                border-left: none;
-                border-right: none;
-            }
-            
-            #gameFrame {
-                max-width: 100%;
-                margin: 0;
-            }
-            
-            .game-header .title .sub {
-                display: inline;
-            }
-            .score-display .label {
-                display: inline;
-            }
-            .status-display .status-text {
-                display: inline;
-            }
+            margin: 0 auto;
         }
 
         /* ============================================================
@@ -282,7 +180,66 @@
         }
 
         /* ============================================================
-           GAME FRAME
+           DESKTOP MODE TOGGLE BUTTON
+           ============================================================ */
+        .desktop-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: calc(var(--font-size-status) * 0.85);
+            color: #A7B5C5;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.3s ease;
+            user-select: none;
+            flex-shrink: 0;
+            white-space: nowrap;
+            min-height: 28px;
+        }
+        .desktop-toggle:hover {
+            border-color: rgba(0, 191, 255, 0.3);
+            background: rgba(0, 191, 255, 0.05);
+        }
+        .desktop-toggle .toggle-track {
+            width: clamp(22px, 3vw, 32px);
+            height: clamp(12px, 1.5vw, 16px);
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .desktop-toggle .toggle-track .toggle-thumb {
+            width: clamp(8px, 1vw, 12px);
+            height: clamp(8px, 1vw, 12px);
+            background: #A7B5C5;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .desktop-toggle.active .toggle-track {
+            background: rgba(0, 191, 255, 0.3);
+        }
+        .desktop-toggle.active .toggle-track .toggle-thumb {
+            left: calc(100% - clamp(10px, 1.2vw, 14px));
+            background: #00BFFF;
+        }
+        .desktop-toggle .toggle-label {
+            font-weight: 500;
+            font-size: calc(var(--font-size-status) * 0.85);
+            display: none;
+        }
+        .desktop-toggle .toggle-icon {
+            font-size: calc(var(--font-size-status) * 0.9);
+        }
+
+        /* ============================================================
+           GAME FRAME - Canvas container
            ============================================================ */
         #gameFrame {
             flex: 1;
@@ -290,7 +247,51 @@
             border: none;
             background: #000;
             min-height: 0;
-            height: calc(100% - var(--header-height));
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #gameFrame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+        }
+
+        /* ============================================================
+           DESKTOP MODE - Applied via URL parameter
+           ============================================================ */
+        body.desktop-mode #gameWrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+        }
+
+        body.desktop-mode .game-header {
+            border-left: 1px solid rgba(0, 191, 255, 0.08);
+            border-right: 1px solid rgba(0, 191, 255, 0.08);
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        body.desktop-mode #gameFrame {
+            max-width: 1280px;
+            margin: 0 auto;
+        }
+
+        body.desktop-mode .game-header .title .sub {
+            display: inline;
+        }
+        body.desktop-mode .score-display .label {
+            display: inline;
+        }
+        body.desktop-mode .status-display .status-text {
+            display: inline;
+        }
+        body.desktop-mode .desktop-toggle .toggle-label {
+            display: inline;
         }
 
         /* ============================================================
@@ -407,233 +408,6 @@
         }
 
         /* ============================================================
-           DESKTOP MODE TOGGLE BUTTON
-           ============================================================ */
-        .desktop-toggle {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            font-size: calc(var(--font-size-status) * 0.85);
-            color: #A7B5C5;
-            cursor: pointer;
-            padding: 4px 10px;
-            border-radius: 16px;
-            border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.02);
-            transition: all 0.3s ease;
-            user-select: none;
-            flex-shrink: 0;
-            white-space: nowrap;
-        }
-        .desktop-toggle:hover {
-            border-color: rgba(0, 191, 255, 0.3);
-            background: rgba(0, 191, 255, 0.05);
-        }
-        .desktop-toggle .toggle-track {
-            width: clamp(22px, 3vw, 32px);
-            height: clamp(12px, 1.5vw, 16px);
-            background: rgba(255,255,255,0.1);
-            border-radius: 10px;
-            position: relative;
-            transition: all 0.3s ease;
-            flex-shrink: 0;
-        }
-        .desktop-toggle .toggle-track .toggle-thumb {
-            width: clamp(8px, 1vw, 12px);
-            height: clamp(8px, 1vw, 12px);
-            background: #A7B5C5;
-            border-radius: 50%;
-            position: absolute;
-            top: 2px;
-            left: 2px;
-            transition: all 0.3s ease;
-        }
-        .desktop-toggle.active .toggle-track {
-            background: rgba(0, 191, 255, 0.3);
-        }
-        .desktop-toggle.active .toggle-track .toggle-thumb {
-            left: calc(100% - clamp(10px, 1.2vw, 14px));
-            background: #00BFFF;
-        }
-        .desktop-toggle .toggle-label {
-            font-weight: 500;
-            font-size: calc(var(--font-size-status) * 0.85);
-            display: none;
-        }
-
-        /* ============================================================
-           RESPONSIVE BREAKPOINTS
-           ============================================================ */
-
-        /* ===== LARGE DESKTOP (1200px+) ===== */
-        @media (min-width: 1200px) {
-            :root {
-                --header-height: 64px;
-                --header-padding: 12px 28px;
-                --font-size-title: 1.2rem;
-                --font-size-score: 1rem;
-                --font-size-status: 0.8rem;
-                --gap: 16px;
-                --border-radius: 16px;
-                --padding-score: 6px 20px;
-            }
-            .game-header .title .sub { display: inline; }
-            .score-display .label { display: inline; }
-            .status-display .status-text { display: inline; }
-            .desktop-toggle .toggle-label { display: inline; }
-        }
-
-        /* ===== DESKTOP / CHROME DESKTOP SITE (768px - 1199px) ===== */
-        @media (min-width: 768px) and (max-width: 1199px) {
-            :root {
-                --header-height: 56px;
-                --header-padding: 8px 20px;
-                --font-size-title: 1rem;
-                --font-size-score: 0.9rem;
-                --font-size-status: 0.7rem;
-                --gap: 12px;
-                --border-radius: 14px;
-                --padding-score: 5px 16px;
-            }
-            .game-header .title .sub { display: inline; }
-            .score-display .label { display: inline; }
-            .status-display .status-text { display: inline; }
-            .desktop-toggle .toggle-label { display: inline; }
-        }
-
-        /* ===== TABLET (481px - 767px) ===== */
-        @media (min-width: 481px) and (max-width: 767px) {
-            :root {
-                --header-height: 48px;
-                --header-padding: 6px 14px;
-                --font-size-title: 0.85rem;
-                --font-size-score: 0.75rem;
-                --font-size-status: 0.6rem;
-                --gap: 8px;
-                --border-radius: 10px;
-                --padding-score: 3px 12px;
-            }
-            .game-header .title .sub { display: none; }
-            .score-display .label { display: none; }
-            .status-display .status-text { display: none; }
-            .desktop-toggle .toggle-label { display: none; }
-        }
-
-        /* ===== LARGE PHONE (361px - 480px) ===== */
-        @media (min-width: 361px) and (max-width: 480px) {
-            :root {
-                --header-height: 44px;
-                --header-padding: 4px 10px;
-                --font-size-title: 0.75rem;
-                --font-size-score: 0.65rem;
-                --font-size-status: 0.55rem;
-                --gap: 6px;
-                --border-radius: 8px;
-                --padding-score: 2px 10px;
-            }
-            .game-header .title .sub { display: none; }
-            .game-header .title i { display: none; }
-            .score-display .label { display: none; }
-            .score-display i { display: none; }
-            .status-display .status-text { display: none; }
-            .desktop-toggle .toggle-label { display: none; }
-            .desktop-toggle { padding: 2px 6px; }
-        }
-
-        /* ===== SMALL PHONE (320px - 360px) ===== */
-        @media (min-width: 320px) and (max-width: 360px) {
-            :root {
-                --header-height: 38px;
-                --header-padding: 3px 8px;
-                --font-size-title: 0.6rem;
-                --font-size-score: 0.55rem;
-                --font-size-status: 0.45rem;
-                --gap: 4px;
-                --border-radius: 6px;
-                --padding-score: 2px 8px;
-            }
-            .game-header .title .sub { display: none; }
-            .game-header .title i { display: none; }
-            .score-display .label { display: none; }
-            .score-display i { display: none; }
-            .status-display .status-text { display: none; }
-            .desktop-toggle .toggle-label { display: none; }
-            .desktop-toggle { padding: 2px 4px; }
-            .desktop-toggle .toggle-track {
-                width: 18px;
-                height: 10px;
-            }
-            .desktop-toggle .toggle-track .toggle-thumb {
-                width: 6px;
-                height: 6px;
-                top: 2px;
-                left: 2px;
-            }
-            .desktop-toggle.active .toggle-track .toggle-thumb {
-                left: calc(100% - 8px);
-            }
-            .score-display .score-value { min-width: 20px; }
-            .status-display .dot { width: 5px; height: 5px; }
-        }
-
-        /* ===== EXTRA SMALL PHONE (< 320px) ===== */
-        @media (max-width: 319px) {
-            :root {
-                --header-height: 34px;
-                --header-padding: 2px 6px;
-                --font-size-title: 0.5rem;
-                --font-size-score: 0.45rem;
-                --font-size-status: 0.4rem;
-                --gap: 3px;
-                --border-radius: 4px;
-                --padding-score: 1px 6px;
-            }
-            .game-header .title .sub { display: none; }
-            .game-header .title i { display: none; }
-            .score-display .label { display: none; }
-            .score-display i { display: none; }
-            .status-display .status-text { display: none; }
-            .desktop-toggle .toggle-label { display: none; }
-            .desktop-toggle { padding: 1px 4px; }
-            .desktop-toggle .toggle-track {
-                width: 14px;
-                height: 8px;
-            }
-            .desktop-toggle .toggle-track .toggle-thumb {
-                width: 4px;
-                height: 4px;
-                top: 2px;
-                left: 2px;
-            }
-            .desktop-toggle.active .toggle-track .toggle-thumb {
-                left: calc(100% - 6px);
-            }
-            .score-display .score-value { min-width: 14px; }
-            .status-display .dot { width: 4px; height: 4px; }
-        }
-
-        /* ===== LANDSCAPE PHONES ===== */
-        @media (max-height: 500px) and (orientation: landscape) {
-            :root {
-                --header-height: 36px;
-                --header-padding: 4px 12px;
-                --font-size-title: 0.65rem;
-                --font-size-score: 0.55rem;
-                --font-size-status: 0.5rem;
-                --gap: 6px;
-                --border-radius: 8px;
-                --padding-score: 2px 10px;
-            }
-            .game-header .title .sub { display: none; }
-            .game-header .title i { display: none; }
-            .score-display .label { display: none; }
-            .score-display i { display: none; }
-            .status-display .status-text { display: none; }
-            .desktop-toggle .toggle-label { display: none; }
-            .desktop-toggle { padding: 2px 6px; }
-        }
-
-        /* ============================================================
            SCROLLBAR
            ============================================================ */
         ::-webkit-scrollbar {
@@ -644,6 +418,9 @@
 </head>
 <body>
 
+    <!-- ============================================================
+       LOADING OVERLAY
+       ============================================================ -->
     <div id="loadingOverlay">
         <div class="spinner"></div>
         <div class="text" id="loadingText">🏃 Loading Ninja Run...</div>
@@ -656,7 +433,11 @@
         </button>
     </div>
 
+    <!-- ============================================================
+       GAME WRAPPER
+       ============================================================ -->
     <div id="gameWrapper">
+        <!-- Header -->
         <div class="game-header" id="gameHeader">
             <div class="title">
                 <i class="fas fa-gamepad"></i>
@@ -672,87 +453,98 @@
                 <span class="dot" id="statusDot"></span>
                 <span class="status-text" id="statusText">Loading...</span>
             </div>
-            <div class="desktop-toggle active" id="desktopToggle" onclick="toggleDesktopMode()">
-                <span class="toggle-label">🖥️</span>
+            <!-- ===== DESKTOP TOGGLE BUTTON ===== -->
+            <div class="desktop-toggle" id="desktopToggle" onclick="toggleDesktopMode()">
+                <span class="toggle-icon">🖥️</span>
+                <span class="toggle-label">Desktop</span>
                 <span class="toggle-track">
                     <span class="toggle-thumb"></span>
                 </span>
             </div>
         </div>
-        <iframe id="gameFrame" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
+
+        <!-- Game Frame -->
+        <div id="gameFrame">
+            <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
+        </div>
     </div>
 
     <script>
         // ============================================================
-        // DETECT CHROME DESKTOP SITE MODE
+        // URL PARAMETER HANDLING
         // ============================================================
-        function detectDesktopMode() {
-            // Check if screen width indicates desktop site mode
-            // Chrome's "Desktop Site" mode typically uses 980px+ width
-            const isDesktopMode = window.innerWidth >= 768;
-            
-            // Check if user agent indicates mobile but width is desktop
-            const isMobileUA = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent);
-            
-            // If mobile user agent but desktop width, Chrome Desktop Site is enabled
-            if (isMobileUA && isDesktopMode) {
-                console.log('📱 Chrome Desktop Site mode detected!');
-                document.body.classList.add('chrome-desktop-mode');
-                return true;
+
+        function getUrlParams() {
+            return new URLSearchParams(window.location.search);
+        }
+
+        function updateUrlParam(key, value) {
+            const params = getUrlParams();
+            if (value === null || value === undefined || value === 'false') {
+                params.delete(key);
+            } else {
+                params.set(key, value);
             }
-            
-            return false;
+            const newUrl = window.location.pathname + '?' + params.toString();
+            window.history.pushState({}, '', newUrl);
+        }
+
+        function getDesktopModeFromUrl() {
+            const params = getUrlParams();
+            return params.get('desktop') === 'true';
         }
 
         // ============================================================
         // DESKTOP MODE TOGGLE
         // ============================================================
-        let desktopMode = true;
-        const STORAGE_KEY = 'shora_desktop_mode';
 
-        function loadDesktopMode() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved !== null) {
-                desktopMode = saved === 'true';
-            } else {
-                // Default: ON - but check if Chrome Desktop Site is active
-                const chromeDesktop = detectDesktopMode();
-                desktopMode = chromeDesktop || true;
-                localStorage.setItem(STORAGE_KEY, String(desktopMode));
-            }
-            applyDesktopMode();
-        }
+        let isDesktopMode = false;
 
-        function applyDesktopMode() {
-            const toggle = document.getElementById('desktopToggle');
+        function applyDesktopMode(desktop) {
+            isDesktopMode = desktop;
             const body = document.body;
-            const wrapper = document.getElementById('gameWrapper');
+            const toggle = document.getElementById('desktopToggle');
             
-            if (desktopMode) {
+            if (desktop) {
                 body.classList.add('desktop-mode');
                 toggle.classList.add('active');
-                // Remove max-width for Chrome Desktop Site mode
-                if (body.classList.contains('chrome-desktop-mode')) {
-                    wrapper.style.maxWidth = '100%';
-                    wrapper.style.boxShadow = 'none';
-                } else {
-                    wrapper.style.maxWidth = '1280px';
-                    wrapper.style.boxShadow = '0 0 60px rgba(0, 191, 255, 0.05)';
+                // Update viewport for desktop
+                const viewport = document.querySelector('meta[name=viewport]');
+                if (viewport) {
+                    viewport.content = 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
                 }
             } else {
                 body.classList.remove('desktop-mode');
                 toggle.classList.remove('active');
-                wrapper.style.maxWidth = '100%';
-                wrapper.style.boxShadow = 'none';
+                // Restore mobile viewport
+                const viewport = document.querySelector('meta[name=viewport]');
+                if (viewport) {
+                    viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+                }
             }
-            
-            localStorage.setItem(STORAGE_KEY, String(desktopMode));
         }
 
         function toggleDesktopMode() {
-            desktopMode = !desktopMode;
-            applyDesktopMode();
-            showToast(desktopMode ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
+            const newState = !isDesktopMode;
+            // Update URL parameter
+            updateUrlParam('desktop', newState ? 'true' : null);
+            // Apply the mode
+            applyDesktopMode(newState);
+            // Show toast notification
+            showToast(newState ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
+            // Reload the iframe to apply changes
+            reloadGame();
+        }
+
+        function reloadGame() {
+            const frame = document.getElementById('gameIframe');
+            if (frame && frame.src) {
+                // Preserve the current URL parameters
+                const currentSrc = frame.src;
+                const url = new URL(currentSrc);
+                // Reload with same params
+                frame.src = frame.src;
+            }
         }
 
         // ============================================================
@@ -766,13 +558,6 @@
         console.log('🎮 Ninja Run Wrapper loaded');
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
-        console.log(`🖥️ Desktop mode: ${desktopMode ? 'ON' : 'OFF'}`);
-
-        // Detect Chrome Desktop Site on load
-        setTimeout(() => {
-            detectDesktopMode();
-            loadDesktopMode();
-        }, 100);
 
         // ============================================================
         // TOAST
@@ -804,35 +589,37 @@
             console.log('📊 Starting score tracking...');
 
             scoreInterval = setInterval(() => {
-                if (!window.gameRuntime) return;
                 try {
-                    const rt = window.gameRuntime;
-                    let score = 0;
+                    const frame = document.getElementById('gameIframe');
+                    if (!frame) return;
+                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                    if (!frameDoc) return;
+                    
+                    const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
+                    if (!runtime) return;
 
-                    const vars = rt.all_global_vars || [];
+                    let score = 0;
+                    const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
                             if (v.name === 'Score' || v.name === 'score') {
                                 score = v.data || 0;
                             }
-                            if (v.name === 'GameOver' || v.name === 'gameOver') {
-                                if (v.data === true && score > 0 && !scoreSubmitted) {
-                                    console.log('🎯 Game Over detected');
-                                    submitScore(score);
-                                }
+                            if ((v.name === 'GameOver' || v.name === 'gameOver') && v.data === true && score > 0 && !scoreSubmitted) {
+                                console.log('🎯 Game Over detected');
+                                submitScore(score);
                             }
                         }
                     }
 
-                    if (rt.globalVars) {
-                        for (const key in rt.globalVars) {
+                    if (runtime.globalVars) {
+                        for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
-                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes(
-                                'coins')) {
-                                const val = rt.globalVars[key];
+                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes('coins')) {
+                                const val = runtime.globalVars[key];
                                 if (typeof val === 'number' && val > score) score = val;
                             }
-                            if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
+                            if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
                                 if (score > 0 && !scoreSubmitted) {
                                     console.log('🎯 Game Over detected from globalVars');
                                     submitScore(score);
@@ -843,7 +630,6 @@
 
                     if (score > gameScore) {
                         gameScore = score;
-                        console.log('📊 Score updated:', gameScore);
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                     }
@@ -890,14 +676,13 @@
         }
 
         // ============================================================
-        // INJECT BRIDGE
+        // INJECT BRIDGE INTO GAME
         // ============================================================
         function injectBridge() {
             try {
-                const frame = document.getElementById('gameFrame');
+                const frame = document.getElementById('gameIframe');
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return;
-
                 if (frameDoc.getElementById('ninjaBridgeScript')) return;
 
                 const script = frameDoc.createElement('script');
@@ -1026,7 +811,7 @@
         // LOAD GAME
         // ============================================================
         function loadGame() {
-            const frame = document.getElementById('gameFrame');
+            const frame = document.getElementById('gameIframe');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
@@ -1042,6 +827,7 @@
             statusText.textContent = 'Loading...';
             statusDot.className = 'dot';
 
+            // Build game URL
             const timestamp = Date.now();
             const gameUrl = `${GAME_URL}?event=${EVENT_ID}&user=${USER_ID}&t=${timestamp}`;
             frame.src = gameUrl;
@@ -1074,11 +860,7 @@
                                 statusDot.className = 'dot';
                             }, 400);
                             setTimeout(() => injectBridge(), 1500);
-                            // Re-detect desktop mode after game loads
-                            setTimeout(() => {
-                                detectDesktopMode();
-                                loadDesktopMode();
-                            }, 500);
+                            setTimeout(() => startScoreTracking(), 2000);
                             return;
                         }
                     }
@@ -1127,7 +909,7 @@
         });
 
         // ============================================================
-        // KEYBOARD SHORTCUTS
+        // KEYBOARD SHORTCUT - Press D to toggle desktop
         // ============================================================
         document.addEventListener('keydown', function(e) {
             if (e.key === 'd' || e.key === 'D') {
@@ -1141,7 +923,7 @@
         });
 
         // ============================================================
-        // PREVENT SCROLLING & ZOOM
+        // PREVENT TOUCH SCROLL & ZOOM
         // ============================================================
         document.addEventListener('touchmove', function(e) {
             if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
@@ -1152,23 +934,7 @@
         document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
 
         // ============================================================
-        // WINDOW RESIZE - Detect Chrome Desktop Site changes
-        // ============================================================
-        let resizeTimeout;
-        window.addEventListener('resize', function() {
-            clearTimeout(resizeTimeout);
-            resizeTimeout = setTimeout(() => {
-                const wasDesktop = document.body.classList.contains('chrome-desktop-mode');
-                const isDesktop = detectDesktopMode();
-                if (wasDesktop !== isDesktop) {
-                    console.log('🔄 Chrome Desktop Site mode changed:', isDesktop ? 'ON' : 'OFF');
-                    loadDesktopMode();
-                }
-            }, 300);
-        });
-
-        // ============================================================
-        // DEBUG (Parent)
+        // DEBUG
         // ============================================================
         window.__ninjaParentDebug = {
             getStatus: function() {
@@ -1177,11 +943,8 @@
                     submitted: scoreSubmitted,
                     sessionScore: sessionStorage.getItem('ninjaRunScore'),
                     liveScore: sessionStorage.getItem('ninjaRunLiveScore'),
-                    desktopMode: desktopMode,
-                    chromeDesktopMode: document.body.classList.contains('chrome-desktop-mode'),
-                    windowWidth: window.innerWidth,
-                    windowHeight: window.innerHeight,
-                    isMobileUA: /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Mobile/i.test(navigator.userAgent)
+                    desktopMode: isDesktopMode,
+                    urlDesktop: getDesktopModeFromUrl()
                 };
             },
             submitScore: function(score) {
@@ -1195,25 +958,24 @@
         // ============================================================
         // INIT
         // ============================================================
+
+        // Check URL parameter for desktop mode
+        const desktopFromUrl = getDesktopModeFromUrl();
+        applyDesktopMode(desktopFromUrl);
+
+        // Load the game
         loadGame();
 
         console.log('');
         console.log('🖥️ ===========================================');
-        console.log('🖥️ NINJA RUN - CHROME DESKTOP SITE READY');
+        console.log('🖥️ NINJA RUN - URL PARAMETER DESKTOP MODE');
         console.log('🖥️ ===========================================');
-        console.log('📱 When you tick "Desktop Site" in Chrome:');
-        console.log('   ✅ Game auto-adjusts to desktop view');
-        console.log('   ✅ UI scales for desktop experience');
-        console.log('   ✅ Clear, visible interface');
+        console.log('📐 URL Parameter: ?desktop=true');
+        console.log('🔄 Toggle: Click button or press "D"');
+        console.log('📱 Current mode: ' + (isDesktopMode ? 'DESKTOP' : 'MOBILE'));
         console.log('');
-        console.log('🔘 Desktop toggle button available');
-        console.log('⌨️  Press "D" to toggle desktop mode');
-        console.log('⌨️  Press "ESC" to close game');
-        console.log('');
-        console.log('🔍 DEBUG COMMANDS:');
-        console.log('  __ninjaParentDebug.getStatus()  - Check status');
-        console.log('  __ninjaParentDebug.submitScore(1000)  - Submit score');
-        console.log('  __ninjaParentDebug.toggleDesktop()  - Toggle desktop mode');
+        console.log('🔍 DEBUG: __ninjaParentDebug.getStatus()');
+        console.log('🔍 Toggle: __ninjaParentDebug.toggleDesktop()');
     </script>
 
 </body>
