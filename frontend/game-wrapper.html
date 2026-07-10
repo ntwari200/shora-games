@@ -4,13 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Ninja Run - Shora Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        * { 
-            margin: 0; 
-            padding: 0; 
-            box-sizing: border-box; 
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
         
         body {
             background: #06111F;
@@ -68,10 +66,7 @@
             gap: 10px;
             white-space: nowrap;
         }
-        .game-header .title i { 
-            color: #FFD700; 
-            font-size: 1rem;
-        }
+        .game-header .title i { color: #FFD700; font-size: 1rem; }
         .game-header .title .sub {
             font-size: 0.6rem;
             color: #A7B5C5;
@@ -92,10 +87,7 @@
             color: #FFD700;
             white-space: nowrap;
         }
-        .score-display i {
-            color: #FFD700;
-            font-size: 0.8rem;
-        }
+        .score-display i { color: #FFD700; font-size: 0.8rem; }
         .score-display .score-value {
             font-weight: 700;
             min-width: 40px;
@@ -128,14 +120,8 @@
             animation: pulse 1.5s infinite;
             display: inline-block;
         }
-        .status-display .dot.complete {
-            background: #FFD700;
-            animation: none;
-        }
-        .status-display .dot.error {
-            background: #FF4D6D;
-            animation: none;
-        }
+        .status-display .dot.complete { background: #FFD700; animation: none; }
+        .status-display .dot.error { background: #FF4D6D; animation: none; }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; transform: scale(1); }
@@ -178,9 +164,7 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
         #loadingOverlay .text {
             margin-top: 20px;
             color: #A7B5C5;
@@ -330,10 +314,9 @@
     </div>
 
     <script>
-        // ========================================
+        // ============================================================
         // CONFIG
-        // ========================================
-
+        // ============================================================
         const params = new URLSearchParams(window.location.search);
         const EVENT_ID = params.get('event') || 'event_001';
         const USER_ID = params.get('user') || 'user_001';
@@ -343,401 +326,26 @@
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
 
-        // ========================================
-        // COMPLETE BRIDGE CODE (Embedded)
-        // ========================================
+        // ============================================================
+        // STATE
+        // ============================================================
+        let gameScore = 0;
+        let scoreSubmitted = false;
+        let runtime = null;
+        let scoreInterval = null;
+        let gameLoaded = false;
 
-        const BRIDGE_CODE = `
-        // ========================================
-        // NINJA RUN BRIDGE - Embedded Version
-        // ========================================
-        
-        (function() {
-            'use strict';
-            
-            console.log('🏃 Ninja Run Bridge (Embedded) loaded');
-            
-            const EVENT_ID = '${EVENT_ID}';
-            const USER_ID = '${USER_ID}';
-            
-            let gameScore = 0;
-            let scoreSubmitted = false;
-            let runtime = null;
-            let checkInterval = null;
-            let gameStarted = false;
-            
-            // ========================================
-            // SCORE HANDLING
-            // ========================================
-            
-            window.ninjaRunComplete = function(score) {
-                console.log('🎮 Game Complete! Score:', score);
-                if (scoreSubmitted) return;
-                
-                const finalScore = parseInt(score) || gameScore || 0;
-                gameScore = finalScore;
-                console.log('📊 Final Score:', finalScore);
-                
-                // Store in session storage
-                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
-                sessionStorage.setItem('ninjaRunPlayed', 'true');
-                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
-                sessionStorage.setItem('ninjaRunComplete', 'true');
-                
-                // Send to parent
-                if (window.parent && window.parent !== window) {
-                    try {
-                        window.parent.postMessage({
-                            type: 'NINJA_RUN_COMPLETE',
-                            score: finalScore,
-                            eventId: EVENT_ID,
-                            userId: USER_ID,
-                            timestamp: Date.now()
-                        }, '*');
-                        console.log('✅ Score sent to parent via postMessage');
-                    } catch (e) {
-                        console.log('⚠️ Could not send to parent:', e);
-                    }
-                }
-                
-                scoreSubmitted = true;
-                showCompletionMessage(finalScore);
-            };
-            
-            function showCompletionMessage(score) {
-                if (document.getElementById('ninjaRunOverlay')) return;
-                
-                const overlay = document.createElement('div');
-                overlay.id = 'ninjaRunOverlay';
-                overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Orbitron,monospace;color:#fff;';
-                overlay.innerHTML = \`
-                    <div style="background:linear-gradient(135deg,#06111F,#0B1F36);border:2px solid #00BFFF;border-radius:20px;padding:30px 40px;text-align:center;max-width:400px;">
-                        <div style="font-size:3.5rem;">🏆</div>
-                        <h2 style="color:#FFD700;font-size:1.3rem;">Game Complete!</h2>
-                        <div style="font-size:2.5rem;color:#00E676;font-weight:700;margin:8px 0;">\${score}</div>
-                        <div style="color:#A7B5C5;">points</div>
-                        <div style="margin-top:12px;font-size:0.7rem;color:#A7B5C5;">
-                            <i class="fas fa-sync fa-spin"></i> Submitting score...
-                        </div>
-                        <button onclick="window.close()" style="margin-top:20px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;color:#000;padding:10px 25px;border-radius:10px;font-family:Orbitron,monospace;font-weight:700;cursor:pointer;font-size:0.75rem;">
-                            Close & View Rankings
-                        </button>
-                    </div>
-                \`;
-                document.body.appendChild(overlay);
-                
-                setTimeout(() => window.close(), 5000);
-            }
-            
-            // ========================================
-            // HOOK INTO GAME
-            // ========================================
-            
-            function waitForRuntime() {
-                console.log('⏳ Waiting for Construct 2 runtime...');
-                let attempts = 0;
-                
-                const checkRuntime = setInterval(() => {
-                    attempts++;
-                    try {
-                        const canvas = document.getElementById('c2canvas');
-                        if (canvas && canvas.c2runtime) {
-                            clearInterval(checkRuntime);
-                            runtime = canvas.c2runtime;
-                            console.log('✅ Runtime detected');
-                            hookIntoGame(runtime);
-                            return;
-                        }
-                    } catch(e) {}
-                    if (attempts > 50) {
-                        clearInterval(checkRuntime);
-                        console.log('⚠️ Runtime not found, starting fallback');
-                        startFallbackMonitor();
-                    }
-                }, 500);
-            }
-            
-            function hookIntoGame(runtime) {
-                console.log('🔗 Hooking into game...');
-                
-                // Hook into tick
-                const originalTick = runtime.tick;
-                runtime.tick = function() {
-                    originalTick.call(this);
-                    try {
-                        if (runtime.globalVars) {
-                            // Check for score
-                            for (const key in runtime.globalVars) {
-                                const lowerKey = key.toLowerCase();
-                                if (lowerKey.includes('score') || lowerKey.includes('distance')) {
-                                    const val = runtime.globalVars[key];
-                                    if (typeof val === 'number' && val > gameScore) {
-                                        gameScore = val;
-                                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
-                                        // Send live update to parent
-                                        try {
-                                            if (window.parent && window.parent !== window) {
-                                                window.parent.postMessage({
-                                                    type: 'NINJA_RUN_SCORE',
-                                                    score: gameScore
-                                                }, '*');
-                                            }
-                                        } catch(e) {}
-                                    }
-                                }
-                            }
-                            // Check for game over
-                            if (runtime.globalVars['GameOver'] === true || runtime.globalVars['gameOver'] === true) {
-                                if (gameScore > 0 && !scoreSubmitted) {
-                                    console.log('🎯 Game Over detected');
-                                    window.ninjaRunComplete(gameScore);
-                                }
-                            }
-                        }
-                    } catch(e) {}
-                };
-                
-                // Hook into triggers
-                const originalTrigger = runtime.trigger;
-                runtime.trigger = function(method, inst, value) {
-                    const result = originalTrigger.call(this, method, inst, value);
-                    try {
-                        if (method && method.name) {
-                            const name = method.name;
-                            if (name.includes('End') || name.includes('GameOver') || name.includes('Finish') || name.includes('Complete')) {
-                                if (gameScore > 0 && !scoreSubmitted) {
-                                    console.log('🎯 Game end detected via trigger:', name);
-                                    window.ninjaRunComplete(gameScore);
-                                }
-                            }
-                        }
-                    } catch(e) {}
-                    return result;
-                };
-                
-                gameStarted = true;
-                console.log('✅ Game hooked successfully');
-                console.log('📊 Initial Score:', gameScore);
-            }
-            
-            // ========================================
-            // FALLBACK MONITOR
-            // ========================================
-            
-            function startFallbackMonitor() {
-                console.log('📊 Fallback monitor started');
-                let noChangeCount = 0;
-                let lastScore = 0;
-                
-                checkInterval = setInterval(() => {
-                    try {
-                        // Check session storage
-                        const played = sessionStorage.getItem('ninjaRunPlayed');
-                        const score = sessionStorage.getItem('ninjaRunScore');
-                        const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
-                        
-                        if (liveScore !== null) {
-                            const val = parseInt(liveScore);
-                            if (val > gameScore) {
-                                gameScore = val;
-                            }
-                        }
-                        
-                        if (played === 'true' && score !== null && !scoreSubmitted) {
-                            clearInterval(checkInterval);
-                            window.ninjaRunComplete(parseInt(score));
-                            return;
-                        }
-                        
-                        // Check if game ended (score unchanged for 15 seconds with score > 0)
-                        if (gameScore > 0 && !scoreSubmitted) {
-                            if (gameScore === lastScore) {
-                                noChangeCount++;
-                                if (noChangeCount > 30) {
-                                    console.log('⏰ Auto-submit after timeout');
-                                    window.ninjaRunComplete(gameScore);
-                                }
-                            } else {
-                                lastScore = gameScore;
-                                noChangeCount = 0;
-                            }
-                        }
-                    } catch(e) {}
-                }, 500);
-                
-                setTimeout(() => {
-                    if (checkInterval) {
-                        clearInterval(checkInterval);
-                        if (gameScore > 0 && !scoreSubmitted) {
-                            console.log('⏰ Final timeout, submitting score');
-                            window.ninjaRunComplete(gameScore);
-                        }
-                    }
-                }, 120000);
-            }
-            
-            // ========================================
-            // DEBUG HELPERS
-            // ========================================
-            
-            // Expose debug to both iframe and parent
-            window.__ninjaDebug = {
-                score: () => gameScore,
-                status: () => ({
-                    score: gameScore,
-                    submitted: scoreSubmitted,
-                    started: gameStarted,
-                    runtime: !!runtime
-                }),
-                submit: (s) => window.ninjaRunComplete(s)
-            };
-            
-            // Also expose to parent window via postMessage
-            window.addEventListener('message', function(event) {
-                if (event.data && event.data.type === 'GET_NINJA_DEBUG') {
-                    event.source.postMessage({
-                        type: 'NINJA_DEBUG_RESPONSE',
-                        data: {
-                            score: gameScore,
-                            submitted: scoreSubmitted,
-                            started: gameStarted,
-                            runtime: !!runtime
-                        }
-                    }, '*');
-                }
-                if (event.data && event.data.type === 'NINJA_SUBMIT_SCORE') {
-                    window.ninjaRunComplete(event.data.score);
-                }
-            });
-            
-            // ========================================
-            // INIT
-            // ========================================
-            
-            console.log('🚀 Embedded Ninja Run Bridge initializing...');
-            waitForRuntime();
-            console.log('✅ Embedded bridge ready');
-            console.log('📊 Type __ninjaDebug.status() in the GAME CONSOLE (not parent)');
-        })();
-        `;
-
-        // ========================================
-        // INJECT BRIDGE INTO IFRAME
-        // ========================================
-
-        function injectBridge() {
-            try {
-                const frame = document.getElementById('gameFrame');
-                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                
-                if (!frameDoc) {
-                    console.log('⚠️ Cannot access iframe document');
-                    startFallbackMonitor();
-                    return;
-                }
-                
-                // Check if bridge already exists
-                if (frameDoc.getElementById('ninjaBridgeScript')) {
-                    console.log('✅ Bridge already injected');
-                    return;
-                }
-                
-                // Create script with embedded bridge code
-                const script = frameDoc.createElement('script');
-                script.id = 'ninjaBridgeScript';
-                script.type = 'text/javascript';
-                script.textContent = BRIDGE_CODE;
-                
-                frameDoc.head.appendChild(script);
-                console.log('✅ Bridge injected successfully (embedded)');
-                
-                // Also inject a small helper to bridge debug to parent
-                const debugHelper = frameDoc.createElement('script');
-                debugHelper.textContent = `
-                    // Helper to allow parent to access debug
-                    window.addEventListener('message', function(e) {
-                        if (e.data && e.data.type === 'GET_DEBUG_FROM_PARENT') {
-                            if (window.__ninjaDebug) {
-                                e.source.postMessage({
-                                    type: 'DEBUG_FROM_CHILD',
-                                    data: window.__ninjaDebug.status()
-                                }, '*');
-                            }
-                        }
-                    });
-                    console.log('🔍 Debug helper ready');
-                `;
-                frameDoc.head.appendChild(debugHelper);
-                
-            } catch (e) {
-                console.log('⚠️ Error injecting bridge:', e);
-                startFallbackMonitor();
-            }
-        }
-
-        // ========================================
-        // PARENT DEBUG HELPER
-        // ========================================
-
-        window.__ninjaParentDebug = {
-            getStatus: function() {
-                return new Promise((resolve) => {
-                    const frame = document.getElementById('gameFrame');
-                    if (!frame) {
-                        resolve({ error: 'Frame not found' });
-                        return;
-                    }
-                    
-                    // Check session storage first
-                    const played = sessionStorage.getItem('ninjaRunPlayed');
-                    const score = sessionStorage.getItem('ninjaRunScore');
-                    const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
-                    
-                    resolve({
-                        sessionStorage: {
-                            played: played,
-                            score: score,
-                            liveScore: liveScore
-                        },
-                        displayScore: document.getElementById('scoreDisplay')?.textContent || '0',
-                        statusText: document.getElementById('statusText')?.textContent || 'Unknown'
-                    });
-                });
-            },
-            submitScore: function(score) {
-                sessionStorage.setItem('ninjaRunScore', score.toString());
-                sessionStorage.setItem('ninjaRunPlayed', 'true');
-                sessionStorage.setItem('ninjaRunFinalScore', score.toString());
-                sessionStorage.setItem('ninjaRunComplete', 'true');
-                
-                // Try to send to iframe
-                const frame = document.getElementById('gameFrame');
-                if (frame && frame.contentWindow) {
-                    frame.contentWindow.postMessage({
-                        type: 'NINJA_SUBMIT_SCORE',
-                        score: score
-                    }, '*');
-                }
-                
-                console.log(`📤 Manually submitted score: ${score}`);
-                showToast(`✅ Score ${score} submitted!`, 'success');
-            }
-        };
-
-        // ========================================
+        // ============================================================
         // TOAST
-        // ========================================
-
+        // ============================================================
         function showToast(message, type = 'info') {
             const existing = document.querySelector('.toast-cyber');
             if (existing) existing.remove();
-            
             const toast = document.createElement('div');
             toast.className = 'toast-cyber';
             if (type === 'error') toast.classList.add('error');
             toast.textContent = message;
             document.body.appendChild(toast);
-            
             setTimeout(() => {
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.5s ease';
@@ -745,10 +353,369 @@
             }, 3000);
         }
 
-        // ========================================
-        // LOAD GAME
-        // ========================================
+        // ============================================================
+        // SCORE TRACKING (FROM YOUR OLD FILE)
+        // ============================================================
+        function startScoreTracking() {
+            if (scoreInterval) clearInterval(scoreInterval);
 
+            console.log('📊 Starting score tracking...');
+
+            scoreInterval = setInterval(() => {
+                if (!window.gameRuntime) return;
+
+                try {
+                    const rt = window.gameRuntime;
+                    
+                    // ==== METHOD 1: Check global variables (from your old file) ====
+                    const vars = rt.all_global_vars || [];
+                    let score = 0,
+                        coins = 0,
+                        distance = 0;
+
+                    for (let v of vars) {
+                        if (v && v.name) {
+                            if (v.name === 'Score' || v.name === 'score') {
+                                score = v.data || 0;
+                            }
+                            if (v.name === 'Coins' || v.name === 'coins') {
+                                coins = v.data || 0;
+                            }
+                            if (v.name === 'Distances' || v.name === 'distance' || v.name === 'Distance') {
+                                distance = v.data || 0;
+                            }
+                        }
+                    }
+
+                    // ==== METHOD 2: Check runtime globalVars ====
+                    if (rt.globalVars) {
+                        const gv = rt.globalVars;
+                        for (const key in gv) {
+                            const lowerKey = key.toLowerCase();
+                            if (lowerKey.includes('score') && !lowerKey.includes('coins')) {
+                                const val = gv[key];
+                                if (typeof val === 'number' && val > score) score = val;
+                            }
+                            if (lowerKey.includes('coin')) {
+                                const val = gv[key];
+                                if (typeof val === 'number' && val > coins) coins = val;
+                            }
+                            if (lowerKey.includes('distance')) {
+                                const val = gv[key];
+                                if (typeof val === 'number' && val > distance) distance = val;
+                            }
+                            if (lowerKey === 'gameover' || lowerKey === 'game_over') {
+                                if (gv[key] === true) {
+                                    console.log('🎯 Game Over detected from globalVars');
+                                    submitScore(Math.max(score, gameScore));
+                                }
+                            }
+                        }
+                    }
+
+                    // ==== METHOD 3: Check window variables ====
+                    const windowVars = ['score', 'Score', 'playerScore', 'gameScore', 'distance', 'Distance'];
+                    for (const varName of windowVars) {
+                        if (typeof window[varName] !== 'undefined') {
+                            const val = window[varName];
+                            if (typeof val === 'number' && val > score) {
+                                score = val;
+                            }
+                        }
+                    }
+
+                    // Update if score changed
+                    if (score > gameScore) {
+                        gameScore = score;
+                        console.log(`📊 Score updated: ${gameScore}`);
+                        document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
+                        
+                        // Store in session storage
+                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                    }
+
+                    // Check for game over (from your old file)
+                    if (rt.all_global_vars) {
+                        for (let v of rt.all_global_vars) {
+                            if (v && v.name && (v.name === 'GameOver' || v.name === 'gameOver')) {
+                                if (v.data === true) {
+                                    console.log('🎯 Game Over detected from all_global_vars');
+                                    submitScore(Math.max(gameScore, score));
+                                }
+                            }
+                        }
+                    }
+
+                } catch (e) {
+                    // Silent fail - prevents console spam
+                }
+            }, 300); // Check every 300ms (from your old file)
+
+            console.log('✅ Score tracking started');
+        }
+
+        // ============================================================
+        // SUBMIT SCORE
+        // ============================================================
+        function submitScore(score) {
+            if (scoreSubmitted) return;
+            const finalScore = parseInt(score) || gameScore || 0;
+            if (finalScore === 0) return;
+
+            console.log(`🏆 Submitting score: ${finalScore}`);
+            scoreSubmitted = true;
+
+            // Store in session storage
+            sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunPlayed', 'true');
+            sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunComplete', 'true');
+
+            // Send to parent
+            if (window.parent && window.parent !== window) {
+                try {
+                    window.parent.postMessage({
+                        type: 'NINJA_RUN_COMPLETE',
+                        score: finalScore,
+                        eventId: EVENT_ID,
+                        userId: USER_ID,
+                        timestamp: Date.now()
+                    }, '*');
+                    console.log('✅ Score sent to parent via postMessage');
+                } catch (e) {
+                    console.log('⚠️ Could not send to parent:', e);
+                }
+            }
+
+            // Update display
+            document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
+            document.getElementById('statusText').textContent = '✅ Complete!';
+            document.getElementById('statusDot').className = 'dot complete';
+
+            showToast(`🏆 Score: ${finalScore} points!`, 'success');
+            setTimeout(() => window.close(), 3000);
+        }
+
+        // ============================================================
+        // INJECT BRIDGE (Embedded)
+        // ============================================================
+        function injectBridge() {
+            try {
+                const frame = document.getElementById('gameFrame');
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) {
+                    console.log('⚠️ Cannot access iframe document');
+                    return;
+                }
+
+                if (frameDoc.getElementById('ninjaBridgeScript')) {
+                    console.log('✅ Bridge already injected');
+                    return;
+                }
+
+                // Create script with score tracking
+                const script = frameDoc.createElement('script');
+                script.id = 'ninjaBridgeScript';
+                script.type = 'text/javascript';
+                script.textContent = `
+                    // ============================================================
+                    // NINJA RUN BRIDGE - With Score Tracking
+                    // ============================================================
+                    (function() {
+                        console.log('🏃 Ninja Run Bridge loaded');
+
+                        let gameScore = 0;
+                        let scoreSubmitted = false;
+                        let runtime = null;
+                        let scoreInterval = null;
+
+                        // ============================================================
+                        // SCORE TRACKING (From working version)
+                        // ============================================================
+                        function startScoreTracking() {
+                            if (scoreInterval) clearInterval(scoreInterval);
+                            console.log('📊 Starting score tracking...');
+
+                            scoreInterval = setInterval(() => {
+                                if (!window.gameRuntime) return;
+                                try {
+                                    const rt = window.gameRuntime;
+                                    let score = 0;
+
+                                    // Check global variables
+                                    const vars = rt.all_global_vars || [];
+                                    for (let v of vars) {
+                                        if (v && v.name) {
+                                            if (v.name === 'Score' || v.name === 'score') {
+                                                score = v.data || 0;
+                                            }
+                                            if (v.name === 'GameOver' || v.name === 'gameOver') {
+                                                if (v.data === true && score > 0 && !scoreSubmitted) {
+                                                    console.log('🎯 Game Over detected');
+                                                    submitScore(score);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Check runtime globalVars
+                                    if (rt.globalVars) {
+                                        for (const key in rt.globalVars) {
+                                            const lowerKey = key.toLowerCase();
+                                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes('coins')) {
+                                                const val = rt.globalVars[key];
+                                                if (typeof val === 'number' && val > score) score = val;
+                                            }
+                                            if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
+                                                if (score > 0 && !scoreSubmitted) {
+                                                    console.log('🎯 Game Over detected from globalVars');
+                                                    submitScore(score);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                    // Update score
+                                    if (score > gameScore) {
+                                        gameScore = score;
+                                        console.log('📊 Score updated:', gameScore);
+                                        // Send live update
+                                        if (window.parent && window.parent !== window) {
+                                            try {
+                                                window.parent.postMessage({
+                                                    type: 'NINJA_RUN_SCORE',
+                                                    score: gameScore
+                                                }, '*');
+                                            } catch(e) {}
+                                        }
+                                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                                    }
+
+                                } catch(e) { /* Silent */ }
+                            }, 300);
+                        }
+
+                        // ============================================================
+                        // SUBMIT SCORE
+                        // ============================================================
+                        function submitScore(score) {
+                            if (scoreSubmitted) return;
+                            const finalScore = parseInt(score) || gameScore || 0;
+                            if (finalScore === 0) return;
+
+                            console.log('🏆 Submitting score:', finalScore);
+                            scoreSubmitted = true;
+
+                            sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                            sessionStorage.setItem('ninjaRunPlayed', 'true');
+                            sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                            sessionStorage.setItem('ninjaRunComplete', 'true');
+
+                            if (window.parent && window.parent !== window) {
+                                try {
+                                    window.parent.postMessage({
+                                        type: 'NINJA_RUN_COMPLETE',
+                                        score: finalScore,
+                                        eventId: '${EVENT_ID}',
+                                        userId: '${USER_ID}',
+                                        timestamp: Date.now()
+                                    }, '*');
+                                    console.log('✅ Score sent to parent');
+                                } catch(e) {}
+                            }
+
+                            // Show completion
+                            const overlay = document.createElement('div');
+                            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Orbitron,monospace;color:#fff;';
+                            overlay.innerHTML = '<div style="background:linear-gradient(135deg,#06111F,#0B1F36);border:2px solid #00BFFF;border-radius:20px;padding:30px 40px;text-align:center;max-width:400px;"><div style="font-size:3.5rem;">🏆</div><h2 style="color:#FFD700;font-size:1.3rem;">Game Complete!</h2><div style="font-size:2.5rem;color:#00E676;font-weight:700;margin:8px 0;">' + finalScore + '</div><div style="color:#A7B5C5;">points</div><button onclick="window.close()" style="margin-top:20px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;color:#000;padding:10px 25px;border-radius:10px;font-family:Orbitron,monospace;font-weight:700;cursor:pointer;">Close</button></div>';
+                            document.body.appendChild(overlay);
+                            setTimeout(() => window.close(), 4000);
+                        }
+
+                        // ============================================================
+                        // HOOK INTO RUNTIME
+                        // ============================================================
+                        function waitForRuntime() {
+                            let attempts = 0;
+                            const checkRuntime = setInterval(() => {
+                                attempts++;
+                                try {
+                                    const canvas = document.getElementById('c2canvas');
+                                    if (canvas && canvas.c2runtime) {
+                                        clearInterval(checkRuntime);
+                                        runtime = canvas.c2runtime;
+                                        window.gameRuntime = runtime;
+                                        console.log('✅ Runtime detected');
+                                        startScoreTracking();
+                                        return;
+                                    }
+                                    if (window.c2runtime) {
+                                        clearInterval(checkRuntime);
+                                        runtime = window.c2runtime;
+                                        window.gameRuntime = runtime;
+                                        console.log('✅ Runtime detected via window');
+                                        startScoreTracking();
+                                        return;
+                                    }
+                                } catch(e) {}
+                                if (attempts > 50) {
+                                    clearInterval(checkRuntime);
+                                    console.log('⚠️ Runtime not found, using fallback');
+                                    startFallbackMonitor();
+                                }
+                            }, 500);
+                        }
+
+                        // ============================================================
+                        // FALLBACK MONITOR
+                        // ============================================================
+                        function startFallbackMonitor() {
+                            console.log('📊 Fallback monitor started');
+                            setInterval(() => {
+                                try {
+                                    const played = sessionStorage.getItem('ninjaRunPlayed');
+                                    const score = sessionStorage.getItem('ninjaRunScore');
+                                    const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
+                                    if (liveScore !== null) {
+                                        const val = parseInt(liveScore);
+                                        if (val > gameScore) gameScore = val;
+                                    }
+                                    if (played === 'true' && score !== null && !scoreSubmitted) {
+                                        submitScore(parseInt(score));
+                                    }
+                                } catch(e) {}
+                            }, 1000);
+                        }
+
+                        // ============================================================
+                        // EXPOSE DEBUG
+                        // ============================================================
+                        window.__ninjaDebug = {
+                            score: () => gameScore,
+                            status: () => ({ score: gameScore, submitted: scoreSubmitted, runtime: !!runtime }),
+                            submit: (s) => submitScore(s)
+                        };
+
+                        // ============================================================
+                        // INIT
+                        // ============================================================
+                        console.log('🚀 Bridge initializing...');
+                        waitForRuntime();
+                        console.log('✅ Bridge ready');
+                    })();
+                `;
+
+                frameDoc.head.appendChild(script);
+                console.log('✅ Bridge injected successfully');
+
+            } catch (e) {
+                console.log('⚠️ Error injecting bridge:', e);
+            }
+        }
+
+        // ============================================================
+        // LOAD GAME
+        // ============================================================
         function loadGame() {
             const frame = document.getElementById('gameFrame');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -782,27 +749,21 @@
 
             const loadCheck = setInterval(() => {
                 loadAttempts++;
-                
                 try {
                     const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                    
                     if (frameDoc) {
                         const canvas = frameDoc.getElementById('c2canvas');
                         const bodyContent = frameDoc.body?.innerHTML || '';
-                        
                         if (canvas || bodyContent.includes('c2canvas') || bodyContent.includes('Construct 2')) {
                             clearInterval(progressInterval);
                             clearInterval(loadCheck);
-                            
                             progressFill.style.width = '100%';
                             loadingText.textContent = '✅ Game Loaded!';
-                            
                             setTimeout(() => {
                                 loadingOverlay.classList.add('hidden');
                                 statusText.textContent = 'Playing...';
                                 statusDot.className = 'dot';
                             }, 400);
-                            
                             setTimeout(() => injectBridge(), 1500);
                             return;
                         }
@@ -810,17 +771,14 @@
                 } catch (e) {
                     console.log('⏳ Waiting for game to load...', loadAttempts);
                 }
-
                 if (loadAttempts >= maxAttempts) {
                     clearInterval(progressInterval);
                     clearInterval(loadCheck);
-                    
                     errorText.style.display = 'block';
                     retryBtn.style.display = 'block';
                     loadingText.textContent = '⚠️ Game taking too long to load';
                     statusText.textContent = '⚠️ Error';
                     statusDot.className = 'dot error';
-                    
                     showToast('⚠️ Game failed to load. Please try again.', 'error');
                 }
             }, 200);
@@ -833,104 +791,80 @@
             }, 10000);
         }
 
-        // ========================================
-        // FALLBACK MONITOR (Parent)
-        // ========================================
-
-        function startFallbackMonitor() {
-            console.log('📊 Starting parent fallback monitor');
-            
-            const checkInterval = setInterval(() => {
-                try {
-                    const played = sessionStorage.getItem('ninjaRunPlayed');
-                    const score = sessionStorage.getItem('ninjaRunScore');
-                    const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
-                    
-                    if (liveScore !== null) {
-                        document.getElementById('scoreDisplay').textContent = parseInt(liveScore).toLocaleString();
-                    }
-                    
-                    if (played === 'true' && score !== null) {
-                        clearInterval(checkInterval);
-                        const scoreValue = parseInt(score);
-                        document.getElementById('scoreDisplay').textContent = scoreValue.toLocaleString();
-                        document.getElementById('statusText').textContent = '✅ Complete!';
-                        document.getElementById('statusDot').className = 'dot complete';
-                        window.onNinjaRunComplete(scoreValue, EVENT_ID, USER_ID);
-                    }
-                } catch (e) {}
-            }, 500);
-
-            setTimeout(() => {
-                clearInterval(checkInterval);
-            }, 180000);
-        }
-
-        // ========================================
-        // SCORE UPDATES
-        // ========================================
-
+        // ============================================================
+        // MESSAGE LISTENER
+        // ============================================================
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
                 const display = document.getElementById('scoreDisplay');
                 const score = event.data.score || 0;
                 display.textContent = score.toLocaleString();
                 display.className = 'score-value pulse';
-                setTimeout(() => {
-                    display.className = 'score-value';
-                }, 300);
+                setTimeout(() => { display.className = 'score-value'; }, 300);
+                gameScore = score;
             }
             if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
                 const display = document.getElementById('scoreDisplay');
                 display.textContent = (event.data.score || 0).toLocaleString();
                 document.getElementById('statusText').textContent = '✅ Complete!';
                 document.getElementById('statusDot').className = 'dot complete';
-                window.onNinjaRunComplete(event.data.score, event.data.eventId, event.data.userId);
+                submitScore(event.data.score);
             }
         });
 
-        window.onNinjaRunComplete = function(score, eventId, userId) {
-            console.log('🎯 Game Complete! Score:', score);
-            
-            const toast = document.createElement('div');
-            toast.className = 'toast-cyber';
-            toast.textContent = `🏆 Score: ${score} points!`;
-            document.body.appendChild(toast);
-            
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 4000);
-
-            setTimeout(() => {
-                window.close();
-            }, 3000);
+        // ============================================================
+        // SUBMIT SCORE (Parent)
+        // ============================================================
+        window.submitScore = function(score) {
+            const finalScore = parseInt(score) || gameScore || 0;
+            if (finalScore === 0 || scoreSubmitted) return;
+            scoreSubmitted = true;
+            sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunPlayed', 'true');
+            sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunComplete', 'true');
+            document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
+            document.getElementById('statusText').textContent = '✅ Complete!';
+            document.getElementById('statusDot').className = 'dot complete';
+            showToast(`🏆 Score: ${finalScore} points!`, 'success');
+            setTimeout(() => window.close(), 3000);
         };
 
-        // ========================================
-        // PREVENT SCROLLING & ZOOM
-        // ========================================
-
+        // ============================================================
+        // PREVENT SCROLLING
+        // ============================================================
         document.addEventListener('touchmove', function(e) {
             if (e.target === document.body || e.target === document.getElementById('gameContainer')) {
                 e.preventDefault();
             }
         }, { passive: false });
 
-        document.addEventListener('gesturestart', function(e) {
-            e.preventDefault();
-        });
+        document.addEventListener('gesturestart', function(e) { e.preventDefault(); });
 
-        // ========================================
+        // ============================================================
+        // DEBUG (Parent)
+        // ============================================================
+        window.__ninjaParentDebug = {
+            getStatus: function() {
+                return {
+                    score: gameScore,
+                    submitted: scoreSubmitted,
+                    sessionScore: sessionStorage.getItem('ninjaRunScore'),
+                    liveScore: sessionStorage.getItem('ninjaRunLiveScore')
+                };
+            },
+            submitScore: function(score) {
+                window.submitScore(score);
+            }
+        };
+
+        // ============================================================
         // INIT
-        // ========================================
-
+        // ============================================================
         loadGame();
 
         console.log('🖥️ Desktop mode is FORCED');
         console.log('✅ Press "ESC" to close game');
-        console.log('📄 Bridge is EMBEDDED - no external file needed');
         console.log('');
         console.log('🔍 DEBUG COMMANDS (in parent console):');
         console.log('  __ninjaParentDebug.getStatus()  - Check game status');
