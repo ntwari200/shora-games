@@ -261,26 +261,38 @@
         }
 
         /* ============================================================
-           DESKTOP MODE - Applied via URL parameter
+           DESKTOP MODE - Full Simulation like Chrome
            ============================================================ */
-        body.desktop-mode #gameWrapper {
-            max-width: 1280px;
-            margin: 0 auto;
-            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+        
+        /* When desktop mode is active, we force desktop viewport */
+        body.desktop-mode #gameFrame iframe {
+            /* Force desktop width in the iframe */
+            width: 1280px !important;
+            height: 720px !important;
+            /* Scale to fit phone screen */
+            transform: scale(1);
+            transform-origin: center center;
+            /* Position in center */
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.6);
         }
 
-        body.desktop-mode .game-header {
-            border-left: 1px solid rgba(0, 191, 255, 0.08);
-            border-right: 1px solid rgba(0, 191, 255, 0.08);
-            max-width: 1280px;
-            margin: 0 auto;
+        /* On smaller phones, scale more */
+        @media (max-width: 480px) {
+            body.desktop-mode #gameFrame iframe {
+                transform: translate(-50%, -50%) scale(0.45);
+            }
         }
 
-        body.desktop-mode #gameFrame {
-            max-width: 1280px;
-            margin: 0 auto;
+        @media (max-width: 360px) {
+            body.desktop-mode #gameFrame iframe {
+                transform: translate(-50%, -50%) scale(0.35);
+            }
         }
 
+        /* Desktop mode header changes */
         body.desktop-mode .game-header .title .sub {
             display: inline;
         }
@@ -495,34 +507,106 @@
         }
 
         // ============================================================
-        // DESKTOP MODE TOGGLE
+        // DESKTOP MODE TOGGLE - Full Chrome-like behavior
         // ============================================================
 
         let isDesktopMode = false;
+        let currentScale = 1;
 
         function applyDesktopMode(desktop) {
             isDesktopMode = desktop;
             const body = document.body;
             const toggle = document.getElementById('desktopToggle');
+            const iframe = document.getElementById('gameIframe');
             
             if (desktop) {
+                // Simulate Chrome's Desktop Site behavior
                 body.classList.add('desktop-mode');
                 toggle.classList.add('active');
-                // Update viewport for desktop
+                
+                // Change viewport to desktop width
                 const viewport = document.querySelector('meta[name=viewport]');
                 if (viewport) {
                     viewport.content = 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
                 }
+                
+                // Force iframe to desktop size
+                if (iframe) {
+                    iframe.style.width = '1280px';
+                    iframe.style.height = '720px';
+                    iframe.style.maxWidth = 'none';
+                    iframe.style.maxHeight = 'none';
+                    iframe.style.position = 'absolute';
+                    iframe.style.top = '50%';
+                    iframe.style.left = '50%';
+                    
+                    // Calculate scale to fit screen
+                    const winWidth = window.innerWidth;
+                    const winHeight = window.innerHeight;
+                    const scaleX = (winWidth * 0.9) / 1280;
+                    const scaleY = (winHeight * 0.85) / 720;
+                    currentScale = Math.min(scaleX, scaleY, 1);
+                    
+                    iframe.style.transform = 'translate(-50%, -50%) scale(' + currentScale + ')';
+                    iframe.style.transformOrigin = 'center center';
+                }
+                
+                console.log('🖥️ Desktop mode activated (scale: ' + currentScale + ')');
+                
             } else {
+                // Restore mobile view
                 body.classList.remove('desktop-mode');
                 toggle.classList.remove('active');
+                
                 // Restore mobile viewport
                 const viewport = document.querySelector('meta[name=viewport]');
                 if (viewport) {
                     viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
                 }
+                
+                // Restore iframe to mobile size
+                if (iframe) {
+                    iframe.style.width = '100%';
+                    iframe.style.height = '100%';
+                    iframe.style.maxWidth = '100%';
+                    iframe.style.maxHeight = '100%';
+                    iframe.style.position = 'relative';
+                    iframe.style.top = 'auto';
+                    iframe.style.left = 'auto';
+                    iframe.style.transform = 'none';
+                    iframe.style.transformOrigin = 'unset';
+                }
+                
+                console.log('📱 Mobile mode activated');
             }
         }
+
+        // ============================================================
+        // HANDLE RESIZE - Update desktop scale
+        // ============================================================
+
+        function handleResize() {
+            if (isDesktopMode) {
+                const iframe = document.getElementById('gameIframe');
+                if (iframe) {
+                    const winWidth = window.innerWidth;
+                    const winHeight = window.innerHeight;
+                    const scaleX = (winWidth * 0.9) / 1280;
+                    const scaleY = (winHeight * 0.85) / 720;
+                    currentScale = Math.min(scaleX, scaleY, 1);
+                    iframe.style.transform = 'translate(-50%, -50%) scale(' + currentScale + ')';
+                }
+            }
+        }
+
+        window.addEventListener('resize', handleResize);
+        window.addEventListener('orientationchange', function() {
+            setTimeout(handleResize, 500);
+        });
+
+        // ============================================================
+        // TOGGLE FUNCTION
+        // ============================================================
 
         function toggleDesktopMode() {
             const newState = !isDesktopMode;
@@ -533,17 +617,32 @@
             // Show toast notification
             showToast(newState ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
             // Reload the iframe to apply changes
-            reloadGame();
+            if (newState) {
+                // For desktop mode, we need to reload the game with desktop viewport
+                reloadGameWithDesktop();
+            } else {
+                // For mobile mode, just reload normally
+                reloadGame();
+            }
+        }
+
+        function reloadGameWithDesktop() {
+            const frame = document.getElementById('gameIframe');
+            if (frame && frame.src) {
+                // Add desktop parameter to game URL
+                const url = new URL(frame.src);
+                url.searchParams.set('desktop', 'true');
+                frame.src = url.toString();
+            }
         }
 
         function reloadGame() {
             const frame = document.getElementById('gameIframe');
             if (frame && frame.src) {
-                // Preserve the current URL parameters
-                const currentSrc = frame.src;
-                const url = new URL(currentSrc);
-                // Reload with same params
-                frame.src = frame.src;
+                // Remove desktop parameter from game URL
+                const url = new URL(frame.src);
+                url.searchParams.delete('desktop');
+                frame.src = url.toString();
             }
         }
 
@@ -944,7 +1043,8 @@
                     sessionScore: sessionStorage.getItem('ninjaRunScore'),
                     liveScore: sessionStorage.getItem('ninjaRunLiveScore'),
                     desktopMode: isDesktopMode,
-                    urlDesktop: getDesktopModeFromUrl()
+                    urlDesktop: getDesktopModeFromUrl(),
+                    scale: currentScale
                 };
             },
             submitScore: function(score) {
@@ -968,11 +1068,12 @@
 
         console.log('');
         console.log('🖥️ ===========================================');
-        console.log('🖥️ NINJA RUN - URL PARAMETER DESKTOP MODE');
+        console.log('🖥️ NINJA RUN - FULL DESKTOP SITE SIMULATION');
         console.log('🖥️ ===========================================');
-        console.log('📐 URL Parameter: ?desktop=true');
+        console.log('📐 Like Chrome\'s "Desktop Site" feature');
         console.log('🔄 Toggle: Click button or press "D"');
         console.log('📱 Current mode: ' + (isDesktopMode ? 'DESKTOP' : 'MOBILE'));
+        console.log('📐 Scale: ' + (currentScale * 100).toFixed(0) + '%');
         console.log('');
         console.log('🔍 DEBUG: __ninjaParentDebug.getStatus()');
         console.log('🔍 Toggle: __ninjaParentDebug.toggleDesktop()');
