@@ -5,9 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
 <!-- ============================================================
-   VIEWPORT - Proper touch handling
+   VIEWPORT - Allow proper scaling
    ============================================================ -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
 
 <title>SHORA GAMES | Ninja Run</title>
 
@@ -127,7 +127,7 @@ html, body {
 }
 
 /* ============================================================
-   CANVAS CONTAINER
+   CANVAS CONTAINER - Dynamic sizing
    ============================================================ */
 #c2canvasdiv {
     display: none;
@@ -143,13 +143,14 @@ html, body {
 }
 
 /* ============================================================
-   CANVAS - CRITICAL: Must match game's internal resolution
+   CANVAS - Scales dynamically while keeping 1280x720 resolution
    ============================================================ */
 #c2canvas {
     display: block;
-    /* Keep canvas at 1280x720 for proper touch mapping */
+    /* CRITICAL: Keep game resolution at 1280x720 for touch mapping */
     width: 1280px !important;
     height: 720px !important;
+    /* Allow scaling */
     max-width: 100vw;
     max-height: 100vh;
     max-height: 100dvh;
@@ -164,10 +165,13 @@ html, body {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    /* Allow resize */
+    min-width: 320px;
+    min-height: 180px;
 }
 
 /* ============================================================
-   RESPONSIVE
+   RESPONSIVE - Canvas scales with screen
    ============================================================ */
 @media (max-width: 1280px) {
     #c2canvas {
@@ -180,7 +184,8 @@ html, body {
     }
 }
 
-@media (min-width: 768px) and (max-width: 1024px) {
+/* For very small screens, keep aspect ratio */
+@media (max-width: 480px) {
     #c2canvas {
         width: 1280px !important;
         height: 720px !important;
@@ -236,9 +241,10 @@ html, body {
 
 var GAME_WIDTH = 1280;
 var GAME_HEIGHT = 720;
+var isGameReady = false;
 
 // ============================================================
-// CANVAS RESIZE - Maintain 1280x720 for touch mapping
+// SMART CANVAS RESIZE - Resize while maintaining 1280x720
 // ============================================================
 
 function resizeCanvas() {
@@ -279,113 +285,143 @@ function resizeCanvas() {
     canvas.style.transform = 'translate(-50%, -50%)';
     canvas.style.display = 'block';
     
+    // Calculate the actual display size (for the runtime)
+    var rect = canvas.getBoundingClientRect();
+    var displayWidth = Math.round(rect.width);
+    var displayHeight = Math.round(rect.height);
+    
     // Update Construct 2 runtime with the actual display size
-    if (typeof cr_sizeCanvas === 'function') {
-        // Pass the display size, not the game size
-        var displayWidth = Math.min(winWidth, GAME_WIDTH);
-        var displayHeight = Math.min(winHeight, GAME_HEIGHT);
+    if (typeof cr_sizeCanvas === 'function' && isGameReady) {
         cr_sizeCanvas(displayWidth, displayHeight);
     }
     
-    console.log('📐 Canvas: ' + GAME_WIDTH + 'x' + GAME_HEIGHT + ' (fixed), Display: ' + winWidth + 'x' + winHeight);
+    console.log('📐 Game: ' + GAME_WIDTH + 'x' + GAME_HEIGHT + ' | Display: ' + displayWidth + 'x' + displayHeight);
+    return { width: displayWidth, height: displayHeight };
 }
 
 // ============================================================
-// TOUCH COORDINATE FIX - Ensure touch events map correctly
+// TOUCH COORDINATE MAPPING - Maps touch to 1280x720
+// ============================================================
+
+function getCanvasCoords(e) {
+    var canvas = document.getElementById('c2canvas');
+    if (!canvas) return { x: 0, y: 0 };
+    
+    var rect = canvas.getBoundingClientRect();
+    var scaleX = GAME_WIDTH / rect.width;
+    var scaleY = GAME_HEIGHT / rect.height;
+    
+    var clientX, clientY;
+    
+    if (e.touches) {
+        clientX = e.touches[0].clientX;
+        clientY = e.touches[0].clientY;
+    } else if (e.changedTouches) {
+        clientX = e.changedTouches[0].clientX;
+        clientY = e.changedTouches[0].clientY;
+    } else {
+        clientX = e.clientX || e.pageX;
+        clientY = e.clientY || e.pageY;
+    }
+    
+    // Calculate position relative to canvas
+    var x = (clientX - rect.left) * scaleX;
+    var y = (clientY - rect.top) * scaleY;
+    
+    // Clamp to game bounds
+    x = Math.max(0, Math.min(GAME_WIDTH, x));
+    y = Math.max(0, Math.min(GAME_HEIGHT, y));
+    
+    return { x: Math.round(x), y: Math.round(y) };
+}
+
+// ============================================================
+// FIX TOUCH EVENTS
 // ============================================================
 
 function fixTouchEvents() {
     var canvas = document.getElementById('c2canvas');
     if (!canvas) return;
     
-    // Get canvas bounding rect for coordinate mapping
-    function getCanvasCoords(e) {
-        var rect = canvas.getBoundingClientRect();
-        var scaleX = GAME_WIDTH / rect.width;
-        var scaleY = GAME_HEIGHT / rect.height;
-        
-        var clientX, clientY;
-        
-        if (e.touches) {
-            clientX = e.touches[0].clientX;
-            clientY = e.touches[0].clientY;
-        } else {
-            clientX = e.clientX;
-            clientY = e.clientY;
-        }
-        
-        // Calculate position relative to canvas
-        var x = (clientX - rect.left) * scaleX;
-        var y = (clientY - rect.top) * scaleY;
-        
-        // Clamp to game bounds
-        x = Math.max(0, Math.min(GAME_WIDTH, x));
-        y = Math.max(0, Math.min(GAME_HEIGHT, y));
-        
-        return { x: x, y: y };
-    }
+    console.log('🖱️ Applying touch/click coordinate fix...');
     
-    // Override touch events to pass correct coordinates
+    // Store original event handlers
+    var originalHandlers = [];
+    
+    // Override touch events
     canvas.addEventListener('touchstart', function(e) {
         var coords = getCanvasCoords(e);
-        // Update the touch position in the event
-        if (e.touches && e.touches.length > 0) {
-            e.touches[0].pageX = coords.x;
-            e.touches[0].pageY = coords.y;
-        }
-        // Let the event propagate
-        return true;
+        // Store corrected coordinates on the event
+        e._correctedX = coords.x;
+        e._correctedY = coords.y;
+        // Allow event to propagate
     }, { passive: true });
     
     canvas.addEventListener('touchmove', function(e) {
         var coords = getCanvasCoords(e);
-        if (e.touches && e.touches.length > 0) {
-            e.touches[0].pageX = coords.x;
-            e.touches[0].pageY = coords.y;
-        }
-        return true;
+        e._correctedX = coords.x;
+        e._correctedY = coords.y;
     }, { passive: true });
     
+    canvas.addEventListener('touchend', function(e) {
+        var coords = getCanvasCoords(e);
+        e._correctedX = coords.x;
+        e._correctedY = coords.y;
+    }, { passive: true });
+    
+    // Fix click events
     canvas.addEventListener('click', function(e) {
         var coords = getCanvasCoords(e);
-        // Dispatch a new click event with corrected coordinates
-        var newEvent = new MouseEvent('click', {
-            clientX: coords.x,
-            clientY: coords.y,
-            bubbles: true,
-            cancelable: true
+        // Override clientX/clientY for this event
+        Object.defineProperty(e, 'clientX', { 
+            value: coords.x, 
+            writable: false,
+            configurable: true
         });
-        // Let the original event propagate with corrected coords
-        Object.defineProperty(e, 'clientX', { value: coords.x, writable: false });
-        Object.defineProperty(e, 'clientY', { value: coords.y, writable: false });
-        return true;
+        Object.defineProperty(e, 'clientY', { 
+            value: coords.y, 
+            writable: false,
+            configurable: true
+        });
+        Object.defineProperty(e, 'pageX', { 
+            value: coords.x, 
+            writable: false,
+            configurable: true
+        });
+        Object.defineProperty(e, 'pageY', { 
+            value: coords.y, 
+            writable: false,
+            configurable: true
+        });
     }, { passive: true });
     
-    console.log('🖱️ Touch/Click coordinate fix applied');
+    console.log('✅ Touch/Click coordinate fix applied');
 }
 
 // ============================================================
 // HANDLE WINDOW RESIZE
 // ============================================================
 
-jQuery(window).resize(function() {
-    resizeCanvas();
-});
+var resizeTimeout;
 
+function handleResize() {
+    clearTimeout(resizeTimeout);
+    resizeTimeout = setTimeout(function() {
+        resizeCanvas();
+    }, 200);
+}
+
+jQuery(window).resize(handleResize);
 window.addEventListener('orientationchange', function() {
-    setTimeout(resizeCanvas, 500);
+    setTimeout(handleResize, 500);
 });
-
-window.addEventListener('resize', function() {
-    resizeCanvas();
-});
+window.addEventListener('resize', handleResize);
 
 document.addEventListener('fullscreenchange', function() {
-    setTimeout(resizeCanvas, 300);
+    setTimeout(handleResize, 300);
 });
-
 document.addEventListener('webkitfullscreenchange', function() {
-    setTimeout(resizeCanvas, 300);
+    setTimeout(handleResize, 300);
 });
 
 // ============================================================
@@ -404,6 +440,7 @@ setTimeout(function() {
         
         // Create runtime
         cr_createRuntime("c2canvas");
+        isGameReady = true;
         
         // Resize canvas after creation
         setTimeout(function() {
@@ -414,8 +451,8 @@ setTimeout(function() {
         
         console.log('🎮 Ninja Run loaded successfully!');
         console.log('📱 Viewport: ' + window.innerWidth + 'x' + window.innerHeight);
-        console.log('🖱️ Canvas: ' + GAME_WIDTH + 'x' + GAME_HEIGHT + ' (fixed for touch mapping)');
-        console.log('🖱️ Touch/Click coordinate fix applied');
+        console.log('🖱️ Game: ' + GAME_WIDTH + 'x' + GAME_HEIGHT + ' (fixed resolution)');
+        console.log('🔄 Canvas will auto-resize to fit any screen');
         
     }, 800);
     
@@ -453,8 +490,22 @@ document.addEventListener('touchmove', function(e) {
 // ============================================================
 
 console.log('%c🏃 NINJA RUN - SHORA GAMES', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
-console.log('%c📱 Canvas fixed at 1280x720 for accurate touch mapping', 'color: #82d4ff; font-size: 14px;');
-console.log('%c🖱️ Touch/Click coordinates mapped correctly to game', 'color: #34d399; font-size: 14px;');
+console.log('%c📱 Fully responsive - Auto-resizes to any screen', 'color: #82d4ff; font-size: 14px;');
+console.log('%c🖱️ Touch/Click mapped to 1280x720 game coordinates', 'color: #34d399; font-size: 14px;');
+console.log('%c🔄 Canvas will resize dynamically with window', 'color: #fbbf24; font-size: 14px;');
+
+// ============================================================
+// EXPOSE RESIZE FUNCTION FOR DEBUGGING
+// ============================================================
+
+window.__resizeGame = function() {
+    resizeCanvas();
+    console.log('🔄 Manual resize triggered');
+};
+
+window.__getGameCoords = function(e) {
+    return getCanvasCoords(e);
+};
 </script>
 
 </body>
