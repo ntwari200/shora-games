@@ -148,44 +148,56 @@
         .page-header h1 span { color: var(--primary); }
         .page-header .subtitle { color: var(--muted); font-size: 0.8rem; }
 
-        /* ===== EVENT CARD ===== */
-        .event-card {
+        /* ===== TOURNAMENT GRID ===== */
+        .tournament-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        /* ===== TOURNAMENT CARD ===== */
+        .tournament-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
             border-radius: var(--radius);
             overflow: hidden;
-            margin-bottom: 24px;
             transition: var(--transition);
+            cursor: pointer;
         }
-        .event-card:hover { border-color: rgba(0, 191, 255, 0.2); }
+        .tournament-card:hover {
+            border-color: rgba(0, 191, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
 
-        .event-cover {
+        .tournament-card .card-cover {
             position: relative;
             width: 100%;
-            height: 200px;
+            height: 160px;
             background: linear-gradient(135deg, var(--bg2), #0D1B2A);
             overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
         }
-        .event-cover img {
+        .tournament-card .card-cover img {
             width: 100%;
             height: 100%;
             object-fit: cover;
         }
-        .event-cover .placeholder-icon {
-            font-size: 4rem;
+        .tournament-card .card-cover .placeholder-icon {
+            font-size: 3rem;
             opacity: 0.3;
             color: var(--primary);
         }
-        .event-cover .event-status-badge {
+        .tournament-card .card-cover .card-status-badge {
             position: absolute;
-            top: 16px;
-            right: 16px;
-            padding: 6px 16px;
+            top: 12px;
+            right: 12px;
+            padding: 4px 14px;
             border-radius: 30px;
-            font-size: 0.7rem;
+            font-size: 0.6rem;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 1px;
@@ -193,264 +205,143 @@
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .event-cover .event-status-badge.live { color: var(--success); border-color: rgba(0, 230, 118, 0.3); }
-        .event-cover .event-status-badge.ended { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
-        .event-cover .event-status-badge.upcoming { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
+        .tournament-card .card-cover .card-status-badge.live { color: var(--success); border-color: rgba(0, 230, 118, 0.3); }
+        .tournament-card .card-cover .card-status-badge.ended { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
+        .tournament-card .card-cover .card-status-badge.upcoming { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
+        .tournament-card .card-cover .card-status-badge.locked { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
 
-        .event-cover .upload-btn {
+        .tournament-card .card-cover .card-lock-badge {
             position: absolute;
-            bottom: 16px;
-            right: 16px;
+            top: 12px;
+            left: 12px;
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.55rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
             background: rgba(0, 0, 0, 0.7);
             backdrop-filter: blur(8px);
             border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text);
+            color: var(--danger);
+        }
+        .tournament-card .card-cover .card-lock-badge.unlocked {
+            color: var(--success);
+            border-color: rgba(0, 230, 118, 0.3);
+        }
+
+        .tournament-card .card-body {
+            padding: 16px 18px;
+        }
+        .tournament-card .card-body .card-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            margin-bottom: 4px;
+        }
+        .tournament-card .card-body .card-game {
+            font-size: 0.75rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+        .tournament-card .card-body .card-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 8px 0;
+        }
+        .tournament-card .card-body .card-meta .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .tournament-card .card-body .card-meta .meta-item i { color: var(--primary); width: 14px; font-size: 0.65rem; }
+        .tournament-card .card-body .card-meta .meta-item strong { color: var(--text); font-weight: 600; }
+        .tournament-card .card-body .card-meta .meta-item .gold { color: var(--gold); }
+
+        .tournament-card .card-body .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+        .tournament-card .card-body .card-actions .btn {
             padding: 8px 16px;
-            border-radius: 30px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
             font-size: 0.7rem;
             cursor: pointer;
             transition: var(--transition);
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-        .event-cover .upload-btn:hover {
-            background: var(--primary);
-            color: #000;
-            border-color: var(--primary);
-        }
-        .event-cover .upload-btn input[type="file"] {
-            display: none;
-        }
-
-        .event-body {
-            padding: 20px 24px;
-        }
-
-        .event-title-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        .event-title-row h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-        }
-        .event-title-row .prize-pool {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            color: var(--gold);
-        }
-        .event-title-row .prize-pool i { margin-right: 6px; }
-
-        .event-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 12px;
-            margin: 12px 0 16px;
-        }
-        .event-meta .meta-item {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            font-size: 0.85rem;
-            color: var(--muted);
-        }
-        .event-meta .meta-item i { color: var(--primary); width: 18px; }
-        .event-meta .meta-item strong { color: var(--text); font-weight: 600; }
-
-        /* ===== COUNTDOWN ===== */
-        .countdown-container {
-            background: rgba(0, 191, 255, 0.05);
-            border: 1px solid rgba(0, 191, 255, 0.1);
-            border-radius: 12px;
-            padding: 16px 20px;
-            margin: 12px 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-        .countdown-container .label {
-            font-size: 0.7rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--muted);
-        }
-        .countdown-container .timer {
-            font-family: 'Orbitron', monospace;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .countdown-container .timer.urgent { color: var(--danger); animation: pulse 1s infinite; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
-        .players-progress {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 8px 0;
-        }
-        .players-progress .progress-bar {
-            flex: 1;
-            height: 6px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-        .players-progress .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 4px;
-            transition: width 0.5s ease;
-        }
-        .players-progress .count {
-            font-size: 0.85rem;
-            color: var(--muted);
-            white-space: nowrap;
-        }
-        .players-progress .count strong { color: var(--text); }
-
-        /* ===== ACTION BUTTONS ===== */
-        .event-actions {
-            display: flex;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-top: 16px;
-        }
-        .event-actions .btn {
-            padding: 12px 28px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: flex;
-            align-items: center;
-            gap: 8px;
             flex: 1;
             justify-content: center;
-            min-width: 140px;
+            min-width: 80px;
         }
-        .btn-join {
+        .btn-card-join {
             background: linear-gradient(135deg, var(--success), #00C853);
             color: #000;
         }
-        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
-        .btn-join:disabled {
+        .btn-card-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
+        .btn-card-join:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
-        .btn-play {
+        .btn-card-play {
             background: linear-gradient(135deg, var(--gold), #FFA000);
             color: #000;
         }
-        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
-        .btn-play:disabled {
+        .btn-card-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
+        .btn-card-play:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
-        .btn-blocked {
+        .btn-card-blocked {
             background: rgba(255, 77, 109, 0.1);
             color: var(--danger);
             border: 1px solid rgba(255, 77, 109, 0.2);
             cursor: not-allowed;
         }
-        .btn-view-rankings {
+        .btn-card-view {
             background: rgba(255,255,255,0.05);
             color: var(--text);
             border: 1px solid rgba(255,255,255,0.1);
         }
-        .btn-view-rankings:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
+        .btn-card-view:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
 
-        /* ===== RANKINGS ===== */
-        .rankings-section {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius);
-            padding: 20px 24px;
-            margin-top: 16px;
-        }
-        .rankings-section h3 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            margin-bottom: 16px;
+        .tournament-card .card-body .card-players {
             display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 8px;
+            margin-top: 8px;
         }
-        .rankings-section h3 i { color: var(--gold); }
-
-        .ranking-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 10px 12px;
-            border-bottom: 1px solid rgba(255,255,255,0.03);
-            transition: var(--transition);
-        }
-        .ranking-item:hover { background: rgba(255,255,255,0.02); }
-        .ranking-item:last-child { border-bottom: none; }
-
-        .ranking-item .rank {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--muted);
-            width: 30px;
-            text-align: center;
-        }
-        .ranking-item .rank.gold { color: var(--gold); }
-        .ranking-item .rank.silver { color: #C0C0C0; }
-        .ranking-item .rank.bronze { color: #CD7F32; }
-
-        .ranking-item .avatar {
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.8rem;
-            font-weight: 700;
-            color: #000;
-        }
-        .ranking-item .info {
+        .tournament-card .card-body .card-players .progress-bar {
             flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
         }
-        .ranking-item .info .name {
-            font-weight: 600;
-            font-size: 0.9rem;
+        .tournament-card .card-body .card-players .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: width 0.5s ease;
         }
-        .ranking-item .info .score {
+        .tournament-card .card-body .card-players .count {
             font-size: 0.7rem;
             color: var(--muted);
+            white-space: nowrap;
         }
-        .ranking-item .score-value {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: var(--gold);
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 30px 20px;
-            color: var(--muted);
-        }
-        .empty-state i { font-size: 3rem; opacity: 0.3; margin-bottom: 12px; display: block; }
-        .empty-state h3 { color: var(--text); margin-bottom: 6px; }
+        .tournament-card .card-body .card-players .count strong { color: var(--text); }
 
         /* ===== TOAST ===== */
         .toast-cyber {
@@ -479,33 +370,24 @@
         @media (max-width: 768px) {
             .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
             .nav-right { justify-content: space-between; }
-            .event-cover { height: 150px; }
-            .event-body { padding: 16px; }
-            .event-title-row h2 { font-size: 1rem; }
-            .countdown-container .timer { font-size: 1.5rem; }
-            .event-meta { grid-template-columns: 1fr 1fr; }
-            .event-actions .btn { min-width: 100px; font-size: 0.75rem; padding: 10px 16px; }
+            .tournament-grid { grid-template-columns: 1fr 1fr; }
             .page-header h1 { font-size: 1rem; }
         }
 
         @media (max-width: 480px) {
             .container { padding: 10px 10px 30px; }
-            .event-meta { grid-template-columns: 1fr; }
-            .event-actions { flex-direction: column; }
-            .event-actions .btn { width: 100%; }
-            .countdown-container .timer { font-size: 1.2rem; }
-            .ranking-item { padding: 8px 10px; }
-            .ranking-item .info .name { font-size: 0.8rem; }
-            .event-cover { height: 120px; }
-            .event-cover .upload-btn { font-size: 0.6rem; padding: 4px 12px; }
-            .event-title-row .prize-pool { font-size: 1rem; }
+            .tournament-grid { grid-template-columns: 1fr; }
+            .tournament-card .card-cover { height: 120px; }
+            .tournament-card .card-body { padding: 12px 14px; }
+            .tournament-card .card-body .card-title { font-size: 0.9rem; }
+            .tournament-card .card-body .card-actions .btn { font-size: 0.65rem; padding: 6px 12px; }
+            .nav-right { flex-wrap: wrap; justify-content: center; }
+            .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
         }
 
         @media (max-width: 360px) {
-            .nav-right { flex-wrap: wrap; justify-content: center; }
-            .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
-            .countdown-container .timer { font-size: 1rem; }
-            .ranking-item .rank { width: 24px; font-size: 0.75rem; }
+            .tournament-grid { grid-template-columns: 1fr; }
+            .tournament-card .card-body .card-meta { grid-template-columns: 1fr; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -556,7 +438,7 @@
             <a href="tournaments.html" class="user-nav-link active">
                 <i class="fas fa-trophy"></i>
                 <span>Tournaments</span>
-                <span class="badge" id="eventBadge">1</span>
+                <span class="badge" id="eventBadge">0</span>
             </a>
             <a href="leaderboard.html" class="user-nav-link">
                 <i class="fas fa-ranking-star"></i>
@@ -595,87 +477,12 @@
             </div>
         </div>
 
-        <!-- ===== EVENT CARD ===== -->
-        <div class="event-card" id="eventCard">
-            
-            <!-- Event Cover / Profile Picture -->
-            <div class="event-cover" id="eventCover">
-                <img id="eventImage" src="" alt="Event Image" style="display:none;">
-                <span class="placeholder-icon" id="placeholderIcon"><i class="fas fa-trophy"></i></span>
-                
-                <!-- Status Badge -->
-                <span class="event-status-badge live" id="statusBadge">🟢 LIVE</span>
-                
-                <!-- Upload Button (Admin only) -->
-                <label class="upload-btn" id="uploadBtn">
-                    <i class="fas fa-camera"></i> Upload Image
-                    <input type="file" id="imageUpload" accept="image/*">
-                </label>
-            </div>
-
-            <!-- Event Body -->
-            <div class="event-body">
-                
-                <!-- Title & Prize -->
-                <div class="event-title-row">
-                    <h2 id="eventName">Ninja Run Championship</h2>
-                    <span class="prize-pool">
-                        <i class="fas fa-coins"></i> <span id="prizePool">0</span> RWF
-                    </span>
-                </div>
-
-                <!-- Meta Info -->
-                <div class="event-meta">
-                    <div class="meta-item">
-                        <i class="fas fa-gamepad"></i>
-                        Game: <strong id="gameName">Ninja Run</strong>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-ticket-alt"></i>
-                        Entry Fee: <strong id="entryFee">500 RWF</strong>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-user-friends"></i>
-                        Players: <strong id="playerCount">0 / 50</strong>
-                    </div>
-                    <div class="meta-item">
-                        <i class="fas fa-clock"></i>
-                        Status: <strong id="eventStatus">Loading...</strong>
-                    </div>
-                </div>
-
-                <!-- Countdown Timer -->
-                <div class="countdown-container">
-                    <span class="label"><i class="fas fa-hourglass-half"></i> Time Remaining</span>
-                    <span class="timer" id="countdownTimer">--:--:--</span>
-                </div>
-
-                <!-- Players Progress -->
-                <div class="players-progress">
-                    <span style="font-size:0.7rem;color:var(--muted);">Progress</span>
-                    <div class="progress-bar">
-                        <div class="fill" id="progressFill" style="width:0%;"></div>
-                    </div>
-                    <span class="count"><strong id="currentPlayers">0</strong> / 50</span>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="event-actions" id="actionButtons">
-                    <!-- Will be dynamically rendered -->
-                </div>
-
-                <!-- ===== RANKINGS ===== -->
-                <div class="rankings-section" id="rankingsSection" style="display:none;">
-                    <h3><i class="fas fa-trophy"></i> Final Rankings</h3>
-                    <div id="rankingsList">
-                        <div class="empty-state">
-                            <i class="fas fa-users"></i>
-                            <h3>No Rankings Yet</h3>
-                            <p>Players will appear here after the event ends.</p>
-                        </div>
-                    </div>
-                </div>
-
+        <!-- ===== TOURNAMENT GRID ===== -->
+        <div id="tournamentGrid" class="tournament-grid">
+            <!-- Tournaments will be rendered here -->
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
+                <div class="loading-spinner" style="display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top:3px solid var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                <p style="margin-top:12px;">Loading tournaments...</p>
             </div>
         </div>
 
@@ -718,9 +525,8 @@
         // ========================================
 
         import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, update, push, set } from "firebase/database";
+        import { getDatabase, ref, onValue, get, update, set } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
-        import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 
         // ========================================
         // FIREBASE CONFIG
@@ -736,7 +542,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getDatabase(app);
         const auth = getAuth(app);
-        const storage = getStorage(app);
 
         // ========================================
         // STATE
@@ -744,10 +549,8 @@
 
         let currentUser = null;
         let userData = { balance: 0, username: 'Player' };
-        let currentEvent = null;
-        let eventId = null;
-        let countdownInterval = null;
-        let isAdmin = false; // Set this based on your admin check
+        let allTournaments = [];
+        let countdownIntervals = {};
 
         // ========================================
         // AUTH STATE
@@ -757,7 +560,7 @@
             if (user) {
                 currentUser = user;
                 await loadUserData(user.uid);
-                loadEventData();
+                loadTournaments();
                 updateUI();
             } else {
                 window.location.href = 'login.html';
@@ -791,240 +594,336 @@
         }
 
         // ========================================
-        // LOAD EVENT DATA
+        // LOAD TOURNAMENTS FROM FIREBASE
         // ========================================
 
-        function loadEventData() {
-            const eventRef = ref(db, 'tournaments/current_event');
-            onValue(eventRef, (snapshot) => {
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    currentEvent = data;
-                    eventId = data.id || 'event_001';
-                    
-                    // Update UI with event data
-                    updateEventUI(data);
-                    
-                    // Start countdown if event is live
-                    if (data.status === 'live' && data.countdown > 0) {
-                        startCountdown(data.countdown);
-                    } else if (data.status === 'ended') {
-                        showRankings(data);
-                    }
+        function loadTournaments() {
+            // Listen to both paths: root and shora-games
+            const tournamentsRef = ref(db, 'tournaments');
+            const shoraTournamentsRef = ref(db, 'shora-games/tournaments');
+            
+            // Combined listener
+            onValue(tournamentsRef, (snapshot) => {
+                let data = snapshot.val();
+                if (!data) {
+                    // Try shora-games path
+                    onValue(shoraTournamentsRef, (snap) => {
+                        const shoraData = snap.val();
+                        if (shoraData) {
+                            processTournaments(shoraData);
+                        } else {
+                            processTournaments({});
+                        }
+                    });
                 } else {
-                    // No event found - create default
-                    createDefaultEvent();
+                    processTournaments(data);
                 }
-                updateUI();
+            });
+        }
+
+        function processTournaments(data) {
+            const tournaments = [];
+            let totalPlayers = 0;
+
+            for (const [id, tournament] of Object.entries(data || {})) {
+                // Skip if not a valid tournament object
+                if (!tournament || typeof tournament !== 'object') continue;
+                
+                // Only show tournaments that are not hidden
+                if (tournament.hidden) continue;
+                
+                // Calculate player count
+                const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
+                
+                tournaments.push({
+                    id: id,
+                    name: tournament.name || 'Unnamed Tournament',
+                    game: tournament.game || 'Unknown Game',
+                    image: tournament.image || '',
+                    entryFee: tournament.entryFee || 500,
+                    prizePool: tournament.prizePool || 0,
+                    minPlayers: tournament.minPlayers || 2,
+                    maxPlayers: tournament.maxPlayers || 50,
+                    currentPlayers: playerCount,
+                    duration: tournament.duration || 30,
+                    status: tournament.status || 'soon',
+                    locked: tournament.locked || false,
+                    description: tournament.description || '',
+                    players: tournament.players || {},
+                    createdAt: tournament.createdAt || new Date().toISOString(),
+                    updatedAt: tournament.updatedAt || new Date().toISOString()
+                });
+                
+                totalPlayers += playerCount;
+            }
+
+            // Sort: live first, then upcoming, then ended
+            tournaments.sort((a, b) => {
+                const order = { live: 0, upcoming: 1, soon: 1, ended: 2 };
+                return (order[a.status] || 1) - (order[b.status] || 1);
+            });
+
+            allTournaments = tournaments;
+            document.getElementById('totalPlayers').textContent = totalPlayers;
+            
+            renderTournaments(tournaments);
+            updateBadge(tournaments);
+        }
+
+        // ========================================
+        // RENDER TOURNAMENTS
+        // ========================================
+
+        function renderTournaments(tournaments) {
+            const grid = document.getElementById('tournamentGrid');
+            
+            if (tournaments.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);">
+                        <i class="fas fa-trophy" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
+                        <h3 style="color:var(--text);font-family:'Orbitron',monospace;font-size:1.1rem;">No Active Tournaments</h3>
+                        <p style="margin-top:6px;font-size:0.9rem;">Check back soon for new events!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = tournaments.map(tournament => {
+                const isLive = tournament.status === 'live';
+                const isEnded = tournament.status === 'ended';
+                const isSoon = tournament.status === 'soon' || tournament.status === 'upcoming';
+                const isLocked = tournament.locked;
+                const playerCount = tournament.currentPlayers || 0;
+                const maxPlayers = tournament.maxPlayers || 50;
+                const progress = (playerCount / maxPlayers) * 100;
+                
+                // Check if user has joined
+                const userHasJoined = currentUser && tournament.players && tournament.players[currentUser.uid];
+                const userHasPlayed = userData.hasPlayedCurrentEvent;
+                const isFull = playerCount >= maxPlayers;
+                
+                // Determine button
+                let buttonHtml = '';
+                
+                if (isEnded) {
+                    buttonHtml = `
+                        <button class="btn btn-card-view" onclick="showRankings('${tournament.id}')">
+                            <i class="fas fa-trophy"></i> View Rankings
+                        </button>
+                    `;
+                } else if (isLocked && !userHasJoined) {
+                    buttonHtml = `
+                        <button class="btn btn-card-blocked" disabled>
+                            <i class="fas fa-lock"></i> Locked
+                        </button>
+                    `;
+                } else if (isLive && !isLocked) {
+                    if (userHasPlayed) {
+                        buttonHtml = `
+                            <button class="btn btn-card-blocked" disabled>
+                                <i class="fas fa-ban"></i> Already Played
+                            </button>
+                        `;
+                    } else if (userHasJoined) {
+                        buttonHtml = `
+                            <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
+                                <i class="fas fa-play"></i> Play Now
+                            </button>
+                        `;
+                    } else if (isFull) {
+                        buttonHtml = `
+                            <button class="btn btn-card-blocked" disabled>
+                                <i class="fas fa-users"></i> Full (${playerCount}/${maxPlayers})
+                            </button>
+                        `;
+                    } else {
+                        buttonHtml = `
+                            <button class="btn btn-card-join" onclick="joinTournament('${tournament.id}')">
+                                <i class="fas fa-ticket-alt"></i> Join (${tournament.entryFee} RWF)
+                            </button>
+                        `;
+                    }
+                } else if (isSoon) {
+                    buttonHtml = `
+                        <button class="btn btn-card-blocked" disabled>
+                            <i class="fas fa-clock"></i> Coming Soon
+                        </button>
+                    `;
+                }
+
+                // Status badge class
+                let statusClass = 'upcoming';
+                let statusText = '🟡 Upcoming';
+                if (isLive) {
+                    statusClass = 'live';
+                    statusText = '🟢 LIVE';
+                } else if (isEnded) {
+                    statusClass = 'ended';
+                    statusText = '🔴 Ended';
+                }
+
+                // Lock badge
+                let lockBadgeHtml = '';
+                if (isLocked && !isEnded) {
+                    lockBadgeHtml = `<span class="card-lock-badge">🔒 Locked</span>`;
+                } else if (!isLocked && isLive) {
+                    lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
+                }
+
+                // Image
+                const imageHtml = tournament.image ? 
+                    `<img src="${tournament.image}" alt="${tournament.name}" onerror="this.style.display='none';this.parentElement.querySelector('.placeholder-icon').style.display='flex';">` :
+                    '';
+
+                return `
+                    <div class="tournament-card" data-id="${tournament.id}">
+                        <div class="card-cover">
+                            ${imageHtml}
+                            <span class="placeholder-icon" style="${tournament.image ? 'display:none;' : 'display:flex;'}"><i class="fas fa-trophy"></i></span>
+                            <span class="card-status-badge ${statusClass}">${statusText}</span>
+                            ${lockBadgeHtml}
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">${tournament.name}</div>
+                            <div class="card-game"><i class="fas fa-gamepad" style="color:var(--primary);font-size:0.65rem;"></i> ${tournament.game}</div>
+                            
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-coins"></i>
+                                    Entry: <strong>${tournament.entryFee.toLocaleString()} RWF</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-trophy"></i>
+                                    Prize: <strong class="gold">${tournament.prizePool.toLocaleString()} RWF</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    Duration: <strong>${tournament.duration} min</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-user-friends"></i>
+                                    Players: <strong>${playerCount}/${maxPlayers}</strong>
+                                </div>
+                            </div>
+
+                            <div class="card-players">
+                                <span style="font-size:0.6rem;color:var(--muted);">Progress</span>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
+                                </div>
+                                <span class="count"><strong>${playerCount}</strong> / ${maxPlayers}</span>
+                            </div>
+
+                            ${tournament.description ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">${tournament.description}</div>` : ''}
+
+                            <div class="card-actions">
+                                ${buttonHtml}
+                                <button class="btn btn-card-view" onclick="viewTournamentDetails('${tournament.id}')" style="flex:0.5;min-width:auto;padding:8px 12px;">
+                                    <i class="fas fa-info-circle"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Start countdowns for live tournaments
+            tournaments.forEach(t => {
+                if (t.status === 'live') {
+                    startCountdown(t.id);
+                }
             });
         }
 
         // ========================================
-        // CREATE DEFAULT EVENT
+        // COUNTDOWN TIMER
         // ========================================
 
-        async function createDefaultEvent() {
-            const defaultEvent = {
-                id: 'event_001',
-                name: 'Ninja Run Championship',
-                game: 'Ninja Run',
-                entryFee: 500,
-                minPlayers: 2,
-                maxPlayers: 50,
-                currentPlayers: 0,
-                status: 'live',
-                countdown: 7200, // 2 hours
-                prizePool: 0,
-                imageUrl: '',
-                players: {},
-                startTime: new Date().toISOString(),
-                endTime: new Date(Date.now() + 7200000).toISOString()
-            };
-            
-            try {
-                await set(ref(db, 'tournaments/current_event'), defaultEvent);
-                currentEvent = defaultEvent;
-                eventId = defaultEvent.id;
-                updateEventUI(defaultEvent);
-                startCountdown(defaultEvent.countdown);
-            } catch (error) {
-                console.error('Error creating default event:', error);
+        function startCountdown(tournamentId) {
+            // Clear existing interval
+            if (countdownIntervals[tournamentId]) {
+                clearInterval(countdownIntervals[tournamentId]);
             }
+            
+            // Get tournament data
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) return;
+            
+            // Calculate remaining time (using updatedAt + duration)
+            const startTime = tournament.updatedAt ? new Date(tournament.updatedAt).getTime() : Date.now();
+            const durationMs = (tournament.duration || 30) * 60 * 1000;
+            const endTime = startTime + durationMs;
+            let remaining = Math.max(0, Math.floor((endTime - Date.now()) / 1000));
+            
+            if (remaining <= 0) {
+                // Tournament should be ended
+                update(ref(db, `tournaments/${tournamentId}`), { status: 'ended' });
+                return;
+            }
+            
+            countdownIntervals[tournamentId] = setInterval(() => {
+                remaining--;
+                
+                // Find the timer element
+                const card = document.querySelector(`.tournament-card[data-id="${tournamentId}"]`);
+                if (!card) {
+                    clearInterval(countdownIntervals[tournamentId]);
+                    return;
+                }
+                
+                if (remaining <= 0) {
+                    clearInterval(countdownIntervals[tournamentId]);
+                    // Update status to ended
+                    update(ref(db, `tournaments/${tournamentId}`), { status: 'ended' });
+                    return;
+                }
+                
+                // Update the card with countdown (optional - show in card)
+                // We'll refresh the entire list periodically instead
+            }, 1000);
         }
 
         // ========================================
-        // UPDATE EVENT UI
+        // JOIN TOURNAMENT
         // ========================================
 
-        function updateEventUI(event) {
-            // Event Name
-            document.getElementById('eventName').textContent = event.name || 'Ninja Run Championship';
-            document.getElementById('gameName').textContent = event.game || 'Ninja Run';
-            
-            // Entry Fee
-            document.getElementById('entryFee').textContent = `${event.entryFee || 500} RWF`;
-            
-            // Players
-            const playerCount = event.players ? Object.keys(event.players).length : 0;
-            document.getElementById('playerCount').textContent = `${playerCount} / ${event.maxPlayers || 50}`;
-            document.getElementById('currentPlayers').textContent = playerCount;
-            document.getElementById('totalPlayers').textContent = playerCount;
-            
-            // Progress
-            const progress = (playerCount / (event.maxPlayers || 50)) * 100;
-            document.getElementById('progressFill').style.width = `${Math.min(progress, 100)}%`;
-            
-            // Prize Pool
-            const prizePool = event.prizePool || (playerCount * (event.entryFee || 500));
-            document.getElementById('prizePool').textContent = prizePool.toLocaleString();
-            
-            // Status
-            const statusBadge = document.getElementById('statusBadge');
-            const statusText = document.getElementById('eventStatus');
-            if (event.status === 'live') {
-                statusBadge.textContent = '🟢 LIVE';
-                statusBadge.className = 'event-status-badge live';
-                statusText.textContent = 'Live Now!';
-                statusText.style.color = 'var(--success)';
-            } else if (event.status === 'ended') {
-                statusBadge.textContent = '🔴 ENDED';
-                statusBadge.className = 'event-status-badge ended';
-                statusText.textContent = 'Event Ended';
-                statusText.style.color = 'var(--danger)';
-            } else {
-                statusBadge.textContent = '🟡 UPCOMING';
-                statusBadge.className = 'event-status-badge upcoming';
-                statusText.textContent = 'Coming Soon';
-                statusText.style.color = 'var(--gold)';
-            }
-            
-            // Event Image
-            if (event.imageUrl) {
-                document.getElementById('eventImage').src = event.imageUrl;
-                document.getElementById('eventImage').style.display = 'block';
-                document.getElementById('placeholderIcon').style.display = 'none';
-            } else {
-                document.getElementById('eventImage').style.display = 'none';
-                document.getElementById('placeholderIcon').style.display = 'block';
-            }
-            
-            // Update action buttons
-            updateActionButtons(event);
-            
-            // Update badge
-            document.getElementById('eventBadge').textContent = event.status === 'live' ? '1' : '0';
-        }
-
-        // ========================================
-        // UPDATE ACTION BUTTONS
-        // ========================================
-
-        function updateActionButtons(event) {
-            const container = document.getElementById('actionButtons');
-            const playerCount = event.players ? Object.keys(event.players).length : 0;
-            const userHasJoined = event.players && event.players[currentUser?.uid];
-            const userHasPlayed = userData.hasPlayedCurrentEvent;
-            const isFull = playerCount >= (event.maxPlayers || 50);
-            const isEnded = event.status === 'ended';
-            const isLive = event.status === 'live';
-            
-            container.innerHTML = '';
-            
-            if (isEnded) {
-                // Show rankings only
-                container.innerHTML = `
-                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
-                        <i class="fas fa-trophy"></i> View Rankings
-                    </button>
-                `;
-                document.getElementById('rankingsSection').style.display = 'block';
-                return;
-            }
-            
-            if (!isLive) {
-                container.innerHTML = `
-                    <button class="btn btn-blocked" disabled>
-                        <i class="fas fa-clock"></i> Event Not Started
-                    </button>
-                `;
-                return;
-            }
-            
-            if (userHasPlayed) {
-                container.innerHTML = `
-                    <button class="btn btn-blocked" disabled>
-                        <i class="fas fa-ban"></i> Already Played - Wait for Next Event
-                    </button>
-                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
-                        <i class="fas fa-trophy"></i> View Rankings
-                    </button>
-                `;
-                return;
-            }
-            
-            if (userHasJoined) {
-                // User joined but hasn't played - show Play button
-                container.innerHTML = `
-                    <button class="btn btn-play" onclick="playGame()">
-                        <i class="fas fa-play"></i> Play Ninja Run
-                    </button>
-                    <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
-                        <i class="fas fa-trophy"></i> View Rankings
-                    </button>
-                `;
-                return;
-            }
-            
-            if (isFull) {
-                container.innerHTML = `
-                    <button class="btn btn-blocked" disabled>
-                        <i class="fas fa-users"></i> Event is Full (${playerCount}/50)
-                    </button>
-                `;
-                return;
-            }
-            
-            // Show Join button
-            container.innerHTML = `
-                <button class="btn btn-join" onclick="joinEvent()">
-                    <i class="fas fa-ticket-alt"></i> Join Event (${event.entryFee || 500} RWF)
-                </button>
-                <button class="btn btn-view-rankings" onclick="document.getElementById('rankingsSection').scrollIntoView({behavior:'smooth'})">
-                    <i class="fas fa-trophy"></i> View Rankings
-                </button>
-            `;
-        }
-
-        // ========================================
-        // JOIN EVENT
-        // ========================================
-
-        window.joinEvent = async function() {
+        window.joinTournament = async function(tournamentId) {
             if (!currentUser) {
                 showToast('Please login first', 'error');
                 return;
             }
             
-            if (!currentEvent || currentEvent.status !== 'live') {
-                showToast('Event is not available', 'error');
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) {
+                showToast('Tournament not found', 'error');
                 return;
             }
             
-            const entryFee = currentEvent.entryFee || 500;
+            if (tournament.status !== 'live') {
+                showToast('Tournament is not active', 'error');
+                return;
+            }
+            
+            if (tournament.locked) {
+                showToast('Tournament is locked', 'error');
+                return;
+            }
+            
+            const entryFee = tournament.entryFee || 500;
             
             if (userData.balance < entryFee) {
                 showToast(`Insufficient balance! Need ${entryFee} RWF`, 'error');
                 return;
             }
             
-            const playerCount = currentEvent.players ? Object.keys(currentEvent.players).length : 0;
-            if (playerCount >= (currentEvent.maxPlayers || 50)) {
-                showToast('Event is full!', 'error');
+            const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
+            if (playerCount >= (tournament.maxPlayers || 50)) {
+                showToast('Tournament is full!', 'error');
                 return;
             }
             
-            if (currentEvent.players && currentEvent.players[currentUser.uid]) {
-                showToast('You already joined this event!', 'error');
+            if (tournament.players && tournament.players[currentUser.uid]) {
+                showToast('You already joined this tournament!', 'error');
                 return;
             }
             
@@ -1035,7 +934,7 @@
                 userData.balance = newBalance;
                 document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
                 
-                // Add player to event
+                // Add player to tournament
                 const playerData = {
                     username: userData.username,
                     joinedAt: new Date().toISOString(),
@@ -1044,276 +943,249 @@
                     rank: 0
                 };
                 
-                const eventRef = ref(db, `tournaments/current_event/players/${currentUser.uid}`);
-                await set(eventRef, playerData);
+                const tournamentRef = ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`);
+                await set(tournamentRef, playerData);
                 
-                // Update player count
+                // Update player count and prize pool
                 const newCount = playerCount + 1;
-                await update(ref(db, 'tournaments/current_event'), {
+                const newPrizePool = (tournament.prizePool || 0) + entryFee;
+                await update(ref(db, `tournaments/${tournamentId}`), {
                     currentPlayers: newCount,
-                    prizePool: newCount * entryFee
+                    prizePool: newPrizePool,
+                    updatedAt: new Date().toISOString()
+                });
+                
+                // Also update shora-games path if exists
+                await update(ref(db, `shora-games/tournaments/${tournamentId}`), {
+                    currentPlayers: newCount,
+                    prizePool: newPrizePool,
+                    updatedAt: new Date().toISOString()
                 });
                 
                 // Update user's current event
                 await update(ref(db, `users/${currentUser.uid}`), {
-                    currentEventId: eventId
+                    currentEventId: tournamentId
                 });
                 
-                showToast(`✅ Joined event! Entry fee: ${entryFee} RWF`, 'success');
+                showToast(`✅ Joined tournament! Entry fee: ${entryFee} RWF`, 'success');
                 
-                // Reload event data
-                loadEventData();
+                // Reload tournaments
+                loadTournaments();
                 
             } catch (error) {
-                console.error('Error joining event:', error);
-                showToast('Error joining event. Please try again.', 'error');
+                console.error('Error joining tournament:', error);
+                showToast('Error joining tournament. Please try again.', 'error');
             }
         };
 
         // ========================================
         // PLAY GAME
         // ========================================
-// ========================================
-// PLAY NINJA RUN
-// ========================================
 
-window.playGame = function() {
-    if (!currentUser) {
-        showToast('Please login first', 'error');
-        return;
-    }
-    
-    if (!currentEvent || currentEvent.status !== 'live') {
-        showToast('Event is not available', 'error');
-        return;
-    }
-    
-    if (userData.hasPlayedCurrentEvent) {
-        showToast('❌ You already played! Wait for the next event.', 'error');
-        return;
-    }
-    
-    if (!currentEvent.players || !currentEvent.players[currentUser.uid]) {
-        showToast('Please join the event first!', 'error');
-        return;
-    }
-    
-    const eventId = currentEvent.id || 'event_001';
-    const userId = currentUser.uid;
-    const gameUrl = `/game-wrapper.html?event=${eventId}&user=${userId}`;
-    
-    // Open in new tab
-    const gameWindow = window.open(gameUrl, '_blank');
-    
-    if (!gameWindow) {
-        showToast('⚠️ Please allow pop-ups for this site', 'error');
-        return;
-    }
-    
-    showToast('🎮 Opening Ninja Run... Good luck!', 'success');
-    
-    // Start monitoring for game completion
-    startGameMonitor(eventId, userId);
-};
-
-// ========================================
-// GAME MONITOR
-// ========================================
-
-function startGameMonitor(eventId, userId) {
-    let checkCount = 0;
-    const maxChecks = 300; // 5 minutes at 1 second intervals
-    
-    const monitorInterval = setInterval(() => {
-        checkCount++;
-        
-        // Check session storage for game completion
-        const played = sessionStorage.getItem('ninjaRunPlayed');
-        const score = sessionStorage.getItem('ninjaRunScore');
-        
-        if (played === 'true' && score !== null) {
-            clearInterval(monitorInterval);
-            const scoreValue = parseInt(score);
-            console.log(`🎯 Game completed with score: ${scoreValue}`);
+        window.playGame = async function(tournamentId) {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
             
-            // Update user as played
-            updateUserPlayed(eventId, userId, scoreValue);
-            return;
-        }
-        
-        if (checkCount > maxChecks) {
-            clearInterval(monitorInterval);
-            console.log('⏰ Game monitor timed out');
-        }
-    }, 1000);
-}
-
-// ========================================
-// UPDATE USER PLAYED STATUS
-// ========================================
-
-async function updateUserPlayed(eventId, userId, score) {
-    try {
-        // Mark user as played in Firebase
-        await update(ref(db, `users/${userId}`), {
-            hasPlayedCurrentEvent: true
-        });
-        
-        await update(ref(db, `tournaments/current_event/players/${userId}`), {
-            hasPlayed: true,
-            score: score
-        });
-        
-        // Update local state
-        userData.hasPlayedCurrentEvent = true;
-        
-        // Update UI
-        updateUI();
-        showToast(`✅ Score: ${score} points submitted!`, 'success');
-        
-        // Reload event data
-        loadEventData();
-        
-    } catch (error) {
-        console.error('Error updating user played status:', error);
-        showToast('⚠️ Error saving score. Please contact support.', 'error');
-    }
-}
-
-        function startCountdown(seconds) {
-            if (countdownInterval) clearInterval(countdownInterval);
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) {
+                showToast('Tournament not found', 'error');
+                return;
+            }
             
-            const timerElement = document.getElementById('countdownTimer');
+            if (tournament.status !== 'live') {
+                showToast('Tournament is not active', 'error');
+                return;
+            }
             
-            countdownInterval = setInterval(() => {
-                seconds--;
+            if (userData.hasPlayedCurrentEvent) {
+                showToast('❌ You already played in this tournament!', 'error');
+                return;
+            }
+            
+            if (!tournament.players || !tournament.players[currentUser.uid]) {
+                showToast('Please join the tournament first!', 'error');
+                return;
+            }
+            
+            if (tournament.locked) {
+                showToast('Tournament is locked', 'error');
+                return;
+            }
+            
+            // Mark user as played
+            await update(ref(db, `users/${currentUser.uid}`), {
+                hasPlayedCurrentEvent: true
+            });
+            
+            await update(ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`), {
+                hasPlayed: true
+            });
+            
+            // Also update shora-games path
+            await update(ref(db, `shora-games/tournaments/${tournamentId}/players/${currentUser.uid}`), {
+                hasPlayed: true
+            });
+            
+            const userId = currentUser.uid;
+            const gameUrl = `/game-wrapper.html?event=${tournamentId}&user=${userId}`;
+            
+            // Open in new tab
+            const gameWindow = window.open(gameUrl, '_blank');
+            
+            if (!gameWindow) {
+                showToast('⚠️ Please allow pop-ups for this site', 'error');
+                return;
+            }
+            
+            showToast('🎮 Opening Ninja Run... Good luck!', 'success');
+            
+            // Start monitoring for game completion
+            startGameMonitor(tournamentId, userId);
+        };
+
+        // ========================================
+        // GAME MONITOR
+        // ========================================
+
+        function startGameMonitor(tournamentId, userId) {
+            let checkCount = 0;
+            const maxChecks = 300;
+            
+            const monitorInterval = setInterval(() => {
+                checkCount++;
                 
-                if (seconds <= 0) {
-                    clearInterval(countdownInterval);
-                    timerElement.textContent = '00:00:00';
-                    timerElement.className = 'timer urgent';
-                    
-                    // Mark event as ended
-                    update(ref(db, 'tournaments/current_event'), {
-                        status: 'ended',
-                        countdown: 0
-                    });
-                    
-                    showToast('🏁 Event has ended! Check rankings.', 'info');
+                const played = sessionStorage.getItem('ninjaRunPlayed');
+                const score = sessionStorage.getItem('ninjaRunScore');
+                
+                if (played === 'true' && score !== null) {
+                    clearInterval(monitorInterval);
+                    const scoreValue = parseInt(score);
+                    console.log(`🎯 Game completed with score: ${scoreValue}`);
+                    updateUserPlayed(tournamentId, userId, scoreValue);
                     return;
                 }
                 
-                const hours = Math.floor(seconds / 3600);
-                const minutes = Math.floor((seconds % 3600) / 60);
-                const secs = seconds % 60;
-                
-                timerElement.textContent = 
-                    `${String(hours).padStart(2, '0')}:${String(minutes).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-                
-                // Update countdown in Firebase
-                update(ref(db, 'tournaments/current_event'), {
-                    countdown: seconds
-                });
-                
-                // Add urgent class when less than 5 minutes
-                if (seconds < 300) {
-                    timerElement.className = 'timer urgent';
-                } else {
-                    timerElement.className = 'timer';
+                if (checkCount > maxChecks) {
+                    clearInterval(monitorInterval);
+                    console.log('⏰ Game monitor timed out');
                 }
-                
             }, 1000);
         }
 
         // ========================================
-        // SHOW RANKINGS
+        // UPDATE USER PLAYED STATUS
         // ========================================
 
-        function showRankings(event) {
-            const section = document.getElementById('rankingsSection');
-            section.style.display = 'block';
-            
-            const list = document.getElementById('rankingsList');
-            
-            if (!event.players || Object.keys(event.players).length === 0) {
-                list.innerHTML = `
-                    <div class="empty-state">
-                        <i class="fas fa-users"></i>
-                        <h3>No Players</h3>
-                        <p>No players participated in this event.</p>
-                    </div>
-                `;
-                return;
-            }
-            
-            // Sort players by score (descending)
-            const players = Object.entries(event.players)
-                .map(([uid, data]) => ({ uid, ...data }))
-                .sort((a, b) => (b.score || 0) - (a.score || 0));
-            
-            // Assign ranks
-            players.forEach((player, index) => {
-                player.rank = index + 1;
-            });
-            
-            list.innerHTML = players.map((player, index) => {
-                const rankClass = player.rank === 1 ? 'gold' : player.rank === 2 ? 'silver' : player.rank === 3 ? 'bronze' : '';
-                const medal = player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : `#${player.rank}`;
+        async function updateUserPlayed(tournamentId, userId, score) {
+            try {
+                await update(ref(db, `users/${userId}`), {
+                    hasPlayedCurrentEvent: true
+                });
                 
-                return `
-                    <div class="ranking-item">
-                        <span class="rank ${rankClass}">${medal}</span>
-                        <div class="avatar">${(player.username || 'P').charAt(0).toUpperCase()}</div>
-                        <div class="info">
-                            <div class="name">${player.username || 'Anonymous'}</div>
-                            <div class="score">Score: <span class="score-value">${player.score || 0}</span></div>
-                        </div>
-                        <div style="font-size:0.75rem;color:var(--muted);">
-                            ${player.hasPlayed ? '✅ Played' : '⏳ Pending'}
-                        </div>
-                    </div>
-                `;
-            }).join('');
+                await update(ref(db, `tournaments/${tournamentId}/players/${userId}`), {
+                    hasPlayed: true,
+                    score: score
+                });
+                
+                await update(ref(db, `shora-games/tournaments/${tournamentId}/players/${userId}`), {
+                    hasPlayed: true,
+                    score: score
+                });
+                
+                userData.hasPlayedCurrentEvent = true;
+                updateUI();
+                showToast(`✅ Score: ${score} points submitted!`, 'success');
+                loadTournaments();
+                
+            } catch (error) {
+                console.error('Error updating user played status:', error);
+                showToast('⚠️ Error saving score. Please contact support.', 'error');
+            }
         }
 
         // ========================================
-        // UPLOAD EVENT IMAGE
+        // VIEW TOURNAMENT DETAILS
         // ========================================
 
-        document.getElementById('imageUpload')?.addEventListener('change', async function(e) {
-            const file = e.target.files[0];
-            if (!file) return;
-            
-            // Check if admin (you can implement proper admin check)
-            if (!isAdmin) {
-                showToast('Only admins can upload images', 'error');
+        window.viewTournamentDetails = function(tournamentId) {
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) {
+                showToast('Tournament not found', 'error');
                 return;
             }
             
-            try {
-                const storagePath = `events/${eventId}/cover_${Date.now()}.jpg`;
-                const storageRef = storageRef(storage, storagePath);
-                await uploadBytes(storageRef, file);
-                const url = await getDownloadURL(storageRef);
+            // Show tournament details in a modal or alert
+            const players = tournament.players ? Object.values(tournament.players) : [];
+            const playerList = players.length > 0 ? 
+                players.map(p => `- ${p.username || 'Anonymous'} (Score: ${p.score || 0})`).join('\n') :
+                'No players yet';
+            
+            alert(`
+                🏆 ${tournament.name}
+                🎮 Game: ${tournament.game}
+                📅 Status: ${tournament.status.toUpperCase()}
+                💰 Entry Fee: ${tournament.entryFee} RWF
+                🏅 Prize Pool: ${tournament.prizePool} RWF
+                👥 Players: ${tournament.currentPlayers}/${tournament.maxPlayers}
+                ⏱️ Duration: ${tournament.duration} minutes
+                ${tournament.description ? `📝 ${tournament.description}` : ''}
+                ${tournament.locked ? '🔒 Locked' : '🔓 Open'}
                 
-                // Update event with image URL
-                await update(ref(db, 'tournaments/current_event'), { imageUrl: url });
-                
-                showToast('✅ Event image uploaded successfully!', 'success');
-                loadEventData();
-                
-            } catch (error) {
-                console.error('Error uploading image:', error);
-                showToast('Error uploading image', 'error');
+                👤 Players List:
+                ${playerList}
+            `);
+        };
+
+        // ========================================
+        // SHOW RANKINGS (for ended tournaments)
+        // ========================================
+
+        window.showRankings = function(tournamentId) {
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) {
+                showToast('Tournament not found', 'error');
+                return;
             }
-        });
+            
+            if (!tournament.players || Object.keys(tournament.players).length === 0) {
+                showToast('No players participated in this tournament', 'info');
+                return;
+            }
+            
+            const players = Object.entries(tournament.players)
+                .map(([uid, data]) => ({ uid, ...data }))
+                .sort((a, b) => (b.score || 0) - (a.score || 0));
+            
+            let rankings = players.map((p, i) => {
+                const medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `${i + 1}.`;
+                return `${medal} ${p.username || 'Anonymous'} - ${p.score || 0} points`;
+            }).join('\n');
+            
+            alert(`
+                🏆 ${tournament.name} - Final Rankings
+                ${'='.repeat(30)}
+                ${rankings}
+                ${'='.repeat(30)}
+                Total Players: ${players.length}
+            `);
+        };
+
+        // ========================================
+        // UPDATE BADGE
+        // ========================================
+
+        function updateBadge(tournaments) {
+            const liveCount = tournaments.filter(t => t.status === 'live').length;
+            document.getElementById('eventBadge').textContent = liveCount;
+        }
 
         // ========================================
         // UPDATE UI
         // ========================================
 
         function updateUI() {
-            // Update balance in navbar
             document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
             document.getElementById('navUsername').textContent = userData.username;
         }
@@ -1353,15 +1225,16 @@ async function updateUserPlayed(eventId, userId, score) {
         // ========================================
 
         console.log('%c🏆 SHORA GAMES - TOURNAMENTS', 'color: #FFD700; font-size: 20px; font-weight: bold;');
-        console.log('%c🎮 Game: Ninja Run', 'color: #00BFFF;');
-        console.log('%c💰 Entry Fee: 500 RWF', 'color: #00E676;');
-        console.log('%c👥 Max Players: 50', 'color: #FFC857;');
-        console.log('%c🔄 Real-time countdown active', 'color: #FF4D6D;');
-        console.log('%c📸 Event image upload ready', 'color: #A7B5C5;');
-
-        // Make functions available globally for onclick
-        window.joinEvent = joinEvent;
+        console.log('%c📊 Connected to Firebase - Receiving admin updates', 'color: #00E676;');
+        console.log('%c🔄 Tournaments auto-update when admin makes changes', 'color: #00BFFF;');
+        console.log('%c👥 Min Players: 2 (fixed) | Max: Admin set', 'color: #FFC857;');
+        console.log('%c🔒 Lock/Unlock controlled by admin', 'color: #FF4D6D;');
+        
+        // Make functions available globally
+        window.joinTournament = joinTournament;
         window.playGame = playGame;
+        window.viewTournamentDetails = viewTournamentDetails;
+        window.showRankings = showRankings;
     </script>
 
 </body>
