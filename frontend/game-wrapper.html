@@ -2,149 +2,128 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
     <title>Ninja Run - Shora Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         /* ============================================================
-           FORCE DESKTOP MODE - OVERRIDE ALL MOBILE SETTINGS
+           RESPONSIVE DESIGN - Adapts to all devices
            ============================================================ */
         
-        /* Reset everything to desktop */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
 
-        /* Force desktop viewport - prevents mobile zoom/resize */
-        html {
-            min-width: 1024px;
-            min-height: 768px;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            position: fixed;
-            top: 0;
-            left: 0;
+        :root {
+            --header-height: 56px;
+            --header-padding: 8px 16px;
+            --font-size-title: 0.9rem;
+            --font-size-score: 0.85rem;
+            --font-size-status: 0.65rem;
+            --gap: 8px;
+            --border-radius: 12px;
+            --padding-score: 4px 12px;
         }
 
-        body {
-            background: #06111F;
-            color: #fff;
-            font-family: 'Inter', sans-serif;
-            min-width: 1024px;
-            min-height: 768px;
+        html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
+            background: #06111F;
+            color: #fff;
+            font-family: 'Inter', 'Space Grotesk', sans-serif;
             margin: 0;
             padding: 0;
             position: fixed;
             top: 0;
             left: 0;
-            /* Prevent any mobile scaling */
-            -webkit-text-size-adjust: 100%;
-            -ms-text-size-adjust: 100%;
-            -moz-text-size-adjust: 100%;
-            transform: none !important;
-            -webkit-transform: none !important;
-        }
-
-        /* Block any mobile zoom/scale */
-        * {
-            -webkit-touch-callout: none;
-            -webkit-user-select: none;
-            user-select: none;
-            touch-action: manipulation;
         }
 
         /* ============================================================
-           DESKTOP CONTAINER - Fixed size
+           GAME CONTAINER - Fills screen, maintains aspect ratio
            ============================================================ */
-        #gameContainer {
+        #gameWrapper {
             width: 100%;
             height: 100vh;
             height: 100dvh;
-            position: relative;
             display: flex;
             flex-direction: column;
-            max-width: 1280px;
-            margin: 0 auto;
             background: #000;
-            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
-            min-height: 768px;
-            min-width: 1024px;
+            position: relative;
+            overflow: hidden;
         }
 
         /* ============================================================
-           HEADER - Desktop style
+           HEADER - Responsive
            ============================================================ */
         .game-header {
             position: relative;
             z-index: 100;
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(16px);
-            padding: 10px 24px;
+            background: rgba(6, 17, 31, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            padding: var(--header-padding);
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.08);
             flex-shrink: 0;
-            min-height: 60px;
-            gap: 16px;
+            min-height: var(--header-height);
+            height: var(--header-height);
+            gap: var(--gap);
             flex-wrap: nowrap;
-            max-width: 1280px;
-            margin: 0 auto;
             width: 100%;
-            border-left: 1px solid rgba(0, 191, 255, 0.1);
-            border-right: 1px solid rgba(0, 191, 255, 0.1);
         }
 
         .game-header .title {
             font-family: 'Orbitron', monospace;
-            font-size: 1.1rem;
+            font-size: var(--font-size-title);
             color: #00BFFF;
             display: flex;
             align-items: center;
-            gap: 12px;
+            gap: 6px;
             white-space: nowrap;
-            flex-shrink: 0;
+            flex-shrink: 1;
+            min-width: 0;
         }
         .game-header .title i {
             color: #FFD700;
-            font-size: 1.1rem;
+            font-size: calc(var(--font-size-title) * 0.9);
         }
         .game-header .title .sub {
-            font-size: 0.65rem;
+            font-size: calc(var(--font-size-title) * 0.5);
             color: #A7B5C5;
             font-family: 'Inter', sans-serif;
             font-weight: 300;
+            display: none;
         }
 
         .score-display {
             display: flex;
             align-items: center;
-            gap: 10px;
-            background: rgba(0, 191, 255, 0.08);
-            border: 1px solid rgba(0, 191, 255, 0.15);
-            border-radius: 20px;
-            padding: 6px 20px;
+            gap: 4px;
+            background: rgba(0, 191, 255, 0.06);
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            border-radius: var(--border-radius);
+            padding: var(--padding-score);
             font-family: 'Orbitron', monospace;
-            font-size: 1rem;
+            font-size: var(--font-size-score);
             color: #FFD700;
             white-space: nowrap;
-            flex-shrink: 0;
+            flex-shrink: 1;
+            min-width: 0;
         }
         .score-display i {
             color: #FFD700;
-            font-size: 0.9rem;
+            font-size: calc(var(--font-size-score) * 0.8);
         }
         .score-display .score-value {
             font-weight: 700;
-            min-width: 50px;
+            min-width: 30px;
             text-align: center;
             color: #00E676;
             transition: all 0.3s ease;
@@ -152,34 +131,32 @@
         .score-display .score-value.pulse {
             animation: scorePulse 0.3s ease;
         }
+        .score-display .label {
+            display: none;
+        }
 
         @keyframes scorePulse {
-            0%,
-            100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.3);
-                color: #FFD700;
-            }
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.3); color: #FFD700; }
         }
 
         .status-display {
             display: flex;
             align-items: center;
-            gap: 10px;
-            font-size: 0.75rem;
+            gap: 6px;
+            font-size: var(--font-size-status);
             color: #A7B5C5;
             white-space: nowrap;
             flex-shrink: 0;
         }
         .status-display .dot {
-            width: 10px;
-            height: 10px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
             background: #00E676;
             animation: pulse 1.5s infinite;
             display: inline-block;
+            flex-shrink: 0;
         }
         .status-display .dot.complete {
             background: #FFD700;
@@ -189,21 +166,17 @@
             background: #FF4D6D;
             animation: none;
         }
+        .status-display .status-text {
+            display: none;
+        }
 
         @keyframes pulse {
-            0%,
-            100% {
-                opacity: 1;
-                transform: scale(1);
-            }
-            50% {
-                opacity: 0.3;
-                transform: scale(0.8);
-            }
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.3; transform: scale(0.8); }
         }
 
         /* ============================================================
-           GAME FRAME - Desktop size
+           GAME FRAME - Responsive
            ============================================================ */
         #gameFrame {
             flex: 1;
@@ -211,14 +184,11 @@
             border: none;
             background: #000;
             min-height: 0;
-            max-width: 1280px;
-            margin: 0 auto;
-            height: calc(100vh - 60px);
-            min-height: 708px;
+            height: calc(100% - var(--header-height));
         }
 
         /* ============================================================
-           LOADING OVERLAY - Desktop style
+           LOADING OVERLAY - Responsive
            ============================================================ */
         #loadingOverlay {
             position: fixed;
@@ -232,41 +202,41 @@
             transition: opacity 0.5s ease;
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(20px);
-            min-width: 1024px;
-            min-height: 768px;
+            -webkit-backdrop-filter: blur(20px);
+            padding: 20px;
         }
         #loadingOverlay.hidden {
             opacity: 0;
             pointer-events: none;
         }
         #loadingOverlay .spinner {
-            width: 60px;
-            height: 60px;
-            border: 4px solid rgba(0, 191, 255, 0.1);
+            width: clamp(40px, 8vw, 60px);
+            height: clamp(40px, 8vw, 60px);
+            border: 3px solid rgba(0, 191, 255, 0.1);
             border-top-color: #00BFFF;
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
         @keyframes spin {
-            to {
-                transform: rotate(360deg);
-            }
+            to { transform: rotate(360deg); }
         }
         #loadingOverlay .text {
-            margin-top: 24px;
+            margin-top: 16px;
             color: #A7B5C5;
-            font-size: 1rem;
+            font-size: clamp(0.7rem, 2vw, 1rem);
             font-family: 'Orbitron', monospace;
+            text-align: center;
         }
         #loadingOverlay .error-text {
             color: #FF4D6D;
-            margin-top: 12px;
-            font-size: 0.9rem;
+            margin-top: 8px;
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
             display: none;
+            text-align: center;
         }
         #loadingOverlay .progress-bar {
-            margin-top: 20px;
-            width: 250px;
+            margin-top: 16px;
+            width: clamp(150px, 40vw, 250px);
             height: 4px;
             background: rgba(255, 255, 255, 0.05);
             border-radius: 2px;
@@ -280,16 +250,16 @@
             transition: width 0.3s ease;
         }
         #loadingOverlay .retry-btn {
-            margin-top: 24px;
+            margin-top: 16px;
             background: linear-gradient(135deg, #00BFFF, #6C63FF);
             border: none;
             color: #000;
-            padding: 12px 36px;
+            padding: clamp(8px, 1.5vh, 12px) clamp(20px, 4vw, 36px);
             border-radius: 10px;
             font-family: 'Orbitron', monospace;
             font-weight: 700;
             cursor: pointer;
-            font-size: 0.9rem;
+            font-size: clamp(0.6rem, 1.5vw, 0.9rem);
             display: none;
             transition: all 0.3s ease;
         }
@@ -299,133 +269,380 @@
         }
 
         /* ============================================================
-           TOAST - Desktop style
+           TOAST - Responsive
            ============================================================ */
         .toast-cyber {
             position: fixed;
-            bottom: 40px;
+            bottom: clamp(16px, 3vh, 40px);
             left: 50%;
             transform: translateX(-50%);
             background: rgba(6, 17, 31, 0.95);
             backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
             border: 1px solid rgba(0, 230, 118, 0.3);
             border-radius: 50px;
-            padding: 14px 28px;
+            padding: clamp(8px, 1.5vh, 14px) clamp(16px, 3vw, 28px);
             color: #00E676;
-            font-size: 1rem;
+            font-size: clamp(0.65rem, 1.5vw, 1rem);
             z-index: 9999;
             font-family: 'Inter', sans-serif;
             box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
             max-width: 90%;
             text-align: center;
             animation: slideUp 0.3s ease;
-            white-space: nowrap;
         }
         .toast-cyber.error {
             border-color: rgba(255, 77, 109, 0.3);
             color: #FF4D6D;
         }
         @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateX(-50%) translateY(20px);
+            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
+            to { opacity: 1; transform: translateX(-50%) translateY(0); }
+        }
+
+        /* ============================================================
+           DESKTOP MODE TOGGLE BUTTON
+           ============================================================ */
+        .desktop-toggle {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            font-size: calc(var(--font-size-status) * 0.85);
+            color: #A7B5C5;
+            cursor: pointer;
+            padding: 4px 10px;
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+            background: rgba(255,255,255,0.02);
+            transition: all 0.3s ease;
+            user-select: none;
+            flex-shrink: 0;
+            white-space: nowrap;
+        }
+        .desktop-toggle:hover {
+            border-color: rgba(0, 191, 255, 0.3);
+            background: rgba(0, 191, 255, 0.05);
+        }
+        .desktop-toggle .toggle-track {
+            width: clamp(22px, 3vw, 32px);
+            height: clamp(12px, 1.5vw, 16px);
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            position: relative;
+            transition: all 0.3s ease;
+            flex-shrink: 0;
+        }
+        .desktop-toggle .toggle-track .toggle-thumb {
+            width: clamp(8px, 1vw, 12px);
+            height: clamp(8px, 1vw, 12px);
+            background: #A7B5C5;
+            border-radius: 50%;
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            transition: all 0.3s ease;
+        }
+        .desktop-toggle.active .toggle-track {
+            background: rgba(0, 191, 255, 0.3);
+        }
+        .desktop-toggle.active .toggle-track .toggle-thumb {
+            left: calc(100% - clamp(10px, 1.2vw, 14px));
+            background: #00BFFF;
+        }
+        .desktop-toggle .toggle-label {
+            font-weight: 500;
+            font-size: calc(var(--font-size-status) * 0.85);
+            display: none;
+        }
+
+        /* ============================================================
+           RESPONSIVE BREAKPOINTS
+           ============================================================ */
+
+        /* ===== LARGE DESKTOP (1200px+) ===== */
+        @media (min-width: 1200px) {
+            :root {
+                --header-height: 64px;
+                --header-padding: 12px 28px;
+                --font-size-title: 1.2rem;
+                --font-size-score: 1rem;
+                --font-size-status: 0.8rem;
+                --gap: 16px;
+                --border-radius: 16px;
+                --padding-score: 6px 20px;
             }
-            to {
-                opacity: 1;
-                transform: translateX(-50%) translateY(0);
+            .game-header .title .sub {
+                display: inline;
+            }
+            .score-display .label {
+                display: inline;
+            }
+            .status-display .status-text {
+                display: inline;
+            }
+            .desktop-toggle .toggle-label {
+                display: inline;
+            }
+        }
+
+        /* ===== DESKTOP (1024px - 1199px) ===== */
+        @media (min-width: 1024px) and (max-width: 1199px) {
+            :root {
+                --header-height: 60px;
+                --header-padding: 10px 24px;
+                --font-size-title: 1.1rem;
+                --font-size-score: 0.95rem;
+                --font-size-status: 0.75rem;
+                --gap: 14px;
+                --border-radius: 14px;
+                --padding-score: 5px 16px;
+            }
+            .game-header .title .sub {
+                display: inline;
+            }
+            .score-display .label {
+                display: inline;
+            }
+            .status-display .status-text {
+                display: inline;
+            }
+            .desktop-toggle .toggle-label {
+                display: inline;
+            }
+        }
+
+        /* ===== TABLET (768px - 1023px) ===== */
+        @media (min-width: 768px) and (max-width: 1023px) {
+            :root {
+                --header-height: 52px;
+                --header-padding: 8px 16px;
+                --font-size-title: 0.95rem;
+                --font-size-score: 0.85rem;
+                --font-size-status: 0.7rem;
+                --gap: 10px;
+                --border-radius: 12px;
+                --padding-score: 4px 14px;
+            }
+            .game-header .title .sub {
+                display: none;
+            }
+            .score-display .label {
+                display: none;
+            }
+            .status-display .status-text {
+                display: none;
+            }
+            .desktop-toggle .toggle-label {
+                display: none;
+            }
+        }
+
+        /* ===== LARGE PHONE (480px - 767px) ===== */
+        @media (min-width: 480px) and (max-width: 767px) {
+            :root {
+                --header-height: 46px;
+                --header-padding: 6px 12px;
+                --font-size-title: 0.8rem;
+                --font-size-score: 0.7rem;
+                --font-size-status: 0.6rem;
+                --gap: 6px;
+                --border-radius: 10px;
+                --padding-score: 3px 10px;
+            }
+            .game-header .title .sub {
+                display: none;
+            }
+            .game-header .title i {
+                display: none;
+            }
+            .score-display .label {
+                display: none;
+            }
+            .score-display i {
+                display: none;
+            }
+            .status-display .status-text {
+                display: none;
+            }
+            .desktop-toggle .toggle-label {
+                display: none;
+            }
+            .desktop-toggle {
+                padding: 2px 6px;
+            }
+        }
+
+        /* ===== SMALL PHONE (320px - 479px) ===== */
+        @media (min-width: 320px) and (max-width: 479px) {
+            :root {
+                --header-height: 40px;
+                --header-padding: 4px 8px;
+                --font-size-title: 0.65rem;
+                --font-size-score: 0.6rem;
+                --font-size-status: 0.5rem;
+                --gap: 4px;
+                --border-radius: 8px;
+                --padding-score: 2px 8px;
+            }
+            .game-header .title .sub {
+                display: none;
+            }
+            .game-header .title i {
+                display: none;
+            }
+            .score-display .label {
+                display: none;
+            }
+            .score-display i {
+                display: none;
+            }
+            .status-display .status-text {
+                display: none;
+            }
+            .desktop-toggle .toggle-label {
+                display: none;
+            }
+            .desktop-toggle {
+                padding: 2px 4px;
+            }
+            .desktop-toggle .toggle-track {
+                width: 18px;
+                height: 10px;
+            }
+            .desktop-toggle .toggle-track .toggle-thumb {
+                width: 6px;
+                height: 6px;
+                top: 2px;
+                left: 2px;
+            }
+            .desktop-toggle.active .toggle-track .toggle-thumb {
+                left: calc(100% - 8px);
+            }
+            .score-display .score-value {
+                min-width: 20px;
+            }
+            .status-display .dot {
+                width: 6px;
+                height: 6px;
+            }
+        }
+
+        /* ===== EXTRA SMALL PHONE (< 320px) ===== */
+        @media (max-width: 319px) {
+            :root {
+                --header-height: 36px;
+                --header-padding: 2px 6px;
+                --font-size-title: 0.55rem;
+                --font-size-score: 0.5rem;
+                --font-size-status: 0.45rem;
+                --gap: 3px;
+                --border-radius: 6px;
+                --padding-score: 2px 6px;
+            }
+            .game-header .title .sub {
+                display: none;
+            }
+            .game-header .title i {
+                display: none;
+            }
+            .score-display .label {
+                display: none;
+            }
+            .score-display i {
+                display: none;
+            }
+            .status-display .status-text {
+                display: none;
+            }
+            .desktop-toggle .toggle-label {
+                display: none;
+            }
+            .desktop-toggle {
+                padding: 1px 4px;
+            }
+            .desktop-toggle .toggle-track {
+                width: 16px;
+                height: 8px;
+            }
+            .desktop-toggle .toggle-track .toggle-thumb {
+                width: 5px;
+                height: 5px;
+                top: 1.5px;
+                left: 1.5px;
+            }
+            .desktop-toggle.active .toggle-track .toggle-thumb {
+                left: calc(100% - 6.5px);
+            }
+            .score-display .score-value {
+                min-width: 16px;
+            }
+            .status-display .dot {
+                width: 5px;
+                height: 5px;
+            }
+        }
+
+        /* ===== LANDSCAPE PHONES ===== */
+        @media (max-height: 500px) and (orientation: landscape) {
+            :root {
+                --header-height: 36px;
+                --header-padding: 4px 12px;
+                --font-size-title: 0.7rem;
+                --font-size-score: 0.6rem;
+                --font-size-status: 0.5rem;
+                --gap: 6px;
+                --border-radius: 8px;
+                --padding-score: 2px 10px;
+            }
+            .game-header .title .sub {
+                display: none;
+            }
+            .game-header .title i {
+                display: none;
+            }
+            .score-display .label {
+                display: none;
+            }
+            .score-display i {
+                display: none;
+            }
+            .status-display .status-text {
+                display: none;
+            }
+            .desktop-toggle .toggle-label {
+                display: none;
+            }
+            .desktop-toggle {
+                padding: 2px 6px;
             }
         }
 
         /* ============================================================
-           DESKTOP ONLY - No responsive breakpoints allowed
+           SCROLLBAR
            ============================================================ */
-        /* ALL breakpoints are removed - Desktop ONLY */
-
-        /* Scrollbar styling */
         ::-webkit-scrollbar {
             width: 0px;
             height: 0px;
         }
 
         /* ============================================================
-           FORCE DESKTOP MODE OVERRIDES - Prevent any mobile scaling
+           DESKTOP MODE OVERRIDE
            ============================================================ */
-        
-        /* Block any viewport changes on mobile */
-        @media (max-width: 1023px) {
-            html, body {
-                min-width: 1024px !important;
-                min-height: 768px !important;
-                width: 1024px !important;
-                height: 768px !important;
-                overflow: hidden !important;
-                position: fixed !important;
-                top: 0 !important;
-                left: 0 !important;
-                transform: none !important;
-                -webkit-transform: none !important;
-                zoom: 1 !important;
-                -webkit-zoom: 1 !important;
-                -moz-transform: none !important;
-                -o-transform: none !important;
-            }
-            
-            #gameContainer {
-                min-width: 1024px !important;
-                min-height: 768px !important;
-                width: 1024px !important;
-                height: 768px !important;
-                transform: none !important;
-                -webkit-transform: none !important;
-                margin: 0 auto !important;
-            }
-            
-            #gameFrame {
-                min-height: 708px !important;
-                height: 708px !important;
-            }
-            
-            .game-header {
-                min-height: 60px !important;
-                height: 60px !important;
-            }
-            
-            #loadingOverlay {
-                min-width: 1024px !important;
-                min-height: 768px !important;
-                width: 1024px !important;
-                height: 768px !important;
-            }
+        body.desktop-mode {
+            background: #000;
         }
-
-        /* Block any zoom gestures */
-        body {
-            touch-action: none !important;
-            -webkit-touch-callout: none !important;
-            -webkit-user-select: none !important;
-            user-select: none !important;
+        body.desktop-mode #gameWrapper {
+            max-width: 1280px;
+            margin: 0 auto;
+            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
         }
-
-        /* Prevent double-tap zoom */
-        * {
-            touch-action: manipulation !important;
+        body.desktop-mode .game-header {
+            border-left: 1px solid rgba(0, 191, 255, 0.08);
+            border-right: 1px solid rgba(0, 191, 255, 0.08);
         }
-
-        /* Force hardware acceleration */
-        #gameContainer,
-        #gameFrame,
-        .game-header {
-            -webkit-transform: translateZ(0);
-            transform: translateZ(0);
-            -webkit-backface-visibility: hidden;
-            backface-visibility: hidden;
-            -webkit-perspective: 1000;
-            perspective: 1000;
-        }
-
-        /* Desktop only - no mobile styles */
-        .desktop-only {
-            display: block !important;
+        body.desktop-mode #gameFrame {
+            max-width: 1280px;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -443,7 +660,7 @@
         </button>
     </div>
 
-    <div id="gameContainer">
+    <div id="gameWrapper">
         <div class="game-header" id="gameHeader">
             <div class="title">
                 <i class="fas fa-gamepad"></i>
@@ -452,12 +669,18 @@
             </div>
             <div class="score-display">
                 <i class="fas fa-star"></i>
-                <span>Score:</span>
+                <span class="label">Score:</span>
                 <span class="score-value" id="scoreDisplay">0</span>
             </div>
             <div class="status-display">
                 <span class="dot" id="statusDot"></span>
-                <span id="statusText">Loading...</span>
+                <span class="status-text" id="statusText">Loading...</span>
+            </div>
+            <div class="desktop-toggle active" id="desktopToggle" onclick="toggleDesktopMode()">
+                <span class="toggle-label">🖥️</span>
+                <span class="toggle-track">
+                    <span class="toggle-thumb"></span>
+                </span>
             </div>
         </div>
         <iframe id="gameFrame" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
@@ -465,61 +688,42 @@
 
     <script>
         // ============================================================
-        // DESKTOP FORCE - BLOCK ANY MOBILE CHANGES
+        // DESKTOP MODE TOGGLE
         // ============================================================
-        
-        // Force desktop viewport
-        (function forceDesktop() {
-            // Block viewport changes
-            const metaViewport = document.querySelector('meta[name=viewport]');
-            if (metaViewport) {
-                metaViewport.content = 'width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+        let desktopMode = true;
+        const STORAGE_KEY = 'shora_desktop_mode';
+
+        function loadDesktopMode() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved !== null) {
+                desktopMode = saved === 'true';
+            } else {
+                desktopMode = true;
+                localStorage.setItem(STORAGE_KEY, 'true');
+            }
+            applyDesktopMode();
+        }
+
+        function applyDesktopMode() {
+            const toggle = document.getElementById('desktopToggle');
+            const body = document.body;
+            
+            if (desktopMode) {
+                body.classList.add('desktop-mode');
+                toggle.classList.add('active');
+            } else {
+                body.classList.remove('desktop-mode');
+                toggle.classList.remove('active');
             }
             
-            // Block device orientation changes
-            window.addEventListener('orientationchange', function(e) {
-                e.preventDefault();
-                // Force back to desktop
-                document.documentElement.style.transform = 'none';
-                document.body.style.transform = 'none';
-                document.documentElement.style.zoom = '1';
-                document.body.style.zoom = '1';
-                return false;
-            }, true);
-            
-            // Block resize events from changing layout
-            let lastWidth = window.innerWidth;
-            window.addEventListener('resize', function(e) {
-                if (window.innerWidth < 1024 || window.innerHeight < 768) {
-                    // Force back to desktop size
-                    document.documentElement.style.minWidth = '1024px';
-                    document.documentElement.style.minHeight = '768px';
-                    document.body.style.minWidth = '1024px';
-                    document.body.style.minHeight = '768px';
-                }
-            }, true);
-            
-            // Block touch events from zooming
-            document.addEventListener('touchstart', function(e) {
-                if (e.touches.length > 1) {
-                    e.preventDefault();
-                }
-            }, { passive: false });
-            
-            document.addEventListener('gesturestart', function(e) {
-                e.preventDefault();
-            }, { passive: false });
-            
-            document.addEventListener('gesturechange', function(e) {
-                e.preventDefault();
-            }, { passive: false });
-            
-            document.addEventListener('gestureend', function(e) {
-                e.preventDefault();
-            }, { passive: false });
-            
-            console.log('🖥️ Desktop mode FORCED - All mobile features blocked');
-        })();
+            localStorage.setItem(STORAGE_KEY, String(desktopMode));
+        }
+
+        function toggleDesktopMode() {
+            desktopMode = !desktopMode;
+            applyDesktopMode();
+            showToast(desktopMode ? '🖥️ Desktop mode ON' : '📱 Mobile mode ON', 'info');
+        }
 
         // ============================================================
         // CONFIG
@@ -529,10 +733,10 @@
         const USER_ID = params.get('user') || 'user_001';
         const GAME_URL = 'games/ninja run/index.html';
 
-        console.log('🎮 Ninja Run Wrapper loaded (DESKTOP ONLY)');
+        console.log('🎮 Ninja Run Wrapper loaded');
         console.log(`📋 Event: ${EVENT_ID}`);
         console.log(`👤 User: ${USER_ID}`);
-        console.log('🖥️ Desktop mode: FORCED - No mobile views allowed');
+        console.log(`🖥️ Desktop mode: ${desktopMode ? 'ON' : 'OFF'}`);
 
         // ============================================================
         // TOAST
@@ -549,11 +753,11 @@
                 toast.style.opacity = '0';
                 toast.style.transition = 'opacity 0.5s ease';
                 setTimeout(() => toast.remove(), 500);
-            }, 4000);
+            }, 3000);
         }
 
         // ============================================================
-        // SCORE TRACKING (From working version)
+        // SCORE TRACKING
         // ============================================================
         let gameScore = 0;
         let scoreSubmitted = false;
@@ -569,7 +773,6 @@
                     const rt = window.gameRuntime;
                     let score = 0;
 
-                    // Check global variables
                     const vars = rt.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
@@ -585,7 +788,6 @@
                         }
                     }
 
-                    // Check runtime globalVars
                     if (rt.globalVars) {
                         for (const key in rt.globalVars) {
                             const lowerKey = key.toLowerCase();
@@ -603,7 +805,6 @@
                         }
                     }
 
-                    // Update score
                     if (score > gameScore) {
                         gameScore = score;
                         console.log('📊 Score updated:', gameScore);
@@ -837,6 +1038,7 @@
                                 statusDot.className = 'dot';
                             }, 400);
                             setTimeout(() => injectBridge(), 1500);
+                            loadDesktopMode();
                             return;
                         }
                     }
@@ -885,24 +1087,29 @@
         });
 
         // ============================================================
-        // PREVENT ALL TOUCH/MOBILE INTERACTIONS
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'd' || e.key === 'D') {
+                toggleDesktopMode();
+            }
+            if (e.key === 'Escape') {
+                if (confirm('Close game and return to tournaments?')) {
+                    window.close();
+                }
+            }
+        });
+
+        // ============================================================
+        // PREVENT SCROLLING & ZOOM
         // ============================================================
         document.addEventListener('touchmove', function(e) {
-            if (e.target === document.body || e.target === document.getElementById('gameContainer')) {
+            if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
                 e.preventDefault();
             }
         }, { passive: false });
 
         document.addEventListener('gesturestart', function(e) { e.preventDefault(); }, { passive: false });
-        document.addEventListener('gesturechange', function(e) { e.preventDefault(); }, { passive: false });
-        document.addEventListener('gestureend', function(e) { e.preventDefault(); }, { passive: false });
-
-        // Block pinch zoom
-        document.addEventListener('touchstart', function(e) {
-            if (e.touches && e.touches.length > 1) {
-                e.preventDefault();
-            }
-        }, { passive: false });
 
         // ============================================================
         // DEBUG (Parent)
@@ -914,11 +1121,14 @@
                     submitted: scoreSubmitted,
                     sessionScore: sessionStorage.getItem('ninjaRunScore'),
                     liveScore: sessionStorage.getItem('ninjaRunLiveScore'),
-                    desktopMode: 'FORCED'
+                    desktopMode: desktopMode
                 };
             },
             submitScore: function(score) {
                 window.submitScore(score);
+            },
+            toggleDesktop: function() {
+                toggleDesktopMode();
             }
         };
 
@@ -926,19 +1136,21 @@
         // INIT
         // ============================================================
         loadGame();
+        loadDesktopMode();
 
         console.log('');
         console.log('🖥️ ===========================================');
-        console.log('🖥️ DESKTOP MODE - FORCED & LOCKED');
+        console.log('🖥️ NINJA RUN - FULLY RESPONSIVE');
         console.log('🖥️ ===========================================');
-        console.log('📱 Mobile/Tablet views are BLOCKED');
-        console.log('🔒 Device toolbar changes are OVERRIDDEN');
-        console.log('📐 Always displays at 1280x720+ resolution');
-        console.log('✅ Press "ESC" to close game');
+        console.log('📱 Adapts to ALL screen sizes');
+        console.log('🔘 Desktop mode toggle available');
+        console.log('⌨️  Press "D" to toggle desktop mode');
+        console.log('⌨️  Press "ESC" to close game');
         console.log('');
-        console.log('🔍 DEBUG COMMANDS (in console):');
-        console.log('  __ninjaParentDebug.getStatus()  - Check game status');
-        console.log('  __ninjaParentDebug.submitScore(1000)  - Manually submit score');
+        console.log('🔍 DEBUG COMMANDS:');
+        console.log('  __ninjaParentDebug.getStatus()  - Check status');
+        console.log('  __ninjaParentDebug.submitScore(1000)  - Submit score');
+        console.log('  __ninjaParentDebug.toggleDesktop()  - Toggle desktop mode');
     </script>
 
 </body>
