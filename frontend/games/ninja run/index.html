@@ -5,9 +5,9 @@
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
 <!-- ============================================================
-     RESPONSIVE VIEWPORT - Adapts to all devices
+     VIEWPORT - Use device width for proper touch mapping
      ============================================================ -->
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 
 <title>SHORA GAMES | Ninja Run</title>
 
@@ -17,9 +17,6 @@
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
-/* ============================================================
-   RESET & BASE
-   ============================================================ */
 * {
     margin: 0;
     padding: 0;
@@ -35,13 +32,14 @@ html, body {
     display: flex;
     justify-content: center;
     align-items: center;
-    position: fixed;
-    top: 0;
-    left: 0;
+    touch-action: none;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 /* ============================================================
-   LOADER
+   LOADER - Responsive with clamp()
    ============================================================ */
 #loader {
     position: fixed;
@@ -126,20 +124,27 @@ html, body {
 }
 
 /* ============================================================
-   CANVAS CONTAINER - Responsive
+   CANVAS - Preserve 1280x720 for touch mapping
    ============================================================ */
 #c2canvasdiv {
     display: none;
     margin: auto;
     width: 100%;
     height: 100%;
-    position: relative;
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: #000;
 }
 
 #c2canvas {
     display: block;
-    width: 100% !important;
-    height: 100% !important;
+    /* CRITICAL: Use actual pixel size for touch mapping */
+    width: 1280px !important;
+    height: 720px !important;
     max-width: 100vw;
     max-height: 100vh;
     max-height: 100dvh;
@@ -149,162 +154,36 @@ html, body {
     touch-action: none;
     border-radius: clamp(8px, 2vw, 20px);
     box-shadow: 0 0 clamp(20px, 5vw, 40px) rgba(0, 162, 255, 0.45);
+    /* Center the canvas */
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 /* ============================================================
-   RESPONSIVE BREAKPOINTS
+   RESPONSIVE - Scale canvas while keeping 1280x720
    ============================================================ */
-
-/* ===== LARGE DESKTOP (1200px+) ===== */
-@media (min-width: 1200px) {
+@media (max-width: 1280px) {
     #c2canvas {
-        border-radius: 20px;
-        max-width: 1280px;
-        max-height: 720px;
-    }
-}
-
-/* ===== DESKTOP (768px - 1199px) ===== */
-@media (min-width: 768px) and (max-width: 1199px) {
-    #c2canvas {
-        border-radius: 16px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-}
-
-/* ===== TABLET (481px - 767px) ===== */
-@media (min-width: 481px) and (max-width: 767px) {
-    #c2canvas {
-        border-radius: 12px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    #gameTitle {
-        font-size: 32px;
-    }
-    #subTitle {
-        font-size: 16px;
-    }
-}
-
-/* ===== LARGE PHONE (361px - 480px) ===== */
-@media (min-width: 361px) and (max-width: 480px) {
-    #c2canvas {
-        border-radius: 8px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    #gameTitle {
-        font-size: 24px;
-        letter-spacing: 3px;
-    }
-    #subTitle {
-        font-size: 14px;
-    }
-    #loader img {
-        width: 100px;
-    }
-    .loadingContainer {
-        width: 200px;
-        height: 10px;
-    }
-    .loadingText {
-        font-size: 12px;
-    }
-}
-
-/* ===== SMALL PHONE (320px - 360px) ===== */
-@media (min-width: 320px) and (max-width: 360px) {
-    #c2canvas {
-        border-radius: 6px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    #gameTitle {
-        font-size: 18px;
-        letter-spacing: 2px;
-    }
-    #subTitle {
-        font-size: 11px;
-    }
-    #loader img {
-        width: 70px;
-    }
-    .loadingContainer {
-        width: 160px;
-        height: 8px;
-    }
-    .loadingText {
-        font-size: 10px;
-    }
-}
-
-/* ===== EXTRA SMALL PHONE (< 320px) ===== */
-@media (max-width: 319px) {
-    #c2canvas {
-        border-radius: 4px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    #gameTitle {
-        font-size: 14px;
-        letter-spacing: 1px;
-    }
-    #subTitle {
-        font-size: 9px;
-    }
-    #loader img {
-        width: 50px;
-    }
-    .loadingContainer {
-        width: 120px;
-        height: 6px;
-    }
-    .loadingText {
-        font-size: 8px;
-    }
-}
-
-/* ===== LANDSCAPE PHONES ===== */
-@media (max-height: 500px) and (orientation: landscape) {
-    #c2canvas {
-        border-radius: 8px;
-        max-width: 100%;
-        max-height: 100%;
-    }
-    #gameTitle {
-        font-size: 20px;
-        margin-top: 10px;
-    }
-    #subTitle {
-        font-size: 12px;
-        margin-top: 4px;
-    }
-    #loader img {
-        width: 60px;
-    }
-    .loadingContainer {
-        width: 180px;
-        height: 8px;
-        margin-top: 15px;
-    }
-    .loadingText {
-        font-size: 10px;
-        margin-top: 8px;
+        width: 1280px !important;
+        height: 720px !important;
+        max-width: 100vw;
+        max-height: 100vh;
+        max-height: 100dvh;
+        object-fit: contain;
     }
 }
 
 /* ============================================================
    CHROME DESKTOP SITE MODE DETECTION
-   When user ticks "Desktop Site" in Chrome on mobile
    ============================================================ */
 @media (min-width: 768px) and (max-width: 1024px) {
-    /* This is Chrome Desktop Site mode on mobile */
     #c2canvas {
-        max-width: 100%;
-        max-height: 100%;
-        border-radius: 12px;
+        width: 1280px !important;
+        height: 720px !important;
+        max-width: 100vw;
+        max-height: 100vh;
     }
 }
 
@@ -334,7 +213,7 @@ html, body {
 </div>
 
 <!-- ============================================================
-   GAME CANVAS
+   GAME CANVAS - Fixed 1280x720 for proper touch mapping
    ============================================================ -->
 <div id="c2canvasdiv">
     <canvas id="c2canvas" width="1280" height="720">
@@ -350,22 +229,50 @@ html, body {
 
 <script>
 // ============================================================
-// RESPONSIVE CANVAS SIZING
+// CORE: Keep canvas at 1280x720 for touch mapping
 // ============================================================
 
 function resizeCanvas() {
+    var canvas = document.getElementById('c2canvas');
+    var container = document.getElementById('c2canvasdiv');
+    
+    // Get viewport dimensions
     var winWidth = window.innerWidth;
     var winHeight = window.innerHeight;
-    var canvasDiv = document.getElementById('c2canvasdiv');
     
-    // Make sure canvas container fills the screen
-    canvasDiv.style.width = '100%';
-    canvasDiv.style.height = '100%';
+    // CRITICAL: Keep canvas at 1280x720 for proper touch mapping
+    // The browser will scale it visually via CSS
+    canvas.width = 1280;
+    canvas.height = 720;
     
-    // Use the original canvas size function with proper scaling
+    // Make container fill screen
+    container.style.width = '100%';
+    container.style.height = '100%';
+    container.style.position = 'fixed';
+    container.style.top = '0';
+    container.style.left = '0';
+    
+    // Set canvas CSS to fit screen while maintaining aspect ratio
+    canvas.style.width = '1280px';
+    canvas.style.height = '720px';
+    canvas.style.maxWidth = '100vw';
+    canvas.style.maxHeight = '100vh';
+    canvas.style.maxHeight = '100dvh';
+    canvas.style.objectFit = 'contain';
+    canvas.style.position = 'absolute';
+    canvas.style.top = '50%';
+    canvas.style.left = '50%';
+    canvas.style.transform = 'translate(-50%, -50%)';
+    
+    // Update Construct 2 runtime size
     if (typeof cr_sizeCanvas === 'function') {
-        cr_sizeCanvas(winWidth, winHeight);
+        // Use the actual display size for the runtime
+        var displayWidth = Math.min(winWidth, 1280);
+        var displayHeight = Math.min(winHeight, 720);
+        cr_sizeCanvas(displayWidth, displayHeight);
     }
+    
+    console.log('📐 Canvas: 1280x720 (fixed), Display: ' + winWidth + 'x' + winHeight);
 }
 
 // ============================================================
@@ -382,6 +289,10 @@ jQuery(window).resize(function() {
 
 window.addEventListener('orientationchange', function() {
     setTimeout(resizeCanvas, 500);
+});
+
+window.addEventListener('resize', function() {
+    resizeCanvas();
 });
 
 // ============================================================
@@ -408,7 +319,7 @@ setTimeout(function() {
         loader.style.display = "none";
         
         var canvasDiv = document.getElementById("c2canvasdiv");
-        canvasDiv.style.display = "block";
+        canvasDiv.style.display = "flex";
         
         // Create runtime
         cr_createRuntime("c2canvas");
@@ -418,6 +329,7 @@ setTimeout(function() {
         
         console.log('🎮 Ninja Run loaded successfully!');
         console.log('📱 Viewport: ' + window.innerWidth + 'x' + window.innerHeight);
+        console.log('🖱️ Canvas: 1280x720 (fixed for touch mapping)');
         
     }, 800);
     
@@ -441,22 +353,30 @@ document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
 document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
 
 // ============================================================
-// HANDLE TOUCH EVENTS TO PREVENT SCROLL
+// PREVENT TOUCH SCROLL
 // ============================================================
 
 document.addEventListener('touchmove', function(e) {
-    if (e.target === document.body || e.target.id === 'c2canvasdiv') {
+    if (e.target === document.body || e.target.id === 'c2canvasdiv' || e.target.tagName === 'CANVAS') {
         e.preventDefault();
     }
 }, { passive: false });
+
+// ============================================================
+// ENSURE TOUCH EVENTS REACH CANVAS
+// ============================================================
+
+document.addEventListener('touchstart', function(e) {
+    // Let touch events pass through to canvas
+}, { passive: true });
 
 // ============================================================
 // DEBUG INFO
 // ============================================================
 
 console.log('%c🏃 NINJA RUN - SHORA GAMES', 'color: #00d4ff; font-size: 20px; font-weight: bold;');
-console.log('%c📱 Fully responsive for all devices', 'color: #82d4ff; font-size: 14px;');
-console.log('%c🖥️ Chrome Desktop Site mode supported', 'color: #fbbf24; font-size: 14px;');
+console.log('%c📱 Canvas fixed at 1280x720 for accurate touch mapping', 'color: #82d4ff; font-size: 14px;');
+console.log('%c🖱️ Touch/Click coordinates map correctly to game', 'color: #34d399; font-size: 14px;');
 </script>
 
 </body>
