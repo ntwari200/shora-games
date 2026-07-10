@@ -1,6 +1,7 @@
 // ========================================
-// NINJA RUN - BRIDGE SCRIPT v2
-// Fixed Score Recording
+// NINJA RUN - BRIDGE SCRIPT
+// Connects Construct 2 game to Shora Games Platform
+// Location: frontend/js/ninja-run-bridge.js
 // ========================================
 
 (function() {
@@ -35,6 +36,9 @@
     let lastKnownScore = 0;
     let gameEndDetected = false;
 
+    console.log(`📋 Event ID: ${CONFIG.eventId}`);
+    console.log(`👤 User ID: ${CONFIG.userId}`);
+
     // ========================================
     // SCORE HANDLING
     // ========================================
@@ -47,7 +51,6 @@
             return;
         }
 
-        // Make sure we have a valid score
         const finalScore = parseInt(score) || gameScore || 0;
         gameScore = finalScore;
         
@@ -58,7 +61,6 @@
     function sendScoreToParent(score) {
         console.log('📤 Sending score to parent:', score);
         
-        // Ensure score is a number
         const finalScore = parseInt(score) || 0;
         
         // Store in session storage (multiple keys for redundancy)
@@ -104,6 +106,9 @@
     }
 
     function showCompletionMessage(score) {
+        // Check if overlay already exists
+        if (document.getElementById('ninjaRunCompleteOverlay')) return;
+        
         const overlay = document.createElement('div');
         overlay.id = 'ninjaRunCompleteOverlay';
         overlay.style.cssText = `
@@ -247,13 +252,11 @@
         // METHOD 1: Monitor global variables
         // ========================================
         
-        // Override the tick function to capture score
         const originalTick = runtime.tick;
         runtime.tick = function() {
             originalTick.call(this);
             
             try {
-                // Check multiple sources for score
                 let currentScore = 0;
                 
                 // 1. Check runtime global variables
@@ -301,7 +304,6 @@
                     gameScore = currentScore;
                     console.log(`📊 Score updated: ${gameScore}`);
                     
-                    // Send live update to parent
                     try {
                         if (window.parent && window.parent !== window) {
                             window.parent.postMessage({
@@ -311,18 +313,16 @@
                         }
                     } catch (e) {}
                     
-                    // Store in session storage
                     sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                 }
                 
                 // Check for game over
                 if (runtime.globalVars) {
-                    // Check for GameOver or End flag
                     const gameOverKeys = ['GameOver', 'gameOver', 'GAME_OVER', 'end', 'End', 'finished', 'Finished'];
                     for (const key of gameOverKeys) {
                         if (runtime.globalVars[key] === true || runtime.globalVars[key] === 1) {
                             if (gameScore > 0 && !scoreSubmitted) {
-                                console.log(`🎯 Game Over detected (${key}: ${runtime.globalVars[key]})`);
+                                console.log(`🎯 Game Over detected (${key})`);
                                 gameEndDetected = true;
                                 window.ninjaRunComplete(gameScore);
                                 return;
@@ -331,9 +331,7 @@
                     }
                 }
                 
-            } catch (e) {
-                // Ignore errors to prevent game crashes
-            }
+            } catch (e) {}
         };
 
         // ========================================
@@ -369,9 +367,7 @@
         // METHOD 3: Direct score access
         // ========================================
         
-        // Try to find score in game objects
         try {
-            // Look for score in layouts
             if (runtime.layouts) {
                 for (const layoutName in runtime.layouts) {
                     const layout = runtime.layouts[layoutName];
@@ -455,9 +451,7 @@
                 // If score hasn't changed and game seems to be done
                 if (gameScore === lastCheckedScore) {
                     noChangeCount++;
-                    // After 5 seconds of no change with a score > 0, check if game ended
                     if (noChangeCount > 30 && gameScore > 0 && !scoreSubmitted && gameStarted) {
-                        // Check if runtime is still active
                         if (runtime && runtime.isRunning !== undefined && !runtime.isRunning) {
                             console.log('🎯 Game ended (runtime stopped)');
                             window.ninjaRunComplete(gameScore);
@@ -468,10 +462,9 @@
                     noChangeCount = 0;
                 }
                 
-                // Auto-submit after 30 seconds of gameplay with score > 0 (fallback)
+                // Auto-submit after 60 seconds of gameplay with score > 0 (fallback)
                 if (gameScore > 0 && !scoreSubmitted && gameStarted) {
                     scoreCheckCount++;
-                    // If we've been checking for 60 seconds and have a score, submit
                     if (scoreCheckCount > 120) {
                         console.log('⏰ Auto-submit after timeout');
                         window.ninjaRunComplete(gameScore);
@@ -514,7 +507,10 @@
             score: gameScore,
             submitted: scoreSubmitted,
             started: gameStarted,
-            ended: gameEndDetected
+            ended: gameEndDetected,
+            runtime: !!runtime,
+            eventId: CONFIG.eventId,
+            userId: CONFIG.userId
         };
     };
 
@@ -549,9 +545,11 @@
             score: gameScore,
             submitted: scoreSubmitted,
             started: gameStarted,
-            runtime: !!runtime
+            runtime: !!runtime,
+            ended: gameEndDetected
         }),
-        submit: (score) => window.submitNinjaRunScore(score)
+        submit: (score) => window.submitNinjaRunScore(score),
+        config: CONFIG
     };
 
     // ========================================
@@ -562,7 +560,6 @@
         if (checkInterval) {
             clearInterval(checkInterval);
         }
-        // If game is closing with a score, try to submit
         if (gameScore > 0 && !scoreSubmitted) {
             console.log('🔄 Page closing, submitting final score');
             window.ninjaRunComplete(gameScore);
@@ -574,8 +571,6 @@
     // ========================================
 
     console.log('🚀 Ninja Run Bridge v2 initializing...');
-    console.log(`📋 Event ID: ${CONFIG.eventId}`);
-    console.log(`👤 User ID: ${CONFIG.userId}`);
 
     // Start waiting for runtime
     waitForRuntime();
