@@ -1,26 +1,80 @@
-// ============================================================
-// FULL DESKTOP SITE TOGGLE (Chrome-like)
-// ============================================================
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <!-- ===== DYNAMIC VIEWPORT - Will be changed by JavaScript ===== -->
+    <meta name="viewport" id="viewportMeta" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Ninja Run - Shora Games</title>
+    <!-- ... rest of head ... -->
+</head>
+<body>
+    <!-- ... content ... -->
+    <script>
+        // ============================================================
+        // DETECT DESKTOP MODE FROM URL
+        // ============================================================
+        const params = new URLSearchParams(window.location.search);
+        const isDesktop = params.get('desktop') === 'true';
+        const viewport = document.getElementById('viewportMeta');
 
-function toggleDesktopMode() {
-    const params = new URLSearchParams(window.location.search);
-    const isDesktop = params.get('desktop') === 'true';
-    
-    if (isDesktop) {
-        // Switch to mobile
-        params.delete('desktop');
-        // Change viewport
-        document.querySelector('meta[name=viewport]').content = 
-            'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no';
-        // Reload with mobile settings
-        window.location.search = params.toString();
-    } else {
-        // Switch to desktop
-        params.set('desktop', 'true');
-        // Change viewport to desktop width (980px = Chrome default)
-        document.querySelector('meta[name=viewport]').content = 
-            'width=980, initial-scale=1.0';
-        // Reload with desktop settings
-        window.location.search = params.toString();
-    }
-}
+        // ============================================================
+        // APPLY DESKTOP MODE - Like Chrome's Desktop Site
+        // ============================================================
+        if (isDesktop) {
+            // CHANGE VIEWPORT TO DESKTOP WIDTH (exactly like Chrome does)
+            viewport.content = 'width=1280, initial-scale=1.0';
+            document.body.classList.add('desktop-mode');
+            
+            // Force desktop mode in localStorage so it persists
+            localStorage.setItem('desktop_mode', 'true');
+            
+            console.log('🖥️ Desktop mode activated (viewport: width=1280)');
+        } else {
+            // MOBILE VIEWPORT
+            viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+            document.body.classList.remove('desktop-mode');
+            localStorage.setItem('desktop_mode', 'false');
+            
+            console.log('📱 Mobile mode activated');
+        }
+
+        // ============================================================
+        // TOGGLE FUNCTION - Changes viewport and reloads
+        // ============================================================
+        function toggleDesktopMode() {
+            const currentDesktop = document.body.classList.contains('desktop-mode');
+            const newState = !currentDesktop;
+            
+            if (newState) {
+                // Go to desktop mode
+                const url = new URL(window.location.href);
+                url.searchParams.set('desktop', 'true');
+                // Change viewport BEFORE reload
+                viewport.content = 'width=1280, initial-scale=1.0';
+                // Navigate to URL with desktop parameter
+                window.location.href = url.toString();
+            } else {
+                // Go to mobile mode
+                const url = new URL(window.location.href);
+                url.searchParams.delete('desktop');
+                // Change viewport BEFORE reload
+                viewport.content = 'width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover';
+                // Navigate to URL without desktop parameter
+                window.location.href = url.toString();
+            }
+        }
+
+        // ============================================================
+        // KEYBOARD SHORTCUT: Press D to toggle
+        // ============================================================
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'd' || e.key === 'D') {
+                toggleDesktopMode();
+            }
+        });
+
+        console.log('📱 Current mode:', isDesktop ? 'DESKTOP' : 'MOBILE');
+        console.log('🔄 Press "D" to toggle desktop mode');
+    </script>
+</body>
+</html>
