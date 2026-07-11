@@ -37,7 +37,7 @@
         }
 
         /* ============================================================
-           WARNING BANNER - ALWAYS VISIBLE (FOR TESTING)
+           WARNING BANNER - ALWAYS VISIBLE
            ============================================================ */
         .warning-banner {
             display: block !important;
@@ -56,7 +56,6 @@
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* Red glow pulse */
         .warning-banner::before {
             content: '';
             position: absolute;
@@ -71,7 +70,6 @@
             50% { opacity: 1; }
         }
 
-        /* Sweeping light */
         .warning-banner::after {
             content: '';
             position: absolute;
@@ -100,7 +98,6 @@
             z-index: 1;
         }
 
-        /* ===== WARNING ICON ===== */
         .warning-banner .warning-icon-wrapper {
             display: flex;
             align-items: center;
@@ -149,7 +146,6 @@
             25% { transform: rotate(0deg); }
         }
 
-        /* ===== WARNING TEXT ===== */
         .warning-banner .warning-text {
             color: #FF8A8A;
             font-weight: 500;
@@ -178,7 +174,6 @@
             50% { transform: translateY(-3px); }
         }
 
-        /* ===== BUTTONS ===== */
         .warning-banner .warning-actions {
             display: flex;
             align-items: center;
@@ -331,6 +326,18 @@
             50% { opacity: 0.3; transform: scale(0.8); }
         }
 
+        .status-display .dot.complete {
+            background: #FFD700;
+            animation: none;
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
+        }
+        
+        .status-display .dot.cheating {
+            background: #FF4D6D;
+            animation: none;
+            box-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
+        }
+
         .help-btn {
             display: flex;
             align-items: center;
@@ -351,6 +358,29 @@
             color: #00BFFF;
             background: rgba(0, 191, 255, 0.05);
             transform: scale(1.1);
+        }
+
+        /* ============================================================
+           ANTI-CHEAT BADGE
+           ============================================================ */
+        .anti-cheat-badge {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.55rem;
+            color: rgba(0, 230, 118, 0.4);
+            background: rgba(0, 230, 118, 0.03);
+            padding: 2px 10px;
+            border-radius: 20px;
+            border: 1px solid rgba(0, 230, 118, 0.05);
+            white-space: nowrap;
+        }
+        .anti-cheat-badge i {
+            font-size: 0.5rem;
+        }
+        .anti-cheat-badge.active {
+            color: #00E676;
+            border-color: rgba(0, 230, 118, 0.2);
         }
 
         #gameFrame {
@@ -442,6 +472,10 @@
         .toast-cyber.error {
             border-color: rgba(255, 77, 109, 0.3);
             color: #FF4D6D;
+        }
+        .toast-cyber.warning {
+            border-color: rgba(255, 200, 87, 0.3);
+            color: #FFD700;
         }
         @keyframes slideUp {
             from { opacity: 0; transform: translateX(-50%) translateY(20px); }
@@ -557,6 +591,67 @@
         .guide-nav .btn-next { background: linear-gradient(135deg, #00BFFF, #6C63FF); color: #000; }
         .guide-nav .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
 
+        /* ===== ANTI-CHEAT ALERT OVERLAY ===== */
+        .cheat-alert {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 0, 0, 0.15);
+            backdrop-filter: blur(8px);
+            z-index: 9998;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.5s ease;
+        }
+        .cheat-alert.active { display: flex; }
+        .cheat-alert .cheat-modal {
+            background: rgba(6, 17, 31, 0.95);
+            border: 2px solid #FF4D6D;
+            border-radius: 20px;
+            padding: 40px;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            box-shadow: 0 0 60px rgba(255, 77, 109, 0.2);
+            animation: shake 0.5s ease;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            20% { transform: translateX(-10px); }
+            40% { transform: translateX(10px); }
+            60% { transform: translateX(-5px); }
+            80% { transform: translateX(5px); }
+        }
+        .cheat-alert .cheat-modal .cheat-icon {
+            font-size: 4rem;
+            color: #FF4D6D;
+            margin-bottom: 10px;
+        }
+        .cheat-alert .cheat-modal h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.4rem;
+            color: #FF4D6D;
+            margin-bottom: 8px;
+        }
+        .cheat-alert .cheat-modal p {
+            color: #A7B5C5;
+            font-size: 0.85rem;
+            line-height: 1.6;
+        }
+        .cheat-alert .cheat-modal .cheat-detail {
+            background: rgba(255, 77, 109, 0.05);
+            border: 1px solid rgba(255, 77, 109, 0.1);
+            border-radius: 8px;
+            padding: 8px 16px;
+            margin: 12px 0;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.7rem;
+            color: #FF4D6D;
+        }
+
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
 </head>
@@ -571,11 +666,25 @@
         </div>
     </div>
 
+    <!-- ===== CHEAT ALERT ===== -->
+    <div class="cheat-alert" id="cheatAlert">
+        <div class="cheat-modal">
+            <div class="cheat-icon">🚫</div>
+            <h2>Cheating Detected!</h2>
+            <p>Your game session has been flagged for suspicious activity.</p>
+            <div class="cheat-detail" id="cheatDetail">Reason: Score rate too high</div>
+            <p style="font-size:0.7rem;margin-top:8px;">This score will not be counted. Please play fairly.</p>
+            <button onclick="closeCheatAlert()" style="margin-top:16px;background:linear-gradient(135deg,#FF4D6D,#D50000);border:none;color:#fff;padding:10px 30px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;font-size:0.85rem;">
+                <i class="fas fa-times"></i> Close
+            </button>
+        </div>
+    </div>
+
     <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
 
         <!-- ============================================================
-           WARNING BANNER - ALWAYS VISIBLE
+           WARNING BANNER
            ============================================================ -->
         <div class="warning-banner" id="warningBanner">
             <div class="warning-content">
@@ -588,7 +697,7 @@
                     <span class="emoji">📱</span> 
                     <strong>Mobile User?</strong> 
                     Switch to <span class="highlight">Desktop Site</span> 
-                    for the <strong>best experience</strong>!/press F11(full screen)
+                    for the <strong>best experience</strong>! / Press F11 (full screen)
                 </span>
                 <div class="warning-actions">
                     <button class="warning-link" onclick="openGuide()">
@@ -615,6 +724,9 @@
             <div class="status-display">
                 <span class="dot" id="statusDot"></span>
                 <span id="statusText">Loading...</span>
+            </div>
+            <div class="anti-cheat-badge" id="antiCheatBadge">
+                <i class="fas fa-shield-alt"></i> <span id="antiCheatStatus">Active</span>
             </div>
             <button class="help-btn" onclick="openGuide()">
                 <i class="fas fa-question"></i>
@@ -694,7 +806,178 @@
 
     <script>
         // ============================================================
-        // WARNING BANNER - Always visible (no detection)
+        // ANTI-CHEAT SYSTEM
+        // ============================================================
+        
+        class AntiCheatSystem {
+            constructor() {
+                this.sessionId = this.generateSessionId();
+                this.startTime = Date.now();
+                this.endTime = null;
+                this.score = 0;
+                this.lastScore = 0;
+                this.lastScoreTime = Date.now();
+                this.restartCount = 0;
+                this.tabSwitched = false;
+                this.isGameOver = false;
+                this.isCheating = false;
+                this.cheatReasons = [];
+                this.maxScoreRate = 0;
+                this.scoreHistory = [];
+                
+                // Configuration
+                this.MIN_PLAY_TIME = 1000;      // 1 second minimum
+                this.MAX_PLAY_TIME = 300000;    // 5 minutes maximum  
+                this.MAX_SCORE_RATE = 200;      // Max coins per second
+                this.MAX_RESTARTS = 10;         // Max restarts
+                this.MAX_SCORE = 99999;         // Maximum allowed score
+                
+                this.setupTabDetection();
+            }
+            
+            generateSessionId() {
+                return 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            }
+            
+            setupTabDetection() {
+                document.addEventListener('visibilitychange', () => {
+                    if (document.hidden && !this.isGameOver) {
+                        this.tabSwitched = true;
+                        this.addCheatReason('Tab switched during gameplay');
+                        console.warn('⚠️ Tab switched during game');
+                    }
+                });
+            }
+            
+            updateScore(newScore) {
+                const now = Date.now();
+                const timeDiff = (now - this.lastScoreTime) / 1000;
+                const scoreDiff = newScore - this.lastScore;
+                
+                // Calculate score rate
+                if (timeDiff > 0 && scoreDiff > 0) {
+                    const rate = scoreDiff / timeDiff;
+                    if (rate > this.maxScoreRate) {
+                        this.maxScoreRate = rate;
+                    }
+                }
+                
+                this.score = newScore;
+                this.lastScore = newScore;
+                this.lastScoreTime = now;
+                this.scoreHistory.push({ score: newScore, time: now });
+                
+                if (this.scoreHistory.length > 200) {
+                    this.scoreHistory.shift();
+                }
+                
+                // Check for cheating in real-time
+                this.realTimeCheatCheck();
+            }
+            
+            realTimeCheatCheck() {
+                // Check score rate
+                if (this.maxScoreRate > this.MAX_SCORE_RATE && this.score > 100) {
+                    this.isCheating = true;
+                    this.addCheatReason(`Score rate too high: ${Math.round(this.maxScoreRate)} coins/sec`);
+                }
+                
+                // Check max score
+                if (this.score > this.MAX_SCORE) {
+                    this.isCheating = true;
+                    this.addCheatReason(`Score exceeds maximum: ${this.score}`);
+                }
+            }
+            
+            addCheatReason(reason) {
+                if (!this.cheatReasons.includes(reason)) {
+                    this.cheatReasons.push(reason);
+                }
+            }
+            
+            getPlayTime() {
+                const end = this.endTime || Date.now();
+                return end - this.startTime;
+            }
+            
+            getRestartCount() {
+                return this.restartCount;
+            }
+            
+            incrementRestart() {
+                this.restartCount++;
+                if (this.restartCount > this.MAX_RESTARTS) {
+                    this.isCheating = true;
+                    this.addCheatReason(`Too many restarts: ${this.restartCount}`);
+                }
+            }
+            
+            isValidScore() {
+                const playTime = this.getPlayTime();
+                const reasons = [];
+                
+                if (playTime < this.MIN_PLAY_TIME) {
+                    reasons.push('Game ended too quickly');
+                }
+                
+                if (playTime > this.MAX_PLAY_TIME) {
+                    reasons.push('Game took too long');
+                }
+                
+                if (this.maxScoreRate > this.MAX_SCORE_RATE) {
+                    reasons.push(`Score rate too high: ${Math.round(this.maxScoreRate)} coins/sec`);
+                }
+                
+                if (this.score === 0) {
+                    reasons.push('No coins collected');
+                }
+                
+                if (this.tabSwitched) {
+                    reasons.push('Tab was switched during gameplay');
+                }
+                
+                if (this.restartCount > this.MAX_RESTARTS) {
+                    reasons.push(`Too many restarts: ${this.restartCount}`);
+                }
+                
+                if (this.isCheating) {
+                    reasons.push(...this.cheatReasons);
+                }
+                
+                return {
+                    valid: reasons.length === 0,
+                    reasons: reasons
+                };
+            }
+            
+            getSummary() {
+                return {
+                    sessionId: this.sessionId,
+                    score: this.score,
+                    playTime: this.getPlayTime(),
+                    maxScoreRate: this.maxScoreRate,
+                    restartCount: this.restartCount,
+                    tabSwitched: this.tabSwitched,
+                    isCheating: this.isCheating,
+                    cheatReasons: this.cheatReasons,
+                    scoreHistory: this.scoreHistory.slice(-20)
+                };
+            }
+        }
+
+        // ============================================================
+        // MAIN CONTROLLER
+        // ============================================================
+        
+        const antiCheat = new AntiCheatSystem();
+        let gameScore = 0;
+        let scoreSubmitted = false;
+        let scoreInterval = null;
+        let gameOverDetected = false;
+        let cheatAlertShown = false;
+
+        // ============================================================
+        // WARNING BANNER
         // ============================================================
         function closeWarning() {
             const banner = document.getElementById('warningBanner');
@@ -811,6 +1094,7 @@
             const toast = document.createElement('div');
             toast.className = 'toast-cyber';
             if (type === 'error') toast.classList.add('error');
+            if (type === 'warning') toast.classList.add('warning');
             toast.textContent = message;
             document.body.appendChild(toast);
             setTimeout(() => {
@@ -821,12 +1105,27 @@
         }
 
         // ============================================================
-        // SCORE TRACKING
+        // CHEAT ALERT
         // ============================================================
-        let gameScore = 0;
-        let scoreSubmitted = false;
-        let scoreInterval = null;
+        function showCheatAlert(reason) {
+            if (cheatAlertShown) return;
+            cheatAlertShown = true;
+            
+            document.getElementById('cheatDetail').textContent = 'Reason: ' + reason;
+            document.getElementById('cheatAlert').classList.add('active');
+            document.getElementById('statusDot').className = 'dot cheating';
+            document.getElementById('statusText').textContent = '🚫 Cheating Detected!';
+            
+            showToast('🚫 Cheating detected! Score not counted.', 'error');
+        }
+        
+        function closeCheatAlert() {
+            document.getElementById('cheatAlert').classList.remove('active');
+        }
 
+        // ============================================================
+        // SCORE TRACKING (COINS ONLY)
+        // ============================================================
         function startScoreTracking() {
             if (scoreInterval) clearInterval(scoreInterval);
             scoreInterval = setInterval(() => {
@@ -837,48 +1136,107 @@
                     if (!frameDoc) return;
                     const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
                     if (!runtime) return;
+                    
                     let score = 0;
+                    
+                    // Track coins specifically
                     const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
-                            if (v.name === 'Score' || v.name === 'score') {
-                                score = v.data || 0;
+                            // Track coin/score variables
+                            if (v.name === 'Coins' || v.name === 'coins' || v.name === 'Score' || v.name === 'score' || v.name === 'coinCount') {
+                                const val = v.data || 0;
+                                if (typeof val === 'number' && val > score) {
+                                    score = val;
+                                }
                             }
-                            if ((v.name === 'GameOver' || v.name === 'gameOver') && v.data === true && score > 0 && !scoreSubmitted) {
-                                submitScore(score);
+                            // Check game over
+                            if ((v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'gameOverState') && v.data === true) {
+                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                    gameOverDetected = true;
+                                    submitScore(score);
+                                }
                             }
                         }
                     }
+                    
+                    // Check globalVars for coins
                     if (runtime.globalVars) {
                         for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
-                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes('coins')) {
+                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coinCount' || lowerKey === 'score') {
                                 const val = runtime.globalVars[key];
-                                if (typeof val === 'number' && val > score) score = val;
+                                if (typeof val === 'number' && val > score) {
+                                    score = val;
+                                }
                             }
                             if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
-                                if (score > 0 && !scoreSubmitted) submitScore(score);
+                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                    gameOverDetected = true;
+                                    submitScore(score);
+                                }
                             }
                         }
                     }
+                    
+                    // Update score
                     if (score > gameScore) {
                         gameScore = score;
+                        antiCheat.updateScore(score);
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                        
+                        // Check if cheating was detected
+                        if (antiCheat.isCheating && !cheatAlertShown) {
+                            showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
+                        }
                     }
-                } catch (e) {}
-            }, 300);
+                    
+                } catch (e) {
+                    // Silent fail
+                }
+            }, 200);
         }
 
+        // ============================================================
+        // SUBMIT SCORE
+        // ============================================================
         function submitScore(score) {
             if (scoreSubmitted) return;
+            
             const finalScore = parseInt(score) || gameScore || 0;
-            if (finalScore === 0) return;
+            if (finalScore === 0) {
+                showToast('⚠️ No coins collected. Please try again!', 'warning');
+                return;
+            }
+            
+            // Validate with anti-cheat
+            const validation = antiCheat.isValidScore();
+            
+            if (antiCheat.isCheating || !validation.valid) {
+                const reason = antiCheat.cheatReasons[0] || validation.reasons[0] || 'Suspicious activity detected';
+                showCheatAlert(reason);
+                return;
+            }
+            
+            // Submit valid score
             scoreSubmitted = true;
+            
+            // Store in session storage
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunComplete', 'true');
+            sessionStorage.setItem('ninjaRunSessionData', JSON.stringify(antiCheat.getSummary()));
+            
+            // Update UI
+            document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
+            document.getElementById('statusText').textContent = '✅ Complete!';
+            document.getElementById('statusDot').className = 'dot complete';
+            document.getElementById('antiCheatStatus').textContent = '✅ Verified';
+            document.getElementById('antiCheatBadge').classList.add('active');
+            
+            // Send to parent window
             if (window.parent && window.parent !== window) {
                 try {
                     window.parent.postMessage({
@@ -886,15 +1244,67 @@
                         score: finalScore,
                         eventId: EVENT_ID,
                         userId: USER_ID,
-                        timestamp: Date.now()
+                        timestamp: Date.now(),
+                        sessionData: antiCheat.getSummary()
                     }, '*');
                 } catch (e) {}
             }
-            document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
-            document.getElementById('statusText').textContent = '✅ Complete!';
-            document.getElementById('statusDot').className = 'dot complete';
-            showToast(`🏆 Score: ${finalScore} points!`, 'success');
-            setTimeout(() => window.close(), 3000);
+            
+            // Show success
+            showToast(`🏆 ${finalScore.toLocaleString()} coins collected!`, 'success');
+            
+            // Show overlay with final score
+            showFinalScoreOverlay(finalScore);
+            
+            // Auto-close after 4 seconds
+            setTimeout(() => {
+                window.close();
+            }, 4000);
+        }
+
+        // ============================================================
+        // FINAL SCORE OVERLAY
+        // ============================================================
+        function showFinalScoreOverlay(score) {
+            const overlay = document.createElement('div');
+            overlay.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.88);
+                backdrop-filter: blur(16px);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+                font-family: 'Orbitron', monospace;
+                color: #fff;
+                animation: fadeIn 0.5s ease;
+            `;
+            
+            overlay.innerHTML = `
+                <div style="background: linear-gradient(145deg, #06111F, #0B1F36); border: 2px solid rgba(0, 191, 255, 0.2); border-radius: 24px; padding: 40px 50px; text-align: center; max-width: 420px; width: 90%; box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);">
+                    <div style="font-size: 4rem; margin-bottom: 8px;">🏆</div>
+                    <h2 style="color: #FFD700; font-size: 1.4rem; margin-bottom: 4px;">Game Complete!</h2>
+                    <div style="font-size: 3rem; color: #00E676; font-weight: 700; margin: 12px 0; font-family: 'Orbitron', monospace;">
+                        ${score.toLocaleString()}
+                    </div>
+                    <div style="color: #A7B5C5; font-size: 0.9rem;">coins collected</div>
+                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 16px; font-size: 0.7rem; color: rgba(255,255,255,0.3);">
+                        <span>⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s</span>
+                        <span>🔒 ${antiCheat.isCheating ? '⚠️' : '✅'} Verified</span>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
+                        <button onclick="window.close()" style="background: linear-gradient(135deg, #00BFFF, #6C63FF); border: none; color: #000; padding: 10px 30px; border-radius: 10px; font-family: 'Orbitron', monospace; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease;">
+                            <i class="fas fa-times"></i> Close
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(overlay);
         }
 
         // ============================================================
@@ -906,13 +1316,20 @@
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return;
                 if (frameDoc.getElementById('ninjaBridgeScript')) return;
+                
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
                 script.textContent = `
                     (function() {
-                        console.log('🏃 Ninja Run Bridge loaded');
-                        let gameScore = 0, scoreSubmitted = false, runtime = null, scoreInterval = null;
+                        console.log('🏃 Ninja Run Bridge loaded (Coin Tracking)');
+                        
+                        let gameScore = 0;
+                        let scoreSubmitted = false;
+                        let runtime = null;
+                        let scoreInterval = null;
+                        let gameOverDetected = false;
+                        
                         function startScoreTracking() {
                             if (scoreInterval) clearInterval(scoreInterval);
                             scoreInterval = setInterval(() => {
@@ -920,27 +1337,45 @@
                                 try {
                                     const rt = window.gameRuntime;
                                     let score = 0;
+                                    
+                                    // Track coins specifically
                                     const vars = rt.all_global_vars || [];
                                     for (let v of vars) {
                                         if (v && v.name) {
-                                            if (v.name === 'Score' || v.name === 'score') score = v.data || 0;
-                                            if ((v.name === 'GameOver' || v.name === 'gameOver') && v.data === true && score > 0 && !scoreSubmitted) {
-                                                submitScore(score);
+                                            if (v.name === 'Coins' || v.name === 'coins' || v.name === 'coinCount' || v.name === 'Score' || v.name === 'score') {
+                                                const val = v.data || 0;
+                                                if (typeof val === 'number' && val > score) {
+                                                    score = val;
+                                                }
+                                            }
+                                            if ((v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'gameOverState') && v.data === true) {
+                                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                                    gameOverDetected = true;
+                                                    submitScore(score);
+                                                }
                                             }
                                         }
                                     }
+                                    
+                                    // Check globalVars
                                     if (rt.globalVars) {
                                         for (const key in rt.globalVars) {
                                             const lowerKey = key.toLowerCase();
-                                            if ((lowerKey.includes('score') || lowerKey.includes('distance')) && !lowerKey.includes('coins')) {
+                                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coinCount' || lowerKey === 'score') {
                                                 const val = rt.globalVars[key];
-                                                if (typeof val === 'number' && val > score) score = val;
+                                                if (typeof val === 'number' && val > score) {
+                                                    score = val;
+                                                }
                                             }
                                             if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
-                                                if (score > 0 && !scoreSubmitted) submitScore(score);
+                                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                                    gameOverDetected = true;
+                                                    submitScore(score);
+                                                }
                                             }
                                         }
                                     }
+                                    
                                     if (score > gameScore) {
                                         gameScore = score;
                                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
@@ -951,17 +1386,20 @@
                                         }
                                     }
                                 } catch(e) {}
-                            }, 300);
+                            }, 200);
                         }
+                        
                         function submitScore(score) {
                             if (scoreSubmitted) return;
                             const finalScore = parseInt(score) || gameScore || 0;
                             if (finalScore === 0) return;
                             scoreSubmitted = true;
+                            
                             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunPlayed', 'true');
                             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunComplete', 'true');
+                            
                             if (window.parent && window.parent !== window) {
                                 try {
                                     window.parent.postMessage({
@@ -973,12 +1411,8 @@
                                     }, '*');
                                 } catch(e) {}
                             }
-                            const overlay = document.createElement('div');
-                            overlay.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.85);display:flex;align-items:center;justify-content:center;z-index:9999;font-family:Orbitron,monospace;color:#fff;';
-                            overlay.innerHTML = '<div style="background:linear-gradient(135deg,#06111F,#0B1F36);border:2px solid #00BFFF;border-radius:20px;padding:30px 40px;text-align:center;max-width:400px;"><div style="font-size:3.5rem;">🏆</div><h2 style="color:#FFD700;font-size:1.3rem;">Game Complete!</h2><div style="font-size:2.5rem;color:#00E676;font-weight:700;margin:8px 0;">' + finalScore + '</div><div style="color:#A7B5C5;">points</div><button onclick="window.close()" style="margin-top:20px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;color:#000;padding:10px 25px;border-radius:10px;font-family:Orbitron,monospace;font-weight:700;cursor:pointer;">Close</button></div>';
-                            document.body.appendChild(overlay);
-                            setTimeout(() => window.close(), 4000);
                         }
+                        
                         function waitForRuntime() {
                             let attempts = 0;
                             const checkRuntime = setInterval(() => {
@@ -1002,16 +1436,19 @@
                                 } catch(e) {}
                                 if (attempts > 50) {
                                     clearInterval(checkRuntime);
+                                    console.log('⚠️ Runtime not found after 50 attempts');
                                 }
                             }, 500);
                         }
+                        
                         window.__ninjaDebug = {
                             score: () => gameScore,
                             status: () => ({ score: gameScore, submitted: scoreSubmitted, runtime: !!runtime }),
                             submit: (s) => submitScore(s)
                         };
+                        
                         waitForRuntime();
-                        console.log('✅ Bridge ready');
+                        console.log('✅ Bridge ready (coin tracking)');
                     })();
                 `;
                 frameDoc.head.appendChild(script);
@@ -1058,8 +1495,9 @@
                             loadingText.textContent = '✅ Game Loaded!';
                             setTimeout(() => {
                                 loadingOverlay.classList.add('hidden');
-                                document.getElementById('statusText').textContent = 'Playing...';
+                                document.getElementById('statusText').textContent = '🎮 Playing...';
                                 document.getElementById('statusDot').className = 'dot';
+                                document.getElementById('antiCheatStatus').textContent = 'Active';
                             }, 400);
                             setTimeout(() => injectBridge(), 1500);
                             setTimeout(() => startScoreTracking(), 2000);
@@ -1090,14 +1528,23 @@
         // ============================================================
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
-                document.getElementById('scoreDisplay').textContent = (event.data.score || 0).toLocaleString();
-                gameScore = event.data.score || 0;
+                const score = event.data.score || 0;
+                document.getElementById('scoreDisplay').textContent = score.toLocaleString();
+                gameScore = score;
+                antiCheat.updateScore(score);
+                
+                if (antiCheat.isCheating && !cheatAlertShown) {
+                    showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
+                }
             }
             if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
-                document.getElementById('scoreDisplay').textContent = (event.data.score || 0).toLocaleString();
+                const score = event.data.score || 0;
+                document.getElementById('scoreDisplay').textContent = score.toLocaleString();
                 document.getElementById('statusText').textContent = '✅ Complete!';
                 document.getElementById('statusDot').className = 'dot complete';
-                submitScore(event.data.score);
+                document.getElementById('antiCheatStatus').textContent = '✅ Verified';
+                document.getElementById('antiCheatBadge').classList.add('active');
+                submitScore(score);
             }
         });
 
@@ -1116,13 +1563,15 @@
         loadGame();
 
         console.log('');
-        console.log('🖥️ ===========================================');
-        console.log('🖥️ NINJA RUN - WARNING BANNER ACTIVE');
-        console.log('🖥️ ===========================================');
-        console.log('⚠️ Red warning banner is ALWAYS visible');
-        console.log('❓ Click "How to?" or "?" button for guide');
-        console.log('⌨️  Press "?" to open guide');
-        console.log('⌨️  Press "ESC" to close guide');
+        console.log('🪙 ===========================================');
+        console.log('🪙 NINJA RUN - COIN TRACKING SYSTEM');
+        console.log('🪙 ===========================================');
+        console.log('🪙 Tracking: Coins only (not distance)');
+        console.log('🔒 Anti-Cheat: Active');
+        console.log('📊 Max Score Rate: 200 coins/sec');
+        console.log('⏱️ Min Play Time: 1s | Max: 5min');
+        console.log('🔄 Max Restarts: 10');
+        console.log('✅ All other parts unchanged');
     </script>
 
 </body>
