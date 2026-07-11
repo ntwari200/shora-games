@@ -488,7 +488,7 @@
             border: 2px solid rgba(255, 23, 68, 0.3);
             border-radius: 20px;
             padding: 32px;
-            max-width: 480px;
+            max-width: 520px;
             width: 100%;
             max-height: 90vh;
             overflow-y: auto;
@@ -590,6 +590,393 @@
             color: var(--text);
         }
 
+        /* ===== GAME CONTROLS MODAL - SIMPLIFIED ===== */
+        .controls-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 3500;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .controls-modal-overlay.show { display: flex; }
+
+        .controls-modal {
+            background: rgba(6, 17, 31, 0.98);
+            border: 2px solid rgba(0, 191, 255, 0.2);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 500px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.5s ease;
+            text-align: center;
+        }
+
+        .controls-modal h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.3rem;
+            margin-bottom: 4px;
+        }
+        
+        .controls-modal .controls-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 24px;
+        }
+
+        .controls-modal .device-badge {
+            display: inline-block;
+            padding: 6px 20px;
+            border-radius: 30px;
+            background: rgba(0, 191, 255, 0.1);
+            border: 1px solid rgba(0, 191, 255, 0.2);
+            color: var(--primary);
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .controls-modal .device-badge i {
+            margin-right: 8px;
+        }
+
+        /* PC Controls */
+        .controls-modal .control-display {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .controls-modal .control-item {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 20px;
+            padding: 16px 20px;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 14px;
+            transition: var(--transition);
+        }
+
+        .controls-modal .control-item:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(0, 191, 255, 0.1);
+        }
+
+        .controls-modal .control-item .control-icon {
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 14px;
+            background: rgba(0, 191, 255, 0.05);
+            border: 1px solid rgba(0, 191, 255, 0.1);
+            font-size: 1.6rem;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .controls-modal .control-item .control-action {
+            flex: 1;
+            text-align: left;
+        }
+
+        .controls-modal .control-item .control-action .action-name {
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text);
+        }
+
+        .controls-modal .control-item .control-action .action-desc {
+            font-size: 0.75rem;
+            color: var(--muted);
+        }
+
+        .controls-modal .control-item .control-key {
+            padding: 6px 18px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 8px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            color: var(--primary);
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+
+        /* Mobile Controls */
+        .controls-modal .mobile-controls {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 16px;
+            padding: 20px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .controls-modal .mobile-controls .phone-screen {
+            width: 100%;
+            max-width: 280px;
+            height: 200px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 16px;
+            border: 2px solid rgba(255,255,255,0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .controls-modal .mobile-controls .phone-screen .tap-indicator {
+            position: absolute;
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: rgba(0, 191, 255, 0.1);
+            border: 2px solid rgba(0, 191, 255, 0.3);
+            animation: tapPulse 1.5s ease-in-out infinite;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .controls-modal .mobile-controls .phone-screen .tap-indicator .hand-icon {
+            font-size: 2.5rem;
+            animation: handTap 1s ease-in-out infinite;
+        }
+
+        @keyframes tapPulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.2); opacity: 0.5; }
+        }
+
+        @keyframes handTap {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .controls-modal .mobile-controls .tap-label {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .controls-modal .mobile-controls .tap-desc {
+            font-size: 0.8rem;
+            color: var(--muted);
+        }
+
+        .controls-modal .mobile-controls .tap-desc i {
+            color: var(--gold);
+            margin: 0 4px;
+        }
+
+        .controls-modal .controls-actions {
+            display: flex;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .controls-modal .controls-actions .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            flex: 1;
+        }
+
+        .controls-modal .controls-actions .btn-close-controls {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--muted);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .controls-modal .controls-actions .btn-close-controls:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text);
+        }
+
+        .controls-modal .controls-actions .btn-play-demo {
+            background: linear-gradient(135deg, #FF1744, #D50000);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.2);
+        }
+
+        .controls-modal .controls-actions .btn-play-demo:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(255, 23, 68, 0.4);
+        }
+
+        /* Device Toggle */
+        .controls-modal .device-toggle {
+            display: flex;
+            gap: 8px;
+            justify-content: center;
+            margin-bottom: 20px;
+        }
+
+        .controls-modal .device-toggle .toggle-btn {
+            padding: 8px 24px;
+            border-radius: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+            background: rgba(255,255,255,0.03);
+            color: var(--muted);
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.75rem;
+            transition: var(--transition);
+        }
+
+        .controls-modal .device-toggle .toggle-btn:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+        }
+
+        .controls-modal .device-toggle .toggle-btn.active {
+            background: rgba(0, 191, 255, 0.1);
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .controls-content {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .controls-content.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ===== JOIN REMINDER MODAL ===== */
+        .reminder-modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 4000;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            padding: 16px;
+        }
+        .reminder-modal-overlay.show { display: flex; }
+
+        .reminder-modal {
+            background: rgba(6, 17, 31, 0.98);
+            border: 2px solid rgba(255, 200, 87, 0.3);
+            border-radius: 24px;
+            padding: 32px;
+            max-width: 480px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            animation: slideUp 0.5s ease;
+            text-align: center;
+        }
+
+        .reminder-modal .reminder-icon {
+            font-size: 4rem;
+            color: var(--gold);
+            margin-bottom: 16px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        .reminder-modal h2 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+            color: var(--gold);
+        }
+
+        .reminder-modal .reminder-sub {
+            color: var(--muted);
+            font-size: 0.85rem;
+            margin-bottom: 20px;
+            line-height: 1.6;
+        }
+
+        .reminder-modal .reminder-actions {
+            display: flex;
+            gap: 12px;
+            flex-direction: column;
+        }
+
+        .reminder-modal .reminder-actions .btn {
+            padding: 14px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .reminder-modal .reminder-actions .btn-join-anyway {
+            background: linear-gradient(135deg, var(--success), #00C853);
+            color: #000;
+        }
+
+        .reminder-modal .reminder-actions .btn-join-anyway:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 230, 118, 0.3);
+        }
+
+        .reminder-modal .reminder-actions .btn-practice {
+            background: linear-gradient(135deg, #FF1744, #D50000);
+            color: #fff;
+            box-shadow: 0 0 30px rgba(255, 23, 68, 0.2);
+        }
+
+        .reminder-modal .reminder-actions .btn-practice:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 40px rgba(255, 23, 68, 0.4);
+        }
+
+        .reminder-modal .reminder-actions .btn-cancel-join {
+            background: rgba(255, 255, 255, 0.03);
+            color: var(--muted);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .reminder-modal .reminder-actions .btn-cancel-join:hover {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text);
+        }
+
         /* ===== TOAST ===== */
         .toast-cyber {
             position: fixed;
@@ -603,7 +990,7 @@
             padding: 10px 20px;
             color: var(--primary);
             font-size: 0.8rem;
-            z-index: 2000;
+            z-index: 5000;
             display: none;
             align-items: center;
             gap: 8px;
@@ -612,6 +999,7 @@
         }
         .toast-cyber.error { border-color: var(--danger); color: var(--danger); }
         .toast-cyber.success { border-color: var(--success); color: var(--success); }
+        .toast-cyber.warning { border-color: var(--gold); color: var(--gold); }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
@@ -623,6 +1011,11 @@
             .demo-modal { padding: 24px; }
             .demo-modal .demo-features { grid-template-columns: 1fr; }
             .demo-modal .demo-actions { flex-direction: column; }
+            .controls-modal { padding: 24px; }
+            .controls-modal .control-item { flex-wrap: wrap; }
+            .controls-modal .controls-actions { flex-direction: column; }
+            .reminder-modal { padding: 24px; }
+            .controls-modal .mobile-controls .phone-screen { max-width: 100%; height: 160px; }
         }
 
         @media (max-width: 480px) {
@@ -636,6 +1029,13 @@
             .nav-right { flex-wrap: wrap; justify-content: center; }
             .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
             .demo-modal { padding: 20px; }
+            .controls-modal .device-toggle .toggle-btn { padding: 6px 16px; font-size: 0.65rem; }
+            .controls-modal .control-item .control-icon { width: 44px; height: 44px; font-size: 1.2rem; }
+            .reminder-modal { padding: 20px; }
+            .reminder-modal .reminder-icon { font-size: 3rem; }
+            .controls-modal .mobile-controls .phone-screen { height: 140px; }
+            .controls-modal .mobile-controls .tap-indicator { width: 60px; height: 60px; }
+            .controls-modal .mobile-controls .tap-indicator .hand-icon { font-size: 2rem; }
         }
 
         @media (max-width: 360px) {
@@ -804,6 +1204,108 @@
         </div>
     </div>
 
+    <!-- ===== GAME CONTROLS MODAL - SIMPLIFIED ===== -->
+    <div class="controls-modal-overlay" id="controlsModal">
+        <div class="controls-modal">
+            <h2>🎯 Game Controls</h2>
+            <div class="controls-sub">Learn how to play before you start!</div>
+
+            <div class="device-toggle">
+                <button class="toggle-btn active" onclick="switchControlsTab('pc')" id="pcToggle">
+                    <i class="fas fa-desktop"></i> PC / Desktop
+                </button>
+                <button class="toggle-btn" onclick="switchControlsTab('mobile')" id="mobileToggle">
+                    <i class="fas fa-mobile-alt"></i> Mobile
+                </button>
+            </div>
+
+            <!-- PC Controls -->
+            <div class="controls-content active" id="controls-pc">
+                <div class="device-badge">
+                    <i class="fas fa-desktop"></i> Desktop Mode
+                </div>
+                
+                <div class="control-display">
+                    <div class="control-item">
+                        <div class="control-icon">
+                            <i class="fas fa-mouse"></i>
+                        </div>
+                        <div class="control-action">
+                            <div class="action-name">Left Click / Right Click</div>
+                            <div class="action-desc">Click to jump</div>
+                        </div>
+                        <div class="control-key">🖱️</div>
+                    </div>
+                </div>
+
+                <div style="text-align: center; margin-top: 8px; padding: 12px; background: rgba(255, 200, 87, 0.05); border-radius: 10px; border: 1px solid rgba(255, 200, 87, 0.1);">
+                    <span style="color: var(--gold);"><i class="fas fa-star"></i> Pro Tip:</span>
+                    <span style="color: var(--muted); font-size: 0.8rem;"> Press left or right click to jump. Simple!</span>
+                </div>
+            </div>
+
+            <!-- Mobile Controls -->
+            <div class="controls-content" id="controls-mobile">
+                <div class="device-badge">
+                    <i class="fas fa-mobile-alt"></i> Mobile Mode
+                </div>
+                
+                <div class="mobile-controls">
+                    <div class="phone-screen">
+                        <div class="tap-indicator">
+                            <span class="hand-icon">👆</span>
+                        </div>
+                    </div>
+                    <div class="tap-label">Tap Anywhere on Screen</div>
+                    <div class="tap-desc">
+                        <i class="fas fa-info-circle"></i> Touch the screen to jump
+                    </div>
+                    <div style="font-size: 0.7rem; color: var(--muted); margin-top: 4px;">
+                        <i class="fas fa-lightbulb" style="color: var(--gold);"></i> 
+                        For best experience, enable "Desktop Site" in Chrome settings
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-actions">
+                <button class="btn btn-close-controls" onclick="closeControlsModal()">
+                    <i class="fas fa-times"></i> Close
+                </button>
+                <button class="btn btn-play-demo" onclick="closeControlsAndPlayDemo()">
+                    <i class="fas fa-play"></i> Play Demo
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== JOIN REMINDER MODAL ===== -->
+    <div class="reminder-modal-overlay" id="reminderModal">
+        <div class="reminder-modal">
+            <div class="reminder-icon">
+                <i class="fas fa-lightbulb"></i>
+            </div>
+            <h2>💡 Practice First!</h2>
+            <div class="reminder-sub">
+                <p>We recommend practicing the game before joining the tournament.</p>
+                <p style="margin-top: 8px; font-size: 0.9rem; color: var(--gold);">
+                    <i class="fas fa-star"></i> Practice is FREE and unlimited!
+                </p>
+            </div>
+            
+            <div class="reminder-actions">
+                <button class="btn btn-practice" onclick="closeReminderAndPractice()">
+                    <i class="fas fa-gamepad"></i> Play Demo (FREE)
+                </button>
+                <button class="btn btn-join-anyway" onclick="closeReminderAndJoin()">
+                    <i class="fas fa-ticket-alt"></i> Join Anyway
+                </button>
+                <button class="btn btn-cancel-join" onclick="closeReminderModal()">
+                    <i class="fas fa-times"></i> Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
     <!-- ===== TOAST ===== -->
     <div id="toast" class="toast-cyber">
         <i class="fas fa-info-circle"></i>
@@ -855,6 +1357,7 @@
         let allTournaments = [];
         let countdownIntervals = {};
         let selectedDemoTournamentId = null;
+        let pendingJoinTournamentId = null;
 
         // ========================================
         // AUTH STATE
@@ -887,7 +1390,8 @@
                         email: data.email || '',
                         phone: data.phone || '',
                         hasPlayedCurrentEvent: data.hasPlayedCurrentEvent || false,
-                        currentEventId: data.currentEventId || null
+                        currentEventId: data.currentEventId || null,
+                        hasPracticed: data.hasPracticed || false
                     };
                     
                     if (userData.hasPlayedCurrentEvent && userData.currentEventId) {
@@ -1092,7 +1596,7 @@
                 
                 const isFull = playerCount >= maxPlayers;
                 
-                // ===== DEMO BUTTON - Always show for live tournaments =====
+                // ===== DEMO BUTTON =====
                 let demoButtonHtml = '';
                 if (isLive && !isLocked) {
                     demoButtonHtml = `
@@ -1137,7 +1641,7 @@
                         `;
                     } else {
                         buttonHtml = `
-                            <button class="btn btn-card-join" onclick="joinTournament('${tournament.id}')">
+                            <button class="btn btn-card-join" onclick="handleJoinClick('${tournament.id}')">
                                 <i class="fas fa-ticket-alt"></i> Join (${tournament.entryFee} RWF)
                             </button>
                         `;
@@ -1373,19 +1877,56 @@
             
             selectedDemoTournamentId = tournamentId;
             
-            // Update modal with tournament info
             document.getElementById('demoTournamentName').textContent = tournament.name;
             document.getElementById('demoDuration').textContent = `${tournament.duration} min`;
+            
+            closeReminderModal();
+            closeControlsModal();
             
             document.getElementById('demoModal').classList.add('show');
         };
 
         window.closeDemoModal = function() {
             document.getElementById('demoModal').classList.remove('show');
-            selectedDemoTournamentId = null;
         };
 
         window.playDemo = function() {
+            closeDemoModal();
+            openControlsModal();
+        };
+
+        // ========================================
+        // GAME CONTROLS FUNCTIONS
+        // ========================================
+
+        window.openControlsModal = function() {
+            document.getElementById('controlsModal').classList.add('show');
+            switchControlsTab('pc');
+        };
+
+        window.closeControlsModal = function() {
+            document.getElementById('controlsModal').classList.remove('show');
+        };
+
+        window.switchControlsTab = function(device) {
+            document.querySelectorAll('.device-toggle .toggle-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            if (device === 'pc') {
+                document.getElementById('pcToggle').classList.add('active');
+                document.getElementById('controls-pc').classList.add('active');
+                document.getElementById('controls-mobile').classList.remove('active');
+            } else {
+                document.getElementById('mobileToggle').classList.add('active');
+                document.getElementById('controls-mobile').classList.add('active');
+                document.getElementById('controls-pc').classList.remove('active');
+            }
+        };
+
+        window.closeControlsAndPlayDemo = function() {
+            closeControlsModal();
+            
             if (!selectedDemoTournamentId) {
                 showToast('No tournament selected', 'error');
                 return;
@@ -1397,12 +1938,14 @@
                 return;
             }
             
-            // Close modal
-            closeDemoModal();
+            if (currentUser) {
+                update(ref(db, `users/${currentUser.uid}`), {
+                    hasPracticed: true
+                });
+                userData.hasPracticed = true;
+            }
             
-            // Launch demo game - use demo mode parameter
             const gameUrl = `/game-wrapper.html?demo=true&game=${encodeURIComponent(tournament.game)}`;
-            
             const gameWindow = window.open(gameUrl, '_blank');
             
             if (!gameWindow) {
@@ -1411,6 +1954,52 @@
             }
             
             showToast('🎮 Demo mode - Practice as much as you want!', 'success');
+        };
+
+        // ========================================
+        // JOIN REMINDER FUNCTIONS
+        // ========================================
+
+        window.handleJoinClick = function(tournamentId) {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            if (userData.hasPracticed) {
+                joinTournament(tournamentId);
+                return;
+            }
+            
+            pendingJoinTournamentId = tournamentId;
+            document.getElementById('reminderModal').classList.add('show');
+        };
+
+        window.closeReminderModal = function() {
+            document.getElementById('reminderModal').classList.remove('show');
+            pendingJoinTournamentId = null;
+        };
+
+        window.closeReminderAndPractice = function() {
+            closeReminderModal();
+            if (pendingJoinTournamentId) {
+                openDemoModal(pendingJoinTournamentId);
+                pendingJoinTournamentId = null;
+            }
+        };
+
+        window.closeReminderAndJoin = function() {
+            closeReminderModal();
+            if (pendingJoinTournamentId) {
+                if (currentUser) {
+                    update(ref(db, `users/${currentUser.uid}`), {
+                        hasPracticed: true
+                    });
+                    userData.hasPracticed = true;
+                }
+                joinTournament(pendingJoinTournamentId);
+                pendingJoinTournamentId = null;
+            }
         };
 
         // ========================================
@@ -1688,6 +2277,7 @@
             toast.className = 'toast-cyber';
             if (type === 'error') toast.classList.add('error');
             if (type === 'success') toast.classList.add('success');
+            if (type === 'warning') toast.classList.add('warning');
             toast.style.display = 'flex';
             clearTimeout(window.toastTimeout);
             window.toastTimeout = setTimeout(() => {
@@ -1711,10 +2301,9 @@
         // CONSOLE
         // ========================================
 
-        console.log('%c🎮 SHORA GAMES - TOURNAMENTS WITH DEMO MODE', 'color: #FFD700; font-size: 20px; font-weight: bold;');
-        console.log('%c🔴 RED DEMO BUTTON - Practice before joining!', 'color: #FF1744; font-size: 14px; font-weight: bold;');
-        console.log('%c🔄 Auto-reset on tournament end', 'color: #00E676; font-size: 14px;');
-        console.log('%c📊 Real-time player tracking with demo mode', 'color: #FFC857;');
+        console.log('%c🎮 SHORA GAMES - SIMPLIFIED CONTROLS', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%c🖱️ PC: Left/Right Click to Jump', 'color: #00BFFF; font-size: 14px;');
+        console.log('%c📱 Mobile: Tap Anywhere to Jump', 'color: #00E676; font-size: 14px;');
         
         window.joinTournament = joinTournament;
         window.playGame = playGame;
@@ -1722,6 +2311,14 @@
         window.openDemoModal = openDemoModal;
         window.closeDemoModal = closeDemoModal;
         window.playDemo = playDemo;
+        window.openControlsModal = openControlsModal;
+        window.closeControlsModal = closeControlsModal;
+        window.switchControlsTab = switchControlsTab;
+        window.closeControlsAndPlayDemo = closeControlsAndPlayDemo;
+        window.handleJoinClick = handleJoinClick;
+        window.closeReminderModal = closeReminderModal;
+        window.closeReminderAndPractice = closeReminderAndPractice;
+        window.closeReminderAndJoin = closeReminderAndJoin;
     </script>
 
 </body>
