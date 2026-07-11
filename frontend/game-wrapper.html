@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== RESET ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
@@ -36,9 +35,6 @@
             overflow: hidden;
         }
 
-        /* ============================================================
-           WARNING BANNER - ALWAYS VISIBLE
-           ============================================================ */
         .warning-banner {
             display: block !important;
             flex-shrink: 0;
@@ -252,9 +248,6 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
-        /* ============================================================
-           HEADER
-           ============================================================ */
         .game-header {
             position: relative;
             z-index: 100;
@@ -360,9 +353,6 @@
             transform: scale(1.1);
         }
 
-        /* ============================================================
-           ANTI-CHEAT BADGE
-           ============================================================ */
         .anti-cheat-badge {
             display: flex;
             align-items: center;
@@ -398,9 +388,6 @@
             background: #000;
         }
 
-        /* ============================================================
-           LOADING OVERLAY
-           ============================================================ */
         #loadingOverlay {
             position: fixed;
             inset: 0;
@@ -482,7 +469,6 @@
             to { opacity: 1; transform: translateX(-50%) translateY(0); }
         }
 
-        /* ===== GUIDE MODAL ===== */
         .guide-overlay {
             position: fixed;
             inset: 0;
@@ -591,7 +577,6 @@
         .guide-nav .btn-next { background: linear-gradient(135deg, #00BFFF, #6C63FF); color: #000; }
         .guide-nav .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
 
-        /* ===== ANTI-CHEAT ALERT OVERLAY ===== */
         .cheat-alert {
             position: fixed;
             top: 0;
@@ -669,143 +654,162 @@
             box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
         }
 
-        /* ===== FINAL SCORE OVERLAY ===== */
-        #finalScoreOverlay {
+        /* ===== OVERLAY - UPGRADED ===== */
+        #gameOverOverlay {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.88);
+            background: rgba(0, 0, 0, 0.92);
             backdrop-filter: blur(16px);
             display: none;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            z-index: 9999;
+            z-index: 99999;
             font-family: 'Orbitron', monospace;
             color: #fff;
-            animation: fadeIn 0.5s ease;
+            animation: overlayFadeIn 0.5s ease;
         }
-        #finalScoreOverlay.active { display: flex; }
-        
-        #finalScoreOverlay .modal-content {
-            background: linear-gradient(145deg, #06111F, #0B1F36);
-            border: 2px solid rgba(0, 191, 255, 0.2);
+        #gameOverOverlay.active { display: flex; }
+
+        @keyframes overlayFadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @keyframes overlaySpin {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes overlayLoadBar {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        #gameOverOverlay .overlay-box {
+            background: linear-gradient(145deg, #0B1F36, #06111F);
+            border: 2px solid #00E676;
             border-radius: 24px;
             padding: 40px 50px;
             text-align: center;
-            max-width: 420px;
+            max-width: 450px;
             width: 90%;
-            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+            box-shadow: 0 0 80px rgba(0, 230, 118, 0.1);
+            animation: overlaySlideUp 0.5s ease;
         }
-        
-        #finalScoreOverlay .modal-content .trophy {
+
+        @keyframes overlaySlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #gameOverOverlay .overlay-trophy {
             font-size: 4rem;
             margin-bottom: 8px;
         }
-        
-        #finalScoreOverlay .modal-content .title {
-            color: #FFD700;
+
+        #gameOverOverlay .overlay-title {
+            font-family: 'Orbitron', monospace;
+            color: #00E676;
             font-size: 1.4rem;
             margin-bottom: 4px;
         }
-        
-        #finalScoreOverlay .modal-content .score-display-final {
+
+        #gameOverOverlay .overlay-score {
             font-size: 3rem;
-            color: #00E676;
+            color: #FFD700;
             font-weight: 700;
             margin: 12px 0;
             font-family: 'Orbitron', monospace;
         }
-        
-        #finalScoreOverlay .modal-content .score-label {
+
+        #gameOverOverlay .overlay-label {
             color: #A7B5C5;
-            font-size: 0.9rem;
+            font-size: 0.85rem;
         }
-        
-        #finalScoreOverlay .modal-content .score-meta {
-            display: flex;
-            gap: 20px;
-            justify-content: center;
+
+        #gameOverOverlay .overlay-submit-status {
             margin-top: 16px;
-            font-size: 0.7rem;
-            color: rgba(255,255,255,0.3);
-        }
-        
-        #finalScoreOverlay .modal-content .score-actions {
-            margin-top: 20px;
+            padding: 10px 20px;
+            background: rgba(0, 230, 118, 0.05);
+            border: 1px solid rgba(0, 230, 118, 0.1);
+            border-radius: 12px;
             display: flex;
-            gap: 12px;
+            align-items: center;
             justify-content: center;
+            gap: 12px;
         }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn {
-            padding: 10px 30px;
+
+        #gameOverOverlay .overlay-submit-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(0, 230, 118, 0.2);
+            border-top: 2px solid #00E676;
+            border-radius: 50%;
+            animation: overlaySpin 0.8s linear infinite;
+        }
+
+        #gameOverOverlay .overlay-submit-text {
+            color: #00E676;
+            font-size: 0.8rem;
+        }
+
+        #gameOverOverlay .overlay-redirect-bar {
+            margin-top: 16px;
+            width: 100%;
+            height: 3px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+
+        #gameOverOverlay .overlay-redirect-bar .bar-fill {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00BFFF, #6C63FF);
+            border-radius: 2px;
+            animation: overlayLoadBar 3s ease forwards;
+        }
+
+        #gameOverOverlay .overlay-redirect-text {
+            margin-top: 10px;
+            color: rgba(255,255,255,0.3);
+            font-size: 0.65rem;
+        }
+
+        #gameOverOverlay .overlay-demo-btn {
+            margin-top: 20px;
+            background: linear-gradient(135deg, #FFD700, #FFA000);
             border: none;
             border-radius: 10px;
+            color: #000;
+            padding: 12px 30px;
             font-family: 'Orbitron', monospace;
             font-weight: 700;
             font-size: 0.8rem;
             cursor: pointer;
             transition: all 0.3s ease;
         }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-primary {
-            background: linear-gradient(135deg, #00BFFF, #6C63FF);
-            color: #000;
+
+        #gameOverOverlay .overlay-demo-btn:hover {
+            transform: scale(1.05);
         }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
+
+        /* ===== BLOCKER OVERLAY ===== */
+        #blockerOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: transparent;
+            z-index: 99998;
+            display: none;
+            pointer-events: all;
         }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-success {
-            background: linear-gradient(135deg, #00E676, #00C853);
-            color: #000;
-        }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-success:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(0, 230, 118, 0.3);
-        }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-danger {
-            background: linear-gradient(135deg, #FF4D6D, #D50000);
-            color: #fff;
-        }
-        
-        #finalScoreOverlay .modal-content .score-actions .btn-danger:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
-        }
-        
-        #finalScoreOverlay .modal-content .status-badge {
-            display: inline-block;
-            padding: 4px 16px;
-            border-radius: 20px;
-            font-size: 0.7rem;
-            font-weight: 600;
-            margin-top: 8px;
-        }
-        
-        #finalScoreOverlay .modal-content .status-badge.success {
-            background: rgba(0, 230, 118, 0.1);
-            color: #00E676;
-            border: 1px solid rgba(0, 230, 118, 0.2);
-        }
-        
-        #finalScoreOverlay .modal-content .status-badge.error {
-            background: rgba(255, 77, 109, 0.1);
-            color: #FF4D6D;
-            border: 1px solid rgba(255, 77, 109, 0.2);
-        }
-        
-        #finalScoreOverlay .modal-content .status-badge.pending {
-            background: rgba(255, 200, 87, 0.1);
-            color: #FFD700;
-            border: 1px solid rgba(255, 200, 87, 0.2);
-        }
+        #blockerOverlay.active { display: block; }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
@@ -835,41 +839,35 @@
         </div>
     </div>
 
-    <!-- ===== FINAL SCORE OVERLAY ===== -->
-    <div id="finalScoreOverlay">
-        <div class="modal-content">
-            <div class="trophy" id="finalTrophy">🏆</div>
-            <div class="title" id="finalTitle">Game Complete!</div>
-            <div class="score-display-final" id="finalScore">0</div>
-            <div class="score-label" id="finalScoreLabel">coins collected</div>
-            <div class="status-badge success" id="finalStatusBadge">✅ Score Submitted</div>
-            <div class="score-meta" id="finalMeta">
-                <span id="finalTime">⏱️ 0s</span>
-                <span id="finalStatus">✅ Verified</span>
+    <!-- ===== GAME OVER OVERLAY (UPGRADED) ===== -->
+    <div id="gameOverOverlay">
+        <div class="overlay-box">
+            <div class="overlay-trophy" id="overlayTrophy">🏆</div>
+            <div class="overlay-title" id="overlayTitle">Game Over!</div>
+            <div class="overlay-score" id="overlayScore">0</div>
+            <div class="overlay-label" id="overlayLabel">coins collected</div>
+
+            <div class="overlay-submit-status" id="overlayStatus">
+                <div class="overlay-submit-spinner"></div>
+                <span class="overlay-submit-text">⏳ Submitting score...</span>
             </div>
-            <div class="score-actions" id="finalActions">
-                <button class="btn btn-primary" id="finalViewRankings" onclick="goToRankings()">
-                    <i class="fas fa-ranking-star"></i> View Rankings
-                </button>
-                <button class="btn btn-success" id="finalPlayAgain" onclick="goToTournaments()">
-                    <i class="fas fa-trophy"></i> Tournaments
-                </button>
+
+            <div class="overlay-redirect-bar">
+                <div class="bar-fill"></div>
             </div>
+            <div class="overlay-redirect-text" id="overlayRedirectText">⏳ Redirecting to tournament...</div>
         </div>
     </div>
 
+    <!-- ===== BLOCKER OVERLAY ===== -->
+    <div id="blockerOverlay"></div>
+
     <!-- ===== GAME WRAPPER ===== -->
     <div id="gameWrapper">
-
-        <!-- ============================================================
-           WARNING BANNER
-           ============================================================ -->
         <div class="warning-banner" id="warningBanner">
             <div class="warning-content">
                 <div class="warning-icon-wrapper">
-                    <span class="warning-icon">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </span>
+                    <span class="warning-icon"><i class="fas fa-exclamation-triangle"></i></span>
                 </div>
                 <span class="warning-text">
                     <span class="emoji">📱</span> 
@@ -888,7 +886,6 @@
             </div>
         </div>
 
-        <!-- ===== HEADER ===== -->
         <div class="game-header">
             <div class="title">
                 <i class="fas fa-gamepad"></i>
@@ -911,7 +908,6 @@
             </button>
         </div>
 
-        <!-- ===== GAME FRAME ===== -->
         <div id="gameFrame">
             <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
         </div>
@@ -984,7 +980,7 @@
 
     <script>
         // ============================================================
-        // CONFIG - READ MODE FROM URL
+        // CONFIG
         // ============================================================
         const params = new URLSearchParams(window.location.search);
         const EVENT_ID = params.get('event') || '';
@@ -992,9 +988,6 @@
         const DEMO_MODE = params.get('demo') === 'true';
         const GAME_URL = 'games/ninja run/index.html';
 
-        // ============================================================
-        // MODE DETECTION
-        // ============================================================
         const IS_TOURNAMENT_MODE = !DEMO_MODE && EVENT_ID && USER_ID;
         const IS_DEMO_MODE = DEMO_MODE || !IS_TOURNAMENT_MODE;
 
@@ -1002,22 +995,26 @@
         console.log('📋 Event ID:', EVENT_ID || 'N/A');
         console.log('👤 User ID:', USER_ID || 'N/A');
 
-        // Update UI based on mode
-        document.getElementById('modeLabel').textContent = IS_DEMO_MODE ? '| Demo Mode' : '| Tournament';
-        if (IS_DEMO_MODE) {
-            document.getElementById('modeLabel').style.color = '#FFD700';
-            document.getElementById('antiCheatStatus').textContent = 'Demo';
-            document.getElementById('antiCheatBadge').style.color = '#FFD700';
-            document.getElementById('antiCheatBadge').style.borderColor = 'rgba(255, 215, 0, 0.2)';
-        }
+        // ============================================================
+        // STATE
+        // ============================================================
+        let gameScore = 0;
+        let scoreSubmitted = false;
+        let gameOverDetected = false;
+        let gameStarted = false;
+        let cheatAlertShown = false;
+        let autoRedirectTimer = null;
+        let scoreInterval = null;
+        let gameStartTime = Date.now();
+        let firstGameOver = true;
+        let redirectDone = false;
 
         // ============================================================
         // ANTI-CHEAT SYSTEM
         // ============================================================
-        
         class AntiCheatSystem {
             constructor() {
-                this.sessionId = this.generateSessionId();
+                this.sessionId = 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
                 this.startTime = Date.now();
                 this.endTime = null;
                 this.score = 0;
@@ -1025,43 +1022,23 @@
                 this.lastScoreTime = Date.now();
                 this.restartCount = 0;
                 this.tabSwitched = false;
-                this.isGameOver = false;
                 this.isCheating = false;
                 this.cheatReasons = [];
                 this.maxScoreRate = 0;
                 this.scoreHistory = [];
-                
-                // Configuration - Strict for tournament, relaxed for demo
                 this.isDemoMode = IS_DEMO_MODE;
-                
-                if (this.isDemoMode) {
-                    // Demo mode: relaxed rules
-                    this.MIN_PLAY_TIME = 0;
-                    this.MAX_PLAY_TIME = 600000; // 10 minutes
-                    this.MAX_SCORE_RATE = 999999;
-                    this.MAX_RESTARTS = 999;
-                    this.MAX_SCORE = 9999999;
-                } else {
-                    // Tournament mode: strict rules
-                    this.MIN_PLAY_TIME = 1000;      // 1 second minimum
-                    this.MAX_PLAY_TIME = 300000;    // 5 minutes maximum
-                    this.MAX_SCORE_RATE = 200;      // Max coins per second
-                    this.MAX_RESTARTS = 10;         // Max restarts
-                    this.MAX_SCORE = 99999;         // Maximum allowed score
-                }
-                
+                this.MIN_PLAY_TIME = this.isDemoMode ? 0 : 1000;
+                this.MAX_PLAY_TIME = this.isDemoMode ? 600000 : 300000;
+                this.MAX_SCORE_RATE = this.isDemoMode ? 999999 : 200;
+                this.MAX_RESTARTS = this.isDemoMode ? 999 : 10;
+                this.MAX_SCORE = this.isDemoMode ? 9999999 : 99999;
                 this.setupTabDetection();
             }
             
-            generateSessionId() {
-                return 'game_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
-            }
-            
             setupTabDetection() {
-                if (this.isDemoMode) return; // No tab detection in demo mode
-                
+                if (this.isDemoMode) return;
                 document.addEventListener('visibilitychange', () => {
-                    if (document.hidden && !this.isGameOver) {
+                    if (document.hidden && !gameOverDetected) {
                         this.tabSwitched = true;
                         this.addCheatReason('Tab switched during gameplay');
                         console.warn('⚠️ Tab switched during game');
@@ -1073,46 +1050,32 @@
                 const now = Date.now();
                 const timeDiff = (now - this.lastScoreTime) / 1000;
                 const scoreDiff = newScore - this.lastScore;
-                
                 if (timeDiff > 0 && scoreDiff > 0) {
                     const rate = scoreDiff / timeDiff;
-                    if (rate > this.maxScoreRate) {
-                        this.maxScoreRate = rate;
-                    }
+                    if (rate > this.maxScoreRate) this.maxScoreRate = rate;
                 }
-                
                 this.score = newScore;
                 this.lastScore = newScore;
                 this.lastScoreTime = now;
                 this.scoreHistory.push({ score: newScore, time: now });
-                
-                if (this.scoreHistory.length > 200) {
-                    this.scoreHistory.shift();
-                }
-                
-                if (!this.isDemoMode) {
-                    this.realTimeCheatCheck();
-                }
+                if (this.scoreHistory.length > 200) this.scoreHistory.shift();
+                if (!this.isDemoMode) this.realTimeCheatCheck();
             }
             
             realTimeCheatCheck() {
                 if (this.isDemoMode) return;
-                
                 if (this.maxScoreRate > this.MAX_SCORE_RATE && this.score > 100) {
                     this.isCheating = true;
-                    this.addCheatReason(`Score rate too high: ${Math.round(this.maxScoreRate)} coins/sec`);
+                    this.addCheatReason('Score rate too high: ' + Math.round(this.maxScoreRate) + ' coins/sec');
                 }
-                
                 if (this.score > this.MAX_SCORE) {
                     this.isCheating = true;
-                    this.addCheatReason(`Score exceeds maximum: ${this.score}`);
+                    this.addCheatReason('Score exceeds maximum: ' + this.score);
                 }
             }
             
             addCheatReason(reason) {
-                if (!this.cheatReasons.includes(reason)) {
-                    this.cheatReasons.push(reason);
-                }
+                if (!this.cheatReasons.includes(reason)) this.cheatReasons.push(reason);
             }
             
             getPlayTime() {
@@ -1120,58 +1083,18 @@
                 return end - this.startTime;
             }
             
-            getRestartCount() {
-                return this.restartCount;
-            }
-            
-            incrementRestart() {
-                this.restartCount++;
-                if (!this.isDemoMode && this.restartCount > this.MAX_RESTARTS) {
-                    this.isCheating = true;
-                    this.addCheatReason(`Too many restarts: ${this.restartCount}`);
-                }
-            }
-            
             isValidScore() {
-                if (this.isDemoMode) {
-                    return { valid: true, reasons: [] };
-                }
-                
+                if (this.isDemoMode) return { valid: true, reasons: [] };
                 const playTime = this.getPlayTime();
                 const reasons = [];
-                
-                if (playTime < this.MIN_PLAY_TIME) {
-                    reasons.push('Game ended too quickly');
-                }
-                
-                if (playTime > this.MAX_PLAY_TIME) {
-                    reasons.push('Game took too long');
-                }
-                
-                if (this.maxScoreRate > this.MAX_SCORE_RATE) {
-                    reasons.push(`Score rate too high: ${Math.round(this.maxScoreRate)} coins/sec`);
-                }
-                
-                if (this.score === 0) {
-                    reasons.push('No coins collected');
-                }
-                
-                if (this.tabSwitched) {
-                    reasons.push('Tab was switched during gameplay');
-                }
-                
-                if (this.restartCount > this.MAX_RESTARTS) {
-                    reasons.push(`Too many restarts: ${this.restartCount}`);
-                }
-                
-                if (this.isCheating) {
-                    reasons.push(...this.cheatReasons);
-                }
-                
-                return {
-                    valid: reasons.length === 0,
-                    reasons: reasons
-                };
+                if (playTime < this.MIN_PLAY_TIME) reasons.push('Game ended too quickly');
+                if (playTime > this.MAX_PLAY_TIME) reasons.push('Game took too long');
+                if (this.maxScoreRate > this.MAX_SCORE_RATE) reasons.push('Score rate too high: ' + Math.round(this.maxScoreRate) + ' coins/sec');
+                if (this.score === 0) reasons.push('No coins collected');
+                if (this.tabSwitched) reasons.push('Tab was switched during gameplay');
+                if (this.restartCount > this.MAX_RESTARTS) reasons.push('Too many restarts: ' + this.restartCount);
+                if (this.isCheating) reasons.push(...this.cheatReasons);
+                return { valid: reasons.length === 0, reasons: reasons };
             }
             
             getSummary() {
@@ -1190,34 +1113,19 @@
             }
         }
 
-        // ============================================================
-        // MAIN CONTROLLER
-        // ============================================================
-        
         const antiCheat = new AntiCheatSystem();
-        let gameScore = 0;
-        let scoreSubmitted = false;
-        let scoreInterval = null;
-        let gameOverDetected = false;
-        let cheatAlertShown = false;
-        let autoRedirectTimer = null;
 
         // ============================================================
-        // WARNING BANNER
+        // UI HELPERS
         // ============================================================
         function closeWarning() {
             const banner = document.getElementById('warningBanner');
             banner.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
             banner.style.opacity = '0';
             banner.style.transform = 'translateY(-20px)';
-            setTimeout(() => {
-                banner.style.display = 'none';
-            }, 400);
+            setTimeout(() => { banner.style.display = 'none'; }, 400);
         }
 
-        // ============================================================
-        // GUIDE FUNCTIONS
-        // ============================================================
         let currentStep = 0;
         const totalSteps = 5;
 
@@ -1232,17 +1140,11 @@
         }
 
         function nextStep() {
-            if (currentStep < totalSteps - 1) {
-                currentStep++;
-                updateGuide();
-            }
+            if (currentStep < totalSteps - 1) { currentStep++; updateGuide(); }
         }
 
         function prevStep() {
-            if (currentStep > 0) {
-                currentStep--;
-                updateGuide();
-            }
+            if (currentStep > 0) { currentStep--; updateGuide(); }
         }
 
         function updateGuide() {
@@ -1252,7 +1154,6 @@
                 if (index < currentStep) dot.classList.add('done');
                 if (index === currentStep) dot.classList.add('active');
             });
-
             const stepItems = document.querySelectorAll('.step-item');
             stepItems.forEach((item, index) => {
                 item.style.borderColor = 'rgba(255,255,255,0.04)';
@@ -1262,7 +1163,6 @@
                     item.style.background = 'rgba(0, 191, 255, 0.05)';
                 }
             });
-
             const prevBtn = document.querySelector('.btn-prev');
             const nextBtn = document.getElementById('guideNextBtn');
             prevBtn.style.opacity = currentStep === 0 ? '0.3' : '1';
@@ -1276,37 +1176,20 @@
             }
         }
 
-        // ============================================================
-        // KEYBOARD SHORTCUTS
-        // ============================================================
         document.addEventListener('keydown', function(e) {
-            if (e.key === '?' || (e.shiftKey && e.key === '/')) {
-                e.preventDefault();
-                openGuide();
-            }
+            if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openGuide(); }
             if (e.key === 'Escape') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) {
-                    closeGuide();
-                }
+                if (document.getElementById('guideOverlay').classList.contains('active')) closeGuide();
             }
             if (e.key === 'ArrowRight' || e.key === ' ') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) {
-                    e.preventDefault();
-                    nextStep();
-                }
+                if (document.getElementById('guideOverlay').classList.contains('active')) { e.preventDefault(); nextStep(); }
             }
             if (e.key === 'ArrowLeft') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) {
-                    e.preventDefault();
-                    prevStep();
-                }
+                if (document.getElementById('guideOverlay').classList.contains('active')) { e.preventDefault(); prevStep(); }
             }
         });
 
-        // ============================================================
-        // TOAST
-        // ============================================================
-        function showToast(message, type = 'info') {
+        function showToast(message, type) {
             const existing = document.querySelector('.toast-cyber');
             if (existing) existing.remove();
             const toast = document.createElement('div');
@@ -1322,181 +1205,394 @@
             }, 3000);
         }
 
-        // ============================================================
-        // CHEAT ALERT
-        // ============================================================
         function showCheatAlert(reason) {
             if (cheatAlertShown || IS_DEMO_MODE) return;
             cheatAlertShown = true;
-            
             document.getElementById('cheatDetail').textContent = 'Reason: ' + reason;
             document.getElementById('cheatAlert').classList.add('active');
             document.getElementById('statusDot').className = 'dot cheating';
             document.getElementById('statusText').textContent = '🚫 Cheating Detected!';
-            
             showToast('🚫 Cheating detected! Score not counted.', 'error');
         }
-        
+
         function closeCheatAlert() {
             document.getElementById('cheatAlert').classList.remove('active');
         }
 
         // ============================================================
-        // REDIRECT FUNCTIONS
+        // CORE: GAME OVER DETECTION - MULTI-LAYER
         // ============================================================
-        function goToRankings() {
-            if (EVENT_ID) {
-                window.location.href = `tournaments.html?id=${EVENT_ID}`;
-            } else {
-                window.location.href = 'tournaments.html';
+
+        function detectGameOverInFrame() {
+            try {
+                const frame = document.getElementById('gameIframe');
+                if (!frame) return false;
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) return false;
+
+                // ---- METHOD 1: Check runtime variables ----
+                const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
+                if (runtime) {
+                    if (runtime.globalVars) {
+                        const gameOverKeys = ['GameOver', 'gameOver', 'GAME_OVER', 'gameOverState', 'isGameOver', 'game_end', 'gameEnd', 'dead', 'Died'];
+                        for (const key of gameOverKeys) {
+                            if (runtime.globalVars[key] === true || runtime.globalVars[key] === 1 || runtime.globalVars[key] === 'true') {
+                                console.log('🎯 Game Over detected via runtime.globalVars[' + key + ']');
+                                return true;
+                            }
+                        }
+                    }
+                    if (runtime.all_global_vars) {
+                        for (const v of runtime.all_global_vars) {
+                            if (v && v.name) {
+                                const lowerName = v.name.toLowerCase();
+                                if ((lowerName.includes('gameover') || lowerName.includes('game_over') || lowerName.includes('end') || lowerName.includes('die') || lowerName.includes('dead') || lowerName.includes('finished')) &&
+                                    (v.data === true || v.data === 1 || v.data === 'true')) {
+                                    console.log('🎯 Game Over detected via runtime.all_global_vars[' + v.name + ']');
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                    if (runtime.types) {
+                        for (const type of runtime.types_by_index) {
+                            if (type && type.name) {
+                                const lowerName = type.name.toLowerCase();
+                                if ((lowerName.includes('player') || lowerName.includes('ninja')) && type.instances && type.instances.length === 0) {
+                                    console.log('🎯 Game Over detected - Player instance destroyed');
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // ---- METHOD 2: Check DOM for game over elements ----
+                const gameOverSelectors = [
+                    '.gameover', '.game-over', '#gameover', '#game-over',
+                    '[data-gameover]', '.gameover-screen', '.game-over-screen',
+                    '.gameover-overlay', '.game-over-overlay',
+                    '.death-screen', '.game-end', '.gameover-panel',
+                    '.gameover-container', '.game-over-container'
+                ];
+                for (const selector of gameOverSelectors) {
+                    try {
+                        const elements = frameDoc.querySelectorAll(selector);
+                        for (const el of elements) {
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0 && el.style.display !== 'none' && el.style.visibility !== 'hidden' && el.offsetParent !== null) {
+                                console.log('🎯 Game Over detected via DOM: ' + selector);
+                                return true;
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                // ---- METHOD 3: Check for restart buttons ----
+                const restartSelectors = [
+                    '.restart-btn', '#restart', '[data-restart]',
+                    '.btn-restart', '.restart-button', '#restartButton',
+                    '.btnrestart', '#btnrestart', '.game-restart',
+                    'button[onclick*="restart"]', 'div[onclick*="restart"]'
+                ];
+                for (const selector of restartSelectors) {
+                    try {
+                        const elements = frameDoc.querySelectorAll(selector);
+                        for (const el of elements) {
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0 && el.style.display !== 'none' && el.offsetParent !== null) {
+                                const text = (el.textContent || '').toLowerCase();
+                                if (text.includes('restart') || text.includes('replay') || text.includes('try again') || text.includes('retry') || text.includes('play again')) {
+                                    console.log('🎯 Game Over detected via restart button: ' + selector);
+                                    return true;
+                                }
+                            }
+                        }
+                    } catch (e) {}
+                }
+
+                // ---- METHOD 4: Check canvas for game over state ----
+                try {
+                    const canvas = frameDoc.getElementById('c2canvas');
+                    if (canvas) {
+                        const ctx = canvas.getContext('2d');
+                        if (ctx) {
+                            const imageData = ctx.getImageData(0, 0, Math.min(canvas.width, 100), Math.min(canvas.height, 100));
+                            if (imageData && imageData.data) {
+                                // Check if canvas has changed significantly (game over screen usually has different colors)
+                                // This is a simple check - just look for a dark overlay
+                                let darkPixels = 0;
+                                const totalPixels = imageData.data.length / 4;
+                                for (let i = 0; i < imageData.data.length; i += 4) {
+                                    const r = imageData.data[i];
+                                    const g = imageData.data[i + 1];
+                                    const b = imageData.data[i + 2];
+                                    if (r < 50 && g < 50 && b < 50) darkPixels++;
+                                }
+                                if (darkPixels / totalPixels > 0.3) {
+                                    console.log('🎯 Game Over detected via canvas dark overlay');
+                                    return true;
+                                }
+                            }
+                        }
+                    }
+                } catch (e) {}
+
+                return false;
+
+            } catch (e) {
+                return false;
             }
         }
 
-        function goToTournaments() {
-            window.location.href = 'tournaments.html';
-        }
-
-        function goToDashboard() {
-            window.location.href = 'dashboard.html';
-        }
-
         // ============================================================
-        // SCORE TRACKING - COINS ONLY
+        // CORE: BLOCK RESTART BUTTONS
         // ============================================================
-        function startScoreTracking() {
-            if (scoreInterval) clearInterval(scoreInterval);
-            scoreInterval = setInterval(() => {
-                try {
-                    const frame = document.getElementById('gameIframe');
-                    if (!frame) return;
-                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                    if (!frameDoc) return;
-                    const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
-                    if (!runtime) return;
-                    
-                    let score = 0;
-                    
-                    // Track coins specifically - look for coin variables
-                    const vars = runtime.all_global_vars || [];
-                    for (let v of vars) {
-                        if (v && v.name) {
-                            // Only track coin-related variables
-                            const lowerName = v.name.toLowerCase();
-                            if (lowerName === 'coins' || lowerName === 'coin' || 
-                                lowerName === 'coincount' || lowerName === 'coin_counter') {
-                                const val = v.data || 0;
-                                if (typeof val === 'number' && val > score) {
-                                    score = val;
-                                }
-                            }
-                            // Check game over
-                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
-                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                    gameOverDetected = true;
-                                    submitScore(score);
-                                }
-                            }
-                        }
+
+        function blockRestartButtons() {
+            try {
+                const frame = document.getElementById('gameIframe');
+                if (!frame) return;
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) return;
+
+                // Block all restart buttons in the iframe
+                const restartSelectors = [
+                    '.restart-btn', '#restart', '[data-restart]',
+                    '.btn-restart', '.restart-button', '#restartButton',
+                    '.btnrestart', '#btnrestart', '.game-restart',
+                    'button[onclick*="restart"]', 'div[onclick*="restart"]'
+                ];
+
+                for (const selector of restartSelectors) {
+                    const elements = frameDoc.querySelectorAll(selector);
+                    for (const el of elements) {
+                        el.style.pointerEvents = 'none';
+                        el.style.opacity = '0.3';
+                        el.style.cursor = 'default';
+                        el.disabled = true;
+                        // Remove onclick handlers
+                        el.onclick = null;
+                        el.removeAttribute('onclick');
+                        // Clone to remove all event listeners
+                        const newEl = el.cloneNode(true);
+                        el.parentNode.replaceChild(newEl, el);
                     }
-                    
-                    // Check globalVars for coins
-                    if (runtime.globalVars) {
-                        for (const key in runtime.globalVars) {
-                            const lowerKey = key.toLowerCase();
-                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                                lowerKey === 'coincount' || lowerKey === 'coin_counter') {
-                                const val = runtime.globalVars[key];
-                                if (typeof val === 'number' && val > score) {
-                                    score = val;
-                                }
-                            }
-                            if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
-                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                    gameOverDetected = true;
-                                    submitScore(score);
-                                }
-                            }
-                        }
-                    }
-                    
-                    // Update score
-                    if (score > gameScore) {
-                        gameScore = score;
-                        antiCheat.updateScore(score);
-                        document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
-                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
-                        
-                        // Check cheating (only in tournament mode)
-                        if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
-                            showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
-                        }
-                    }
-                    
-                } catch (e) {
-                    // Silent fail
                 }
-            }, 200);
+
+                // Override restart functions
+                if (frame.contentWindow) {
+                    const win = frame.contentWindow;
+                    ['restartGame', 'restart', 'resetGame', 'reset', 'playAgain', 'retry'].forEach(function(funcName) {
+                        if (typeof win[funcName] === 'function') {
+                            win[funcName] = function() {
+                                console.log('🚫 Restart blocked - game already ended');
+                                return false;
+                            };
+                        }
+                    });
+                }
+
+                console.log('✅ Restart buttons blocked');
+
+            } catch (e) {
+                console.log('⚠️ Could not block restart buttons:', e);
+            }
         }
 
         // ============================================================
-        // SUBMIT SCORE
+        // CORE: SETUP MUTATION OBSERVER (catches dynamically created buttons)
         // ============================================================
+
+        let mutationObserver = null;
+
+        function setupMutationObserver() {
+            try {
+                const frame = document.getElementById('gameIframe');
+                if (!frame) return;
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) return;
+
+                if (mutationObserver) mutationObserver.disconnect();
+
+                mutationObserver = new MutationObserver(function(mutations) {
+                    if (gameOverDetected) {
+                        blockRestartButtons();
+                    }
+                    for (const mutation of mutations) {
+                        for (const node of mutation.addedNodes) {
+                            if (node.nodeType === 1) {
+                                const el = node;
+                                // Check if this is a restart button
+                                const text = (el.textContent || '').toLowerCase();
+                                if (text.includes('restart') || text.includes('replay') || text.includes('try again') || 
+                                    text.includes('retry') || text.includes('play again')) {
+                                    if (gameOverDetected) {
+                                        el.style.pointerEvents = 'none';
+                                        el.style.opacity = '0.3';
+                                        el.disabled = true;
+                                    }
+                                }
+                                // Check for game over elements
+                                if (el.classList && (el.classList.contains('gameover') || el.classList.contains('game-over') || 
+                                    el.id === 'gameover' || el.id === 'game-over')) {
+                                    if (gameOverDetected) {
+                                        el.style.display = 'none';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+
+                mutationObserver.observe(frameDoc.body, {
+                    childList: true,
+                    subtree: true,
+                    attributes: true,
+                    attributeFilter: ['style', 'class', 'display']
+                });
+
+                console.log('✅ MutationObserver set up');
+
+            } catch (e) {
+                console.log('⚠️ Could not setup MutationObserver:', e);
+            }
+        }
+
+        // ============================================================
+        // CORE: SHOW GAME OVER OVERLAY
+        // ============================================================
+
+        function showGameOverOverlay(score) {
+            if (document.getElementById('gameOverOverlay').classList.contains('active')) return;
+
+            const overlay = document.getElementById('gameOverOverlay');
+            const isDemo = IS_DEMO_MODE;
+
+            document.getElementById('overlayTrophy').textContent = isDemo ? '🎮' : '🏆';
+            document.getElementById('overlayTitle').textContent = isDemo ? 'Demo Complete!' : 'Game Over!';
+            document.getElementById('overlayTitle').style.color = isDemo ? '#FFD700' : '#00E676';
+            document.getElementById('overlayScore').textContent = score.toLocaleString();
+            document.getElementById('overlayLabel').textContent = isDemo ? 'coins (demo)' : 'coins collected';
+
+            const statusEl = document.getElementById('overlayStatus');
+            const redirectText = document.getElementById('overlayRedirectText');
+
+            if (isDemo) {
+                statusEl.innerHTML = `
+                    <span style="color:#FFD700;font-size:0.8rem;">🎮 Demo Mode</span>
+                    <span style="color:#A7B5C5;font-size:0.7rem;">Free practice complete!</span>
+                `;
+                redirectText.textContent = '🎮 Click below to play again';
+                document.querySelector('#gameOverOverlay .overlay-demo-btn').style.display = 'block';
+            } else {
+                statusEl.innerHTML = `
+                    <div class="overlay-submit-spinner"></div>
+                    <span class="overlay-submit-text">⏳ Submitting score...</span>
+                `;
+                redirectText.textContent = '⏳ Redirecting to tournament...';
+                document.querySelector('#gameOverOverlay .overlay-demo-btn').style.display = 'none';
+                // Start redirect timer
+                startRedirectTimer();
+            }
+
+            overlay.classList.add('active');
+            document.getElementById('blockerOverlay').classList.add('active');
+
+            // Update status
+            document.getElementById('statusText').textContent = isDemo ? '✅ Demo Complete!' : '✅ Game Over!';
+            document.getElementById('statusDot').className = 'dot complete';
+            document.getElementById('antiCheatStatus').textContent = isDemo ? '🎮 Demo' : '✅ Submitted';
+            document.getElementById('antiCheatBadge').classList.add('active');
+
+            // Block everything
+            blockRestartButtons();
+
+            // Hide game over elements in iframe
+            try {
+                const frame = document.getElementById('gameIframe');
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (frameDoc) {
+                    const gameOverElements = frameDoc.querySelectorAll('.gameover, .game-over, #gameover, #game-over, .gameover-screen, .game-over-screen');
+                    for (const el of gameOverElements) {
+                        el.style.display = 'none';
+                    }
+                }
+            } catch (e) {}
+        }
+
+        // ============================================================
+        // CORE: REDIRECT TIMER
+        // ============================================================
+
+        function startRedirectTimer() {
+            if (redirectDone) return;
+            redirectDone = true;
+
+            // Update status after 2 seconds
+            setTimeout(() => {
+                const statusEl = document.getElementById('overlayStatus');
+                statusEl.innerHTML = `
+                    <span style="color:#00E676;font-size:0.8rem;">✅ Score submitted!</span>
+                `;
+            }, 2000);
+
+            // Redirect after 3 seconds
+            setTimeout(() => {
+                if (EVENT_ID) {
+                    window.location.href = 'tournaments.html?id=' + EVENT_ID;
+                } else {
+                    window.location.href = 'tournaments.html';
+                }
+            }, 3500);
+        }
+
+        // ============================================================
+        // CORE: SUBMIT SCORE
+        // ============================================================
+
         function submitScore(score) {
             if (scoreSubmitted) return;
-            
             const finalScore = parseInt(score) || gameScore || 0;
-            
-            // For demo mode: just show success
+
             if (IS_DEMO_MODE) {
                 scoreSubmitted = true;
                 sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                 sessionStorage.setItem('ninjaRunPlayed', 'true');
                 sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
                 sessionStorage.setItem('ninjaRunComplete', 'true');
-                
                 document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
-                document.getElementById('statusText').textContent = '✅ Demo Complete!';
-                document.getElementById('statusDot').className = 'dot complete';
-                document.getElementById('antiCheatStatus').textContent = '🎮 Demo';
-                
-                showToast(`🎮 Demo: ${finalScore.toLocaleString()} coins!`, 'success');
-                showFinalScoreOverlay(finalScore, true);
+                showToast('🎮 Demo: ' + finalScore.toLocaleString() + ' coins!', 'success');
+                showGameOverOverlay(finalScore);
                 return;
             }
-            
-            // Tournament mode: validate and submit
+
             if (finalScore === 0) {
                 showToast('⚠️ No coins collected. Please try again!', 'warning');
                 return;
             }
-            
-            // Validate with anti-cheat
+
             const validation = antiCheat.isValidScore();
-            
             if (antiCheat.isCheating || !validation.valid) {
                 const reason = antiCheat.cheatReasons[0] || validation.reasons[0] || 'Suspicious activity detected';
                 showCheatAlert(reason);
                 return;
             }
-            
-            // Submit valid score to Firebase
+
             scoreSubmitted = true;
-            
-            // Store in session storage
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunComplete', 'true');
             sessionStorage.setItem('ninjaRunSessionData', JSON.stringify(antiCheat.getSummary()));
-            
-            // Update UI
+
             document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
             document.getElementById('statusText').textContent = '✅ Complete!';
             document.getElementById('statusDot').className = 'dot complete';
             document.getElementById('antiCheatStatus').textContent = '✅ Verified';
             document.getElementById('antiCheatBadge').classList.add('active');
-            
-            // Send to parent window
+
+            // Send to parent
             if (window.parent && window.parent !== window) {
                 try {
                     window.parent.postMessage({
@@ -1509,138 +1605,155 @@
                     }, '*');
                 } catch (e) {}
             }
-            
-            // Submit to Firebase
-            if (EVENT_ID && USER_ID) {
-                submitToFirebase(finalScore);
-            }
-            
-            // Show success
-            showToast(`🏆 ${finalScore.toLocaleString()} coins collected!`, 'success');
-            
-            // Show final score overlay with redirect
-            showFinalScoreOverlay(finalScore, false);
-        }
 
-        // ============================================================
-        // SUBMIT TO FIREBASE
-        // ============================================================
-        function submitToFirebase(score) {
-            // Check if Firebase is available
-            if (typeof firebase === 'undefined' || !firebase.database) {
-                console.warn('⚠️ Firebase not available, score saved locally');
-                return;
-            }
-            
-            try {
-                const db = firebase.database();
-                const scoreRef = db.ref(`tournaments/${EVENT_ID}/players/${USER_ID}`);
-                
-                const scoreData = {
-                    score: score,
-                    coins: score, // Store as coins
-                    hasPlayed: true,
-                    submittedAt: Date.now(),
-                    sessionData: antiCheat.getSummary(),
-                    username: `Player_${USER_ID.slice(0, 6)}`
-                };
-                
-                scoreRef.update(scoreData)
-                    .then(() => {
-                        console.log('✅ Score submitted to Firebase:', score);
-                        document.getElementById('finalStatusBadge').textContent = '✅ Submitted to Rankings';
-                        document.getElementById('finalStatusBadge').className = 'status-badge success';
-                    })
-                    .catch((error) => {
-                        console.error('❌ Firebase error:', error);
-                        document.getElementById('finalStatusBadge').textContent = '⚠️ Local Save Only';
-                        document.getElementById('finalStatusBadge').className = 'status-badge warning';
+            // Submit to Firebase if available
+            if (EVENT_ID && USER_ID && typeof firebase !== 'undefined' && firebase.database) {
+                try {
+                    const db = firebase.database();
+                    const scoreRef = db.ref('tournaments/' + EVENT_ID + '/players/' + USER_ID);
+                    scoreRef.update({
+                        score: finalScore,
+                        coins: finalScore,
+                        hasPlayed: true,
+                        submittedAt: Date.now(),
+                        sessionData: antiCheat.getSummary(),
+                        username: 'Player_' + USER_ID.slice(0, 6)
+                    }).then(() => {
+                        console.log('✅ Score submitted to Firebase:', finalScore);
+                    }).catch(function(err) {
+                        console.error('❌ Firebase error:', err);
                     });
-                    
-                // Also update user record
-                const userRef = db.ref(`users/${USER_ID}`);
-                userRef.update({
-                    hasPlayedCurrentEvent: true,
-                    currentEventId: EVENT_ID,
-                    lastScore: score,
-                    lastCoins: score
-                }).catch(() => {});
-                
-            } catch (error) {
-                console.error('❌ Error submitting to Firebase:', error);
+                    const userRef = db.ref('users/' + USER_ID);
+                    userRef.update({
+                        hasPlayedCurrentEvent: true,
+                        currentEventId: EVENT_ID,
+                        lastScore: finalScore,
+                        lastCoins: finalScore
+                    }).catch(function() {});
+                } catch (error) {
+                    console.error('❌ Error submitting to Firebase:', error);
+                }
             }
+
+            showToast('🏆 ' + finalScore.toLocaleString() + ' coins collected!', 'success');
+            showGameOverOverlay(finalScore);
         }
 
         // ============================================================
-        // FINAL SCORE OVERLAY
+        // CORE: SCORE TRACKING
         // ============================================================
-        function showFinalScoreOverlay(score, isDemo) {
-            const overlay = document.getElementById('finalScoreOverlay');
-            const trophy = document.getElementById('finalTrophy');
-            const title = document.getElementById('finalTitle');
-            const scoreDisplay = document.getElementById('finalScore');
-            const label = document.getElementById('finalScoreLabel');
-            const statusBadge = document.getElementById('finalStatusBadge');
-            const timeSpan = document.getElementById('finalTime');
-            const statusSpan = document.getElementById('finalStatus');
-            const actions = document.getElementById('finalActions');
-            
-            trophy.textContent = isDemo ? '🎮' : '🏆';
-            title.textContent = isDemo ? 'Demo Complete!' : 'Game Complete!';
-            scoreDisplay.textContent = score.toLocaleString();
-            label.textContent = isDemo ? 'coins (demo)' : 'coins collected';
-            
-            if (isDemo) {
-                statusBadge.textContent = '🎮 Demo Mode';
-                statusBadge.className = 'status-badge success';
-                statusSpan.textContent = '✅ Free Play';
-                timeSpan.textContent = `⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s`;
-                actions.innerHTML = `
-                    <button class="btn btn-primary" onclick="goToTournaments()">
-                        <i class="fas fa-trophy"></i> Tournaments
-                    </button>
-                    <button class="btn btn-success" onclick="window.close()">
-                        <i class="fas fa-times"></i> Close
-                    </button>
-                `;
-            } else {
-                statusBadge.textContent = '✅ Score Submitted';
-                statusBadge.className = 'status-badge success';
-                statusSpan.textContent = '✅ Verified';
-                timeSpan.textContent = `⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s`;
-                actions.innerHTML = `
-                    <button class="btn btn-primary" onclick="goToRankings()">
-                        <i class="fas fa-ranking-star"></i> View Rankings
-                    </button>
-                    <button class="btn btn-success" onclick="goToTournaments()">
-                        <i class="fas fa-trophy"></i> Tournaments
-                    </button>
-                `;
-            }
-            
-            overlay.classList.add('active');
-            
-            // Auto-redirect for tournament mode
-            if (!isDemo) {
-                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
-                autoRedirectTimer = setTimeout(() => {
-                    goToRankings();
-                }, 5000);
-            }
+
+        function startScoreTracking() {
+            if (scoreInterval) clearInterval(scoreInterval);
+            scoreInterval = setInterval(function() {
+                try {
+                    const frame = document.getElementById('gameIframe');
+                    if (!frame) return;
+                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                    if (!frameDoc) return;
+                    const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
+                    if (!runtime) return;
+
+                    let score = 0;
+
+                    // Track coins
+                    const vars = runtime.all_global_vars || [];
+                    for (let v of vars) {
+                        if (v && v.name) {
+                            const lowerName = v.name.toLowerCase();
+                            if (lowerName === 'coins' || lowerName === 'coin' || lowerName === 'coincount' || lowerName === 'coin_counter') {
+                                const val = v.data || 0;
+                                if (typeof val === 'number' && val > score) score = val;
+                            }
+                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
+                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                    gameOverDetected = true;
+                                    gameStarted = true;
+                                    console.log('🎯 Game Over detected via variable: ' + v.name);
+                                    submitScore(score);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    if (runtime.globalVars) {
+                        for (const key in runtime.globalVars) {
+                            const lowerKey = key.toLowerCase();
+                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coincount' || lowerKey === 'coin_counter') {
+                                const val = runtime.globalVars[key];
+                                if (typeof val === 'number' && val > score) score = val;
+                            }
+                            if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
+                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                    gameOverDetected = true;
+                                    gameStarted = true;
+                                    console.log('🎯 Game Over detected via globalVars: ' + key);
+                                    submitScore(score);
+                                    return;
+                                }
+                            }
+                        }
+                    }
+
+                    if (score > gameScore) {
+                        gameScore = score;
+                        antiCheat.updateScore(score);
+                        document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
+                        sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                        if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
+                            showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
+                        }
+                    }
+
+                    // Also check for game over via detection function
+                    if (!gameOverDetected && gameScore > 0) {
+                        if (detectGameOverInFrame()) {
+                            gameOverDetected = true;
+                            gameStarted = true;
+                            console.log('🎯 Game Over detected via detection function');
+                            submitScore(gameScore);
+                            return;
+                        }
+                    }
+
+                    // Mark started
+                    if (gameScore > 0 && !gameStarted) {
+                        gameStarted = true;
+                        console.log('🎮 Game started (coins detected)');
+                    }
+
+                } catch (e) {
+                    // Silent fail
+                }
+            }, 300);
+
+            // Also check periodically via detection function
+            setInterval(function() {
+                if (!gameOverDetected && gameScore > 0) {
+                    if (detectGameOverInFrame()) {
+                        gameOverDetected = true;
+                        gameStarted = true;
+                        console.log('🎯 Game Over detected via periodic check');
+                        submitScore(gameScore);
+                    }
+                }
+            }, 1000);
         }
 
         // ============================================================
-        // INJECT BRIDGE - COIN TRACKING ONLY
+        // CORE: INJECT BRIDGE
         // ============================================================
+
         function injectBridge() {
             try {
                 const frame = document.getElementById('gameIframe');
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return;
                 if (frameDoc.getElementById('ninjaBridgeScript')) return;
-                
+
                 const isDemo = IS_DEMO_MODE;
-                
+
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
@@ -1663,7 +1776,6 @@
                                     const rt = window.gameRuntime;
                                     let score = 0;
                                     
-                                    // Track coins only
                                     const vars = rt.all_global_vars || [];
                                     for (let v of vars) {
                                         if (v && v.name) {
@@ -1780,8 +1892,9 @@
         }
 
         // ============================================================
-        // LOAD GAME
+        // CORE: LOAD GAME
         // ============================================================
+
         function loadGame() {
             const frame = document.getElementById('gameIframe');
             const loadingOverlay = document.getElementById('loadingOverlay');
@@ -1789,20 +1902,20 @@
             const loadingText = document.getElementById('loadingText');
 
             const timestamp = Date.now();
-            const gameUrl = `${GAME_URL}?event=${EVENT_ID}&user=${USER_ID}&demo=${IS_DEMO_MODE}&t=${timestamp}`;
+            const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
             frame.src = gameUrl;
 
             let progress = 0;
             let loadAttempts = 0;
             const maxAttempts = 50;
 
-            const progressInterval = setInterval(() => {
+            const progressInterval = setInterval(function() {
                 progress += Math.random() * 8 + 2;
                 if (progress > 95) progress = 95;
                 progressFill.style.width = progress + '%';
             }, 200);
 
-            const loadCheck = setInterval(() => {
+            const loadCheck = setInterval(function() {
                 loadAttempts++;
                 try {
                     const frameDoc = frame.contentDocument || frame.contentWindow?.document;
@@ -1814,14 +1927,15 @@
                             clearInterval(loadCheck);
                             progressFill.style.width = '100%';
                             loadingText.textContent = '✅ Game Loaded!';
-                            setTimeout(() => {
+                            setTimeout(function() {
                                 loadingOverlay.classList.add('hidden');
                                 document.getElementById('statusText').textContent = '🎮 Playing...';
                                 document.getElementById('statusDot').className = 'dot';
                                 document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
                             }, 400);
-                            setTimeout(() => injectBridge(), 1500);
-                            setTimeout(() => startScoreTracking(), 2000);
+                            setTimeout(function() { injectBridge(); }, 1500);
+                            setTimeout(function() { startScoreTracking(); }, 2000);
+                            setTimeout(function() { setupMutationObserver(); }, 3000);
                             return;
                         }
                     }
@@ -1836,7 +1950,7 @@
                 }
             }, 200);
 
-            setTimeout(() => {
+            setTimeout(function() {
                 if (!loadingOverlay.classList.contains('hidden')) {
                     clearInterval(progressInterval);
                     clearInterval(loadCheck);
@@ -1847,13 +1961,13 @@
         // ============================================================
         // MESSAGE LISTENER
         // ============================================================
+
         window.addEventListener('message', function(event) {
             if (event.data && event.data.type === 'NINJA_RUN_SCORE') {
                 const score = event.data.score || 0;
                 document.getElementById('scoreDisplay').textContent = score.toLocaleString();
                 gameScore = score;
                 antiCheat.updateScore(score);
-                
                 if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
                     showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
                 }
@@ -1865,13 +1979,17 @@
                 document.getElementById('statusDot').className = 'dot complete';
                 document.getElementById('antiCheatStatus').textContent = '✅ Verified';
                 document.getElementById('antiCheatBadge').classList.add('active');
-                submitScore(score);
+                if (!gameOverDetected) {
+                    gameOverDetected = true;
+                    submitScore(score);
+                }
             }
         });
 
         // ============================================================
         // PREVENT SCROLL
         // ============================================================
+
         document.addEventListener('touchmove', function(e) {
             if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
                 e.preventDefault();
@@ -1881,19 +1999,33 @@
         // ============================================================
         // INIT
         // ============================================================
+
+        // Update UI
+        document.getElementById('modeLabel').textContent = IS_DEMO_MODE ? '| Demo Mode' : '| Tournament';
+        if (IS_DEMO_MODE) {
+            document.getElementById('modeLabel').style.color = '#FFD700';
+            document.getElementById('antiCheatStatus').textContent = 'Demo';
+            document.getElementById('antiCheatBadge').style.color = '#FFD700';
+            document.getElementById('antiCheatBadge').style.borderColor = 'rgba(255, 215, 0, 0.2)';
+        }
+
+        // Demo button handler
+        document.querySelector('#gameOverOverlay .overlay-demo-btn')?.addEventListener('click', function() {
+            window.location.reload();
+        });
+
         loadGame();
 
         console.log('');
         console.log('🪙 ===========================================');
         console.log('🪙 NINJA RUN - COMPLETE TOURNAMENT INTEGRATION');
         console.log('🪙 ===========================================');
-        console.log(`🎯 Mode: ${IS_DEMO_MODE ? 'DEMO (Relaxed)' : 'TOURNAMENT (Strict)'}`);
+        console.log('🎯 Mode:', IS_DEMO_MODE ? 'DEMO (Relaxed)' : 'TOURNAMENT (Strict)');
         console.log('🪙 Tracking: Coins only');
         console.log('🔒 Anti-Cheat:', IS_DEMO_MODE ? 'Disabled' : 'Active');
-        console.log('📊 Score Rate Limit:', IS_DEMO_MODE ? 'Unlimited' : '200 coins/sec');
-        console.log('⏱️ Min Play Time:', IS_DEMO_MODE ? '0s' : '1s');
-        console.log('🔄 Max Restarts:', IS_DEMO_MODE ? 'Unlimited' : '10');
-        console.log('✅ Auto-Redirect: Enabled');
+        console.log('✅ First Game Over Detection: Active');
+        console.log('🚫 Restart Button Blocking: Active');
+        console.log('🔄 Auto-Redirect: Enabled');
         console.log('===========================================');
     </script>
 
