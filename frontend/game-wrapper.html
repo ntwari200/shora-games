@@ -651,6 +651,161 @@
             font-size: 0.7rem;
             color: #FF4D6D;
         }
+        .cheat-alert .cheat-modal .cheat-btn {
+            background: linear-gradient(135deg, #FF4D6D, #D50000);
+            border: none;
+            color: #fff;
+            padding: 10px 30px;
+            border-radius: 10px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+            margin-top: 8px;
+        }
+        .cheat-alert .cheat-modal .cheat-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
+        }
+
+        /* ===== FINAL SCORE OVERLAY ===== */
+        #finalScoreOverlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.88);
+            backdrop-filter: blur(16px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            font-family: 'Orbitron', monospace;
+            color: #fff;
+            animation: fadeIn 0.5s ease;
+        }
+        #finalScoreOverlay.active { display: flex; }
+        
+        #finalScoreOverlay .modal-content {
+            background: linear-gradient(145deg, #06111F, #0B1F36);
+            border: 2px solid rgba(0, 191, 255, 0.2);
+            border-radius: 24px;
+            padding: 40px 50px;
+            text-align: center;
+            max-width: 420px;
+            width: 90%;
+            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
+        }
+        
+        #finalScoreOverlay .modal-content .trophy {
+            font-size: 4rem;
+            margin-bottom: 8px;
+        }
+        
+        #finalScoreOverlay .modal-content .title {
+            color: #FFD700;
+            font-size: 1.4rem;
+            margin-bottom: 4px;
+        }
+        
+        #finalScoreOverlay .modal-content .score-display-final {
+            font-size: 3rem;
+            color: #00E676;
+            font-weight: 700;
+            margin: 12px 0;
+            font-family: 'Orbitron', monospace;
+        }
+        
+        #finalScoreOverlay .modal-content .score-label {
+            color: #A7B5C5;
+            font-size: 0.9rem;
+        }
+        
+        #finalScoreOverlay .modal-content .score-meta {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin-top: 16px;
+            font-size: 0.7rem;
+            color: rgba(255,255,255,0.3);
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions {
+            margin-top: 20px;
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn {
+            padding: 10px 30px;
+            border: none;
+            border-radius: 10px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-primary {
+            background: linear-gradient(135deg, #00BFFF, #6C63FF);
+            color: #000;
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-success {
+            background: linear-gradient(135deg, #00E676, #00C853);
+            color: #000;
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-success:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(0, 230, 118, 0.3);
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-danger {
+            background: linear-gradient(135deg, #FF4D6D, #D50000);
+            color: #fff;
+        }
+        
+        #finalScoreOverlay .modal-content .score-actions .btn-danger:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
+        }
+        
+        #finalScoreOverlay .modal-content .status-badge {
+            display: inline-block;
+            padding: 4px 16px;
+            border-radius: 20px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            margin-top: 8px;
+        }
+        
+        #finalScoreOverlay .modal-content .status-badge.success {
+            background: rgba(0, 230, 118, 0.1);
+            color: #00E676;
+            border: 1px solid rgba(0, 230, 118, 0.2);
+        }
+        
+        #finalScoreOverlay .modal-content .status-badge.error {
+            background: rgba(255, 77, 109, 0.1);
+            color: #FF4D6D;
+            border: 1px solid rgba(255, 77, 109, 0.2);
+        }
+        
+        #finalScoreOverlay .modal-content .status-badge.pending {
+            background: rgba(255, 200, 87, 0.1);
+            color: #FFD700;
+            border: 1px solid rgba(255, 200, 87, 0.2);
+        }
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
     </style>
@@ -674,9 +829,32 @@
             <p>Your game session has been flagged for suspicious activity.</p>
             <div class="cheat-detail" id="cheatDetail">Reason: Score rate too high</div>
             <p style="font-size:0.7rem;margin-top:8px;">This score will not be counted. Please play fairly.</p>
-            <button onclick="closeCheatAlert()" style="margin-top:16px;background:linear-gradient(135deg,#FF4D6D,#D50000);border:none;color:#fff;padding:10px 30px;border-radius:10px;font-family:'Inter',sans-serif;font-weight:700;cursor:pointer;font-size:0.85rem;">
+            <button class="cheat-btn" onclick="closeCheatAlert()">
                 <i class="fas fa-times"></i> Close
             </button>
+        </div>
+    </div>
+
+    <!-- ===== FINAL SCORE OVERLAY ===== -->
+    <div id="finalScoreOverlay">
+        <div class="modal-content">
+            <div class="trophy" id="finalTrophy">🏆</div>
+            <div class="title" id="finalTitle">Game Complete!</div>
+            <div class="score-display-final" id="finalScore">0</div>
+            <div class="score-label" id="finalScoreLabel">coins collected</div>
+            <div class="status-badge success" id="finalStatusBadge">✅ Score Submitted</div>
+            <div class="score-meta" id="finalMeta">
+                <span id="finalTime">⏱️ 0s</span>
+                <span id="finalStatus">✅ Verified</span>
+            </div>
+            <div class="score-actions" id="finalActions">
+                <button class="btn btn-primary" id="finalViewRankings" onclick="goToRankings()">
+                    <i class="fas fa-ranking-star"></i> View Rankings
+                </button>
+                <button class="btn btn-success" id="finalPlayAgain" onclick="goToTournaments()">
+                    <i class="fas fa-trophy"></i> Tournaments
+                </button>
+            </div>
         </div>
     </div>
 
@@ -715,7 +893,7 @@
             <div class="title">
                 <i class="fas fa-gamepad"></i>
                 <span>Ninja Run</span>
-                <span class="sub">| Tournament</span>
+                <span class="sub" id="modeLabel">| Tournament</span>
             </div>
             <div class="score-display">
                 <i class="fas fa-star"></i>
@@ -806,6 +984,34 @@
 
     <script>
         // ============================================================
+        // CONFIG - READ MODE FROM URL
+        // ============================================================
+        const params = new URLSearchParams(window.location.search);
+        const EVENT_ID = params.get('event') || '';
+        const USER_ID = params.get('user') || '';
+        const DEMO_MODE = params.get('demo') === 'true';
+        const GAME_URL = 'games/ninja run/index.html';
+
+        // ============================================================
+        // MODE DETECTION
+        // ============================================================
+        const IS_TOURNAMENT_MODE = !DEMO_MODE && EVENT_ID && USER_ID;
+        const IS_DEMO_MODE = DEMO_MODE || !IS_TOURNAMENT_MODE;
+
+        console.log('🎮 Mode:', IS_DEMO_MODE ? 'DEMO' : 'TOURNAMENT');
+        console.log('📋 Event ID:', EVENT_ID || 'N/A');
+        console.log('👤 User ID:', USER_ID || 'N/A');
+
+        // Update UI based on mode
+        document.getElementById('modeLabel').textContent = IS_DEMO_MODE ? '| Demo Mode' : '| Tournament';
+        if (IS_DEMO_MODE) {
+            document.getElementById('modeLabel').style.color = '#FFD700';
+            document.getElementById('antiCheatStatus').textContent = 'Demo';
+            document.getElementById('antiCheatBadge').style.color = '#FFD700';
+            document.getElementById('antiCheatBadge').style.borderColor = 'rgba(255, 215, 0, 0.2)';
+        }
+
+        // ============================================================
         // ANTI-CHEAT SYSTEM
         // ============================================================
         
@@ -825,12 +1031,24 @@
                 this.maxScoreRate = 0;
                 this.scoreHistory = [];
                 
-                // Configuration
-                this.MIN_PLAY_TIME = 1000;      // 1 second minimum
-                this.MAX_PLAY_TIME = 300000;    // 5 minutes maximum  
-                this.MAX_SCORE_RATE = 200;      // Max coins per second
-                this.MAX_RESTARTS = 10;         // Max restarts
-                this.MAX_SCORE = 99999;         // Maximum allowed score
+                // Configuration - Strict for tournament, relaxed for demo
+                this.isDemoMode = IS_DEMO_MODE;
+                
+                if (this.isDemoMode) {
+                    // Demo mode: relaxed rules
+                    this.MIN_PLAY_TIME = 0;
+                    this.MAX_PLAY_TIME = 600000; // 10 minutes
+                    this.MAX_SCORE_RATE = 999999;
+                    this.MAX_RESTARTS = 999;
+                    this.MAX_SCORE = 9999999;
+                } else {
+                    // Tournament mode: strict rules
+                    this.MIN_PLAY_TIME = 1000;      // 1 second minimum
+                    this.MAX_PLAY_TIME = 300000;    // 5 minutes maximum
+                    this.MAX_SCORE_RATE = 200;      // Max coins per second
+                    this.MAX_RESTARTS = 10;         // Max restarts
+                    this.MAX_SCORE = 99999;         // Maximum allowed score
+                }
                 
                 this.setupTabDetection();
             }
@@ -840,6 +1058,8 @@
             }
             
             setupTabDetection() {
+                if (this.isDemoMode) return; // No tab detection in demo mode
+                
                 document.addEventListener('visibilitychange', () => {
                     if (document.hidden && !this.isGameOver) {
                         this.tabSwitched = true;
@@ -854,7 +1074,6 @@
                 const timeDiff = (now - this.lastScoreTime) / 1000;
                 const scoreDiff = newScore - this.lastScore;
                 
-                // Calculate score rate
                 if (timeDiff > 0 && scoreDiff > 0) {
                     const rate = scoreDiff / timeDiff;
                     if (rate > this.maxScoreRate) {
@@ -871,18 +1090,19 @@
                     this.scoreHistory.shift();
                 }
                 
-                // Check for cheating in real-time
-                this.realTimeCheatCheck();
+                if (!this.isDemoMode) {
+                    this.realTimeCheatCheck();
+                }
             }
             
             realTimeCheatCheck() {
-                // Check score rate
+                if (this.isDemoMode) return;
+                
                 if (this.maxScoreRate > this.MAX_SCORE_RATE && this.score > 100) {
                     this.isCheating = true;
                     this.addCheatReason(`Score rate too high: ${Math.round(this.maxScoreRate)} coins/sec`);
                 }
                 
-                // Check max score
                 if (this.score > this.MAX_SCORE) {
                     this.isCheating = true;
                     this.addCheatReason(`Score exceeds maximum: ${this.score}`);
@@ -906,13 +1126,17 @@
             
             incrementRestart() {
                 this.restartCount++;
-                if (this.restartCount > this.MAX_RESTARTS) {
+                if (!this.isDemoMode && this.restartCount > this.MAX_RESTARTS) {
                     this.isCheating = true;
                     this.addCheatReason(`Too many restarts: ${this.restartCount}`);
                 }
             }
             
             isValidScore() {
+                if (this.isDemoMode) {
+                    return { valid: true, reasons: [] };
+                }
+                
                 const playTime = this.getPlayTime();
                 const reasons = [];
                 
@@ -960,7 +1184,8 @@
                     tabSwitched: this.tabSwitched,
                     isCheating: this.isCheating,
                     cheatReasons: this.cheatReasons,
-                    scoreHistory: this.scoreHistory.slice(-20)
+                    scoreHistory: this.scoreHistory.slice(-20),
+                    isDemoMode: this.isDemoMode
                 };
             }
         }
@@ -975,6 +1200,7 @@
         let scoreInterval = null;
         let gameOverDetected = false;
         let cheatAlertShown = false;
+        let autoRedirectTimer = null;
 
         // ============================================================
         // WARNING BANNER
@@ -1078,14 +1304,6 @@
         });
 
         // ============================================================
-        // CONFIG
-        // ============================================================
-        const params = new URLSearchParams(window.location.search);
-        const EVENT_ID = params.get('event') || 'event_001';
-        const USER_ID = params.get('user') || 'user_001';
-        const GAME_URL = 'games/ninja run/index.html';
-
-        // ============================================================
         // TOAST
         // ============================================================
         function showToast(message, type = 'info') {
@@ -1108,7 +1326,7 @@
         // CHEAT ALERT
         // ============================================================
         function showCheatAlert(reason) {
-            if (cheatAlertShown) return;
+            if (cheatAlertShown || IS_DEMO_MODE) return;
             cheatAlertShown = true;
             
             document.getElementById('cheatDetail').textContent = 'Reason: ' + reason;
@@ -1124,7 +1342,26 @@
         }
 
         // ============================================================
-        // SCORE TRACKING (COINS ONLY)
+        // REDIRECT FUNCTIONS
+        // ============================================================
+        function goToRankings() {
+            if (EVENT_ID) {
+                window.location.href = `tournaments.html?id=${EVENT_ID}`;
+            } else {
+                window.location.href = 'tournaments.html';
+            }
+        }
+
+        function goToTournaments() {
+            window.location.href = 'tournaments.html';
+        }
+
+        function goToDashboard() {
+            window.location.href = 'dashboard.html';
+        }
+
+        // ============================================================
+        // SCORE TRACKING - COINS ONLY
         // ============================================================
         function startScoreTracking() {
             if (scoreInterval) clearInterval(scoreInterval);
@@ -1139,19 +1376,21 @@
                     
                     let score = 0;
                     
-                    // Track coins specifically
+                    // Track coins specifically - look for coin variables
                     const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
-                            // Track coin/score variables
-                            if (v.name === 'Coins' || v.name === 'coins' || v.name === 'Score' || v.name === 'score' || v.name === 'coinCount') {
+                            // Only track coin-related variables
+                            const lowerName = v.name.toLowerCase();
+                            if (lowerName === 'coins' || lowerName === 'coin' || 
+                                lowerName === 'coincount' || lowerName === 'coin_counter') {
                                 const val = v.data || 0;
                                 if (typeof val === 'number' && val > score) {
                                     score = val;
                                 }
                             }
                             // Check game over
-                            if ((v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'gameOverState') && v.data === true) {
+                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
                                 if (score > 0 && !scoreSubmitted && !gameOverDetected) {
                                     gameOverDetected = true;
                                     submitScore(score);
@@ -1164,7 +1403,8 @@
                     if (runtime.globalVars) {
                         for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
-                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coinCount' || lowerKey === 'score') {
+                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
+                                lowerKey === 'coincount' || lowerKey === 'coin_counter') {
                                 const val = runtime.globalVars[key];
                                 if (typeof val === 'number' && val > score) {
                                     score = val;
@@ -1186,8 +1426,8 @@
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                         
-                        // Check if cheating was detected
-                        if (antiCheat.isCheating && !cheatAlertShown) {
+                        // Check cheating (only in tournament mode)
+                        if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
                             showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
                         }
                     }
@@ -1205,6 +1445,26 @@
             if (scoreSubmitted) return;
             
             const finalScore = parseInt(score) || gameScore || 0;
+            
+            // For demo mode: just show success
+            if (IS_DEMO_MODE) {
+                scoreSubmitted = true;
+                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                sessionStorage.setItem('ninjaRunComplete', 'true');
+                
+                document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
+                document.getElementById('statusText').textContent = '✅ Demo Complete!';
+                document.getElementById('statusDot').className = 'dot complete';
+                document.getElementById('antiCheatStatus').textContent = '🎮 Demo';
+                
+                showToast(`🎮 Demo: ${finalScore.toLocaleString()} coins!`, 'success');
+                showFinalScoreOverlay(finalScore, true);
+                return;
+            }
+            
+            // Tournament mode: validate and submit
             if (finalScore === 0) {
                 showToast('⚠️ No coins collected. Please try again!', 'warning');
                 return;
@@ -1219,7 +1479,7 @@
                 return;
             }
             
-            // Submit valid score
+            // Submit valid score to Firebase
             scoreSubmitted = true;
             
             // Store in session storage
@@ -1250,65 +1510,127 @@
                 } catch (e) {}
             }
             
+            // Submit to Firebase
+            if (EVENT_ID && USER_ID) {
+                submitToFirebase(finalScore);
+            }
+            
             // Show success
             showToast(`🏆 ${finalScore.toLocaleString()} coins collected!`, 'success');
             
-            // Show overlay with final score
-            showFinalScoreOverlay(finalScore);
+            // Show final score overlay with redirect
+            showFinalScoreOverlay(finalScore, false);
+        }
+
+        // ============================================================
+        // SUBMIT TO FIREBASE
+        // ============================================================
+        function submitToFirebase(score) {
+            // Check if Firebase is available
+            if (typeof firebase === 'undefined' || !firebase.database) {
+                console.warn('⚠️ Firebase not available, score saved locally');
+                return;
+            }
             
-            // Auto-close after 4 seconds
-            setTimeout(() => {
-                window.close();
-            }, 4000);
+            try {
+                const db = firebase.database();
+                const scoreRef = db.ref(`tournaments/${EVENT_ID}/players/${USER_ID}`);
+                
+                const scoreData = {
+                    score: score,
+                    coins: score, // Store as coins
+                    hasPlayed: true,
+                    submittedAt: Date.now(),
+                    sessionData: antiCheat.getSummary(),
+                    username: `Player_${USER_ID.slice(0, 6)}`
+                };
+                
+                scoreRef.update(scoreData)
+                    .then(() => {
+                        console.log('✅ Score submitted to Firebase:', score);
+                        document.getElementById('finalStatusBadge').textContent = '✅ Submitted to Rankings';
+                        document.getElementById('finalStatusBadge').className = 'status-badge success';
+                    })
+                    .catch((error) => {
+                        console.error('❌ Firebase error:', error);
+                        document.getElementById('finalStatusBadge').textContent = '⚠️ Local Save Only';
+                        document.getElementById('finalStatusBadge').className = 'status-badge warning';
+                    });
+                    
+                // Also update user record
+                const userRef = db.ref(`users/${USER_ID}`);
+                userRef.update({
+                    hasPlayedCurrentEvent: true,
+                    currentEventId: EVENT_ID,
+                    lastScore: score,
+                    lastCoins: score
+                }).catch(() => {});
+                
+            } catch (error) {
+                console.error('❌ Error submitting to Firebase:', error);
+            }
         }
 
         // ============================================================
         // FINAL SCORE OVERLAY
         // ============================================================
-        function showFinalScoreOverlay(score) {
-            const overlay = document.createElement('div');
-            overlay.style.cssText = `
-                position: fixed;
-                top: 0;
-                left: 0;
-                width: 100%;
-                height: 100%;
-                background: rgba(0, 0, 0, 0.88);
-                backdrop-filter: blur(16px);
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                z-index: 9999;
-                font-family: 'Orbitron', monospace;
-                color: #fff;
-                animation: fadeIn 0.5s ease;
-            `;
+        function showFinalScoreOverlay(score, isDemo) {
+            const overlay = document.getElementById('finalScoreOverlay');
+            const trophy = document.getElementById('finalTrophy');
+            const title = document.getElementById('finalTitle');
+            const scoreDisplay = document.getElementById('finalScore');
+            const label = document.getElementById('finalScoreLabel');
+            const statusBadge = document.getElementById('finalStatusBadge');
+            const timeSpan = document.getElementById('finalTime');
+            const statusSpan = document.getElementById('finalStatus');
+            const actions = document.getElementById('finalActions');
             
-            overlay.innerHTML = `
-                <div style="background: linear-gradient(145deg, #06111F, #0B1F36); border: 2px solid rgba(0, 191, 255, 0.2); border-radius: 24px; padding: 40px 50px; text-align: center; max-width: 420px; width: 90%; box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);">
-                    <div style="font-size: 4rem; margin-bottom: 8px;">🏆</div>
-                    <h2 style="color: #FFD700; font-size: 1.4rem; margin-bottom: 4px;">Game Complete!</h2>
-                    <div style="font-size: 3rem; color: #00E676; font-weight: 700; margin: 12px 0; font-family: 'Orbitron', monospace;">
-                        ${score.toLocaleString()}
-                    </div>
-                    <div style="color: #A7B5C5; font-size: 0.9rem;">coins collected</div>
-                    <div style="display: flex; gap: 20px; justify-content: center; margin-top: 16px; font-size: 0.7rem; color: rgba(255,255,255,0.3);">
-                        <span>⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s</span>
-                        <span>🔒 ${antiCheat.isCheating ? '⚠️' : '✅'} Verified</span>
-                    </div>
-                    <div style="margin-top: 20px; display: flex; gap: 12px; justify-content: center;">
-                        <button onclick="window.close()" style="background: linear-gradient(135deg, #00BFFF, #6C63FF); border: none; color: #000; padding: 10px 30px; border-radius: 10px; font-family: 'Orbitron', monospace; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease;">
-                            <i class="fas fa-times"></i> Close
-                        </button>
-                    </div>
-                </div>
-            `;
+            trophy.textContent = isDemo ? '🎮' : '🏆';
+            title.textContent = isDemo ? 'Demo Complete!' : 'Game Complete!';
+            scoreDisplay.textContent = score.toLocaleString();
+            label.textContent = isDemo ? 'coins (demo)' : 'coins collected';
             
-            document.body.appendChild(overlay);
+            if (isDemo) {
+                statusBadge.textContent = '🎮 Demo Mode';
+                statusBadge.className = 'status-badge success';
+                statusSpan.textContent = '✅ Free Play';
+                timeSpan.textContent = `⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s`;
+                actions.innerHTML = `
+                    <button class="btn btn-primary" onclick="goToTournaments()">
+                        <i class="fas fa-trophy"></i> Tournaments
+                    </button>
+                    <button class="btn btn-success" onclick="window.close()">
+                        <i class="fas fa-times"></i> Close
+                    </button>
+                `;
+            } else {
+                statusBadge.textContent = '✅ Score Submitted';
+                statusBadge.className = 'status-badge success';
+                statusSpan.textContent = '✅ Verified';
+                timeSpan.textContent = `⏱️ ${Math.round(antiCheat.getPlayTime() / 1000)}s`;
+                actions.innerHTML = `
+                    <button class="btn btn-primary" onclick="goToRankings()">
+                        <i class="fas fa-ranking-star"></i> View Rankings
+                    </button>
+                    <button class="btn btn-success" onclick="goToTournaments()">
+                        <i class="fas fa-trophy"></i> Tournaments
+                    </button>
+                `;
+            }
+            
+            overlay.classList.add('active');
+            
+            // Auto-redirect for tournament mode
+            if (!isDemo) {
+                if (autoRedirectTimer) clearTimeout(autoRedirectTimer);
+                autoRedirectTimer = setTimeout(() => {
+                    goToRankings();
+                }, 5000);
+            }
         }
 
         // ============================================================
-        // INJECT BRIDGE
+        // INJECT BRIDGE - COIN TRACKING ONLY
         // ============================================================
         function injectBridge() {
             try {
@@ -1317,12 +1639,15 @@
                 if (!frameDoc) return;
                 if (frameDoc.getElementById('ninjaBridgeScript')) return;
                 
+                const isDemo = IS_DEMO_MODE;
+                
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
                 script.textContent = `
                     (function() {
                         console.log('🏃 Ninja Run Bridge loaded (Coin Tracking)');
+                        console.log('🎯 Mode: ${isDemo ? 'DEMO' : 'TOURNAMENT'}');
                         
                         let gameScore = 0;
                         let scoreSubmitted = false;
@@ -1338,17 +1663,19 @@
                                     const rt = window.gameRuntime;
                                     let score = 0;
                                     
-                                    // Track coins specifically
+                                    // Track coins only
                                     const vars = rt.all_global_vars || [];
                                     for (let v of vars) {
                                         if (v && v.name) {
-                                            if (v.name === 'Coins' || v.name === 'coins' || v.name === 'coinCount' || v.name === 'Score' || v.name === 'score') {
+                                            const lowerName = v.name.toLowerCase();
+                                            if (lowerName === 'coins' || lowerName === 'coin' || 
+                                                lowerName === 'coincount' || lowerName === 'coin_counter') {
                                                 const val = v.data || 0;
                                                 if (typeof val === 'number' && val > score) {
                                                     score = val;
                                                 }
                                             }
-                                            if ((v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'gameOverState') && v.data === true) {
+                                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
                                                 if (score > 0 && !scoreSubmitted && !gameOverDetected) {
                                                     gameOverDetected = true;
                                                     submitScore(score);
@@ -1357,11 +1684,11 @@
                                         }
                                     }
                                     
-                                    // Check globalVars
                                     if (rt.globalVars) {
                                         for (const key in rt.globalVars) {
                                             const lowerKey = key.toLowerCase();
-                                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coinCount' || lowerKey === 'score') {
+                                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
+                                                lowerKey === 'coincount' || lowerKey === 'coin_counter') {
                                                 const val = rt.globalVars[key];
                                                 if (typeof val === 'number' && val > score) {
                                                     score = val;
@@ -1441,12 +1768,6 @@
                             }, 500);
                         }
                         
-                        window.__ninjaDebug = {
-                            score: () => gameScore,
-                            status: () => ({ score: gameScore, submitted: scoreSubmitted, runtime: !!runtime }),
-                            submit: (s) => submitScore(s)
-                        };
-                        
                         waitForRuntime();
                         console.log('✅ Bridge ready (coin tracking)');
                     })();
@@ -1468,7 +1789,7 @@
             const loadingText = document.getElementById('loadingText');
 
             const timestamp = Date.now();
-            const gameUrl = `${GAME_URL}?event=${EVENT_ID}&user=${USER_ID}&t=${timestamp}`;
+            const gameUrl = `${GAME_URL}?event=${EVENT_ID}&user=${USER_ID}&demo=${IS_DEMO_MODE}&t=${timestamp}`;
             frame.src = gameUrl;
 
             let progress = 0;
@@ -1497,7 +1818,7 @@
                                 loadingOverlay.classList.add('hidden');
                                 document.getElementById('statusText').textContent = '🎮 Playing...';
                                 document.getElementById('statusDot').className = 'dot';
-                                document.getElementById('antiCheatStatus').textContent = 'Active';
+                                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
                             }, 400);
                             setTimeout(() => injectBridge(), 1500);
                             setTimeout(() => startScoreTracking(), 2000);
@@ -1533,7 +1854,7 @@
                 gameScore = score;
                 antiCheat.updateScore(score);
                 
-                if (antiCheat.isCheating && !cheatAlertShown) {
+                if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
                     showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
                 }
             }
@@ -1564,14 +1885,16 @@
 
         console.log('');
         console.log('🪙 ===========================================');
-        console.log('🪙 NINJA RUN - COIN TRACKING SYSTEM');
+        console.log('🪙 NINJA RUN - COMPLETE TOURNAMENT INTEGRATION');
         console.log('🪙 ===========================================');
-        console.log('🪙 Tracking: Coins only (not distance)');
-        console.log('🔒 Anti-Cheat: Active');
-        console.log('📊 Max Score Rate: 200 coins/sec');
-        console.log('⏱️ Min Play Time: 1s | Max: 5min');
-        console.log('🔄 Max Restarts: 10');
-        console.log('✅ All other parts unchanged');
+        console.log(`🎯 Mode: ${IS_DEMO_MODE ? 'DEMO (Relaxed)' : 'TOURNAMENT (Strict)'}`);
+        console.log('🪙 Tracking: Coins only');
+        console.log('🔒 Anti-Cheat:', IS_DEMO_MODE ? 'Disabled' : 'Active');
+        console.log('📊 Score Rate Limit:', IS_DEMO_MODE ? 'Unlimited' : '200 coins/sec');
+        console.log('⏱️ Min Play Time:', IS_DEMO_MODE ? '0s' : '1s');
+        console.log('🔄 Max Restarts:', IS_DEMO_MODE ? 'Unlimited' : '10');
+        console.log('✅ Auto-Redirect: Enabled');
+        console.log('===========================================');
     </script>
 
 </body>
