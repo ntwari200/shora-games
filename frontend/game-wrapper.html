@@ -46,12 +46,10 @@
             overflow: hidden;
             animation: bannerSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
         }
-
         @keyframes bannerSlideDown {
             0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
-
         .warning-banner::before {
             content: '';
             position: absolute;
@@ -60,12 +58,10 @@
             animation: bannerGlow 2s ease-in-out infinite;
             pointer-events: none;
         }
-
         @keyframes bannerGlow {
             0%, 100% { opacity: 0.5; }
             50% { opacity: 1; }
         }
-
         .warning-banner::after {
             content: '';
             position: absolute;
@@ -77,12 +73,10 @@
             animation: bannerSweep 4s ease-in-out infinite;
             pointer-events: none;
         }
-
         @keyframes bannerSweep {
             0% { transform: translateX(-30%); }
             100% { transform: translateX(30%); }
         }
-
         .warning-banner .warning-content {
             display: flex;
             align-items: center;
@@ -93,7 +87,6 @@
             position: relative;
             z-index: 1;
         }
-
         .warning-banner .warning-icon-wrapper {
             display: flex;
             align-items: center;
@@ -107,7 +100,6 @@
             animation: iconPulse 1.5s ease-in-out infinite;
             position: relative;
         }
-
         .warning-banner .warning-icon-wrapper::before {
             content: '';
             position: absolute;
@@ -116,23 +108,19 @@
             border: 2px solid rgba(255, 50, 50, 0.1);
             animation: iconRing 2s ease-in-out infinite;
         }
-
         @keyframes iconRing {
             0%, 100% { transform: scale(1); opacity: 0.5; }
             50% { transform: scale(1.3); opacity: 0; }
         }
-
         @keyframes iconPulse {
             0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
             50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); }
         }
-
         .warning-banner .warning-icon {
             color: #FF4D6D;
             font-size: 1.2rem;
             animation: iconShake 2s ease-in-out infinite;
         }
-
         @keyframes iconShake {
             0%, 100% { transform: rotate(0deg); }
             5% { transform: rotate(-15deg); }
@@ -141,7 +129,6 @@
             20% { transform: rotate(10deg); }
             25% { transform: rotate(0deg); }
         }
-
         .warning-banner .warning-text {
             color: #FF8A8A;
             font-weight: 500;
@@ -150,7 +137,6 @@
             text-align: center;
             min-width: 120px;
         }
-
         .warning-banner .warning-text .highlight {
             color: #FF4D6D;
             font-weight: 700;
@@ -159,24 +145,20 @@
             border-radius: 4px;
             border: 1px solid rgba(255, 50, 50, 0.2);
         }
-
         .warning-banner .warning-text .emoji {
             display: inline-block;
             animation: emojiBounce 1.5s ease-in-out infinite;
         }
-
         @keyframes emojiBounce {
             0%, 100% { transform: translateY(0); }
             50% { transform: translateY(-3px); }
         }
-
         .warning-banner .warning-actions {
             display: flex;
             align-items: center;
             gap: 8px;
             flex-shrink: 0;
         }
-
         .warning-banner .warning-link {
             color: #fff;
             font-weight: 600;
@@ -195,7 +177,6 @@
             position: relative;
             overflow: hidden;
         }
-
         .warning-banner .warning-link::before {
             content: '';
             position: absolute;
@@ -207,25 +188,20 @@
             transform: rotate(45deg);
             animation: linkShine 3s ease-in-out infinite;
         }
-
         @keyframes linkShine {
             0% { transform: translateX(-100%) rotate(45deg); }
             100% { transform: translateX(100%) rotate(45deg); }
         }
-
         .warning-banner .warning-link:hover {
             transform: scale(1.05);
             box-shadow: 0 6px 30px rgba(255, 50, 50, 0.5);
         }
-
         .warning-banner .warning-link:active {
             transform: scale(0.95);
         }
-
         .warning-banner .warning-link i {
             font-size: clamp(0.5rem, 1vw, 0.65rem);
         }
-
         .warning-banner .warning-close {
             background: rgba(255, 255, 255, 0.05);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -241,7 +217,6 @@
             flex-shrink: 0;
             font-family: 'Inter', sans-serif;
         }
-
         .warning-banner .warning-close:hover {
             color: #fff;
             background: rgba(255, 255, 255, 0.1);
@@ -318,13 +293,11 @@
             0%, 100% { opacity: 1; transform: scale(1); }
             50% { opacity: 0.3; transform: scale(0.8); }
         }
-
         .status-display .dot.complete {
             background: #FFD700;
             animation: none;
             box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
         }
-        
         .status-display .dot.cheating {
             background: #FF4D6D;
             animation: none;
@@ -365,9 +338,7 @@
             border: 1px solid rgba(0, 230, 118, 0.05);
             white-space: nowrap;
         }
-        .anti-cheat-badge i {
-            font-size: 0.5rem;
-        }
+        .anti-cheat-badge i { font-size: 0.5rem; }
         .anti-cheat-badge.active {
             color: #00E676;
             border-color: rgba(0, 230, 118, 0.2);
@@ -437,6 +408,7 @@
             width: 0%;
             transition: width 0.3s ease;
         }
+
         .toast-cyber {
             position: fixed;
             bottom: clamp(16px, 3vh, 40px);
@@ -610,22 +582,9 @@
             60% { transform: translateX(-5px); }
             80% { transform: translateX(5px); }
         }
-        .cheat-alert .cheat-modal .cheat-icon {
-            font-size: 4rem;
-            color: #FF4D6D;
-            margin-bottom: 10px;
-        }
-        .cheat-alert .cheat-modal h2 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
-            color: #FF4D6D;
-            margin-bottom: 8px;
-        }
-        .cheat-alert .cheat-modal p {
-            color: #A7B5C5;
-            font-size: 0.85rem;
-            line-height: 1.6;
-        }
+        .cheat-alert .cheat-modal .cheat-icon { font-size: 4rem; color: #FF4D6D; margin-bottom: 10px; }
+        .cheat-alert .cheat-modal h2 { font-family: 'Orbitron', monospace; font-size: 1.4rem; color: #FF4D6D; margin-bottom: 8px; }
+        .cheat-alert .cheat-modal p { color: #A7B5C5; font-size: 0.85rem; line-height: 1.6; }
         .cheat-alert .cheat-modal .cheat-detail {
             background: rgba(255, 77, 109, 0.05);
             border: 1px solid rgba(255, 77, 109, 0.1);
@@ -654,7 +613,7 @@
             box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
         }
 
-        /* ===== OVERLAY - UPGRADED ===== */
+        /* ===== GAME OVER OVERLAY - FIXED ===== */
         #gameOverOverlay {
             position: fixed;
             top: 0;
@@ -673,19 +632,20 @@
             animation: overlayFadeIn 0.5s ease;
         }
         #gameOverOverlay.active { display: flex; }
-
         @keyframes overlayFadeIn {
             from { opacity: 0; transform: scale(0.95); }
             to { opacity: 1; transform: scale(1); }
         }
-
         @keyframes overlaySpin {
             to { transform: rotate(360deg); }
         }
-
         @keyframes overlayLoadBar {
             0% { width: 0%; }
             100% { width: 100%; }
+        }
+        @keyframes overlaySlideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         #gameOverOverlay .overlay-box {
@@ -699,24 +659,13 @@
             box-shadow: 0 0 80px rgba(0, 230, 118, 0.1);
             animation: overlaySlideUp 0.5s ease;
         }
-
-        @keyframes overlaySlideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #gameOverOverlay .overlay-trophy {
-            font-size: 4rem;
-            margin-bottom: 8px;
-        }
-
+        #gameOverOverlay .overlay-trophy { font-size: 4rem; margin-bottom: 8px; }
         #gameOverOverlay .overlay-title {
             font-family: 'Orbitron', monospace;
             color: #00E676;
             font-size: 1.4rem;
             margin-bottom: 4px;
         }
-
         #gameOverOverlay .overlay-score {
             font-size: 3rem;
             color: #FFD700;
@@ -724,12 +673,7 @@
             margin: 12px 0;
             font-family: 'Orbitron', monospace;
         }
-
-        #gameOverOverlay .overlay-label {
-            color: #A7B5C5;
-            font-size: 0.85rem;
-        }
-
+        #gameOverOverlay .overlay-label { color: #A7B5C5; font-size: 0.85rem; }
         #gameOverOverlay .overlay-submit-status {
             margin-top: 16px;
             padding: 10px 20px;
@@ -741,7 +685,6 @@
             justify-content: center;
             gap: 12px;
         }
-
         #gameOverOverlay .overlay-submit-spinner {
             width: 16px;
             height: 16px;
@@ -750,12 +693,7 @@
             border-radius: 50%;
             animation: overlaySpin 0.8s linear infinite;
         }
-
-        #gameOverOverlay .overlay-submit-text {
-            color: #00E676;
-            font-size: 0.8rem;
-        }
-
+        #gameOverOverlay .overlay-submit-text { color: #00E676; font-size: 0.8rem; }
         #gameOverOverlay .overlay-redirect-bar {
             margin-top: 16px;
             width: 100%;
@@ -764,7 +702,6 @@
             border-radius: 2px;
             overflow: hidden;
         }
-
         #gameOverOverlay .overlay-redirect-bar .bar-fill {
             height: 100%;
             width: 0%;
@@ -772,13 +709,11 @@
             border-radius: 2px;
             animation: overlayLoadBar 3s ease forwards;
         }
-
         #gameOverOverlay .overlay-redirect-text {
             margin-top: 10px;
             color: rgba(255,255,255,0.3);
             font-size: 0.65rem;
         }
-
         #gameOverOverlay .overlay-demo-btn {
             margin-top: 20px;
             background: linear-gradient(135deg, #FFD700, #FFA000);
@@ -792,12 +727,8 @@
             cursor: pointer;
             transition: all 0.3s ease;
         }
+        #gameOverOverlay .overlay-demo-btn:hover { transform: scale(1.05); }
 
-        #gameOverOverlay .overlay-demo-btn:hover {
-            transform: scale(1.05);
-        }
-
-        /* ===== BLOCKER OVERLAY ===== */
         #blockerOverlay {
             position: fixed;
             top: 0;
@@ -839,23 +770,24 @@
         </div>
     </div>
 
-    <!-- ===== GAME OVER OVERLAY (UPGRADED) ===== -->
+    <!-- ===== GAME OVER OVERLAY ===== -->
     <div id="gameOverOverlay">
         <div class="overlay-box">
             <div class="overlay-trophy" id="overlayTrophy">🏆</div>
             <div class="overlay-title" id="overlayTitle">Game Over!</div>
             <div class="overlay-score" id="overlayScore">0</div>
             <div class="overlay-label" id="overlayLabel">coins collected</div>
-
             <div class="overlay-submit-status" id="overlayStatus">
                 <div class="overlay-submit-spinner"></div>
                 <span class="overlay-submit-text">⏳ Submitting score...</span>
             </div>
-
             <div class="overlay-redirect-bar">
                 <div class="bar-fill"></div>
             </div>
             <div class="overlay-redirect-text" id="overlayRedirectText">⏳ Redirecting to tournament...</div>
+            <button class="overlay-demo-btn" style="display:none;" onclick="window.location.reload()">
+                🔄 Play Again (Demo)
+            </button>
         </div>
     </div>
 
@@ -1003,11 +935,10 @@
         let gameOverDetected = false;
         let gameStarted = false;
         let cheatAlertShown = false;
-        let autoRedirectTimer = null;
         let scoreInterval = null;
         let gameStartTime = Date.now();
-        let firstGameOver = true;
         let redirectDone = false;
+        let firstGameOver = true;
 
         // ============================================================
         // ANTI-CHEAT SYSTEM
@@ -1220,7 +1151,7 @@
         }
 
         // ============================================================
-        // CORE: GAME OVER DETECTION - MULTI-LAYER
+        // THE FIXED GAME OVER DETECTION - EXACT MATCH WITH YOUR GAME
         // ============================================================
 
         function detectGameOverInFrame() {
@@ -1230,80 +1161,97 @@
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return false;
 
-                // ---- METHOD 1: Check runtime variables ----
+                // ========================================
+                // METHOD 1: Check runtime.GameOver variable (EXACT match)
+                // ========================================
                 const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
                 if (runtime) {
+                    // Check globalVars for "GameOver" (capital G and O)
                     if (runtime.globalVars) {
-                        const gameOverKeys = ['GameOver', 'gameOver', 'GAME_OVER', 'gameOverState', 'isGameOver', 'game_end', 'gameEnd', 'dead', 'Died'];
-                        for (const key of gameOverKeys) {
-                            if (runtime.globalVars[key] === true || runtime.globalVars[key] === 1 || runtime.globalVars[key] === 'true') {
-                                console.log('🎯 Game Over detected via runtime.globalVars[' + key + ']');
-                                return true;
-                            }
+                        // Check exact GameOver variable
+                        if (runtime.globalVars['GameOver'] === true || 
+                            runtime.globalVars['GameOver'] === 1) {
+                            console.log('🎯 GAME OVER detected via runtime.globalVars.GameOver =', runtime.globalVars['GameOver']);
+                            return true;
+                        }
+                        // Also check other common variations
+                        if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
+                            console.log('🎯 GAME OVER detected via runtime.globalVars.gameOver =', runtime.globalVars['gameOver']);
+                            return true;
+                        }
+                        if (runtime.globalVars['GAME_OVER'] === true || runtime.globalVars['GAME_OVER'] === 1) {
+                            console.log('🎯 GAME OVER detected via runtime.globalVars.GAME_OVER =', runtime.globalVars['GAME_OVER']);
+                            return true;
                         }
                     }
+                    
+                    // Check all_global_vars for variable named "GameOver"
                     if (runtime.all_global_vars) {
                         for (const v of runtime.all_global_vars) {
                             if (v && v.name) {
-                                const lowerName = v.name.toLowerCase();
-                                if ((lowerName.includes('gameover') || lowerName.includes('game_over') || lowerName.includes('end') || lowerName.includes('die') || lowerName.includes('dead') || lowerName.includes('finished')) &&
-                                    (v.data === true || v.data === 1 || v.data === 'true')) {
-                                    console.log('🎯 Game Over detected via runtime.all_global_vars[' + v.name + ']');
-                                    return true;
+                                // Exact match for GameOver
+                                if (v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'GAME_OVER') {
+                                    if (v.data === true || v.data === 1) {
+                                        console.log('🎯 GAME OVER detected via runtime.all_global_vars.' + v.name + ' =', v.data);
+                                        return true;
+                                    }
                                 }
-                            }
-                        }
-                    }
-                    if (runtime.types) {
-                        for (const type of runtime.types_by_index) {
-                            if (type && type.name) {
-                                const lowerName = type.name.toLowerCase();
-                                if ((lowerName.includes('player') || lowerName.includes('ninja')) && type.instances && type.instances.length === 0) {
-                                    console.log('🎯 Game Over detected - Player instance destroyed');
-                                    return true;
+                                // Check if name contains gameover
+                                const lowerName = v.name.toLowerCase();
+                                if (lowerName.includes('gameover') || lowerName.includes('game_over')) {
+                                    if (v.data === true || v.data === 1) {
+                                        console.log('🎯 GAME OVER detected via runtime.all_global_vars.' + v.name + ' =', v.data);
+                                        return true;
+                                    }
                                 }
                             }
                         }
                     }
                 }
 
-                // ---- METHOD 2: Check DOM for game over elements ----
+                // ========================================
+                // METHOD 2: Check DOM for Game Over elements (t26)
+                // ========================================
                 const gameOverSelectors = [
                     '.gameover', '.game-over', '#gameover', '#game-over',
-                    '[data-gameover]', '.gameover-screen', '.game-over-screen',
-                    '.gameover-overlay', '.game-over-overlay',
-                    '.death-screen', '.game-end', '.gameover-panel',
-                    '.gameover-container', '.game-over-container'
+                    '.gameover-screen', '.gameover-panel',
+                    '.gameover-overlay', '.game-over-overlay'
                 ];
                 for (const selector of gameOverSelectors) {
                     try {
                         const elements = frameDoc.querySelectorAll(selector);
                         for (const el of elements) {
                             const rect = el.getBoundingClientRect();
-                            if (rect.width > 0 && rect.height > 0 && el.style.display !== 'none' && el.style.visibility !== 'hidden' && el.offsetParent !== null) {
-                                console.log('🎯 Game Over detected via DOM: ' + selector);
+                            if (rect.width > 0 && rect.height > 0 && 
+                                el.style.display !== 'none' && 
+                                el.style.visibility !== 'hidden' && 
+                                el.offsetParent !== null) {
+                                console.log('🎯 GAME OVER detected via DOM:', selector);
                                 return true;
                             }
                         }
                     } catch (e) {}
                 }
 
-                // ---- METHOD 3: Check for restart buttons ----
+                // ========================================
+                // METHOD 3: Check for Restart Button (t18)
+                // ========================================
                 const restartSelectors = [
-                    '.restart-btn', '#restart', '[data-restart]',
+                    '.btnrestart', '#btnrestart', '.restart-btn', '#restart',
                     '.btn-restart', '.restart-button', '#restartButton',
-                    '.btnrestart', '#btnrestart', '.game-restart',
-                    'button[onclick*="restart"]', 'div[onclick*="restart"]'
+                    '.game-restart'
                 ];
                 for (const selector of restartSelectors) {
                     try {
                         const elements = frameDoc.querySelectorAll(selector);
                         for (const el of elements) {
                             const rect = el.getBoundingClientRect();
-                            if (rect.width > 0 && rect.height > 0 && el.style.display !== 'none' && el.offsetParent !== null) {
+                            if (rect.width > 0 && rect.height > 0 && 
+                                el.style.display !== 'none' && 
+                                el.offsetParent !== null) {
                                 const text = (el.textContent || '').toLowerCase();
-                                if (text.includes('restart') || text.includes('replay') || text.includes('try again') || text.includes('retry') || text.includes('play again')) {
-                                    console.log('🎯 Game Over detected via restart button: ' + selector);
+                                if (text.includes('restart') || text.includes('replay') || text.includes('try again')) {
+                                    console.log('🎯 GAME OVER detected via restart button:', selector);
                                     return true;
                                 }
                             }
@@ -1311,27 +1259,25 @@
                     } catch (e) {}
                 }
 
-                // ---- METHOD 4: Check canvas for game over state ----
+                // ========================================
+                // METHOD 4: Check Player Death
+                // ========================================
                 try {
-                    const canvas = frameDoc.getElementById('c2canvas');
-                    if (canvas) {
-                        const ctx = canvas.getContext('2d');
-                        if (ctx) {
-                            const imageData = ctx.getImageData(0, 0, Math.min(canvas.width, 100), Math.min(canvas.height, 100));
-                            if (imageData && imageData.data) {
-                                // Check if canvas has changed significantly (game over screen usually has different colors)
-                                // This is a simple check - just look for a dark overlay
-                                let darkPixels = 0;
-                                const totalPixels = imageData.data.length / 4;
-                                for (let i = 0; i < imageData.data.length; i += 4) {
-                                    const r = imageData.data[i];
-                                    const g = imageData.data[i + 1];
-                                    const b = imageData.data[i + 2];
-                                    if (r < 50 && g < 50 && b < 50) darkPixels++;
-                                }
-                                if (darkPixels / totalPixels > 0.3) {
-                                    console.log('🎯 Game Over detected via canvas dark overlay');
-                                    return true;
+                    if (runtime && runtime.types) {
+                        for (const type of runtime.types_by_index) {
+                            if (type && type.name) {
+                                const lowerName = type.name.toLowerCase();
+                                if (lowerName.includes('player') || lowerName.includes('ninja')) {
+                                    if (!type.instances || type.instances.length === 0) {
+                                        console.log('🎯 GAME OVER detected - Player destroyed');
+                                        return true;
+                                    }
+                                    // Check if player fell off screen (y > 800)
+                                    const player = type.instances[0];
+                                    if (player && player.y > 800) {
+                                        console.log('🎯 GAME OVER detected - Player fell off screen');
+                                        return true;
+                                    }
                                 }
                             }
                         }
@@ -1341,12 +1287,13 @@
                 return false;
 
             } catch (e) {
+                console.log('⚠️ Error in detectGameOverInFrame:', e);
                 return false;
             }
         }
 
         // ============================================================
-        // CORE: BLOCK RESTART BUTTONS
+        // BLOCK RESTART BUTTONS
         // ============================================================
 
         function blockRestartButtons() {
@@ -1356,12 +1303,11 @@
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return;
 
-                // Block all restart buttons in the iframe
+                // Block all restart buttons
                 const restartSelectors = [
-                    '.restart-btn', '#restart', '[data-restart]',
+                    '.btnrestart', '#btnrestart', '.restart-btn', '#restart',
                     '.btn-restart', '.restart-button', '#restartButton',
-                    '.btnrestart', '#btnrestart', '.game-restart',
-                    'button[onclick*="restart"]', 'div[onclick*="restart"]'
+                    '.game-restart', 'button[onclick*="restart"]'
                 ];
 
                 for (const selector of restartSelectors) {
@@ -1371,10 +1317,8 @@
                         el.style.opacity = '0.3';
                         el.style.cursor = 'default';
                         el.disabled = true;
-                        // Remove onclick handlers
                         el.onclick = null;
                         el.removeAttribute('onclick');
-                        // Clone to remove all event listeners
                         const newEl = el.cloneNode(true);
                         el.parentNode.replaceChild(newEl, el);
                     }
@@ -1386,7 +1330,7 @@
                     ['restartGame', 'restart', 'resetGame', 'reset', 'playAgain', 'retry'].forEach(function(funcName) {
                         if (typeof win[funcName] === 'function') {
                             win[funcName] = function() {
-                                console.log('🚫 Restart blocked - game already ended');
+                                console.log('🚫 Restart blocked');
                                 return false;
                             };
                         }
@@ -1401,66 +1345,7 @@
         }
 
         // ============================================================
-        // CORE: SETUP MUTATION OBSERVER (catches dynamically created buttons)
-        // ============================================================
-
-        let mutationObserver = null;
-
-        function setupMutationObserver() {
-            try {
-                const frame = document.getElementById('gameIframe');
-                if (!frame) return;
-                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                if (!frameDoc) return;
-
-                if (mutationObserver) mutationObserver.disconnect();
-
-                mutationObserver = new MutationObserver(function(mutations) {
-                    if (gameOverDetected) {
-                        blockRestartButtons();
-                    }
-                    for (const mutation of mutations) {
-                        for (const node of mutation.addedNodes) {
-                            if (node.nodeType === 1) {
-                                const el = node;
-                                // Check if this is a restart button
-                                const text = (el.textContent || '').toLowerCase();
-                                if (text.includes('restart') || text.includes('replay') || text.includes('try again') || 
-                                    text.includes('retry') || text.includes('play again')) {
-                                    if (gameOverDetected) {
-                                        el.style.pointerEvents = 'none';
-                                        el.style.opacity = '0.3';
-                                        el.disabled = true;
-                                    }
-                                }
-                                // Check for game over elements
-                                if (el.classList && (el.classList.contains('gameover') || el.classList.contains('game-over') || 
-                                    el.id === 'gameover' || el.id === 'game-over')) {
-                                    if (gameOverDetected) {
-                                        el.style.display = 'none';
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-
-                mutationObserver.observe(frameDoc.body, {
-                    childList: true,
-                    subtree: true,
-                    attributes: true,
-                    attributeFilter: ['style', 'class', 'display']
-                });
-
-                console.log('✅ MutationObserver set up');
-
-            } catch (e) {
-                console.log('⚠️ Could not setup MutationObserver:', e);
-            }
-        }
-
-        // ============================================================
-        // CORE: SHOW GAME OVER OVERLAY
+        // SHOW GAME OVER OVERLAY
         // ============================================================
 
         function showGameOverOverlay(score) {
@@ -1492,20 +1377,17 @@
                 `;
                 redirectText.textContent = '⏳ Redirecting to tournament...';
                 document.querySelector('#gameOverOverlay .overlay-demo-btn').style.display = 'none';
-                // Start redirect timer
                 startRedirectTimer();
             }
 
             overlay.classList.add('active');
             document.getElementById('blockerOverlay').classList.add('active');
 
-            // Update status
             document.getElementById('statusText').textContent = isDemo ? '✅ Demo Complete!' : '✅ Game Over!';
             document.getElementById('statusDot').className = 'dot complete';
             document.getElementById('antiCheatStatus').textContent = isDemo ? '🎮 Demo' : '✅ Submitted';
             document.getElementById('antiCheatBadge').classList.add('active');
 
-            // Block everything
             blockRestartButtons();
 
             // Hide game over elements in iframe
@@ -1522,14 +1404,13 @@
         }
 
         // ============================================================
-        // CORE: REDIRECT TIMER
+        // REDIRECT TIMER
         // ============================================================
 
         function startRedirectTimer() {
             if (redirectDone) return;
             redirectDone = true;
 
-            // Update status after 2 seconds
             setTimeout(() => {
                 const statusEl = document.getElementById('overlayStatus');
                 statusEl.innerHTML = `
@@ -1537,7 +1418,6 @@
                 `;
             }, 2000);
 
-            // Redirect after 3 seconds
             setTimeout(() => {
                 if (EVENT_ID) {
                     window.location.href = 'tournaments.html?id=' + EVENT_ID;
@@ -1548,7 +1428,7 @@
         }
 
         // ============================================================
-        // CORE: SUBMIT SCORE
+        // SUBMIT SCORE
         // ============================================================
 
         function submitScore(score) {
@@ -1640,11 +1520,13 @@
         }
 
         // ============================================================
-        // CORE: SCORE TRACKING
+        // SCORE TRACKING - WITH FIXED GAME OVER DETECTION
         // ============================================================
 
         function startScoreTracking() {
             if (scoreInterval) clearInterval(scoreInterval);
+
+            // Track coins and game over
             scoreInterval = setInterval(function() {
                 try {
                     const frame = document.getElementById('gameIframe');
@@ -1656,22 +1538,28 @@
 
                     let score = 0;
 
-                    // Track coins
+                    // Track coins (from data.js: "Coins" variable)
                     const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
                             const lowerName = v.name.toLowerCase();
-                            if (lowerName === 'coins' || lowerName === 'coin' || lowerName === 'coincount' || lowerName === 'coin_counter') {
+                            if (lowerName === 'coins' || lowerName === 'coin' || 
+                                lowerName === 'coincount' || lowerName === 'coin_counter' ||
+                                v.name === 'Coins') {
                                 const val = v.data || 0;
                                 if (typeof val === 'number' && val > score) score = val;
                             }
-                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
-                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                    gameOverDetected = true;
-                                    gameStarted = true;
-                                    console.log('🎯 Game Over detected via variable: ' + v.name);
-                                    submitScore(score);
-                                    return;
+                            
+                            // Check for GameOver (exact match)
+                            if (v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'GAME_OVER') {
+                                if (v.data === true || v.data === 1) {
+                                    if (!gameOverDetected && score > 0) {
+                                        gameOverDetected = true;
+                                        gameStarted = true;
+                                        console.log('🎯 GAME OVER detected via variable: ' + v.name + ' = ' + v.data);
+                                        submitScore(score);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -1680,17 +1568,23 @@
                     if (runtime.globalVars) {
                         for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
-                            if (lowerKey === 'coins' || lowerKey === 'coin' || lowerKey === 'coincount' || lowerKey === 'coin_counter') {
+                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
+                                lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
+                                key === 'Coins') {
                                 const val = runtime.globalVars[key];
                                 if (typeof val === 'number' && val > score) score = val;
                             }
-                            if (lowerKey === 'gameover' && runtime.globalVars[key] === true) {
-                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                    gameOverDetected = true;
-                                    gameStarted = true;
-                                    console.log('🎯 Game Over detected via globalVars: ' + key);
-                                    submitScore(score);
-                                    return;
+                            
+                            // Check GameOver
+                            if (key === 'GameOver' || key === 'gameOver' || key === 'GAME_OVER') {
+                                if (runtime.globalVars[key] === true || runtime.globalVars[key] === 1) {
+                                    if (!gameOverDetected && score > 0) {
+                                        gameOverDetected = true;
+                                        gameStarted = true;
+                                        console.log('🎯 GAME OVER detected via globalVars: ' + key + ' = ' + runtime.globalVars[key]);
+                                        submitScore(score);
+                                        return;
+                                    }
                                 }
                             }
                         }
@@ -1706,18 +1600,16 @@
                         }
                     }
 
-                    // Also check for game over via detection function
+                    // Also run the detection function
                     if (!gameOverDetected && gameScore > 0) {
                         if (detectGameOverInFrame()) {
                             gameOverDetected = true;
                             gameStarted = true;
-                            console.log('🎯 Game Over detected via detection function');
                             submitScore(gameScore);
                             return;
                         }
                     }
 
-                    // Mark started
                     if (gameScore > 0 && !gameStarted) {
                         gameStarted = true;
                         console.log('🎮 Game started (coins detected)');
@@ -1728,13 +1620,13 @@
                 }
             }, 300);
 
-            // Also check periodically via detection function
+            // Additional check for game over every second
             setInterval(function() {
                 if (!gameOverDetected && gameScore > 0) {
                     if (detectGameOverInFrame()) {
                         gameOverDetected = true;
                         gameStarted = true;
-                        console.log('🎯 Game Over detected via periodic check');
+                        console.log('🎯 GAME OVER detected via periodic check');
                         submitScore(gameScore);
                     }
                 }
@@ -1742,7 +1634,7 @@
         }
 
         // ============================================================
-        // CORE: INJECT BRIDGE
+        // INJECT BRIDGE
         // ============================================================
 
         function injectBridge() {
@@ -1759,7 +1651,7 @@
                 script.type = 'text/javascript';
                 script.textContent = `
                     (function() {
-                        console.log('🏃 Ninja Run Bridge loaded (Coin Tracking)');
+                        console.log('🏃 Ninja Run Bridge loaded');
                         console.log('🎯 Mode: ${isDemo ? 'DEMO' : 'TOURNAMENT'}');
                         
                         let gameScore = 0;
@@ -1776,21 +1668,26 @@
                                     const rt = window.gameRuntime;
                                     let score = 0;
                                     
+                                    // Track coins
                                     const vars = rt.all_global_vars || [];
                                     for (let v of vars) {
                                         if (v && v.name) {
                                             const lowerName = v.name.toLowerCase();
                                             if (lowerName === 'coins' || lowerName === 'coin' || 
-                                                lowerName === 'coincount' || lowerName === 'coin_counter') {
+                                                lowerName === 'coincount' || lowerName === 'coin_counter' ||
+                                                v.name === 'Coins') {
                                                 const val = v.data || 0;
                                                 if (typeof val === 'number' && val > score) {
                                                     score = val;
                                                 }
                                             }
-                                            if ((lowerName === 'gameover' || lowerName === 'game_over' || lowerName === 'gameoverstate') && v.data === true) {
-                                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                                    gameOverDetected = true;
-                                                    submitScore(score);
+                                            // Check GameOver
+                                            if (v.name === 'GameOver' || v.name === 'gameOver') {
+                                                if (v.data === true || v.data === 1) {
+                                                    if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                                        gameOverDetected = true;
+                                                        submitScore(score);
+                                                    }
                                                 }
                                             }
                                         }
@@ -1800,16 +1697,19 @@
                                         for (const key in rt.globalVars) {
                                             const lowerKey = key.toLowerCase();
                                             if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                                                lowerKey === 'coincount' || lowerKey === 'coin_counter') {
+                                                lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
+                                                key === 'Coins') {
                                                 const val = rt.globalVars[key];
                                                 if (typeof val === 'number' && val > score) {
                                                     score = val;
                                                 }
                                             }
-                                            if (lowerKey === 'gameover' && rt.globalVars[key] === true) {
-                                                if (score > 0 && !scoreSubmitted && !gameOverDetected) {
-                                                    gameOverDetected = true;
-                                                    submitScore(score);
+                                            if (key === 'GameOver' || key === 'gameOver') {
+                                                if (rt.globalVars[key] === true || rt.globalVars[key] === 1) {
+                                                    if (score > 0 && !scoreSubmitted && !gameOverDetected) {
+                                                        gameOverDetected = true;
+                                                        submitScore(score);
+                                                    }
                                                 }
                                             }
                                         }
@@ -1881,7 +1781,7 @@
                         }
                         
                         waitForRuntime();
-                        console.log('✅ Bridge ready (coin tracking)');
+                        console.log('✅ Bridge ready');
                     })();
                 `;
                 frameDoc.head.appendChild(script);
@@ -1892,7 +1792,7 @@
         }
 
         // ============================================================
-        // CORE: LOAD GAME
+        // LOAD GAME
         // ============================================================
 
         function loadGame() {
@@ -1935,7 +1835,6 @@
                             }, 400);
                             setTimeout(function() { injectBridge(); }, 1500);
                             setTimeout(function() { startScoreTracking(); }, 2000);
-                            setTimeout(function() { setupMutationObserver(); }, 3000);
                             return;
                         }
                     }
@@ -2000,7 +1899,6 @@
         // INIT
         // ============================================================
 
-        // Update UI
         document.getElementById('modeLabel').textContent = IS_DEMO_MODE ? '| Demo Mode' : '| Tournament';
         if (IS_DEMO_MODE) {
             document.getElementById('modeLabel').style.color = '#FFD700';
@@ -2009,7 +1907,6 @@
             document.getElementById('antiCheatBadge').style.borderColor = 'rgba(255, 215, 0, 0.2)';
         }
 
-        // Demo button handler
         document.querySelector('#gameOverOverlay .overlay-demo-btn')?.addEventListener('click', function() {
             window.location.reload();
         });
@@ -2020,9 +1917,9 @@
         console.log('🪙 ===========================================');
         console.log('🪙 NINJA RUN - COMPLETE TOURNAMENT INTEGRATION');
         console.log('🪙 ===========================================');
-        console.log('🎯 Mode:', IS_DEMO_MODE ? 'DEMO (Relaxed)' : 'TOURNAMENT (Strict)');
-        console.log('🪙 Tracking: Coins only');
-        console.log('🔒 Anti-Cheat:', IS_DEMO_MODE ? 'Disabled' : 'Active');
+        console.log('🎯 Mode:', IS_DEMO_MODE ? 'DEMO' : 'TOURNAMENT');
+        console.log('🪙 Tracking: Coins (from data.js: "Coins" variable)');
+        console.log('🎯 Game Over detection: "GameOver" variable (exact match)');
         console.log('✅ First Game Over Detection: Active');
         console.log('🚫 Restart Button Blocking: Active');
         console.log('🔄 Auto-Redirect: Enabled');
