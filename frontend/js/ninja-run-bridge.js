@@ -1,13 +1,12 @@
 // ========================================
-// NINJA RUN - BRIDGE SCRIPT v3 (FIXED)
-// Connects Construct 2 game to Shora Games Platform
-// Location: frontend/js/ninja-run-bridge.js
+// NINJA RUN - BRIDGE SCRIPT v4 (FINAL)
+// FIRST GAME OVER DETECTION + AUTO-REDIRECT
 // ========================================
 
 (function() {
     'use strict';
 
-    console.log('🏃 Ninja Run Bridge v3 (Coin Tracking) loaded');
+    console.log('🏃 Ninja Run Bridge v4 (First Game Over Detection) loaded');
 
     // ========================================
     // CONFIG
@@ -17,10 +16,9 @@
         eventId: getParam('event'),
         userId: getParam('user'),
         isDemo: getParam('demo') === 'true',
-        gameUrl: window.location.href,
-        maxWaitTime: 60000, // 60 seconds to detect runtime
-        scoreSubmitDelay: 2000, // 2 seconds after game over
-        maxGameTime: 300000, // 5 minutes max
+        maxWaitTime: 60000,
+        scoreSubmitDelay: 1000, // 1 second after game over
+        maxGameTime: 300000,
     };
 
     function getParam(name) {
@@ -38,182 +36,15 @@
     let checkInterval = null;
     let runtime = null;
     let gameEndDetected = false;
-    let coinElements = [];
-    let scoreCheckCount = 0;
-    let lastKnownScore = 0;
+    let firstGameOverDetected = false;
     let gameStartTime = Date.now();
+    let originalRestartHandler = null;
+    let redirectTimer = null;
+    let gameOverScreenVisible = false;
 
     console.log(`📋 Event ID: ${CONFIG.eventId || 'DEMO'}`);
     console.log(`👤 User ID: ${CONFIG.userId || 'GUEST'}`);
     console.log(`🎯 Mode: ${CONFIG.isDemo ? 'DEMO' : 'TOURNAMENT'}`);
-
-    // ========================================
-    // CORE: SCORE HANDLING (COINS ONLY)
-    // ========================================
-
-    window.ninjaRunComplete = function(score) {
-        console.log('🎮 Game Complete! Score:', score);
-        
-        if (scoreSubmitted) {
-            console.log('⚠️ Score already submitted');
-            return;
-        }
-
-        const finalScore = parseInt(score) || gameScore || 0;
-        gameScore = finalScore;
-        
-        console.log(`📊 Final Score (Coins): ${finalScore}`);
-        sendScoreToParent(finalScore);
-    };
-
-    function sendScoreToParent(score) {
-        console.log('📤 Sending score to parent:', score);
-        
-        const finalScore = parseInt(score) || 0;
-        
-        // Store in session storage (multiple keys for redundancy)
-        sessionStorage.setItem('ninjaRunScore', finalScore.toString());
-        sessionStorage.setItem('ninjaRunPlayed', 'true');
-        sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
-        sessionStorage.setItem('ninjaRunComplete', 'true');
-        sessionStorage.setItem('ninjaRunCoins', finalScore.toString());
-        
-        // Also store in localStorage as backup
-        try {
-            if (CONFIG.eventId) {
-                localStorage.setItem('ninjaRunScore_' + CONFIG.eventId, finalScore.toString());
-            }
-            if (CONFIG.userId) {
-                localStorage.setItem('ninjaRunPlayed_' + CONFIG.userId, 'true');
-            }
-            localStorage.setItem('ninjaRunCoins_' + Date.now(), finalScore.toString());
-        } catch (e) {}
-        
-        // Send to parent via postMessage
-        if (window.parent && window.parent !== window) {
-            try {
-                window.parent.postMessage({
-                    type: 'NINJA_RUN_COMPLETE',
-                    score: finalScore,
-                    coins: finalScore,
-                    eventId: CONFIG.eventId,
-                    userId: CONFIG.userId,
-                    isDemo: CONFIG.isDemo,
-                    timestamp: Date.now()
-                }, '*');
-                console.log('✅ Score sent to parent via postMessage');
-            } catch (e) {
-                console.log('⚠️ Could not send to parent:', e);
-            }
-        }
-
-        // Try calling parent function
-        if (window.parent && window.parent.onNinjaRunComplete) {
-            try {
-                window.parent.onNinjaRunComplete(finalScore, CONFIG.eventId, CONFIG.userId);
-                console.log('✅ Score sent to parent via direct function');
-            } catch (e) {
-                console.log('⚠️ Could not call parent function:', e);
-            }
-        }
-
-        scoreSubmitted = true;
-        
-        // Show completion message (only in tournament mode or if not in iframe)
-        if (!CONFIG.isDemo || !window.parent || window.parent === window) {
-            showCompletionMessage(finalScore);
-        }
-    }
-
-    function showCompletionMessage(score) {
-        // Check if overlay already exists
-        if (document.getElementById('ninjaRunCompleteOverlay')) return;
-        
-        const overlay = document.createElement('div');
-        overlay.id = 'ninjaRunCompleteOverlay';
-        overlay.style.cssText = `
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 9999;
-            font-family: 'Orbitron', monospace;
-            color: #fff;
-            animation: fadeIn 0.5s ease;
-        `;
-        overlay.innerHTML = `
-            <div style="
-                background: linear-gradient(135deg, #06111F, #0B1F36);
-                border: 2px solid ${CONFIG.isDemo ? '#FFD700' : '#00BFFF'};
-                border-radius: 20px;
-                padding: 30px 40px;
-                text-align: center;
-                max-width: 400px;
-                box-shadow: 0 0 60px rgba(0, 191, 255, 0.2);
-            ">
-                <div style="font-size: 3.5rem; margin-bottom: 8px;">${CONFIG.isDemo ? '🎮' : '🏆'}</div>
-                <h2 style="
-                    font-family: 'Orbitron', monospace;
-                    color: ${CONFIG.isDemo ? '#FFD700' : '#FFD700'};
-                    font-size: 1.3rem;
-                    margin-bottom: 6px;
-                ">${CONFIG.isDemo ? 'Demo Complete!' : 'Game Complete!'}</h2>
-                <div style="
-                    font-size: 2.5rem;
-                    color: #00E676;
-                    font-weight: 700;
-                    margin: 8px 0;
-                ">${score}</div>
-                <div style="color: #A7B5C5; font-size: 0.8rem;">${CONFIG.isDemo ? 'coins (demo)' : 'coins collected'}</div>
-                <div style="margin-top: 12px; font-size: 0.7rem; color: #A7B5C5;">
-                    ${CONFIG.isDemo ? '🎮 Practice mode' : '🏆 Score submitted!'}
-                </div>
-                <button onclick="window.close()" style="
-                    margin-top: 20px;
-                    background: linear-gradient(135deg, ${CONFIG.isDemo ? '#FFD700' : '#00BFFF'}, ${CONFIG.isDemo ? '#FFA000' : '#6C63FF'});
-                    border: none;
-                    color: #000;
-                    padding: 10px 25px;
-                    border-radius: 10px;
-                    font-family: 'Orbitron', monospace;
-                    font-weight: 700;
-                    cursor: pointer;
-                    font-size: 0.75rem;
-                    transition: all 0.3s ease;
-                " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
-                    ${CONFIG.isDemo ? '🎮 Continue' : '🏆 View Rankings'}
-                </button>
-            </div>
-            <style>
-                @keyframes fadeIn {
-                    from { opacity: 0; transform: scale(0.9); }
-                    to { opacity: 1; transform: scale(1); }
-                }
-            </style>
-        `;
-        document.body.appendChild(overlay);
-
-        // Auto-close after 5 seconds (10 seconds for demo)
-        const closeDelay = CONFIG.isDemo ? 10000 : 5000;
-        setTimeout(() => {
-            if (overlay.parentNode) {
-                overlay.style.opacity = '0';
-                overlay.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => {
-                    if (overlay.parentNode) overlay.remove();
-                    if (!CONFIG.isDemo) {
-                        window.close();
-                    }
-                }, 500);
-            }
-        }, closeDelay);
-    }
 
     // ========================================
     // CORE: FIND COINS IN THE GAME
@@ -224,64 +55,36 @@
         let found = false;
 
         try {
-            // ========================================
-            // METHOD 1: Check Construct 2 Runtime
-            // ========================================
-            
             if (runtime) {
-                // Check global vars
+                // Check globalVars
                 if (runtime.globalVars) {
                     for (const key in runtime.globalVars) {
                         const lowerKey = key.toLowerCase();
-                        // Track ONLY coin-related variables
-                        if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                            lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
-                            lowerKey === 'coin_count' || lowerKey === 'totalcoins') {
+                        const coinKeys = ['coins', 'coin', 'coincount', 'coin_counter', 
+                                         'coin_count', 'totalcoins', 'coinsscore', 
+                                         'coin_score', 'coinscore'];
+                        if (coinKeys.includes(lowerKey)) {
                             const val = runtime.globalVars[key];
                             if (typeof val === 'number' && val > score) {
                                 score = val;
                                 found = true;
-                                console.log(`🪙 Found coins in runtime.globalVars[${key}]: ${val}`);
                             }
                         }
                     }
                 }
                 
-                // Check all global variables (all_global_vars)
                 if (runtime.all_global_vars) {
                     for (const v of runtime.all_global_vars) {
                         if (v && v.name) {
                             const lowerName = v.name.toLowerCase();
-                            if (lowerName === 'coins' || lowerName === 'coin' || 
-                                lowerName === 'coincount' || lowerName === 'coin_counter' ||
-                                lowerName === 'coin_count' || lowerName === 'totalcoins') {
+                            const coinKeys = ['coins', 'coin', 'coincount', 'coin_counter', 
+                                             'coin_count', 'totalcoins', 'coinsscore', 
+                                             'coin_score', 'coinscore'];
+                            if (coinKeys.includes(lowerName)) {
                                 const val = v.data || 0;
                                 if (typeof val === 'number' && val > score) {
                                     score = val;
                                     found = true;
-                                    console.log(`🪙 Found coins in runtime.all_global_vars[${v.name}]: ${val}`);
-                                }
-                            }
-                        }
-                    }
-                }
-                
-                // Check layouts for coin variables
-                if (runtime.layouts) {
-                    for (const layoutName in runtime.layouts) {
-                        const layout = runtime.layouts[layoutName];
-                        if (layout && layout.globalVars) {
-                            for (const key in layout.globalVars) {
-                                const lowerKey = key.toLowerCase();
-                                if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                                    lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
-                                    lowerKey === 'coin_count' || lowerKey === 'totalcoins') {
-                                    const val = layout.globalVars[key];
-                                    if (typeof val === 'number' && val > score) {
-                                        score = val;
-                                        found = true;
-                                        console.log(`🪙 Found coins in layout[${layoutName}][${key}]: ${val}`);
-                                    }
                                 }
                             }
                         }
@@ -289,18 +92,15 @@
                 }
             }
 
-            // ========================================
-            // METHOD 2: Check DOM Elements
-            // ========================================
-            
+            // Check DOM elements
             if (!found || score === 0) {
                 const coinSelectors = [
                     '.coins', '.coin', '#coins', '#coin',
                     '[data-coins]', '[data-coin]',
                     '.coin-count', '.coinCounter',
                     '[class*="coin"]', '[id*="coin"]',
-                    '.score', '#score', '.score-value',
-                    '.score-display'
+                    '.coin-display', '.coin-score',
+                    '.score-display', '.score-value'
                 ];
                 
                 for (const selector of coinSelectors) {
@@ -312,40 +112,34 @@
                             if (!isNaN(num) && num > score) {
                                 score = num;
                                 found = true;
-                                console.log(`🪙 Found coins in DOM [${selector}]: ${num}`);
                             }
                         }
                     } catch (e) {}
                 }
             }
 
-            // ========================================
-            // METHOD 3: Check window object
-            // ========================================
-            
+            // Check window object
             if (!found || score === 0) {
-                const coinNames = ['coins', 'coin', 'coinCount', 'coin_counter', 'coin_count', 'totalCoins'];
+                const coinNames = ['coins', 'coin', 'coinCount', 'coin_counter', 
+                                  'coin_count', 'totalCoins', 'coinScore'];
                 for (const name of coinNames) {
                     if (typeof window[name] !== 'undefined') {
                         const val = window[name];
                         if (typeof val === 'number' && val > score) {
                             score = val;
                             found = true;
-                            console.log(`🪙 Found coins in window[${name}]: ${val}`);
                         }
                     }
                 }
             }
 
-        } catch (e) {
-            // Ignore errors
-        }
+        } catch (e) {}
 
         return score;
     }
 
     // ========================================
-    // CORE: DETECT GAME OVER
+    // CORE: DETECT GAME OVER (FIRST TIME ONLY)
     // ========================================
 
     function detectGameOver() {
@@ -354,25 +148,24 @@
 
         try {
             // ========================================
-            // METHOD 1: Check Construct 2 Runtime
+            // METHOD 1: Construct 2 Runtime
             // ========================================
             
             if (runtime) {
-                // Check global vars for game over flags
                 if (runtime.globalVars) {
-                    const gameOverKeys = ['GameOver', 'gameOver', 'GAME_OVER', 'gameOverState', 'isGameOver', 'game_end', 'gameEnd'];
+                    const gameOverKeys = ['GameOver', 'gameOver', 'GAME_OVER', 
+                                         'gameOverState', 'isGameOver', 
+                                         'game_end', 'gameEnd', 'dead', 'Died'];
                     for (const key of gameOverKeys) {
                         const val = runtime.globalVars[key];
                         if (val === true || val === 1 || val === 'true') {
                             isGameOver = true;
                             reason = `runtime.globalVars[${key}] = ${val}`;
-                            console.log(`🎯 Game Over detected: ${reason}`);
                             return { isGameOver, reason };
                         }
                     }
                 }
                 
-                // Check all global variables
                 if (runtime.all_global_vars) {
                     for (const v of runtime.all_global_vars) {
                         if (v && v.name) {
@@ -383,7 +176,6 @@
                                 if (v.data === true || v.data === 1 || v.data === 'true') {
                                     isGameOver = true;
                                     reason = `runtime.all_global_vars[${v.name}] = ${v.data}`;
-                                    console.log(`🎯 Game Over detected: ${reason}`);
                                     return { isGameOver, reason };
                                 }
                             }
@@ -393,74 +185,61 @@
             }
 
             // ========================================
-            // METHOD 2: Check DOM for Game Over Elements
+            // METHOD 2: DOM Game Over Elements
             // ========================================
             
             const gameOverSelectors = [
                 '.gameover', '.game-over', '#gameover', '#game-over',
                 '[data-gameover]', '.gameover-screen', '.game-over-screen',
                 '.gameover-overlay', '.game-over-overlay',
-                '.death-screen', '.game-end', '.gameover-panel'
+                '.death-screen', '.game-end', '.gameover-panel',
+                '.gameover-container', '.game-over-container'
             ];
             
             for (const selector of gameOverSelectors) {
                 try {
                     const elements = document.querySelectorAll(selector);
                     for (const el of elements) {
-                        if (el.style.display !== 'none' && el.style.display !== 'hidden') {
-                            const isVisible = el.offsetParent !== null;
-                            if (isVisible) {
-                                isGameOver = true;
-                                reason = `DOM element visible: ${selector}`;
-                                console.log(`🎯 Game Over detected: ${reason}`);
-                                return { isGameOver, reason };
-                            }
+                        const rect = el.getBoundingClientRect();
+                        const isVisible = rect.width > 0 && rect.height > 0 && 
+                                         el.style.display !== 'none' && 
+                                         el.style.visibility !== 'hidden' &&
+                                         el.offsetParent !== null;
+                        if (isVisible) {
+                            isGameOver = true;
+                            reason = `DOM element visible: ${selector}`;
+                            return { isGameOver, reason };
                         }
                     }
                 } catch (e) {}
             }
 
             // ========================================
-            // METHOD 3: Check for player death
-            // ========================================
-            
-            try {
-                // Check if player exists and is alive
-                if (runtime && runtime.types) {
-                    for (const type of runtime.types_by_index) {
-                        if (type && type.name && type.name.toLowerCase().includes('player')) {
-                            if (type.instances && type.instances.length === 0) {
-                                isGameOver = true;
-                                reason = 'Player instance destroyed';
-                                console.log(`🎯 Game Over detected: ${reason}`);
-                                return { isGameOver, reason };
-                            }
-                        }
-                    }
-                }
-            } catch (e) {}
-
-            // ========================================
-            // METHOD 4: Check for game over button (restart)
+            // METHOD 3: Restart Button Detection
             // ========================================
             
             try {
                 const restartSelectors = [
                     '.restart-btn', '#restart', '[data-restart]',
                     '.btn-restart', '.restart-button', '#restartButton',
-                    'button:contains("Restart")', '.game-restart'
+                    '.btnrestart', '#btnrestart', '.game-restart',
+                    'button[onclick*="restart"]', 'div[onclick*="restart"]'
                 ];
                 
                 for (const selector of restartSelectors) {
                     const elements = document.querySelectorAll(selector);
                     for (const el of elements) {
-                        if (el.style.display !== 'none' && el.offsetParent !== null) {
+                        const rect = el.getBoundingClientRect();
+                        const isVisible = rect.width > 0 && rect.height > 0 && 
+                                         el.style.display !== 'none' && 
+                                         el.offsetParent !== null;
+                        if (isVisible) {
                             const text = (el.textContent || '').toLowerCase();
-                            if (text.includes('restart') || text.includes('replay') || text.includes('try again')) {
-                                // If restart button is visible and interactive, game is over
+                            if (text.includes('restart') || text.includes('replay') || 
+                                text.includes('try again') || text.includes('retry') ||
+                                text.includes('play again')) {
                                 isGameOver = true;
                                 reason = `Restart button visible: ${selector}`;
-                                console.log(`🎯 Game Over detected: ${reason}`);
                                 return { isGameOver, reason };
                             }
                         }
@@ -468,11 +247,307 @@
                 }
             } catch (e) {}
 
-        } catch (e) {
-            // Ignore errors
-        }
+            // ========================================
+            // METHOD 4: Player Death Detection
+            // ========================================
+            
+            try {
+                if (runtime && runtime.types) {
+                    for (const type of runtime.types_by_index) {
+                        if (type && type.name) {
+                            const lowerName = type.name.toLowerCase();
+                            if (lowerName.includes('player') || lowerName.includes('ninja')) {
+                                if (type.instances && type.instances.length === 0) {
+                                    isGameOver = true;
+                                    reason = 'Player instance destroyed';
+                                    return { isGameOver, reason };
+                                }
+                                // Check if player is off screen
+                                if (type.instances && type.instances.length > 0) {
+                                    const player = type.instances[0];
+                                    if (player.y > 800 || player.y < -100) {
+                                        isGameOver = true;
+                                        reason = 'Player fell off screen';
+                                        return { isGameOver, reason };
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } catch (e) {}
+
+        } catch (e) {}
 
         return { isGameOver, reason };
+    }
+
+    // ========================================
+    // BLOCK RESTART BUTTON
+    // ========================================
+
+    function blockRestartButton() {
+        try {
+            // Method 1: Find and disable all restart buttons
+            const restartSelectors = [
+                '.restart-btn', '#restart', '[data-restart]',
+                '.btn-restart', '.restart-button', '#restartButton',
+                '.btnrestart', '#btnrestart', '.game-restart',
+                'button[onclick*="restart"]', 'div[onclick*="restart"]'
+            ];
+
+            for (const selector of restartSelectors) {
+                const elements = document.querySelectorAll(selector);
+                for (const el of elements) {
+                    // Disable the element
+                    el.style.pointerEvents = 'none';
+                    el.style.opacity = '0.5';
+                    el.style.cursor = 'default';
+                    el.disabled = true;
+                    
+                    // Remove click handlers
+                    const newEl = el.cloneNode(true);
+                    el.parentNode.replaceChild(newEl, el);
+                }
+            }
+
+            // Method 2: Override the restart function if it exists
+            if (typeof window.restartGame === 'function') {
+                window.restartGame = function() {
+                    console.log('🚫 Restart blocked - game already ended');
+                    return false;
+                };
+            }
+
+            if (typeof window.restart === 'function') {
+                window.restart = function() {
+                    console.log('🚫 Restart blocked - game already ended');
+                    return false;
+                };
+            }
+
+            // Method 3: Block keyboard shortcuts (R key for restart)
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'r' || e.key === 'R' || e.key === 'Enter') {
+                    // Check if we're on game over screen
+                    const gameOverElements = document.querySelectorAll('.gameover, .game-over, #gameover, #game-over');
+                    for (const el of gameOverElements) {
+                        if (el.offsetParent !== null) {
+                            e.preventDefault();
+                            e.stopPropagation();
+                            console.log('🚫 Restart key blocked');
+                            return false;
+                        }
+                    }
+                }
+            }, true);
+
+            console.log('✅ Restart button blocked');
+
+        } catch (e) {
+            console.log('⚠️ Could not block restart button:', e);
+        }
+    }
+
+    // ========================================
+    // SHOW GAME OVER OVERLAY
+    // ========================================
+
+    function showGameOverOverlay(score, isDemo) {
+        // Remove any existing overlay
+        const existing = document.getElementById('ninjaRunGameOverOverlay');
+        if (existing) existing.remove();
+
+        const overlay = document.createElement('div');
+        overlay.id = 'ninjaRunGameOverOverlay';
+        overlay.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 99999;
+            font-family: 'Orbitron', monospace;
+            color: #fff;
+            animation: fadeIn 0.6s ease;
+        `;
+
+        const isDemoMode = CONFIG.isDemo || isDemo;
+
+        overlay.innerHTML = `
+            <style>
+                @keyframes fadeIn {
+                    from { opacity: 0; transform: scale(0.95); }
+                    to { opacity: 1; transform: scale(1); }
+                }
+                @keyframes pulse {
+                    0%, 100% { opacity: 1; transform: scale(1); }
+                    50% { opacity: 0.5; transform: scale(1.05); }
+                }
+                @keyframes spin {
+                    to { transform: rotate(360deg); }
+                }
+                @keyframes slideUp {
+                    from { opacity: 0; transform: translateY(30px); }
+                    to { opacity: 1; transform: translateY(0); }
+                }
+            </style>
+            <div style="
+                background: linear-gradient(145deg, #0B1F36, #06111F);
+                border: 2px solid ${isDemoMode ? '#FFD700' : '#00E676'};
+                border-radius: 24px;
+                padding: 40px 50px;
+                text-align: center;
+                max-width: 450px;
+                width: 90%;
+                box-shadow: 0 0 80px ${isDemoMode ? 'rgba(255, 215, 0, 0.1)' : 'rgba(0, 230, 118, 0.1)'};
+                animation: slideUp 0.5s ease;
+            ">
+                <div style="font-size: 4rem; margin-bottom: 8px;">
+                    ${isDemoMode ? '🎮' : '🏆'}
+                </div>
+                <h2 style="
+                    font-family: 'Orbitron', monospace;
+                    color: ${isDemoMode ? '#FFD700' : '#00E676'};
+                    font-size: 1.4rem;
+                    margin-bottom: 4px;
+                ">
+                    ${isDemoMode ? 'Demo Complete!' : 'Game Over!'}
+                </h2>
+                
+                <div style="
+                    font-size: 3rem;
+                    color: #FFD700;
+                    font-weight: 700;
+                    margin: 12px 0;
+                    font-family: 'Orbitron', monospace;
+                ">
+                    ${score.toLocaleString()}
+                </div>
+                <div style="color: #A7B5C5; font-size: 0.85rem;">
+                    ${isDemoMode ? 'coins (demo)' : 'coins collected'}
+                </div>
+
+                ${!isDemoMode ? `
+                    <div style="
+                        margin-top: 16px;
+                        padding: 10px 20px;
+                        background: rgba(0, 230, 118, 0.05);
+                        border: 1px solid rgba(0, 230, 118, 0.1);
+                        border-radius: 12px;
+                    ">
+                        <div style="display: flex; align-items: center; justify-content: center; gap: 12px;">
+                            <div style="
+                                width: 16px;
+                                height: 16px;
+                                border: 2px solid rgba(0, 230, 118, 0.2);
+                                border-top: 2px solid #00E676;
+                                border-radius: 50%;
+                                animation: spin 0.8s linear infinite;
+                            "></div>
+                            <span style="color: #00E676; font-size: 0.8rem;">
+                                ⏳ Submitting score...
+                            </span>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <div style="
+                    margin-top: 16px;
+                    font-size: 0.7rem;
+                    color: rgba(255,255,255,0.3);
+                ">
+                    ${isDemoMode ? '🎮 Continue playing' : '⏳ Please wait...'}
+                </div>
+
+                ${isDemoMode ? `
+                    <button onclick="window.location.reload()" style="
+                        margin-top: 20px;
+                        background: linear-gradient(135deg, #FFD700, #FFA000);
+                        border: none;
+                        border-radius: 10px;
+                        color: #000;
+                        padding: 12px 30px;
+                        font-family: 'Orbitron', monospace;
+                        font-weight: 700;
+                        font-size: 0.8rem;
+                        cursor: pointer;
+                        transition: all 0.3s ease;
+                    " onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+                        🔄 Play Again (Demo)
+                    </button>
+                ` : `
+                    <div style="margin-top: 20px; display: flex; flex-direction: column; gap: 8px;">
+                        <div style="color: var(--muted); font-size: 0.65rem;">
+                            ⏳ Redirecting to tournament...
+                        </div>
+                        <div style="
+                            width: 100%;
+                            height: 3px;
+                            background: rgba(255,255,255,0.05);
+                            border-radius: 2px;
+                            overflow: hidden;
+                        ">
+                            <div style="
+                                height: 100%;
+                                width: 0%;
+                                background: linear-gradient(90deg, #00BFFF, #6C63FF);
+                                border-radius: 2px;
+                                animation: loadBar 3s ease forwards;
+                            "></div>
+                        </div>
+                        <style>
+                            @keyframes loadBar {
+                                0% { width: 0%; }
+                                100% { width: 100%; }
+                            }
+                        </style>
+                    </div>
+                `}
+            </div>
+        `;
+
+        document.body.appendChild(overlay);
+
+        // For tournament mode: redirect after 3 seconds
+        if (!isDemoMode) {
+            setTimeout(() => {
+                // Show "redirecting" message
+                const redirectMsg = document.createElement('div');
+                redirectMsg.style.cssText = `
+                    position: fixed;
+                    bottom: 30px;
+                    left: 50%;
+                    transform: translateX(-50%);
+                    background: rgba(6, 17, 31, 0.95);
+                    border: 1px solid rgba(0, 191, 255, 0.2);
+                    border-radius: 50px;
+                    padding: 10px 24px;
+                    color: #A7B5C5;
+                    font-size: 0.8rem;
+                    z-index: 100000;
+                    font-family: 'Inter', sans-serif;
+                    animation: slideUp 0.3s ease;
+                `;
+                redirectMsg.textContent = '🔄 Redirecting to tournament rankings...';
+                document.body.appendChild(redirectMsg);
+
+                setTimeout(() => {
+                    // Redirect to tournament page
+                    if (CONFIG.eventId) {
+                        window.location.href = `tournaments.html?id=${CONFIG.eventId}`;
+                    } else {
+                        window.location.href = 'tournaments.html';
+                    }
+                }, 3000);
+            }, 1500);
+        }
     }
 
     // ========================================
@@ -490,7 +565,6 @@
                 console.log(`🪙 Coins updated: ${gameScore}`);
                 sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
                 
-                // Send live update to parent
                 if (window.parent && window.parent !== window) {
                     try {
                         window.parent.postMessage({
@@ -502,44 +576,127 @@
                 }
             }
             
-            // 3. Check for game over
-            if (!gameEndDetected && gameScore > 0) {
+            // 3. Check for game over - ONLY ONCE!
+            if (!firstGameOverDetected && gameScore > 0) {
                 const gameState = detectGameOver();
                 if (gameState.isGameOver) {
+                    firstGameOverDetected = true;
                     gameEndDetected = true;
-                    console.log(`🎯 Game Over detected: ${gameState.reason}`);
                     
-                    // Wait a moment before submitting (allow final score to update)
+                    console.log(`🎯 FIRST GAME OVER detected: ${gameState.reason}`);
+                    console.log(`📊 Final score: ${gameScore}`);
+                    
+                    // Block restart button immediately
+                    blockRestartButton();
+                    
+                    // Get final score
+                    const finalScore = findCoinScore() || gameScore;
+                    
+                    // Submit score after short delay
                     setTimeout(() => {
-                        // Get final score one more time
-                        const finalScore = findCoinScore() || gameScore;
-                        if (finalScore > 0 && !scoreSubmitted) {
+                        if (!scoreSubmitted) {
                             console.log(`📤 Submitting final score: ${finalScore}`);
-                            window.ninjaRunComplete(finalScore);
-                        } else if (scoreSubmitted) {
-                            console.log('✅ Score already submitted');
-                        } else {
-                            console.log('⚠️ No score to submit');
+                            
+                            // For tournament mode
+                            if (!CONFIG.isDemo) {
+                                // Submit to parent
+                                if (window.parent && window.parent !== window) {
+                                    try {
+                                        window.parent.postMessage({
+                                            type: 'NINJA_RUN_COMPLETE',
+                                            score: finalScore,
+                                            coins: finalScore,
+                                            eventId: CONFIG.eventId,
+                                            userId: CONFIG.userId,
+                                            isDemo: false,
+                                            timestamp: Date.now()
+                                        }, '*');
+                                    } catch (e) {}
+                                }
+                                
+                                // Store in session
+                                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunComplete', 'true');
+                                
+                                scoreSubmitted = true;
+                                
+                                // Show game over overlay (tournament mode)
+                                showGameOverOverlay(finalScore, false);
+                                
+                                // Also try to submit to Firebase
+                                if (typeof firebase !== 'undefined' && firebase.database) {
+                                    submitToFirebase(finalScore);
+                                }
+                                
+                            } else {
+                                // Demo mode - just show overlay
+                                scoreSubmitted = true;
+                                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunComplete', 'true');
+                                
+                                showGameOverOverlay(finalScore, true);
+                            }
                         }
                     }, CONFIG.scoreSubmitDelay);
                 }
             }
 
-            // 4. Check for timeout (max game time exceeded)
-            if (!scoreSubmitted && !gameEndDetected && gameStarted) {
+            // 4. If game over was already detected, keep blocking restart
+            if (firstGameOverDetected) {
+                // Periodically re-block restart buttons (in case game recreates them)
+                blockRestartButton();
+            }
+
+            // 5. Check for timeout
+            if (!scoreSubmitted && !firstGameOverDetected && gameStarted) {
                 const elapsed = Date.now() - gameStartTime;
                 if (elapsed > CONFIG.maxGameTime && gameScore > 0) {
-                    console.log(`⏰ Max game time exceeded (${CONFIG.maxGameTime}ms). Submitting score.`);
+                    console.log(`⏰ Max game time exceeded. Forcing game over.`);
+                    firstGameOverDetected = true;
                     gameEndDetected = true;
+                    
+                    // Block restart
+                    blockRestartButton();
+                    
                     setTimeout(() => {
                         if (!scoreSubmitted) {
-                            window.ninjaRunComplete(gameScore);
+                            const finalScore = gameScore;
+                            scoreSubmitted = true;
+                            
+                            if (!CONFIG.isDemo) {
+                                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunComplete', 'true');
+                                
+                                showGameOverOverlay(finalScore, false);
+                                
+                                if (window.parent && window.parent !== window) {
+                                    try {
+                                        window.parent.postMessage({
+                                            type: 'NINJA_RUN_COMPLETE',
+                                            score: finalScore,
+                                            coins: finalScore,
+                                            eventId: CONFIG.eventId,
+                                            userId: CONFIG.userId,
+                                            isDemo: false,
+                                            timestamp: Date.now()
+                                        }, '*');
+                                    } catch (e) {}
+                                }
+                            } else {
+                                showGameOverOverlay(finalScore, true);
+                            }
                         }
                     }, 500);
                 }
             }
 
-            // 5. Mark as started if we have a score
+            // 6. Mark as started
             if (gameScore > 0 && !gameStarted) {
                 gameStarted = true;
                 console.log('🎮 Game started (coins detected)');
@@ -551,7 +708,50 @@
     }
 
     // ========================================
-    // HOOK INTO CONSTRUCT 2 RUNTIME
+    // SUBMIT TO FIREBASE
+    // ========================================
+
+    function submitToFirebase(score) {
+        try {
+            if (typeof firebase === 'undefined' || !firebase.database) {
+                console.log('ℹ️ Firebase not available, using localStorage');
+                return;
+            }
+            
+            const db = firebase.database();
+            const eventId = CONFIG.eventId;
+            const userId = CONFIG.userId;
+            
+            if (!eventId || !userId) {
+                console.log('ℹ️ No event/user ID, skipping Firebase');
+                return;
+            }
+            
+            const scoreRef = db.ref(`tournaments/${eventId}/players/${userId}`);
+            
+            const scoreData = {
+                score: score,
+                coins: score,
+                hasPlayed: true,
+                submittedAt: Date.now(),
+                username: `Player_${userId.slice(0, 6)}`
+            };
+            
+            scoreRef.update(scoreData)
+                .then(() => {
+                    console.log('✅ Score submitted to Firebase:', score);
+                })
+                .catch((error) => {
+                    console.error('❌ Firebase error:', error);
+                });
+                
+        } catch (error) {
+            console.error('❌ Error submitting to Firebase:', error);
+        }
+    }
+
+    // ========================================
+    // WAIT FOR RUNTIME
     // ========================================
 
     function waitForRuntime() {
@@ -566,12 +766,11 @@
             const elapsed = Date.now() - startTime;
             
             try {
-                // Try multiple ways to find the runtime
                 const canvas = document.getElementById('c2canvas');
                 if (canvas && canvas.c2runtime) {
                     clearInterval(checkRuntime);
                     runtime = canvas.c2runtime;
-                    console.log('✅ Construct 2 Runtime detected via canvas');
+                    console.log('✅ Construct 2 Runtime detected');
                     gameStarted = true;
                     startMonitoring();
                     return;
@@ -580,7 +779,7 @@
                 if (window.c2runtime) {
                     clearInterval(checkRuntime);
                     runtime = window.c2runtime;
-                    console.log('✅ Construct 2 Runtime detected via window');
+                    console.log('✅ Runtime detected via window');
                     gameStarted = true;
                     startMonitoring();
                     return;
@@ -589,64 +788,20 @@
                 if (window.c2canvas && window.c2canvas.c2runtime) {
                     clearInterval(checkRuntime);
                     runtime = window.c2canvas.c2runtime;
-                    console.log('✅ Construct 2 Runtime detected via c2canvas');
+                    console.log('✅ Runtime detected via c2canvas');
                     gameStarted = true;
                     startMonitoring();
                     return;
                 }
                 
-                // Try to find canvas in iframe
-                const iframe = document.querySelector('iframe');
-                if (iframe && iframe.contentWindow) {
-                    const iframeWin = iframe.contentWindow;
-                    if (iframeWin.c2runtime) {
-                        clearInterval(checkRuntime);
-                        runtime = iframeWin.c2runtime;
-                        console.log('✅ Construct 2 Runtime detected via iframe');
-                        gameStarted = true;
-                        startMonitoring();
-                        return;
-                    }
-                    if (iframeWin.c2canvas && iframeWin.c2canvas.c2runtime) {
-                        clearInterval(checkRuntime);
-                        runtime = iframeWin.c2canvas.c2runtime;
-                        console.log('✅ Construct 2 Runtime detected via iframe canvas');
-                        gameStarted = true;
-                        startMonitoring();
-                        return;
-                    }
-                }
-                
             } catch (e) {}
             
-            // Check if we should give up
             if (attempts >= maxAttempts || elapsed > CONFIG.maxWaitTime) {
                 clearInterval(checkRuntime);
-                console.log('⚠️ Runtime detection timed out, using fallback monitoring');
+                console.log('⚠️ Runtime detection timed out, using fallback');
                 startFallbackMonitoring();
             }
         }, 500);
-    }
-
-    // ========================================
-    // START MONITORING
-    // ========================================
-
-    function startMonitoring() {
-        console.log('🔍 Starting game monitoring...');
-        
-        // Clear any existing interval
-        if (checkInterval) {
-            clearInterval(checkInterval);
-        }
-        
-        // Monitor every 500ms
-        checkInterval = setInterval(monitorGame, 500);
-        
-        // Do an initial check
-        setTimeout(monitorGame, 100);
-        
-        console.log('✅ Game monitoring active');
     }
 
     // ========================================
@@ -656,64 +811,94 @@
     function startFallbackMonitoring() {
         console.log('📊 Starting fallback monitoring');
         
-        // Clear any existing interval
         if (checkInterval) {
             clearInterval(checkInterval);
         }
         
-        // Monitor via DOM and session storage
         checkInterval = setInterval(() => {
             try {
-                // Check session storage for score
+                // Check session storage
                 const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
                 if (liveScore !== null) {
                     const score = parseInt(liveScore);
                     if (score > gameScore) {
                         gameScore = score;
-                        console.log(`📊 Score updated from session: ${gameScore}`);
                     }
                 }
                 
-                // Check for game completion flag
+                // Check for completion flag
                 const complete = sessionStorage.getItem('ninjaRunComplete');
-                if (complete === 'true') {
+                if (complete === 'true' && !scoreSubmitted) {
                     const finalScore = sessionStorage.getItem('ninjaRunFinalScore');
-                    if (finalScore !== null && !scoreSubmitted) {
-                        console.log(`🎯 Game completion detected from session storage`);
-                        window.ninjaRunComplete(parseInt(finalScore));
+                    if (finalScore !== null) {
+                        console.log('🎯 Game completion detected from session');
+                        firstGameOverDetected = true;
+                        blockRestartButton();
+                        scoreSubmitted = true;
+                        showGameOverOverlay(parseInt(finalScore), CONFIG.isDemo);
                         return;
                     }
                 }
                 
-                // Try to find coins in DOM
-                const domScore = findCoinScore();
-                if (domScore > gameScore) {
-                    gameScore = domScore;
-                    console.log(`📊 Score updated from DOM: ${gameScore}`);
-                    sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
-                }
-                
-                // Check for game over in DOM
-                if (!gameEndDetected && gameScore > 0) {
+                // Check DOM for game over
+                if (!firstGameOverDetected && gameScore > 0) {
                     const gameState = detectGameOver();
                     if (gameState.isGameOver) {
+                        firstGameOverDetected = true;
                         gameEndDetected = true;
                         console.log(`🎯 Game Over detected (fallback): ${gameState.reason}`);
+                        blockRestartButton();
+                        
                         setTimeout(() => {
-                            if (!scoreSubmitted && gameScore > 0) {
-                                window.ninjaRunComplete(gameScore);
+                            if (!scoreSubmitted) {
+                                const finalScore = gameScore;
+                                scoreSubmitted = true;
+                                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunComplete', 'true');
+                                
+                                if (!CONFIG.isDemo) {
+                                    if (window.parent && window.parent !== window) {
+                                        try {
+                                            window.parent.postMessage({
+                                                type: 'NINJA_RUN_COMPLETE',
+                                                score: finalScore,
+                                                coins: finalScore,
+                                                eventId: CONFIG.eventId,
+                                                userId: CONFIG.userId,
+                                                isDemo: false,
+                                                timestamp: Date.now()
+                                            }, '*');
+                                        } catch (e) {}
+                                    }
+                                }
+                                
+                                showGameOverOverlay(finalScore, CONFIG.isDemo);
                             }
                         }, CONFIG.scoreSubmitDelay);
                     }
                 }
                 
-                // Auto-submit after 5 minutes of gameplay with score
+                // Timeout
                 if (gameScore > 0 && !scoreSubmitted && gameStarted) {
-                    scoreCheckCount++;
                     const elapsed = Date.now() - gameStartTime;
                     if (elapsed > CONFIG.maxGameTime) {
-                        console.log('⏰ Auto-submit after max game time');
-                        window.ninjaRunComplete(gameScore);
+                        console.log('⏰ Auto-submit after max time');
+                        firstGameOverDetected = true;
+                        blockRestartButton();
+                        
+                        setTimeout(() => {
+                            if (!scoreSubmitted) {
+                                const finalScore = gameScore;
+                                scoreSubmitted = true;
+                                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                                sessionStorage.setItem('ninjaRunComplete', 'true');
+                                showGameOverOverlay(finalScore, CONFIG.isDemo);
+                            }
+                        }, 500);
                     }
                 }
                 
@@ -722,17 +907,29 @@
     }
 
     // ========================================
-    // MANUAL SCORE SUBMISSION (For debugging)
+    // MANUAL OVERRIDE FUNCTIONS
     // ========================================
 
-    window.submitNinjaRunScore = function(score) {
-        const finalScore = parseInt(score) || gameScore || 0;
-        console.log(`📤 Manual score submission: ${finalScore}`);
-        window.ninjaRunComplete(finalScore);
-    };
-
-    window.getNinjaRunScore = function() {
-        return gameScore;
+    window.forceGameOver = function(score) {
+        if (firstGameOverDetected) return;
+        
+        const finalScore = score || gameScore || 0;
+        console.log('🔧 Force game over triggered');
+        
+        firstGameOverDetected = true;
+        gameEndDetected = true;
+        blockRestartButton();
+        
+        setTimeout(() => {
+            if (!scoreSubmitted) {
+                scoreSubmitted = true;
+                sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                sessionStorage.setItem('ninjaRunComplete', 'true');
+                showGameOverOverlay(finalScore, CONFIG.isDemo);
+            }
+        }, 500);
     };
 
     window.getNinjaRunStatus = function() {
@@ -742,6 +939,7 @@
             submitted: scoreSubmitted,
             started: gameStarted,
             ended: gameEndDetected,
+            firstGameOver: firstGameOverDetected,
             runtime: !!runtime,
             eventId: CONFIG.eventId,
             userId: CONFIG.userId,
@@ -750,37 +948,24 @@
         };
     };
 
-    window.forceSubmitScore = function() {
-        if (gameScore > 0 && !scoreSubmitted) {
-            console.log('🔧 Force submitting score:', gameScore);
-            window.ninjaRunComplete(gameScore);
-            return true;
-        }
-        return false;
-    };
-
     // ========================================
     // LISTEN FOR MESSAGES
     // ========================================
 
     window.addEventListener('message', function(event) {
+        if (event.data && event.data.type === 'NINJA_RUN_FORCE_GAME_OVER') {
+            console.log('📨 Received force game over message');
+            window.forceGameOver(event.data.score);
+        }
         if (event.data && event.data.type === 'NINJA_RUN_COMPLETE') {
             console.log('📨 Received completion message:', event.data);
-            window.ninjaRunComplete(event.data.score || event.data.coins);
-        }
-        if (event.data && event.data.type === 'GET_NINJA_RUN_SCORE') {
-            event.source.postMessage({
-                type: 'NINJA_RUN_SCORE_RESPONSE',
-                score: gameScore,
-                coins: gameScore,
-                submitted: scoreSubmitted
-            }, '*');
-        }
-        if (event.data && event.data.type === 'NINJA_RUN_SUBMIT_SCORE') {
-            window.submitNinjaRunScore(event.data.score || event.data.coins);
-        }
-        if (event.data && event.data.type === 'NINJA_RUN_FORCE_SUBMIT') {
-            window.forceSubmitScore();
+            if (!firstGameOverDetected) {
+                firstGameOverDetected = true;
+                blockRestartButton();
+                const score = event.data.score || event.data.coins || gameScore;
+                scoreSubmitted = true;
+                showGameOverOverlay(score, CONFIG.isDemo);
+            }
         }
     });
 
@@ -792,11 +977,11 @@
         score: () => gameScore,
         coins: () => gameScore,
         status: () => window.getNinjaRunStatus(),
-        submit: (score) => window.submitNinjaRunScore(score),
-        force: () => window.forceSubmitScore(),
+        forceGameOver: (score) => window.forceGameOver(score),
         config: CONFIG,
         findCoins: () => findCoinScore(),
-        detectGameOver: () => detectGameOver()
+        detectGameOver: () => detectGameOver(),
+        blockRestart: () => blockRestartButton()
     };
 
     // ========================================
@@ -807,9 +992,27 @@
         if (checkInterval) {
             clearInterval(checkInterval);
         }
-        if (gameScore > 0 && !scoreSubmitted) {
+        if (gameScore > 0 && !scoreSubmitted && !CONFIG.isDemo) {
             console.log('🔄 Page closing, submitting final score');
-            window.ninjaRunComplete(gameScore);
+            const finalScore = gameScore;
+            sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunPlayed', 'true');
+            sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+            sessionStorage.setItem('ninjaRunComplete', 'true');
+            
+            if (window.parent && window.parent !== window) {
+                try {
+                    window.parent.postMessage({
+                        type: 'NINJA_RUN_COMPLETE',
+                        score: finalScore,
+                        coins: finalScore,
+                        eventId: CONFIG.eventId,
+                        userId: CONFIG.userId,
+                        isDemo: false,
+                        timestamp: Date.now()
+                    }, '*');
+                } catch (e) {}
+            }
         }
     });
 
@@ -817,15 +1020,35 @@
     // INIT
     // ========================================
 
-    console.log('🚀 Ninja Run Bridge v3 (Coin Tracking) initializing...');
+    console.log('🚀 Ninja Run Bridge v4 (First Game Over Detection) initializing...');
+    console.log('🎯 Mode:', CONFIG.isDemo ? 'DEMO' : 'TOURNAMENT');
+    console.log('🔒 First game over will be detected and restart will be blocked');
+    console.log('📊 For debugging: __ninjaDebug.status()');
+    console.log('🔧 Force game over: __ninjaDebug.forceGameOver(score)');
 
-    // Start waiting for runtime
     waitForRuntime();
 
-    console.log('✅ Ninja Run Bridge v3 ready');
-    console.log('📊 For debugging, type: __ninjaDebug.status()');
-    console.log('📊 To manually submit score: __ninjaDebug.submit(100)');
-    console.log('📊 To force submit: __ninjaDebug.force()');
-    console.log('🪙 Tracking coins only (not distance/score)');
+    // Also periodically check for game over even if runtime not found
+    setInterval(() => {
+        if (!runtime && !firstGameOverDetected && gameScore > 0) {
+            const gameState = detectGameOver();
+            if (gameState.isGameOver) {
+                console.log('🎯 Game Over detected via periodic check');
+                firstGameOverDetected = true;
+                blockRestartButton();
+                const finalScore = gameScore;
+                setTimeout(() => {
+                    if (!scoreSubmitted) {
+                        scoreSubmitted = true;
+                        sessionStorage.setItem('ninjaRunScore', finalScore.toString());
+                        sessionStorage.setItem('ninjaRunPlayed', 'true');
+                        sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
+                        sessionStorage.setItem('ninjaRunComplete', 'true');
+                        showGameOverOverlay(finalScore, CONFIG.isDemo);
+                    }
+                }, CONFIG.scoreSubmitDelay);
+            }
+        }
+    }, 1000);
 
 })();
