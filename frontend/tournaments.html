@@ -13,6 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ===== ALL STYLES (same as before - keeping it concise) ===== */
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -2755,13 +2756,7 @@
                 return;
             }
             
-            if (currentUser) {
-                update(ref(db, `users/${currentUser.uid}`), {
-                    hasPracticed: true
-                });
-                userData.hasPracticed = true;
-            }
-            
+            // OPEN DEMO MODE - pass demo=true parameter
             const gameUrl = `/game-wrapper.html?demo=true&game=${encodeURIComponent(tournament.game)}`;
             const gameWindow = window.open(gameUrl, '_blank');
             
@@ -2783,6 +2778,7 @@
                 return;
             }
             
+            // If user already practiced, join directly
             if (userData.hasPracticed) {
                 joinTournament(tournamentId);
                 return;
@@ -2936,15 +2932,7 @@
                 return;
             }
             
-            await update(ref(db, `users/${currentUser.uid}`), {
-                hasPlayedCurrentEvent: true,
-                currentEventId: tournamentId
-            });
-            
-            await update(ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`), {
-                hasPlayed: true
-            });
-            
+            // OPEN TOURNAMENT MODE - pass event and user parameters
             const userId = currentUser.uid;
             const gameUrl = `/game-wrapper.html?event=${tournamentId}&user=${userId}`;
             
@@ -3007,7 +2995,7 @@
                 userData.hasPlayedCurrentEvent = true;
                 userData.currentEventId = tournamentId;
                 updateUI();
-                showToast(`✅ Score: ${score} points submitted!`, 'success');
+                showToast(`✅ Score: ${score} coins submitted!`, 'success');
                 loadTournaments();
                 
             } catch (error) {
