@@ -1,6 +1,7 @@
 // ============================================================
 // NINJA RUN - UNIFIED BRIDGE v5
 // Combines: Game Over Detection + Timer Sync + Round Integration
+// Location: frontend/js/ninja-run-bridge.js
 // ============================================================
 
 (function() {
@@ -76,14 +77,23 @@
 
     function getRuntime() {
         try {
+            // Check if running inside iframe
             if (window.c2runtime) return window.c2runtime;
             if (window.cr && window.cr.runtime) return window.cr.runtime;
+            
+            // Check canvas
             const canvas = document.getElementById('c2canvas');
             if (canvas && canvas.c2runtime) return canvas.c2runtime;
+            
+            // Check iframe contentWindow
             const iframe = document.querySelector('iframe');
-            if (iframe && iframe.contentWindow && iframe.contentWindow.c2runtime) {
-                return iframe.contentWindow.c2runtime;
+            if (iframe && iframe.contentWindow) {
+                if (iframe.contentWindow.c2runtime) return iframe.contentWindow.c2runtime;
+                if (iframe.contentWindow.cr && iframe.contentWindow.cr.runtime) {
+                    return iframe.contentWindow.cr.runtime;
+                }
             }
+            
             return null;
         } catch(e) { return null; }
     }
@@ -174,6 +184,14 @@
                 const storedScore = localStorage.getItem('ninjarun_score');
                 if (storedScore) {
                     const num = parseInt(storedScore);
+                    if (!isNaN(num) && num > score) {
+                        score = num;
+                        found = true;
+                    }
+                }
+                const liveScore = sessionStorage.getItem('ninjaRunLiveScore');
+                if (liveScore) {
+                    const num = parseInt(liveScore);
                     if (!isNaN(num) && num > score) {
                         score = num;
                         found = true;
