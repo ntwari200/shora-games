@@ -8,15 +8,13 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ============================================
-           COMPLETE RESET - NO PERCENTAGE SIZING ON CANVAS!
-           ============================================ */
+        /* ... (all your styles) ... */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #0a0a0a;
+            background: #06111F;
             color: #fff;
             font-family: 'Inter', sans-serif;
             margin: 0;
@@ -26,7 +24,6 @@
             left: 0;
             touch-action: none;
         }
-
         #gameWrapper {
             width: 100%;
             height: 100vh;
@@ -37,833 +34,124 @@
             position: relative;
             overflow: hidden;
         }
-
-        /* ===== WARNING BANNER ===== */
-        .warning-banner {
-            display: block !important;
-            flex-shrink: 0;
-            position: relative;
-            z-index: 101;
-            background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(200, 0, 0, 0.1));
-            border-bottom: 3px solid #FF4D6D;
-            padding: 12px 16px;
-            overflow: hidden;
-            animation: bannerSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-        @keyframes bannerSlideDown {
-            0% { opacity: 0; transform: translateY(-30px) scale(0.95); }
-            100% { opacity: 1; transform: translateY(0) scale(1); }
-        }
-        .warning-banner::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: radial-gradient(ellipse at 30% 50%, rgba(255, 50, 50, 0.1), transparent 70%);
-            animation: bannerGlow 2s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes bannerGlow {
-            0%, 100% { opacity: 0.5; }
-            50% { opacity: 1; }
-        }
-        .warning-banner::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 300%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.05), transparent);
-            animation: bannerSweep 4s ease-in-out infinite;
-            pointer-events: none;
-        }
-        @keyframes bannerSweep {
-            0% { transform: translateX(-30%); }
-            100% { transform: translateX(30%); }
-        }
-        .warning-banner .warning-content {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            font-size: clamp(0.7rem, 1.4vw, 0.9rem);
-            position: relative;
-            z-index: 1;
-        }
-        .warning-banner .warning-icon-wrapper {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            background: rgba(255, 50, 50, 0.15);
-            border: 2px solid rgba(255, 50, 50, 0.3);
-            flex-shrink: 0;
-            animation: iconPulse 1.5s ease-in-out infinite;
-            position: relative;
-        }
-        .warning-banner .warning-icon-wrapper::before {
-            content: '';
-            position: absolute;
-            inset: -4px;
-            border-radius: 50%;
-            border: 2px solid rgba(255, 50, 50, 0.1);
-            animation: iconRing 2s ease-in-out infinite;
-        }
-        @keyframes iconRing {
-            0%, 100% { transform: scale(1); opacity: 0.5; }
-            50% { transform: scale(1.3); opacity: 0; }
-        }
-        @keyframes iconPulse {
-            0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); }
-            50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); }
-        }
-        .warning-banner .warning-icon {
-            color: #FF4D6D;
-            font-size: 1.2rem;
-            animation: iconShake 2s ease-in-out infinite;
-        }
-        @keyframes iconShake {
-            0%, 100% { transform: rotate(0deg); }
-            5% { transform: rotate(-15deg); }
-            10% { transform: rotate(15deg); }
-            15% { transform: rotate(-10deg); }
-            20% { transform: rotate(10deg); }
-            25% { transform: rotate(0deg); }
-        }
-        .warning-banner .warning-text {
-            color: #FF8A8A;
-            font-weight: 500;
-            text-shadow: 0 0 20px rgba(255, 50, 50, 0.1);
-            flex: 1;
-            text-align: center;
-            min-width: 120px;
-        }
-        .warning-banner .warning-text .highlight {
-            color: #FF4D6D;
-            font-weight: 700;
-            background: rgba(255, 50, 50, 0.15);
-            padding: 2px 12px;
-            border-radius: 4px;
-            border: 1px solid rgba(255, 50, 50, 0.2);
-        }
-        .warning-banner .warning-text .emoji {
-            display: inline-block;
-            animation: emojiBounce 1.5s ease-in-out infinite;
-        }
-        @keyframes emojiBounce {
-            0%, 100% { transform: translateY(0); }
-            50% { transform: translateY(-3px); }
-        }
-        .warning-banner .warning-actions {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            flex-shrink: 0;
-        }
-        .warning-banner .warning-link {
-            color: #fff;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 6px 18px;
-            border-radius: 30px;
-            background: linear-gradient(135deg, #FF4D6D, #D50000);
-            border: none;
-            cursor: pointer;
-            font-size: clamp(0.6rem, 1.2vw, 0.75rem);
-            transition: all 0.3s ease;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 4px 20px rgba(255, 50, 50, 0.3);
-            position: relative;
-            overflow: hidden;
-        }
-        .warning-banner .warning-link::before {
-            content: '';
-            position: absolute;
-            top: -50%;
-            left: -50%;
-            width: 200%;
-            height: 200%;
-            background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent);
-            transform: rotate(45deg);
-            animation: linkShine 3s ease-in-out infinite;
-        }
-        @keyframes linkShine {
-            0% { transform: translateX(-100%) rotate(45deg); }
-            100% { transform: translateX(100%) rotate(45deg); }
-        }
-        .warning-banner .warning-link:hover {
-            transform: scale(1.05);
-            box-shadow: 0 6px 30px rgba(255, 50, 50, 0.5);
-        }
-        .warning-banner .warning-link:active {
-            transform: scale(0.95);
-        }
-        .warning-banner .warning-link i {
-            font-size: clamp(0.5rem, 1vw, 0.65rem);
-        }
-        .warning-banner .warning-close {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            color: rgba(255, 255, 255, 0.3);
-            cursor: pointer;
-            font-size: clamp(0.6rem, 1vw, 0.75rem);
-            transition: all 0.3s ease;
-            padding: 4px 12px;
-            border-radius: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            font-family: 'Inter', sans-serif;
-        }
-        .warning-banner .warning-close:hover {
-            color: #fff;
-            background: rgba(255, 255, 255, 0.1);
-            border-color: rgba(255, 255, 255, 0.1);
-        }
-
-        /* ===== GAME HEADER ===== */
-        .game-header {
-            position: relative;
-            z-index: 100;
-            background: rgba(6, 17, 31, 0.92);
-            backdrop-filter: blur(12px);
-            padding: 8px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-bottom: 1px solid rgba(0, 191, 255, 0.08);
-            flex-shrink: 0;
-            min-height: 56px;
-            gap: 8px;
-        }
-
-        .game-header .title {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            color: #00BFFF;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            white-space: nowrap;
-        }
+        .warning-banner { display: block !important; flex-shrink: 0; position: relative; z-index: 101; background: linear-gradient(135deg, rgba(255, 0, 0, 0.2), rgba(200, 0, 0, 0.1)); border-bottom: 3px solid #FF4D6D; padding: 12px 16px; overflow: hidden; animation: bannerSlideDown 0.6s cubic-bezier(0.16, 1, 0.3, 1); }
+        @keyframes bannerSlideDown { 0% { opacity: 0; transform: translateY(-30px) scale(0.95); } 100% { opacity: 1; transform: translateY(0) scale(1); } }
+        .warning-banner::before { content: ''; position: absolute; inset: 0; background: radial-gradient(ellipse at 30% 50%, rgba(255, 50, 50, 0.1), transparent 70%); animation: bannerGlow 2s ease-in-out infinite; pointer-events: none; }
+        @keyframes bannerGlow { 0%, 100% { opacity: 0.5; } 50% { opacity: 1; } }
+        .warning-banner::after { content: ''; position: absolute; top: 0; left: -100%; width: 300%; height: 100%; background: linear-gradient(90deg, transparent, rgba(255, 50, 50, 0.05), transparent); animation: bannerSweep 4s ease-in-out infinite; pointer-events: none; }
+        @keyframes bannerSweep { 0% { transform: translateX(-30%); } 100% { transform: translateX(30%); } }
+        .warning-banner .warning-content { display: flex; align-items: center; justify-content: center; gap: 12px; flex-wrap: wrap; font-size: clamp(0.7rem, 1.4vw, 0.9rem); position: relative; z-index: 1; }
+        .warning-banner .warning-icon-wrapper { display: flex; align-items: center; justify-content: center; width: 38px; height: 38px; border-radius: 50%; background: rgba(255, 50, 50, 0.15); border: 2px solid rgba(255, 50, 50, 0.3); flex-shrink: 0; animation: iconPulse 1.5s ease-in-out infinite; position: relative; }
+        .warning-banner .warning-icon-wrapper::before { content: ''; position: absolute; inset: -4px; border-radius: 50%; border: 2px solid rgba(255, 50, 50, 0.1); animation: iconRing 2s ease-in-out infinite; }
+        @keyframes iconRing { 0%, 100% { transform: scale(1); opacity: 0.5; } 50% { transform: scale(1.3); opacity: 0; } }
+        @keyframes iconPulse { 0%, 100% { transform: scale(1); box-shadow: 0 0 20px rgba(255, 50, 50, 0.1); } 50% { transform: scale(1.05); box-shadow: 0 0 40px rgba(255, 50, 50, 0.2); } }
+        .warning-banner .warning-icon { color: #FF4D6D; font-size: 1.2rem; animation: iconShake 2s ease-in-out infinite; }
+        @keyframes iconShake { 0%, 100% { transform: rotate(0deg); } 5% { transform: rotate(-15deg); } 10% { transform: rotate(15deg); } 15% { transform: rotate(-10deg); } 20% { transform: rotate(10deg); } 25% { transform: rotate(0deg); } }
+        .warning-banner .warning-text { color: #FF8A8A; font-weight: 500; text-shadow: 0 0 20px rgba(255, 50, 50, 0.1); flex: 1; text-align: center; min-width: 120px; }
+        .warning-banner .warning-text .highlight { color: #FF4D6D; font-weight: 700; background: rgba(255, 50, 50, 0.15); padding: 2px 12px; border-radius: 4px; border: 1px solid rgba(255, 50, 50, 0.2); }
+        .warning-banner .warning-text .emoji { display: inline-block; animation: emojiBounce 1.5s ease-in-out infinite; }
+        @keyframes emojiBounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-3px); } }
+        .warning-banner .warning-actions { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+        .warning-banner .warning-link { color: #fff; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; padding: 6px 18px; border-radius: 30px; background: linear-gradient(135deg, #FF4D6D, #D50000); border: none; cursor: pointer; font-size: clamp(0.6rem, 1.2vw, 0.75rem); transition: all 0.3s ease; font-family: 'Inter', sans-serif; box-shadow: 0 4px 20px rgba(255, 50, 50, 0.3); position: relative; overflow: hidden; }
+        .warning-banner .warning-link::before { content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%; background: linear-gradient(45deg, transparent, rgba(255,255,255,0.05), transparent); transform: rotate(45deg); animation: linkShine 3s ease-in-out infinite; }
+        @keyframes linkShine { 0% { transform: translateX(-100%) rotate(45deg); } 100% { transform: translateX(100%) rotate(45deg); } }
+        .warning-banner .warning-link:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(255, 50, 50, 0.5); }
+        .warning-banner .warning-link:active { transform: scale(0.95); }
+        .warning-banner .warning-link i { font-size: clamp(0.5rem, 1vw, 0.65rem); }
+        .warning-banner .warning-close { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); cursor: pointer; font-size: clamp(0.6rem, 1vw, 0.75rem); transition: all 0.3s ease; padding: 4px 12px; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Inter', sans-serif; }
+        .warning-banner .warning-close:hover { color: #fff; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.1); }
+        .game-header { position: relative; z-index: 100; background: rgba(6, 17, 31, 0.92); backdrop-filter: blur(12px); padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 191, 255, 0.08); flex-shrink: 0; min-height: 56px; gap: 8px; }
+        .game-header .title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: #00BFFF; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
         .game-header .title i { color: #FFD700; }
-        .game-header .title .sub {
-            font-size: 0.5rem;
-            color: #A7B5C5;
-            font-family: 'Inter', sans-serif;
-        }
-
-        .score-display {
-            display: flex;
-            align-items: center;
-            gap: 4px;
-            background: rgba(0, 191, 255, 0.06);
-            border: 1px solid rgba(0, 191, 255, 0.1);
-            border-radius: 12px;
-            padding: 4px 12px;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.85rem;
-            color: #FFD700;
-        }
+        .game-header .title .sub { font-size: 0.5rem; color: #A7B5C5; font-family: 'Inter', sans-serif; }
+        .score-display { display: flex; align-items: center; gap: 4px; background: rgba(0, 191, 255, 0.06); border: 1px solid rgba(0, 191, 255, 0.1); border-radius: 12px; padding: 4px 12px; font-family: 'Orbitron', monospace; font-size: 0.85rem; color: #FFD700; }
         .score-display i { color: #FFD700; font-size: 0.8rem; }
-        .score-display .score-value {
-            font-weight: 700;
-            min-width: 30px;
-            text-align: center;
-            color: #00E676;
-        }
-
-        .status-display {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.65rem;
-            color: #A7B5C5;
-        }
-        .status-display .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: #00E676;
-            animation: pulse 1.5s infinite;
-            display: inline-block;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; transform: scale(1); }
-            50% { opacity: 0.3; transform: scale(0.8); }
-        }
-        .status-display .dot.complete {
-            background: #FFD700;
-            animation: none;
-            box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
-        }
-        .status-display .dot.cheating {
-            background: #FF4D6D;
-            animation: none;
-            box-shadow: 0 0 20px rgba(255, 77, 109, 0.3);
-        }
-
-        .help-btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            width: 32px;
-            height: 32px;
-            border-radius: 50%;
-            border: 1px solid rgba(255,255,255,0.1);
-            background: rgba(255,255,255,0.03);
-            color: #A7B5C5;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 0.8rem;
-            flex-shrink: 0;
-        }
-        .help-btn:hover {
-            border-color: rgba(0, 191, 255, 0.3);
-            color: #00BFFF;
-            background: rgba(0, 191, 255, 0.05);
-            transform: scale(1.1);
-        }
-
-        .anti-cheat-badge {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-size: 0.55rem;
-            color: rgba(0, 230, 118, 0.4);
-            background: rgba(0, 230, 118, 0.03);
-            padding: 2px 10px;
-            border-radius: 20px;
-            border: 1px solid rgba(0, 230, 118, 0.05);
-            white-space: nowrap;
-        }
+        .score-display .score-value { font-weight: 700; min-width: 30px; text-align: center; color: #00E676; }
+        .status-display { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #A7B5C5; }
+        .status-display .dot { width: 8px; height: 8px; border-radius: 50%; background: #00E676; animation: pulse 1.5s infinite; display: inline-block; }
+        @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
+        .status-display .dot.complete { background: #FFD700; animation: none; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
+        .status-display .dot.cheating { background: #FF4D6D; animation: none; box-shadow: 0 0 20px rgba(255, 77, 109, 0.3); }
+        .help-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #A7B5C5; cursor: pointer; transition: all 0.3s ease; font-size: 0.8rem; flex-shrink: 0; }
+        .help-btn:hover { border-color: rgba(0, 191, 255, 0.3); color: #00BFFF; background: rgba(0, 191, 255, 0.05); transform: scale(1.1); }
+        .anti-cheat-badge { display: flex; align-items: center; gap: 6px; font-size: 0.55rem; color: rgba(0, 230, 118, 0.4); background: rgba(0, 230, 118, 0.03); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(0, 230, 118, 0.05); white-space: nowrap; }
         .anti-cheat-badge i { font-size: 0.5rem; }
-        .anti-cheat-badge.active {
-            color: #00E676;
-            border-color: rgba(0, 230, 118, 0.2);
-        }
-
-        /* ===== GAME FRAME - CONTAINER ONLY ===== */
-        #gameFrame {
-            flex: 1;
-            width: 100%;
-            border: none;
-            background: #000;
-            min-height: 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        /* ===== CRITICAL: NO PERCENTAGE SIZING ON CANVAS! ===== */
-        /* The canvas will be sized EXACTLY by JavaScript */
-        #gameFrame canvas {
-            position: absolute;
-            top: 0;
-            left: 0;
-            image-rendering: auto;
-            background: #000;
-            /* width and height set by JS ONLY */
-        }
-
-        /* ===== IFRAME STYLING ===== */
-        #gameFrame iframe {
-            width: 100%;
-            height: 100%;
-            border: none;
-            background: #000;
-            display: block;
-        }
-
-        /* ===== TOUCH CONTROLS (anchored to canvas) ===== */
-        #touchControls {
-            position: absolute;
-            pointer-events: none;
-            z-index: 50;
-            display: none;
-        }
-        #touchControls.active {
-            display: block;
-        }
-        #touchControls .touch-btn {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: all;
-            cursor: pointer;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            backdrop-filter: blur(4px);
-            transition: all 0.2s ease;
-        }
-        #touchControls .touch-btn:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.25);
-        }
-        #touchControls .touch-btn.left {
-            left: 20px;
-            bottom: 20px;
-        }
-        #touchControls .touch-btn.right {
-            left: 100px;
-            bottom: 20px;
-        }
-        #touchControls .touch-btn.jump {
-            right: 20px;
-            bottom: 20px;
-            width: 80px;
-            height: 80px;
-            font-size: 1.8rem;
-            background: rgba(0, 191, 255, 0.2);
-            border-color: rgba(0, 191, 255, 0.4);
-        }
-        #touchControls .touch-btn.jump:active {
-            background: rgba(0, 191, 255, 0.4);
-        }
-
-        /* ===== LOADING OVERLAY ===== */
-        #loadingOverlay {
-            position: fixed;
-            inset: 0;
-            background: #06111F;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 1000;
-            transition: opacity 0.5s ease;
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(20px);
-            padding: 20px;
-        }
-        #loadingOverlay.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        #loadingOverlay .spinner {
-            width: clamp(40px, 8vw, 60px);
-            height: clamp(40px, 8vw, 60px);
-            border: 3px solid rgba(0, 191, 255, 0.1);
-            border-top-color: #00BFFF;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-        }
+        .anti-cheat-badge.active { color: #00E676; border-color: rgba(0, 230, 118, 0.2); }
+        #gameFrame { flex: 1; width: 100%; border: none; background: #000; min-height: 0; position: relative; }
+        #gameFrame iframe { width: 100%; height: 100%; border: none; background: #000; }
+        #loadingOverlay { position: fixed; inset: 0; background: #06111F; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.5s ease; background: rgba(6, 17, 31, 0.95); backdrop-filter: blur(20px); padding: 20px; }
+        #loadingOverlay.hidden { opacity: 0; pointer-events: none; }
+        #loadingOverlay .spinner { width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px); border: 3px solid rgba(0, 191, 255, 0.1); border-top-color: #00BFFF; border-radius: 50%; animation: spin 0.8s linear infinite; }
         @keyframes spin { to { transform: rotate(360deg); } }
-        #loadingOverlay .text {
-            margin-top: 16px;
-            color: #A7B5C5;
-            font-size: clamp(0.7rem, 2vw, 1rem);
-            font-family: 'Orbitron', monospace;
-            text-align: center;
-        }
-        #loadingOverlay .progress-bar {
-            margin-top: 16px;
-            width: clamp(150px, 40vw, 250px);
-            height: 4px;
-            background: rgba(255, 255, 255, 0.05);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        #loadingOverlay .progress-bar .fill {
-            height: 100%;
-            background: linear-gradient(90deg, #00BFFF, #6C63FF);
-            border-radius: 2px;
-            width: 0%;
-            transition: width 0.3s ease;
-        }
-
-        /* ===== TOAST ===== */
-        .toast-cyber {
-            position: fixed;
-            bottom: clamp(16px, 3vh, 40px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(6, 17, 31, 0.95);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(0, 230, 118, 0.3);
-            border-radius: 50px;
-            padding: clamp(8px, 1.5vh, 14px) clamp(16px, 3vw, 28px);
-            color: #00E676;
-            font-size: clamp(0.65rem, 1.5vw, 1rem);
-            z-index: 9999;
-            font-family: 'Inter', sans-serif;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            max-width: 90%;
-            text-align: center;
-            animation: slideUp 0.3s ease;
-        }
-        .toast-cyber.error {
-            border-color: rgba(255, 77, 109, 0.3);
-            color: #FF4D6D;
-        }
-        .toast-cyber.warning {
-            border-color: rgba(255, 200, 87, 0.3);
-            color: #FFD700;
-        }
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateX(-50%) translateY(20px); }
-            to { opacity: 1; transform: translateX(-50%) translateY(0); }
-        }
-
-        /* ===== GUIDE OVERLAY ===== */
-        .guide-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 9999;
-            background: rgba(6, 17, 31, 0.92);
-            backdrop-filter: blur(20px);
-            display: none;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            animation: fadeIn 0.4s ease;
-        }
+        #loadingOverlay .text { margin-top: 16px; color: #A7B5C5; font-size: clamp(0.7rem, 2vw, 1rem); font-family: 'Orbitron', monospace; text-align: center; }
+        #loadingOverlay .progress-bar { margin-top: 16px; width: clamp(150px, 40vw, 250px); height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; }
+        #loadingOverlay .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #00BFFF, #6C63FF); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
+        .toast-cyber { position: fixed; bottom: clamp(16px, 3vh, 40px); left: 50%; transform: translateX(-50%); background: rgba(6, 17, 31, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 50px; padding: clamp(8px, 1.5vh, 14px) clamp(16px, 3vw, 28px); color: #00E676; font-size: clamp(0.65rem, 1.5vw, 1rem); z-index: 9999; font-family: 'Inter', sans-serif; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); max-width: 90%; text-align: center; animation: slideUp 0.3s ease; }
+        .toast-cyber.error { border-color: rgba(255, 77, 109, 0.3); color: #FF4D6D; }
+        .toast-cyber.warning { border-color: rgba(255, 200, 87, 0.3); color: #FFD700; }
+        @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        .guide-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(6, 17, 31, 0.92); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.4s ease; }
         .guide-overlay.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
-
-        .guide-modal {
-            max-width: 480px;
-            width: 100%;
-            max-height: 90vh;
-            overflow-y: auto;
-            background: linear-gradient(145deg, #0B1F36, #06111F);
-            border: 1px solid rgba(0, 191, 255, 0.15);
-            border-radius: 20px;
-            padding: 28px 24px;
-            box-shadow: 0 0 60px rgba(0, 191, 255, 0.05);
-            position: relative;
-        }
-        .guide-close {
-            position: absolute;
-            top: 12px;
-            right: 16px;
-            background: none;
-            border: none;
-            color: #A7B5C5;
-            font-size: 1.2rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            padding: 4px 8px;
-            border-radius: 8px;
-        }
+        .guide-modal { max-width: 480px; width: 100%; max-height: 90vh; overflow-y: auto; background: linear-gradient(145deg, #0B1F36, #06111F); border: 1px solid rgba(0, 191, 255, 0.15); border-radius: 20px; padding: 28px 24px; box-shadow: 0 0 60px rgba(0, 191, 255, 0.05); position: relative; }
+        .guide-close { position: absolute; top: 12px; right: 16px; background: none; border: none; color: #A7B5C5; font-size: 1.2rem; cursor: pointer; transition: all 0.3s ease; padding: 4px 8px; border-radius: 8px; }
         .guide-close:hover { color: #fff; background: rgba(255,255,255,0.05); }
         .guide-header { text-align: center; margin-bottom: 24px; }
         .guide-header .icon { font-size: 3rem; display: block; margin-bottom: 8px; animation: bounce 2s ease-in-out infinite; }
         @keyframes bounce { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-8px); } }
         .guide-header h2 { font-family: 'Orbitron', monospace; font-size: 1.2rem; color: #00BFFF; margin-bottom: 4px; }
         .guide-header p { color: #A7B5C5; font-size: 0.85rem; }
-
         .step-list { display: flex; flex-direction: column; gap: 16px; margin: 20px 0; }
-        .step-item {
-            display: flex;
-            align-items: flex-start;
-            gap: 14px;
-            padding: 14px 16px;
-            background: rgba(255,255,255,0.02);
-            border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.04);
-            transition: all 0.3s ease;
-            cursor: pointer;
-        }
+        .step-item { display: flex; align-items: flex-start; gap: 14px; padding: 14px 16px; background: rgba(255,255,255,0.02); border-radius: 12px; border: 1px solid rgba(255,255,255,0.04); transition: all 0.3s ease; cursor: pointer; }
         .step-item:hover { background: rgba(255,255,255,0.04); border-color: rgba(0, 191, 255, 0.1); }
-        .step-item .step-number {
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(108, 99, 255, 0.2));
-            border: 1px solid rgba(0, 191, 255, 0.2);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 0.7rem;
-            font-weight: 700;
-            color: #00BFFF;
-            flex-shrink: 0;
-        }
+        .step-item .step-number { width: 28px; height: 28px; border-radius: 50%; background: linear-gradient(135deg, rgba(0, 191, 255, 0.2), rgba(108, 99, 255, 0.2)); border: 1px solid rgba(0, 191, 255, 0.2); display: flex; align-items: center; justify-content: center; font-size: 0.7rem; font-weight: 700; color: #00BFFF; flex-shrink: 0; }
         .step-item .step-content { flex: 1; }
         .step-item .step-content .step-title { font-weight: 600; font-size: 0.9rem; color: #fff; margin-bottom: 2px; }
         .step-item .step-content .step-desc { font-size: 0.75rem; color: #A7B5C5; line-height: 1.4; }
         .step-item .step-content .step-desc strong { color: #FFD700; }
         .step-item .step-icon { font-size: 1.2rem; opacity: 0.6; flex-shrink: 0; align-self: center; }
-
         .guide-progress { display: flex; justify-content: center; gap: 8px; margin: 20px 0 16px; }
-        .guide-progress .dot {
-            width: 8px;
-            height: 8px;
-            border-radius: 50%;
-            background: rgba(255,255,255,0.1);
-            transition: all 0.3s ease;
-        }
+        .guide-progress .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.1); transition: all 0.3s ease; }
         .guide-progress .dot.active { background: #00BFFF; box-shadow: 0 0 15px rgba(0, 191, 255, 0.3); }
         .guide-progress .dot.done { background: #00E676; box-shadow: 0 0 15px rgba(0, 230, 118, 0.3); }
-
         .guide-nav { display: flex; gap: 10px; margin-top: 16px; }
-        .guide-nav button {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        .guide-nav button { flex: 1; padding: 10px; border: none; border-radius: 10px; font-family: 'Space Grotesk', sans-serif; font-weight: 600; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; }
         .guide-nav .btn-prev { background: rgba(255,255,255,0.05); color: #A7B5C5; border: 1px solid rgba(255,255,255,0.05); }
         .guide-nav .btn-prev:hover { background: rgba(255,255,255,0.08); }
         .guide-nav .btn-next { background: linear-gradient(135deg, #00BFFF, #6C63FF); color: #000; }
         .guide-nav .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
-
-        /* ===== CHEAT ALERT ===== */
-        .cheat-alert {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(255, 0, 0, 0.15);
-            backdrop-filter: blur(8px);
-            z-index: 9998;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            animation: fadeIn 0.5s ease;
-        }
+        .cheat-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.15); backdrop-filter: blur(8px); z-index: 9998; display: none; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
         .cheat-alert.active { display: flex; }
-        .cheat-alert .cheat-modal {
-            background: rgba(6, 17, 31, 0.95);
-            border: 2px solid #FF4D6D;
-            border-radius: 20px;
-            padding: 40px;
-            max-width: 420px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 0 60px rgba(255, 77, 109, 0.2);
-            animation: shake 0.5s ease;
-        }
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            20% { transform: translateX(-10px); }
-            40% { transform: translateX(10px); }
-            60% { transform: translateX(-5px); }
-            80% { transform: translateX(5px); }
-        }
+        .cheat-alert .cheat-modal { background: rgba(6, 17, 31, 0.95); border: 2px solid #FF4D6D; border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 0 60px rgba(255, 77, 109, 0.2); animation: shake 0.5s ease; }
+        @keyframes shake { 0%, 100% { transform: translateX(0); } 20% { transform: translateX(-10px); } 40% { transform: translateX(10px); } 60% { transform: translateX(-5px); } 80% { transform: translateX(5px); } }
         .cheat-alert .cheat-modal .cheat-icon { font-size: 4rem; color: #FF4D6D; margin-bottom: 10px; }
         .cheat-alert .cheat-modal h2 { font-family: 'Orbitron', monospace; font-size: 1.4rem; color: #FF4D6D; margin-bottom: 8px; }
         .cheat-alert .cheat-modal p { color: #A7B5C5; font-size: 0.85rem; line-height: 1.6; }
-        .cheat-alert .cheat-modal .cheat-detail {
-            background: rgba(255, 77, 109, 0.05);
-            border: 1px solid rgba(255, 77, 109, 0.1);
-            border-radius: 8px;
-            padding: 8px 16px;
-            margin: 12px 0;
-            font-family: 'Orbitron', monospace;
-            font-size: 0.7rem;
-            color: #FF4D6D;
-        }
-        .cheat-alert .cheat-modal .cheat-btn {
-            background: linear-gradient(135deg, #FF4D6D, #D50000);
-            border: none;
-            color: #fff;
-            padding: 10px 30px;
-            border-radius: 10px;
-            font-family: 'Inter', sans-serif;
-            font-weight: 700;
-            cursor: pointer;
-            font-size: 0.85rem;
-            transition: all 0.3s ease;
-            margin-top: 8px;
-        }
-        .cheat-alert .cheat-modal .cheat-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3);
-        }
-
-        /* ===== GAME OVER OVERLAY ===== */
-        #gameOverOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(16px);
-            display: none;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 99999;
-            font-family: 'Orbitron', monospace;
-            color: #fff;
-            animation: overlayFadeIn 0.5s ease;
-        }
+        .cheat-alert .cheat-modal .cheat-detail { background: rgba(255, 77, 109, 0.05); border: 1px solid rgba(255, 77, 109, 0.1); border-radius: 8px; padding: 8px 16px; margin: 12px 0; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: #FF4D6D; }
+        .cheat-alert .cheat-modal .cheat-btn { background: linear-gradient(135deg, #FF4D6D, #D50000); border: none; color: #fff; padding: 10px 30px; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; margin-top: 8px; }
+        .cheat-alert .cheat-modal .cheat-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3); }
+        #gameOverOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(16px); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; font-family: 'Orbitron', monospace; color: #fff; animation: overlayFadeIn 0.5s ease; }
         #gameOverOverlay.active { display: flex; }
-        @keyframes overlayFadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        @keyframes overlaySpin {
-            to { transform: rotate(360deg); }
-        }
-        @keyframes overlayLoadBar {
-            0% { width: 0%; }
-            100% { width: 100%; }
-        }
-        @keyframes overlaySlideUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        #gameOverOverlay .overlay-box {
-            background: linear-gradient(145deg, #0B1F36, #06111F);
-            border: 2px solid #00E676;
-            border-radius: 24px;
-            padding: 40px 50px;
-            text-align: center;
-            max-width: 450px;
-            width: 90%;
-            box-shadow: 0 0 80px rgba(0, 230, 118, 0.1);
-            animation: overlaySlideUp 0.5s ease;
-        }
+        @keyframes overlayFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+        @keyframes overlaySpin { to { transform: rotate(360deg); } }
+        @keyframes overlayLoadBar { 0% { width: 0%; } 100% { width: 100%; } }
+        @keyframes overlaySlideUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        #gameOverOverlay .overlay-box { background: linear-gradient(145deg, #0B1F36, #06111F); border: 2px solid #00E676; border-radius: 24px; padding: 40px 50px; text-align: center; max-width: 450px; width: 90%; box-shadow: 0 0 80px rgba(0, 230, 118, 0.1); animation: overlaySlideUp 0.5s ease; }
         #gameOverOverlay .overlay-trophy { font-size: 4rem; margin-bottom: 8px; }
-        #gameOverOverlay .overlay-title {
-            font-family: 'Orbitron', monospace;
-            color: #00E676;
-            font-size: 1.4rem;
-            margin-bottom: 4px;
-        }
-        #gameOverOverlay .overlay-score {
-            font-size: 3rem;
-            color: #FFD700;
-            font-weight: 700;
-            margin: 12px 0;
-            font-family: 'Orbitron', monospace;
-        }
+        #gameOverOverlay .overlay-title { font-family: 'Orbitron', monospace; color: #00E676; font-size: 1.4rem; margin-bottom: 4px; }
+        #gameOverOverlay .overlay-score { font-size: 3rem; color: #FFD700; font-weight: 700; margin: 12px 0; font-family: 'Orbitron', monospace; }
         #gameOverOverlay .overlay-label { color: #A7B5C5; font-size: 0.85rem; }
-        #gameOverOverlay .overlay-submit-status {
-            margin-top: 16px;
-            padding: 10px 20px;
-            background: rgba(0, 230, 118, 0.05);
-            border: 1px solid rgba(0, 230, 118, 0.1);
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 12px;
-        }
-        #gameOverOverlay .overlay-submit-spinner {
-            width: 16px;
-            height: 16px;
-            border: 2px solid rgba(0, 230, 118, 0.2);
-            border-top: 2px solid #00E676;
-            border-radius: 50%;
-            animation: overlaySpin 0.8s linear infinite;
-        }
+        #gameOverOverlay .overlay-submit-status { margin-top: 16px; padding: 10px 20px; background: rgba(0, 230, 118, 0.05); border: 1px solid rgba(0, 230, 118, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; gap: 12px; }
+        #gameOverOverlay .overlay-submit-spinner { width: 16px; height: 16px; border: 2px solid rgba(0, 230, 118, 0.2); border-top: 2px solid #00E676; border-radius: 50%; animation: overlaySpin 0.8s linear infinite; }
         #gameOverOverlay .overlay-submit-text { color: #00E676; font-size: 0.8rem; }
-        #gameOverOverlay .overlay-redirect-bar {
-            margin-top: 16px;
-            width: 100%;
-            height: 3px;
-            background: rgba(255,255,255,0.05);
-            border-radius: 2px;
-            overflow: hidden;
-        }
-        #gameOverOverlay .overlay-redirect-bar .bar-fill {
-            height: 100%;
-            width: 0%;
-            background: linear-gradient(90deg, #00BFFF, #6C63FF);
-            border-radius: 2px;
-            animation: overlayLoadBar 3s ease forwards;
-        }
-        #gameOverOverlay .overlay-redirect-text {
-            margin-top: 10px;
-            color: rgba(255,255,255,0.3);
-            font-size: 0.65rem;
-        }
-        #gameOverOverlay .overlay-demo-btn {
-            margin-top: 20px;
-            background: linear-gradient(135deg, #FFD700, #FFA000);
-            border: none;
-            border-radius: 10px;
-            color: #000;
-            padding: 12px 30px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
+        #gameOverOverlay .overlay-redirect-bar { margin-top: 16px; width: 100%; height: 3px; background: rgba(255,255,255,0.05); border-radius: 2px; overflow: hidden; }
+        #gameOverOverlay .overlay-redirect-bar .bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg, #00BFFF, #6C63FF); border-radius: 2px; animation: overlayLoadBar 3s ease forwards; }
+        #gameOverOverlay .overlay-redirect-text { margin-top: 10px; color: rgba(255,255,255,0.3); font-size: 0.65rem; }
+        #gameOverOverlay .overlay-demo-btn { margin-top: 20px; background: linear-gradient(135deg, #FFD700, #FFA000); border: none; border-radius: 10px; color: #000; padding: 12px 30px; font-family: 'Orbitron', monospace; font-weight: 700; font-size: 0.8rem; cursor: pointer; transition: all 0.3s ease; }
         #gameOverOverlay .overlay-demo-btn:hover { transform: scale(1.05); }
-
-        /* ===== BLOCKER OVERLAY ===== */
-        #blockerOverlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: transparent;
-            z-index: 99998;
-            display: none;
-            pointer-events: all;
-        }
+        #blockerOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: transparent; z-index: 99998; display: none; pointer-events: all; }
         #blockerOverlay.active { display: block; }
-
         ::-webkit-scrollbar { width: 0px; height: 0px; }
-
-        /* ===== RESPONSIVE HEADER ===== */
-        @media (max-width: 480px) {
-            .game-header .title { font-size: 0.6rem; }
-            .game-header .title .sub { font-size: 0.4rem; }
-            .score-display { font-size: 0.6rem; padding: 2px 8px; }
-            .status-display { font-size: 0.5rem; }
-            .anti-cheat-badge { font-size: 0.4rem; padding: 1px 6px; }
-            .help-btn { width: 24px; height: 24px; font-size: 0.6rem; }
-            .warning-banner .warning-text { font-size: 0.5rem; }
-            .warning-banner .warning-link { font-size: 0.5rem; padding: 4px 10px; }
-            .warning-banner .warning-close { font-size: 0.5rem; padding: 2px 8px; }
-            .warning-banner .warning-icon-wrapper { width: 24px; height: 24px; }
-            .warning-banner .warning-icon { font-size: 0.8rem; }
-            #touchControls .touch-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            #touchControls .touch-btn.jump { width: 65px; height: 65px; font-size: 1.5rem; }
-            #touchControls .touch-btn.left { left: 10px; bottom: 10px; }
-            #touchControls .touch-btn.right { left: 75px; bottom: 10px; }
-            #touchControls .touch-btn.jump { right: 10px; bottom: 10px; }
-        }
-
-        @media (max-height: 500px) and (orientation: landscape) {
-            .game-header { min-height: 40px; padding: 4px 12px; }
-            .game-header .title { font-size: 0.6rem; }
-            .score-display { font-size: 0.55rem; padding: 2px 6px; }
-            .status-display { font-size: 0.45rem; }
-            .anti-cheat-badge { font-size: 0.4rem; padding: 1px 4px; }
-            .help-btn { width: 20px; height: 20px; font-size: 0.5rem; }
-            .warning-banner { padding: 6px 12px; }
-            .warning-banner .warning-text { font-size: 0.45rem; }
-            .warning-banner .warning-link { font-size: 0.45rem; padding: 3px 8px; }
-            .warning-banner .warning-close { font-size: 0.45rem; padding: 2px 6px; }
-            .warning-banner .warning-icon-wrapper { width: 20px; height: 20px; }
-            .warning-banner .warning-icon { font-size: 0.6rem; }
-            #touchControls .touch-btn { width: 40px; height: 40px; font-size: 1rem; }
-            #touchControls .touch-btn.jump { width: 55px; height: 55px; font-size: 1.3rem; }
-            #touchControls .touch-btn.left { left: 10px; bottom: 10px; }
-            #touchControls .touch-btn.right { left: 65px; bottom: 10px; }
-            #touchControls .touch-btn.jump { right: 10px; bottom: 10px; }
-        }
     </style>
 </head>
 <body>
@@ -961,16 +249,8 @@
             </button>
         </div>
 
-        <!-- ===== GAME FRAME ===== -->
         <div id="gameFrame">
-            <!-- Game will be loaded here -->
-        </div>
-
-        <!-- ===== TOUCH CONTROLS ===== -->
-        <div id="touchControls">
-            <div class="touch-btn left" id="touchLeft">◀</div>
-            <div class="touch-btn right" id="touchRight">▶</div>
-            <div class="touch-btn jump" id="touchJump">▲</div>
+            <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
         </div>
     </div>
 
@@ -1048,10 +328,8 @@
         const USER_ID = params.get('user') || '';
         const DEMO_MODE = params.get('demo') === 'true';
 
-        const GAME_WIDTH = 1280;
-        const GAME_HEIGHT = 720;
-        const GAME_ASPECT = GAME_WIDTH / GAME_HEIGHT;
-        const GAME_URL = '/games/ninja%20run/index.html';
+        // ===== CORRECT PATH: shora-games/frontend/games/ninja run/index.html =====
+        const GAME_URL = 'games/ninja%20run/index.html';
 
         const IS_TOURNAMENT_MODE = !DEMO_MODE && EVENT_ID && USER_ID;
         const IS_DEMO_MODE = DEMO_MODE || !IS_TOURNAMENT_MODE;
@@ -1060,10 +338,9 @@
         console.log('📋 Event ID:', EVENT_ID || 'N/A');
         console.log('👤 User ID:', USER_ID || 'N/A');
         console.log('📁 Game Path:', GAME_URL);
-        console.log('📐 Game Size:', GAME_WIDTH + 'x' + GAME_HEIGHT);
 
         // ============================================================
-        // SIDS FROM data.js
+        // SIDS FROM data.js (EXACT MATCH)
         // ============================================================
         const SIDS = {
             Player: 6015150563090787,
@@ -1085,10 +362,6 @@
         let gameStartTime = Date.now();
         let redirectDone = false;
         let firstGameOver = true;
-        let gameRuntime = null;
-        let canvasElement = null;
-        let gameLoaded = false;
-        let fitAttempts = 0;
 
         // ============================================================
         // ANTI-CHEAT SYSTEM
@@ -1301,202 +574,6 @@
         }
 
         // ============================================================
-        // THE TRICK: LETTERBOX SCALING THROUGH Construct 2's OWN SYSTEM
-        // ============================================================
-
-        function fitCanvasToScreen() {
-            fitAttempts++;
-            
-            // Try to get the canvas
-            let canvas = canvasElement;
-            if (!canvas) {
-                canvas = document.getElementById('c2canvas');
-                if (canvas) canvasElement = canvas;
-            }
-            
-            if (!canvas) {
-                // Try to find in iframe
-                const frame = document.getElementById('gameFrame');
-                if (frame) {
-                    const iframe = frame.querySelector('iframe');
-                    if (iframe) {
-                        try {
-                            const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                            if (frameDoc) {
-                                canvas = frameDoc.getElementById('c2canvas');
-                                if (canvas) canvasElement = canvas;
-                            }
-                        } catch (e) {}
-                    }
-                }
-            }
-            
-            if (!canvas) {
-                if (fitAttempts < 20) {
-                    console.log('⏳ Waiting for canvas... attempt', fitAttempts);
-                    setTimeout(fitCanvasToScreen, 200);
-                }
-                return;
-            }
-
-            // Try to get the runtime
-            let runtime = gameRuntime;
-            if (!runtime && canvas.c2runtime) {
-                runtime = canvas.c2runtime;
-                gameRuntime = runtime;
-                window.gameRuntime = runtime;
-            }
-            
-            if (!runtime) {
-                console.log('⏳ Waiting for runtime...');
-                setTimeout(fitCanvasToScreen, 300);
-                return;
-            }
-
-            // Get container dimensions
-            const frame = document.getElementById('gameFrame');
-            const containerW = frame ? frame.clientWidth : window.innerWidth;
-            const containerH = frame ? frame.clientHeight : window.innerHeight;
-            const availW = window.innerWidth;
-            const availH = window.innerHeight;
-
-            console.log('📐 Container:', containerW, 'x', containerH);
-            console.log('📐 Viewport:', availW, 'x', availH);
-
-            // Calculate letterbox dimensions
-            const containerAspect = containerW / containerH;
-            let displayW, displayH;
-
-            if (containerAspect > GAME_ASPECT) {
-                // Container is wider than game - letterbox left/right
-                displayH = containerH;
-                displayW = displayH * GAME_ASPECT;
-            } else {
-                // Container is taller/narrower - letterbox top/bottom
-                displayW = containerW;
-                displayH = displayW / GAME_ASPECT;
-            }
-
-            // Ensure we have valid numbers
-            if (!isFinite(displayW) || !isFinite(displayH) || displayW <= 0 || displayH <= 0) {
-                displayW = Math.min(containerW, GAME_WIDTH);
-                displayH = displayW / GAME_ASPECT;
-                if (displayH > containerH) {
-                    displayH = containerH;
-                    displayW = displayH * GAME_ASPECT;
-                }
-            }
-
-            // Apply as exact pixel size (NO PERCENTAGES!)
-            canvas.style.width = displayW + 'px';
-            canvas.style.height = displayH + 'px';
-            canvas.style.position = 'absolute';
-            canvas.style.left = ((containerW - displayW) / 2) + 'px';
-            canvas.style.top = ((containerH - displayH) / 2) + 'px';
-            canvas.style.display = 'block';
-
-            // Handle devicePixelRatio for sharp rendering on retina
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = displayW * dpr;
-            canvas.height = displayH * dpr;
-
-            // CRITICAL: Tell the engine the real displayed size, forced
-            if (runtime && typeof runtime.setSize === 'function') {
-                runtime.setSize(displayW, displayH, true);
-                console.log('✅ Runtime size set to:', displayW, 'x', displayH, '(DPR:', dpr, ')');
-            }
-
-            // Position touch controls
-            positionTouchControls();
-
-            console.log('✅ Canvas scaled to:', displayW, 'x', displayH);
-            console.log('📍 Canvas position:', canvas.style.left, canvas.style.top);
-            
-            // Remove loading overlay if game is loaded
-            if (gameLoaded) {
-                const loadingOverlay = document.getElementById('loadingOverlay');
-                if (loadingOverlay && !loadingOverlay.classList.contains('hidden')) {
-                    loadingOverlay.classList.add('hidden');
-                    document.getElementById('statusText').textContent = '🎮 Playing...';
-                    document.getElementById('statusDot').className = 'dot';
-                }
-            }
-        }
-
-        // ============================================================
-        // POSITION TOUCH CONTROLS
-        // ============================================================
-
-        function positionTouchControls() {
-            const canvas = canvasElement || document.getElementById('c2canvas');
-            if (!canvas) return;
-            
-            const rect = canvas.getBoundingClientRect();
-            const controls = document.getElementById('touchControls');
-            if (controls) {
-                controls.style.position = 'fixed';
-                controls.style.left = rect.left + 'px';
-                controls.style.width = rect.width + 'px';
-                controls.style.top = rect.top + 'px';
-                controls.style.height = rect.height + 'px';
-                controls.style.pointerEvents = 'none';
-                controls.style.display = 'block';
-                controls.classList.add('active');
-                
-                // Position buttons relative to controls container
-                const leftBtn = document.getElementById('touchLeft');
-                const rightBtn = document.getElementById('touchRight');
-                const jumpBtn = document.getElementById('touchJump');
-                
-                if (leftBtn) {
-                    leftBtn.style.position = 'absolute';
-                    leftBtn.style.left = '20px';
-                    leftBtn.style.bottom = '20px';
-                    leftBtn.style.pointerEvents = 'all';
-                }
-                if (rightBtn) {
-                    rightBtn.style.position = 'absolute';
-                    rightBtn.style.left = '100px';
-                    rightBtn.style.bottom = '20px';
-                    rightBtn.style.pointerEvents = 'all';
-                }
-                if (jumpBtn) {
-                    jumpBtn.style.position = 'absolute';
-                    jumpBtn.style.right = '20px';
-                    jumpBtn.style.bottom = '20px';
-                    jumpBtn.style.pointerEvents = 'all';
-                }
-            }
-        }
-
-        // ============================================================
-        // FIX AUDIO LISTENER ERROR
-        // ============================================================
-
-        function fixAudioListener() {
-            try {
-                const runtime = gameRuntime || window.gameRuntime;
-                if (!runtime) return false;
-                
-                if (runtime.glwrap && runtime.glwrap.ctx && runtime.glwrap.ctx.listener) {
-                    const listener = runtime.glwrap.ctx.listener;
-                    if (listener.setPosition) {
-                        listener.setPosition(640, 360, -600);
-                        console.log('✅ Audio listener position fixed');
-                    }
-                    if (listener.setOrientation) {
-                        listener.setOrientation(0, 0, 1, 0, -1, 0);
-                    }
-                    return true;
-                }
-                return false;
-            } catch (e) {
-                console.warn('⚠️ Audio listener fix error:', e);
-                return false;
-            }
-        }
-
-        // ============================================================
         // GAME OVER DETECTION - SIDS BASED
         // ============================================================
 
@@ -1511,67 +588,73 @@
         function isGameOverUsingSIDS(runtime) {
             if (!runtime) return false;
 
+            // Signal 1: "Distances" group deactivated
             try {
-                // Signal 1: "Distances" group deactivated
                 const g = runtime.groups_by_name && runtime.groups_by_name['distances'];
                 if (g && g.group_active === false) {
                     console.log('🔍 Game Over: Distances group deactivated');
                     return true;
                 }
+            } catch(e) {}
 
-                // Signal 2: Player instance destroyed
-                const playerType = getTypeBySid(runtime, SIDS.Player);
-                if (playerType && playerType.instances && playerType.instances.length === 0) {
-                    console.log('🔍 Game Over: Player destroyed');
+            // Signal 2: Player instance destroyed (count == 0)
+            const playerType = getTypeBySid(runtime, SIDS.Player);
+            if (playerType && playerType.instances && playerType.instances.length === 0) {
+                console.log('🔍 Game Over: Player destroyed');
+                return true;
+            }
+
+            // Signal 3: GameOver panel slid into view (Y ~360, resting Y is -600)
+            const goType = getTypeBySid(runtime, SIDS.GameOver);
+            if (goType && goType.instances && goType.instances.length) {
+                const y = goType.instances[0].y || 0;
+                if (y > 100) {
+                    console.log('🔍 Game Over: GameOver panel on screen (y=' + y + ')');
                     return true;
                 }
-
-                // Signal 3: GameOver panel on screen
-                const goType = getTypeBySid(runtime, SIDS.GameOver);
-                if (goType && goType.instances && goType.instances.length) {
-                    const y = goType.instances[0].y || 0;
-                    if (y > 100) {
-                        console.log('🔍 Game Over: GameOver panel on screen (y=' + y + ')');
-                        return true;
-                    }
-                }
-
-                // Signal 4: GameOver variable
-                if (runtime.globalVars) {
-                    if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
-                        console.log('🔍 Game Over: GameOver variable = true');
-                        return true;
-                    }
-                    if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
-                        console.log('🔍 Game Over: gameOver variable = true');
-                        return true;
-                    }
-                }
-
-            } catch (e) {}
+            }
 
             return false;
         }
 
         function detectGameOverInFrame() {
             try {
-                const runtime = gameRuntime || window.gameRuntime;
-                if (runtime && isGameOverUsingSIDS(runtime)) {
-                    return true;
+                const frame = document.getElementById('gameIframe');
+                if (!frame) return false;
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) return false;
+
+                const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
+                if (runtime) {
+                    if (isGameOverUsingSIDS(runtime)) {
+                        return true;
+                    }
+                    if (runtime.globalVars) {
+                        if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
+                            console.log('🎯 GAME OVER via globalVars.GameOver');
+                            return true;
+                        }
+                        if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
+                            console.log('🎯 GAME OVER via globalVars.gameOver');
+                            return true;
+                        }
+                    }
                 }
 
-                const frame = document.getElementById('gameFrame');
-                if (frame) {
-                    const iframe = frame.querySelector('iframe');
-                    if (iframe) {
-                        const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                        if (frameDoc) {
-                            const runtime2 = frameDoc.c2runtime || iframe.contentWindow?.c2runtime;
-                            if (runtime2 && isGameOverUsingSIDS(runtime2)) {
+                const gameOverSelectors = ['.gameover', '.game-over', '#gameover', '#game-over', '.gameover-screen', '.gameover-panel', '.gameover-overlay'];
+                for (const selector of gameOverSelectors) {
+                    try {
+                        const elements = frameDoc.querySelectorAll(selector);
+                        for (const el of elements) {
+                            const rect = el.getBoundingClientRect();
+                            if (rect.width > 0 && rect.height > 0 && 
+                                el.style.display !== 'none' && 
+                                el.offsetParent !== null) {
+                                console.log('🎯 GAME OVER via DOM:', selector);
                                 return true;
                             }
                         }
-                    }
+                    } catch (e) {}
                 }
 
                 return false;
@@ -1743,7 +826,7 @@
         }
 
         // ============================================================
-        // SCORE TRACKING
+        // SCORE TRACKING - WITH SIDS-BASED DETECTION
         // ============================================================
 
         function startScoreTracking() {
@@ -1751,9 +834,13 @@
 
             scoreInterval = setInterval(function() {
                 try {
-                    const runtime = gameRuntime || window.gameRuntime;
+                    const frame = document.getElementById('gameIframe');
+                    if (!frame) return;
+                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                    if (!frameDoc) return;
+                    const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
                     if (!runtime) return;
-                    
+
                     let score = 0;
 
                     // Track coins from runtime
@@ -1855,53 +942,38 @@
         }
 
         // ============================================================
-        // INJECT BRIDGE INTO THE GAME
+        // INJECT BRIDGE INTO THE GAME IFRAME
         // ============================================================
 
         function injectBridge() {
             try {
-                const frame = document.getElementById('gameFrame');
-                if (!frame) return;
-
-                let targetDoc = null;
-                let targetWin = null;
-
-                // Check if canvas is directly in the frame
-                const canvas = document.getElementById('c2canvas');
-                if (canvas) {
-                    targetDoc = document;
-                    targetWin = window;
-                }
-
-                // If not, try iframe
-                if (!targetDoc) {
-                    const iframe = frame.querySelector('iframe');
-                    if (iframe) {
-                        try {
-                            targetDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                            targetWin = iframe.contentWindow;
-                        } catch (e) {}
-                    }
-                }
-
-                if (!targetDoc) {
-                    console.log('⚠️ Could not access document for bridge injection');
+                const frame = document.getElementById('gameIframe');
+                if (!frame) {
+                    console.log('⚠️ Game iframe not found');
                     return;
                 }
 
-                if (targetDoc.getElementById('ninjaBridgeScript')) {
+                const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                if (!frameDoc) {
+                    console.log('⚠️ Could not access iframe document');
+                    return;
+                }
+
+                // Check if bridge already injected
+                if (frameDoc.getElementById('ninjaBridgeScript')) {
                     console.log('✅ Bridge already injected');
                     return;
                 }
 
                 const isDemo = IS_DEMO_MODE;
 
-                const script = targetDoc.createElement('script');
+                // Create bridge script inside the game
+                const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
                 script.textContent = `
                     (function() {
-                        console.log('🏃 Ninja Run Bridge v3 loaded');
+                        console.log('🏃 Ninja Run Bridge v3 loaded inside game');
                         console.log('🎯 Mode: ${isDemo ? 'DEMO' : 'TOURNAMENT'}');
                         console.log('📋 Event: ${EVENT_ID || 'DEMO'}');
                         console.log('👤 User: ${USER_ID || 'GUEST'}');
@@ -1914,16 +986,14 @@
                         let bridgeReady = false;
                         let gameStartTime = Date.now();
 
-                        const SIDS = {
-                            Player: ${SIDS.Player},
-                            Bomb: ${SIDS.Bomb},
-                            GameOver: ${SIDS.GameOver},
-                            Restart: ${SIDS.Restart},
-                            Play: ${SIDS.Play}
-                        };
+                        // ========================================
+                        // FIND COINS IN THE GAME
+                        // ========================================
 
                         function findCoinScore() {
                             let score = 0;
+                            let found = false;
+
                             try {
                                 if (runtime) {
                                     if (runtime.globalVars) {
@@ -1935,10 +1005,12 @@
                                                 const val = runtime.globalVars[key];
                                                 if (typeof val === 'number' && val > score) {
                                                     score = val;
+                                                    found = true;
                                                 }
                                             }
                                         }
                                     }
+                                    
                                     if (runtime.all_global_vars) {
                                         for (const v of runtime.all_global_vars) {
                                             if (v && v.name) {
@@ -1949,6 +1021,7 @@
                                                     const val = v.data || 0;
                                                     if (typeof val === 'number' && val > score) {
                                                         score = val;
+                                                        found = true;
                                                     }
                                                 }
                                             }
@@ -1956,8 +1029,21 @@
                                     }
                                 }
                             } catch (e) {}
+
                             return score;
                         }
+
+                        // ========================================
+                        // DETECT GAME OVER USING SIDS
+                        // ========================================
+
+                        const SIDS = {
+                            Player: ${SIDS.Player},
+                            Bomb: ${SIDS.Bomb},
+                            GameOver: ${SIDS.GameOver},
+                            Restart: ${SIDS.Restart},
+                            Play: ${SIDS.Play}
+                        };
 
                         function getTypeBySid(sid) {
                             if (!runtime || !runtime.types_by_index) return null;
@@ -1969,17 +1055,23 @@
 
                         function detectGameOver() {
                             if (!runtime) return false;
+
                             try {
+                                // Signal 1: Distances group deactivated
                                 const g = runtime.groups_by_name && runtime.groups_by_name['distances'];
                                 if (g && g.group_active === false) {
                                     console.log('🔍 Game Over: Distances group deactivated');
                                     return true;
                                 }
+
+                                // Signal 2: Player destroyed
                                 const playerType = getTypeBySid(SIDS.Player);
                                 if (playerType && playerType.instances && playerType.instances.length === 0) {
                                     console.log('🔍 Game Over: Player destroyed');
                                     return true;
                                 }
+
+                                // Signal 3: GameOver panel on screen
                                 const goType = getTypeBySid(SIDS.GameOver);
                                 if (goType && goType.instances && goType.instances.length) {
                                     const y = goType.instances[0].y || 0;
@@ -1988,6 +1080,8 @@
                                         return true;
                                     }
                                 }
+
+                                // Signal 4: GameOver variable
                                 if (runtime.globalVars) {
                                     if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
                                         console.log('🔍 Game Over: GameOver variable = true');
@@ -1998,22 +1092,31 @@
                                         return true;
                                     }
                                 }
+
                             } catch (e) {}
+
                             return false;
                         }
+
+                        // ========================================
+                        // SUBMIT SCORE TO PARENT
+                        // ========================================
 
                         function submitScore(score) {
                             if (scoreSubmitted) return;
                             const finalScore = parseInt(score) || gameScore || 0;
                             if (finalScore === 0) return;
+                            
                             scoreSubmitted = true;
                             console.log('📤 Submitting score:', finalScore);
                             
+                            // Store in session storage
                             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunPlayed', 'true');
                             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunComplete', 'true');
                             
+                            // Send to parent via postMessage
                             if (window.parent && window.parent !== window) {
                                 try {
                                     window.parent.postMessage({
@@ -2032,19 +1135,29 @@
                             }
                         }
 
+                        // ========================================
+                        // START MONITORING
+                        // ========================================
+
                         function startMonitoring() {
                             console.log('🔍 Starting game monitoring...');
                             bridgeReady = true;
                             gameStartTime = Date.now();
 
                             if (scoreInterval) clearInterval(scoreInterval);
+
                             scoreInterval = setInterval(function() {
                                 try {
                                     if (!runtime) return;
+                                    
+                                    // Get current coin score
                                     const currentScore = findCoinScore();
+                                    
+                                    // Update if changed
                                     if (currentScore > gameScore) {
                                         gameScore = currentScore;
                                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                                        
                                         if (window.parent && window.parent !== window) {
                                             try {
                                                 window.parent.postMessage({
@@ -2055,6 +1168,8 @@
                                             } catch(e) {}
                                         }
                                     }
+                                    
+                                    // Check for game over
                                     if (!gameOverDetected && gameScore > 0) {
                                         if (detectGameOver()) {
                                             gameOverDetected = true;
@@ -2066,6 +1181,8 @@
                                             return;
                                         }
                                     }
+                                    
+                                    // Check for timeout (max 5 minutes)
                                     if (!gameOverDetected && gameScore > 0) {
                                         const elapsed = Date.now() - gameStartTime;
                                         if (elapsed > 300000) {
@@ -2074,13 +1191,20 @@
                                             submitScore(gameScore);
                                         }
                                     }
+                                    
                                 } catch(e) {}
                             }, 300);
                         }
 
+                        // ========================================
+                        // WAIT FOR RUNTIME
+                        // ========================================
+
                         function waitForRuntime() {
                             console.log('⏳ Waiting for Construct 2 runtime...');
                             let attempts = 0;
+                            const maxAttempts = 50;
+
                             const checkRuntime = setInterval(function() {
                                 attempts++;
                                 try {
@@ -2091,14 +1215,6 @@
                                         window.gameRuntime = runtime;
                                         console.log('✅ Runtime detected via canvas');
                                         startMonitoring();
-                                        if (window.parent && window.parent !== window) {
-                                            try {
-                                                window.parent.postMessage({
-                                                    type: 'NINJA_RUNTIME_READY',
-                                                    ready: true
-                                                }, '*');
-                                            } catch(e) {}
-                                        }
                                         return;
                                     }
                                     if (window.c2runtime) {
@@ -2110,15 +1226,16 @@
                                         return;
                                     }
                                 } catch(e) {}
-                                if (attempts > 50) {
+                                if (attempts > maxAttempts) {
                                     clearInterval(checkRuntime);
-                                    console.log('⚠️ Runtime not found after 50 attempts');
+                                    console.log('⚠️ Runtime not found after ' + maxAttempts + ' attempts');
                                 }
                             }, 500);
                         }
 
                         waitForRuntime();
 
+                        // Listen for parent messages
                         window.addEventListener('message', function(event) {
                             if (event.data && event.data.type === 'NINJA_RUN_FORCE_SUBMIT') {
                                 console.log('📨 Force submit requested');
@@ -2126,8 +1243,17 @@
                                     submitScore(gameScore);
                                 }
                             }
+                            if (event.data && event.data.type === 'GET_NINJA_RUN_STATUS') {
+                                event.source.postMessage({
+                                    type: 'NINJA_RUN_STATUS_RESPONSE',
+                                    score: gameScore,
+                                    submitted: scoreSubmitted,
+                                    ready: bridgeReady
+                                }, '*');
+                            }
                         });
 
+                        // Expose for debugging inside the game
                         window.__ninjaBridge = {
                             score: () => gameScore,
                             submit: submitScore,
@@ -2150,12 +1276,14 @@
                     })();
                 `;
 
-                if (targetDoc.head) {
-                    targetDoc.head.appendChild(script);
-                    console.log('✅ Bridge injected into head');
-                } else if (targetDoc.body) {
-                    targetDoc.body.appendChild(script);
-                    console.log('✅ Bridge injected into body');
+                // Append script to game's head
+                if (frameDoc.head) {
+                    frameDoc.head.appendChild(script);
+                    console.log('✅ Bridge injected into game');
+                } else {
+                    // If head not available, append to body
+                    frameDoc.body.appendChild(script);
+                    console.log('✅ Bridge injected into game body');
                 }
 
             } catch (e) {
@@ -2168,104 +1296,20 @@
         // ============================================================
 
         function loadGame() {
-            const frame = document.getElementById('gameFrame');
+            const frame = document.getElementById('gameIframe');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
-
-            // Clear the frame
-            frame.innerHTML = '';
-
-            // Create iframe
-            const iframe = document.createElement('iframe');
-            iframe.id = 'gameIframe';
-            iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-downloads');
-            iframe.style.width = '100%';
-            iframe.style.height = '100%';
-            iframe.style.border = 'none';
-            iframe.style.background = '#000';
-            iframe.style.display = 'block';
-            iframe.style.position = 'absolute';
-            iframe.style.top = '0';
-            iframe.style.left = '0';
 
             const timestamp = Date.now();
             const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
             
             console.log('📁 Loading game from:', gameUrl);
+            frame.src = gameUrl;
 
-            // ===== IFRAME LOAD HANDLER =====
-            iframe.addEventListener('load', function() {
-                console.log('✅ Iframe loaded event fired');
-                
-                // Try to find the canvas after load
-                setTimeout(function() {
-                    try {
-                        const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                        if (frameDoc) {
-                            const canvas = frameDoc.getElementById('c2canvas');
-                            if (canvas) {
-                                console.log('✅ Canvas found in iframe');
-                                canvasElement = canvas;
-                                if (canvas.c2runtime) {
-                                    gameRuntime = canvas.c2runtime;
-                                    window.gameRuntime = gameRuntime;
-                                }
-                                gameLoaded = true;
-                                fitCanvasToScreen();
-                                setTimeout(injectBridge, 500);
-                                setTimeout(startScoreTracking, 1000);
-                                setTimeout(fixAudioListener, 500);
-                                return;
-                            } else {
-                                console.log('⏳ Canvas not yet available, waiting...');
-                                // Keep checking
-                                let attempts = 0;
-                                const checkCanvas = setInterval(function() {
-                                    attempts++;
-                                    const c = frameDoc.getElementById('c2canvas');
-                                    if (c) {
-                                        clearInterval(checkCanvas);
-                                        console.log('✅ Canvas found after', attempts, 'attempts');
-                                        canvasElement = c;
-                                        if (c.c2runtime) {
-                                            gameRuntime = c.c2runtime;
-                                            window.gameRuntime = gameRuntime;
-                                        }
-                                        gameLoaded = true;
-                                        fitCanvasToScreen();
-                                        setTimeout(injectBridge, 500);
-                                        setTimeout(startScoreTracking, 1000);
-                                        setTimeout(fixAudioListener, 500);
-                                    } else if (attempts > 30) {
-                                        clearInterval(checkCanvas);
-                                        console.log('⚠️ Canvas not found after 30 attempts');
-                                        // Try to see what's in the iframe
-                                        console.log('📄 Iframe body length:', frameDoc.body?.innerHTML?.length || 0);
-                                    }
-                                }, 300);
-                            }
-                        }
-                    } catch (e) {
-                        console.warn('⚠️ Cannot access iframe content:', e);
-                    }
-                }, 500);
-            });
-
-            iframe.addEventListener('error', function(e) {
-                console.error('❌ Iframe error:', e);
-                loadingText.textContent = '❌ Failed to load game!';
-                showToast('❌ Failed to load game. Please refresh.', 'error');
-            });
-
-            // Set the src
-            iframe.src = gameUrl;
-            frame.appendChild(iframe);
-
-            // ===== LOADING PROGRESS =====
             let progress = 0;
             let loadAttempts = 0;
-            const maxAttempts = 60;
+            const maxAttempts = 50;
 
             const progressInterval = setInterval(function() {
                 progress += Math.random() * 8 + 2;
@@ -2273,159 +1317,45 @@
                 progressFill.style.width = progress + '%';
             }, 200);
 
-            // Fallback check
-            const fallbackCheck = setInterval(function() {
+            const loadCheck = setInterval(function() {
                 loadAttempts++;
-                
-                // Check if canvas is already in the main document
-                const canvas = document.getElementById('c2canvas');
-                if (canvas) {
-                    clearInterval(fallbackCheck);
-                    clearInterval(progressInterval);
-                    progressFill.style.width = '100%';
-                    loadingText.textContent = '✅ Game Loaded!';
-                    canvasElement = canvas;
-                    if (canvas.c2runtime) {
-                        gameRuntime = canvas.c2runtime;
-                        window.gameRuntime = gameRuntime;
-                    }
-                    gameLoaded = true;
-                    fitCanvasToScreen();
-                    setTimeout(injectBridge, 500);
-                    setTimeout(startScoreTracking, 1000);
-                    setTimeout(fixAudioListener, 500);
-                    return;
-                }
-                
-                // Check iframe
                 try {
-                    const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                     if (frameDoc) {
                         const canvas = frameDoc.getElementById('c2canvas');
-                        if (canvas) {
-                            clearInterval(fallbackCheck);
+                        if (canvas || (frameDoc.body && frameDoc.body.innerHTML && frameDoc.body.innerHTML.includes('c2canvas'))) {
                             clearInterval(progressInterval);
+                            clearInterval(loadCheck);
                             progressFill.style.width = '100%';
                             loadingText.textContent = '✅ Game Loaded!';
-                            canvasElement = canvas;
-                            if (canvas.c2runtime) {
-                                gameRuntime = canvas.c2runtime;
-                                window.gameRuntime = gameRuntime;
-                            }
-                            gameLoaded = true;
-                            fitCanvasToScreen();
-                            setTimeout(injectBridge, 500);
-                            setTimeout(startScoreTracking, 1000);
-                            setTimeout(fixAudioListener, 500);
-                            return;
-                        }
-                    }
-                } catch (e) {}
-                
-                if (loadAttempts >= maxAttempts) {
-                    clearInterval(fallbackCheck);
-                    clearInterval(progressInterval);
-                    loadingText.textContent = '⚠️ Game taking too long to load';
-                    showToast('⚠️ Game failed to load. Please refresh.', 'error');
-                    console.error('❌ Game load timeout');
-                }
-            }, 500);
-
-            // Safety timeout
-            setTimeout(function() {
-                if (!loadingOverlay.classList.contains('hidden')) {
-                    clearInterval(progressInterval);
-                    clearInterval(fallbackCheck);
-                }
-            }, 35000);
-
-            // Also try to load the game directly if iframe fails
-            setTimeout(function() {
-                if (!gameLoaded) {
-                    console.log('🔄 Trying alternative loading method...');
-                    // Try to load scripts directly
-                    loadGameDirect();
-                }
-            }, 5000);
-        }
-
-        // ============================================================
-        // ALTERNATIVE: DIRECT GAME LOADING (fallback)
-        // ============================================================
-
-        function loadGameDirect() {
-            const frame = document.getElementById('gameFrame');
-            if (!frame) return;
-            
-            // Check if game is already loaded
-            if (document.getElementById('c2canvas')) {
-                console.log('✅ Game already loaded directly');
-                return;
-            }
-            
-            console.log('📁 Attempting direct game load...');
-            
-            // Create canvas div
-            const gameDiv = document.createElement('div');
-            gameDiv.id = 'c2canvasdiv';
-            gameDiv.style.width = '100%';
-            gameDiv.style.height = '100%';
-            gameDiv.style.display = 'block';
-            gameDiv.style.position = 'relative';
-            
-            // Create canvas
-            const canvas = document.createElement('canvas');
-            canvas.id = 'c2canvas';
-            canvas.width = GAME_WIDTH;
-            canvas.height = GAME_HEIGHT;
-            canvas.style.position = 'absolute';
-            canvas.style.top = '0';
-            canvas.style.left = '0';
-            
-            gameDiv.appendChild(canvas);
-            frame.appendChild(gameDiv);
-            
-            // Load game scripts
-            const scripts = [
-                '/games/ninja%20run/jquery-2.1.1.min.js',
-                '/games/ninja%20run/c2runtime.js',
-                '/games/ninja%20run/data.js'
-            ];
-            
-            let loaded = 0;
-            scripts.forEach(function(src) {
-                const script = document.createElement('script');
-                script.src = src;
-                script.onload = function() {
-                    loaded++;
-                    console.log('✅ Loaded:', src);
-                    if (loaded === scripts.length) {
-                        console.log('✅ All game scripts loaded');
-                        // Initialize the game
-                        setTimeout(function() {
-                            if (typeof cr_createRuntime === 'function') {
-                                cr_createRuntime('c2canvas');
-                                canvasElement = canvas;
-                                gameLoaded = true;
-                                const loadingOverlay = document.getElementById('loadingOverlay');
+                            setTimeout(function() {
                                 loadingOverlay.classList.add('hidden');
                                 document.getElementById('statusText').textContent = '🎮 Playing...';
                                 document.getElementById('statusDot').className = 'dot';
-                                fitCanvasToScreen();
-                                setTimeout(injectBridge, 500);
-                                setTimeout(startScoreTracking, 1000);
-                                setTimeout(fixAudioListener, 500);
-                            } else {
-                                console.log('⏳ cr_createRuntime not available yet');
-                            }
-                        }, 500);
+                                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
+                            }, 400);
+                            setTimeout(function() { injectBridge(); }, 1500);
+                            setTimeout(function() { startScoreTracking(); }, 2000);
+                            return;
+                        }
                     }
-                };
-                script.onerror = function() {
-                    console.error('❌ Failed to load:', src);
-                };
-                document.head.appendChild(script);
-            });
+                } catch (e) {
+                    // Still loading
+                }
+                if (loadAttempts >= maxAttempts) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
+                    loadingText.textContent = '⚠️ Game taking too long to load';
+                    showToast('⚠️ Game failed to load. Please try again.', 'error');
+                }
+            }, 200);
+
+            setTimeout(function() {
+                if (!loadingOverlay.classList.contains('hidden')) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
+                }
+            }, 10000);
         }
 
         // ============================================================
@@ -2449,22 +1379,6 @@
                     submitScore(score);
                 }
             }
-            if (event.data && event.data.type === 'NINJA_RUNTIME_READY') {
-                console.log('🎮 Runtime ready signal received');
-                fitCanvasToScreen();
-            }
-        });
-
-        // ============================================================
-        // WINDOW RESIZE HANDLER
-        // ============================================================
-
-        window.addEventListener('resize', function() {
-            fitCanvasToScreen();
-        });
-
-        window.addEventListener('orientationchange', function() {
-            setTimeout(fitCanvasToScreen, 300);
         });
 
         // ============================================================
@@ -2472,56 +1386,10 @@
         // ============================================================
 
         document.addEventListener('touchmove', function(e) {
-            if (e.target === document.body || e.target === document.getElementById('gameWrapper') ||
-                e.target === document.getElementById('gameFrame')) {
+            if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
                 e.preventDefault();
             }
         }, { passive: false });
-
-        // ============================================================
-        // TOUCH CONTROLS - Map to keyboard events
-        // ============================================================
-
-        function setupTouchControls() {
-            const leftBtn = document.getElementById('touchLeft');
-            const rightBtn = document.getElementById('touchRight');
-            const jumpBtn = document.getElementById('touchJump');
-            
-            function createTouchEvent(type, key) {
-                return function(e) {
-                    e.preventDefault();
-                    const event = new KeyboardEvent(type, {
-                        key: key,
-                        keyCode: key === 'ArrowLeft' ? 37 : key === 'ArrowRight' ? 39 : 38,
-                        which: key === 'ArrowLeft' ? 37 : key === 'ArrowRight' ? 39 : 38,
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    document.dispatchEvent(event);
-                };
-            }
-            
-            if (leftBtn) {
-                leftBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowLeft'));
-                leftBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowLeft'));
-                leftBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowLeft'));
-                leftBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowLeft'));
-            }
-            
-            if (rightBtn) {
-                rightBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowRight'));
-                rightBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowRight'));
-                rightBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowRight'));
-                rightBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowRight'));
-            }
-            
-            if (jumpBtn) {
-                jumpBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowUp'));
-                jumpBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowUp'));
-                jumpBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowUp'));
-                jumpBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowUp'));
-            }
-        }
 
         // ============================================================
         // INIT
@@ -2539,18 +1407,7 @@
             window.location.reload();
         });
 
-        // Setup touch controls
-        setupTouchControls();
-
-        // Start loading the game
         loadGame();
-
-        // Also try to load directly as fallback
-        setTimeout(function() {
-            if (!gameLoaded) {
-                loadGameDirect();
-            }
-        }, 8000);
 
         console.log('');
         console.log('🪙 ===========================================');
@@ -2558,11 +1415,10 @@
         console.log('🪙 ===========================================');
         console.log('🎯 Mode:', IS_DEMO_MODE ? 'DEMO' : 'TOURNAMENT');
         console.log('📁 Game Path:', GAME_URL);
-        console.log('📐 Game Size:', GAME_WIDTH + 'x' + GAME_HEIGHT);
-        console.log('✅ Letterbox scaling: Enabled');
-        console.log('✅ Runtime setSize() used: Yes');
+        console.log('🎯 SIDS: Player=%s, Bomb=%s, GameOver=%s', SIDS.Player, SIDS.Bomb, SIDS.GameOver);
         console.log('✅ Bridge injection: Enabled');
-        console.log('✅ Touch controls: Enabled');
+        console.log('✅ Game Over detection: SIDS + Variables');
+        console.log('🪙 Tracking: Coins');
         console.log('✅ Auto-Redirect: Enabled');
         console.log('===========================================');
     </script>
