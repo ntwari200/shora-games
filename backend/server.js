@@ -1,379 +1,366 @@
 const express = require('express');
 const cors = require('cors');
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv');
-const { Resend } = require('resend');
-
-dotenv.config();
+const { Pool } = require('pg');
+const admin = require('firebase-admin');
+require('dotenv').config();
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-// CORS - Allow requests from your frontend
-app.use(cors({
-    origin: ['https://shora-frontend.onrender.com', 'http://localhost:3000'],
-    methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
+// ============================================
+// MIDDLEWARE
+// ============================================
+app.use(cors());
 app.use(express.json());
 
-// ============ INITIALIZE RESEND ============
-const resend = new Resend(process.env.RESEND_API_KEY);
-
-// ============ IN-MEMORY STORAGE ============
-let users = [];
-let verificationCodes = {}; // Store verification codes with email/phone
-
-// ============ HELPERS ============
-function generateVerificationCode() {
-    return Math.floor(100000 + Math.random() * 900000).toString();
+// ============================================
+// FIREBASE ADMIN
+// ============================================
+let serviceAccount;
+try {
+    if (process.env.FIREBASE_SERVICE_ACCOUNT) {
+        serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
+    } else {
+        // For local dev
+        serviceAccount = require('./serviceAccountKey.json');
+    }
+} catch (error) {
+    console.error('❌ Firebase service account error:', error.message);
 }
 
-// ============ EMAIL FUNCTIONS ============
-async function sendVerificationEmail(email, username, code) {
+if (serviceAccount) {
+    admin.initializeApp({
+        credential: admin.credential.cert(serviceAccount),
+        databaseURL: process.env.FIREBASE_DATABASE_URL || 'https://shora-games-default-rtdb.firebaseio.com/'
+    });
+    console.log('✅ Firebase initialized');
+}
+
+const firebaseDb = admin.database ? admin.database() : null;
+
+// ============================================
+// NEON DATABASE
+// ============================================
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+        rejectUnauthorized: false
+    }
+});
+
+pool.connect((err) => {
+    if (err) {
+        console.error('❌ Neon connection error:', err.message);
+    } else {
+        console.log('✅ Connected to Neon PostgreSQL');
+    }
+});
+
+// ============================================
+// HELPER FUNCTIONS
+// ============================================
+
+async function getUserFromFirebase(uid) {
+    if (!firebaseDb) return null;
     try {
-        const fromEmail = process.env.FROM_EMAIL || 'Shora Games <onboarding@resend.dev>';
-        console.log(`📧 Sending verification email to ${email} from ${fromEmail}`);
-        
-        const { data, error } = await resend.emails.send({
-            from: fromEmail,
-            to: [email],
-            subject: '🎮 Verify your Shora Games account',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0b0f17; color: #ffffff; padding: 40px; border-radius: 16px; border: 1px solid #00BFFF;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #00BFFF; font-size: 28px;">🎮 SHORA GAMES</h1>
-                        <p style="color: #94A3B8;">Play · Compete · Win</p>
-                    </div>
+        const snapshot = await firebaseDb.ref(`users/${uid}`).once('value');
+        return snapshot.exists() ? snapshot.val() : null;
+    } catch (error) {
+        console.error('Error fetching user:', error);
+        return null;
+    }
+}
 
-                    <h2 style="color: #00BFFF;">Welcome, ${username}! 👋</h2>
-                    <p style="color: #EAF4FF; line-height: 1.6;">Thank you for joining Shora Games! Please verify your email address to start competing.</p>
+async function updateUserBalance(uid, newBalance) {
+    if (!firebaseDb) return false;
+    try {
+        await firebaseDb.ref(`users/${uid}/balance`).set(newBalance);
+        return true;
+    } catch (error) {
+        console.error('Error updating balance:', error);
+        return false;
+    }
+}
 
-                    <div style="background: rgba(0, 191, 255, 0.1); border: 1px solid rgba(0, 191, 255, 0.3); border-radius: 12px; padding: 20px; margin: 30px 0; text-align: center;">
-                        <p style="font-size: 14px; color: #94A3B8; margin-bottom: 10px;">Your verification code</p>
-                        <div style="font-size: 36px; font-weight: 900; color: #00BFFF; letter-spacing: 8px;">${code}</div>
-                    </div>
+// ============================================
+// API ROUTES
+// ============================================
 
-                    <p style="color: #94A3B8; font-size: 14px;">Enter this code on the website to verify your email.</p>
-                    <p style="color: #94A3B8; font-size: 12px; margin-top: 20px;">This code expires in 15 minutes.</p>
-
-                    <div style="border-top: 1px solid rgba(0, 191, 255, 0.2); margin-top: 30px; padding-top: 20px; text-align: center;">
-                        <p style="color: #666; font-size: 12px;">If you didn't create an account, you can ignore this email.</p>
-                        <p style="color: #666; font-size: 12px;">© 2026 Shora Games</p>
-                    </div>
-                </div>
-            `,
+// Health Check
+app.get('/api/health', async (req, res) => {
+    try {
+        await pool.query('SELECT 1');
+        res.json({ 
+            status: 'healthy', 
+            neon: 'connected',
+            firebase: !!firebaseDb,
+            timestamp: new Date().toISOString()
         });
+    } catch (error) {
+        res.status(500).json({ status: 'unhealthy', error: error.message });
+    }
+});
 
-        if (error) {
-            console.error('Resend error:', error);
-            throw error;
+// Get all tournaments
+app.get('/api/tournaments', async (req, res) => {
+    try {
+        const result = await pool.query(
+            'SELECT * FROM tournaments ORDER BY created_at DESC'
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get single tournament with players
+app.get('/api/tournaments/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const tournament = await pool.query(
+            'SELECT * FROM tournaments WHERE id = $1',
+            [id]
+        );
+        
+        if (tournament.rows.length === 0) {
+            return res.status(404).json({ error: 'Tournament not found' });
         }
-        return { success: true, data };
-    } catch (error) {
-        console.error('Email send error:', error);
-        return { success: false, error: error.message };
-    }
-}
 
-async function sendPasswordResetEmail(email, username, resetLink) {
+        const players = await pool.query(
+            `SELECT * FROM tournament_players 
+             WHERE tournament_id = $1 
+             ORDER BY position ASC NULLS LAST, score DESC`,
+            [id]
+        );
+
+        res.json({
+            tournament: tournament.rows[0],
+            players: players.rows
+        });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Get tournament rankings
+app.get('/api/rankings/:tournamentId', async (req, res) => {
+    const { tournamentId } = req.params;
     try {
-        const fromEmail = process.env.FROM_EMAIL || 'Shora Games <onboarding@resend.dev>';
-        
-        const { data, error } = await resend.emails.send({
-            from: fromEmail,
-            to: [email],
-            subject: '🔐 Reset your Shora Games password',
-            html: `
-                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #0b0f17; color: #ffffff; padding: 40px; border-radius: 16px; border: 1px solid #00BFFF;">
-                    <div style="text-align: center; margin-bottom: 30px;">
-                        <h1 style="color: #00BFFF; font-size: 28px;">🔐 SHORA GAMES</h1>
-                    </div>
-
-                    <h2 style="color: #00BFFF;">Password Reset Request</h2>
-                    <p style="color: #EAF4FF; line-height: 1.6;">Hello ${username},</p>
-                    <p style="color: #EAF4FF; line-height: 1.6;">We received a request to reset your Shora Games password.</p>
-
-                    <div style="text-align: center; margin: 30px 0;">
-                        <a href="${resetLink}" style="background: linear-gradient(135deg, #00BFFF, #0088CC); color: #000; padding: 14px 32px; border-radius: 40px; text-decoration: none; font-weight: 700; display: inline-block;">Reset Password</a>
-                    </div>
-
-                    <p style="color: #94A3B8; font-size: 14px;">Or copy this link into your browser:</p>
-                    <p style="color: #00BFFF; font-size: 12px; word-break: break-all; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">${resetLink}</p>
-
-                    <p style="color: #94A3B8; font-size: 12px; margin-top: 20px;">This link expires in 1 hour.</p>
-
-                    <div style="border-top: 1px solid rgba(0, 191, 255, 0.2); margin-top: 30px; padding-top: 20px; text-align: center;">
-                        <p style="color: #666; font-size: 12px;">If you didn't request this, you can ignore this email.</p>
-                        <p style="color: #666; font-size: 12px;">© 2026 Shora Games</p>
-                    </div>
-                </div>
-            `,
-        });
-
-        if (error) throw error;
-        return { success: true, data };
-    } catch (error) {
-        console.error('Email send error:', error);
-        return { success: false, error: error.message };
+        const result = await pool.query(
+            `SELECT 
+                user_id, username, phone, score, time_finished,
+                position, prize_won, has_played, finished_at
+             FROM tournament_players 
+             WHERE tournament_id = $1
+             ORDER BY position ASC NULLS LAST, score DESC`,
+            [tournamentId]
+        );
+        res.json(result.rows);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
-}
-
-// ============ HEALTH CHECK ============
-app.get('/api/health', (req, res) => {
-    res.json({ status: 'ok', message: 'Shora Games API running with Resend!' });
 });
 
-// ============ REGISTER ============
-app.post('/api/auth/register', async (req, res) => {
-    const { phone, email, username, password } = req.body;
-    
-    console.log('📝 Registration:', { phone, email, username });
-    
-    if (!phone || !email || !username || !password) {
-        return res.status(400).json({ error: 'All fields required' });
-    }
-    
-    const existingUser = users.find(u => u.phone === phone || u.email === email);
-    if (existingUser) {
-        return res.status(400).json({ error: 'User already exists' });
-    }
-    
-    const hashedPassword = await bcrypt.hash(password, 10);
-    
-    const newUser = {
-        id: users.length + 1,
-        phone,
-        email,
-        username,
-        password: hashedPassword,
-        verified: false,
-        createdAt: new Date().toISOString()
-    };
-    
-    users.push(newUser);
-    
-    // Generate and store verification code
-    const code = generateVerificationCode();
-    verificationCodes[email] = {
-        code,
-        phone: phone,
-        expiresAt: Date.now() + 15 * 60 * 1000 // 15 minutes
-    };
-    
-    // Send verification email via Resend
-    const emailResult = await sendVerificationEmail(email, username, code);
-    
-    const token = jwt.sign(
-        { id: newUser.id, phone, email },
-        process.env.JWT_SECRET || 'shora_secret_2026',
-        { expiresIn: '7d' }
-    );
-    
-    res.status(201).json({
-        success: true,
-        message: 'Account created! Please check your email for verification code.',
-        token,
-        emailSent: emailResult.success,
-        user: { id: newUser.id, phone, email, username, verified: false }
-    });
-});
+// Create tournament (from admin)
+app.post('/api/tournaments', async (req, res) => {
+    const {
+        id, name, game, image_url, entry_fee, prize_pool,
+        platform_fee_percent, distribution_model, prize_distribution,
+        max_players, min_players, duration, status, locked, description
+    } = req.body;
 
-// ============ VERIFY EMAIL ============
-app.post('/api/auth/verify-email', async (req, res) => {
-    const { phone, email, code } = req.body;
-    
-    console.log('🔐 Verification attempt:', { phone, email });
-    
-    if (!email || !code) {
-        return res.status(400).json({ error: 'Email and verification code required' });
+    if (!id || !name || !game) {
+        return res.status(400).json({ error: 'id, name, and game required' });
     }
-    
-    const stored = verificationCodes[email];
-    if (!stored) {
-        return res.status(400).json({ error: 'No verification code found. Please request a new one.' });
-    }
-    
-    if (stored.expiresAt < Date.now()) {
-        delete verificationCodes[email];
-        return res.status(400).json({ error: 'Verification code expired. Please request a new one.' });
-    }
-    
-    if (stored.code !== code) {
-        return res.status(400).json({ error: 'Invalid verification code' });
-    }
-    
-    // Mark user as verified
-    const user = users.find(u => u.email === email);
-    if (user) {
-        user.verified = true;
-    }
-    
-    delete verificationCodes[email];
-    
-    res.json({
-        success: true,
-        message: 'Email verified successfully! You can now log in.'
-    });
-});
 
-// ============ RESEND VERIFICATION CODE ============
-app.post('/api/auth/resend-verification', async (req, res) => {
-    const { phone, email } = req.body;
-    
-    console.log('🔄 Resend verification:', { phone, email });
-    
-    if (!email) {
-        return res.status(400).json({ error: 'Email required' });
-    }
-    
-    const user = users.find(u => u.email === email);
-    if (!user) {
-        return res.status(404).json({ error: 'User not found' });
-    }
-    
-    if (user.verified) {
-        return res.status(400).json({ error: 'Email already verified' });
-    }
-    
-    const code = generateVerificationCode();
-    verificationCodes[email] = {
-        code,
-        phone: user.phone,
-        expiresAt: Date.now() + 15 * 60 * 1000
-    };
-    
-    const emailResult = await sendVerificationEmail(email, user.username, code);
-    
-    res.json({
-        success: true,
-        message: 'Verification code resent!',
-        emailSent: emailResult.success
-    });
-});
-
-// ============ LOGIN ============
-app.post('/api/auth/login', async (req, res) => {
-    const { phone, password } = req.body;
-    
-    console.log('🔐 Login attempt:', { phone });
-    
-    if (!phone || !password) {
-        return res.status(400).json({ error: 'Phone and password required' });
-    }
-    
-    const user = users.find(u => u.phone === phone);
-    if (!user) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    if (!user.verified) {
-        return res.status(401).json({ 
-            error: 'email_not_verified', 
-            message: 'Please verify your email first. Check your inbox for the verification code.',
-            email: user.email
-        });
-    }
-    
-    const isValid = await bcrypt.compare(password, user.password);
-    if (!isValid) {
-        return res.status(401).json({ error: 'Invalid credentials' });
-    }
-    
-    const token = jwt.sign(
-        { id: user.id, phone, email: user.email },
-        process.env.JWT_SECRET || 'shora_secret_2026',
-        { expiresIn: '7d' }
-    );
-    
-    res.json({
-        success: true,
-        message: 'Login successful!',
-        token,
-        user: { id: user.id, phone: user.phone, email: user.email, username: user.username }
-    });
-});
-
-// ============ FORGOT PASSWORD ============
-app.post('/api/auth/forgot-password', async (req, res) => {
-    const { email } = req.body;
-    
-    console.log('🔑 Forgot password:', { email });
-    
-    if (!email) {
-        return res.status(400).json({ error: 'Email required' });
-    }
-    
-    const user = users.find(u => u.email === email);
-    if (!user) {
-        // For security, don't reveal if email exists
-        return res.json({
-            success: true,
-            message: 'If an account exists with this email, a password reset link has been sent.'
-        });
-    }
-    
-    // Generate password reset token
-    const resetToken = jwt.sign(
-        { id: user.id, email: user.email },
-        process.env.JWT_SECRET || 'shora_secret_2026',
-        { expiresIn: '1h' }
-    );
-    
-    const resetLink = `https://shora-frontend.onrender.com/reset-password.html?token=${resetToken}`;
-    
-    const emailResult = await sendPasswordResetEmail(email, user.username, resetLink);
-    
-    res.json({
-        success: true,
-        message: 'If an account exists with this email, a password reset link has been sent.',
-        emailSent: emailResult.success
-    });
-});
-
-// ============ RESET PASSWORD ============
-app.post('/api/auth/reset-password', async (req, res) => {
-    const { token, newPassword } = req.body;
-    
-    if (!token || !newPassword) {
-        return res.status(400).json({ error: 'Token and new password required' });
-    }
-    
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET || 'shora_secret_2026');
-        const user = users.find(u => u.id === decoded.id);
-        
-        if (!user) {
+        const result = await pool.query(
+            `INSERT INTO tournaments (
+                id, name, game, image_url, entry_fee, prize_pool,
+                platform_fee_percent, distribution_model, prize_distribution,
+                max_players, min_players, duration, status, locked, description
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+            ON CONFLICT (id) DO UPDATE SET
+                name = EXCLUDED.name, game = EXCLUDED.game,
+                image_url = EXCLUDED.image_url, entry_fee = EXCLUDED.entry_fee,
+                prize_pool = EXCLUDED.prize_pool,
+                platform_fee_percent = EXCLUDED.platform_fee_percent,
+                distribution_model = EXCLUDED.distribution_model,
+                prize_distribution = EXCLUDED.prize_distribution,
+                max_players = EXCLUDED.max_players, min_players = EXCLUDED.min_players,
+                duration = EXCLUDED.duration, status = EXCLUDED.status,
+                locked = EXCLUDED.locked, description = EXCLUDED.description,
+                updated_at = CURRENT_TIMESTAMP
+            RETURNING *`,
+            [
+                id, name, game, image_url, entry_fee || 100, prize_pool || 0,
+                platform_fee_percent || 10, distribution_model || 'dynamic',
+                JSON.stringify(prize_distribution || {}),
+                max_players || 50, min_players || 2, duration || 30,
+                status || 'soon', locked || false, description || ''
+            ]
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Join tournament
+app.post('/api/tournaments/:id/join', async (req, res) => {
+    const { id } = req.params;
+    const { user_id, username, phone } = req.body;
+
+    if (!user_id || !username) {
+        return res.status(400).json({ error: 'user_id and username required' });
+    }
+
+    try {
+        const tournamentResult = await pool.query(
+            'SELECT * FROM tournaments WHERE id = $1 AND status = $2',
+            [id, 'live']
+        );
+
+        if (tournamentResult.rows.length === 0) {
+            return res.status(400).json({ error: 'Tournament not available' });
+        }
+
+        const tournament = tournamentResult.rows[0];
+
+        const existingPlayer = await pool.query(
+            'SELECT * FROM tournament_players WHERE tournament_id = $1 AND user_id = $2',
+            [id, user_id]
+        );
+
+        if (existingPlayer.rows.length > 0) {
+            return res.status(400).json({ error: 'Already joined' });
+        }
+
+        const playerCount = await pool.query(
+            'SELECT COUNT(*) FROM tournament_players WHERE tournament_id = $1',
+            [id]
+        );
+
+        if (parseInt(playerCount.rows[0].count) >= tournament.max_players) {
+            return res.status(400).json({ error: 'Tournament is full' });
+        }
+
+        // Check balance in Firebase
+        const userData = await getUserFromFirebase(user_id);
+        if (!userData) {
             return res.status(404).json({ error: 'User not found' });
         }
-        
-        user.password = await bcrypt.hash(newPassword, 10);
-        
+
+        const balance = userData.balance || 0;
+        const entryFee = tournament.entry_fee || 100;
+
+        if (balance < entryFee) {
+            return res.status(400).json({ 
+                error: 'Insufficient balance', 
+                required: entryFee, 
+                available: balance 
+            });
+        }
+
+        // Deduct entry fee
+        await updateUserBalance(user_id, balance - entryFee);
+
+        // Add player
+        const result = await pool.query(
+            `INSERT INTO tournament_players (
+                tournament_id, user_id, username, phone, joined_at
+            ) VALUES ($1, $2, $3, $4, CURRENT_TIMESTAMP)
+            RETURNING *`,
+            [id, user_id, username, phone || '']
+        );
+
         res.json({
             success: true,
-            message: 'Password reset successfully!'
+            player: result.rows[0],
+            balance: balance - entryFee
         });
-    } catch (error) {
-        return res.status(400).json({ error: 'Invalid or expired reset token' });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
     }
 });
 
-// ============ GET ALL USERS (Testing) ============
-app.get('/api/users', (req, res) => {
-    const safeUsers = users.map(({ password, ...rest }) => rest);
-    res.json(safeUsers);
+// Submit score
+app.post('/api/rankings/submit', async (req, res) => {
+    const { tournament_id, user_id, score, time_finished } = req.body;
+
+    if (!tournament_id || !user_id || score === undefined) {
+        return res.status(400).json({ error: 'tournament_id, user_id, score required' });
+    }
+
+    try {
+        const tournamentResult = await pool.query(
+            'SELECT * FROM tournaments WHERE id = $1',
+            [tournament_id]
+        );
+
+        if (tournamentResult.rows.length === 0) {
+            return res.status(404).json({ error: 'Tournament not found' });
+        }
+
+        const tournament = tournamentResult.rows[0];
+        if (tournament.status !== 'live') {
+            return res.status(400).json({ error: 'Tournament is not live' });
+        }
+
+        const existingPlayer = await pool.query(
+            'SELECT * FROM tournament_players WHERE tournament_id = $1 AND user_id = $2',
+            [tournament_id, user_id]
+        );
+
+        if (existingPlayer.rows.length === 0) {
+            return res.status(400).json({ error: 'User has not joined' });
+        }
+
+        if (existingPlayer.rows[0].has_played === true) {
+            return res.status(400).json({ error: 'Already played' });
+        }
+
+        const result = await pool.query(
+            `UPDATE tournament_players 
+             SET score = $1, time_finished = $2, has_played = true,
+                 finished_at = CURRENT_TIMESTAMP
+             WHERE tournament_id = $3 AND user_id = $4
+             RETURNING *`,
+            [score, time_finished || 0, tournament_id, user_id]
+        );
+
+        res.json({ success: true, player: result.rows[0] });
+
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// ============ 404 HANDLER ============
-app.use((req, res) => {
-    res.status(404).json({ error: 'Route not found' });
+// Get revenue
+app.get('/api/revenue', async (req, res) => {
+    try {
+        const result = await pool.query(
+            `SELECT 
+                COALESCE(SUM(total_entry_fees), 0) as total_entry_fees,
+                COALESCE(SUM(total_prizes), 0) as total_prizes,
+                COALESCE(SUM(platform_fee), 0) as total_platform_fee,
+                COALESCE(SUM(player_count), 0) as total_players,
+                COUNT(*) as tournament_count
+             FROM platform_revenue`
+        );
+        res.json(result.rows[0]);
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
 });
 
-// ============ START SERVER ============
-const PORT = process.env.PORT || 5000;
+// ============================================
+// START SERVER
+// ============================================
+
 app.listen(PORT, () => {
-    console.log(`✅ Shora Games API running on port ${PORT}`);
-    console.log(`📧 Resend email integration active`);
-    console.log(`📋 Users in memory: ${users.length}`);
+    console.log(`🚀 API Server running on port ${PORT}`);
+    console.log(`📡 Neon: ${process.env.DATABASE_URL ? 'Configured' : 'Not configured'}`);
+    console.log(`🔥 Firebase: ${process.env.FIREBASE_SERVICE_ACCOUNT ? 'Configured' : 'Not configured'}`);
 });
