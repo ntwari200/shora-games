@@ -2,63 +2,79 @@
 <html manifest="offline.appcache">
 <head>
 <meta charset="UTF-8">
+
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>SHORA GAMES | Ninja Run</title>
 
 <link rel="manifest" href="app.manifest">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;700;900&display=swap" rel="stylesheet">
 
 <style>
+
 *{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Poppins',sans-serif;
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'Poppins',sans-serif;
 }
 
 html,body{
-    width:100%;
-    height:100%;
-    overflow:hidden;
-    background:linear-gradient(180deg,#07111f,#0b1830,#05070d);
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    position:fixed;
-    top:0;
-    left:0;
+
+width:100%;
+height:100%;
+overflow:hidden;
+
+background:
+linear-gradient(180deg,#07111f,#0b1830,#05070d);
+
+display:flex;
+justify-content:center;
+align-items:center;
+
 }
 
 /* ============================================================
    LOADER - Professional Animation
    ============================================================ */
-#loader{
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-    z-index:999999;
-    background:radial-gradient(circle at center,#0d1f3c,#081120,#020305);
-    overflow:hidden;
-    transition: opacity 0.8s ease;
-}
 
-#loader.hidden {
-    opacity: 0;
-    pointer-events: none;
+#loader{
+
+position:fixed;
+
+top:0;
+left:0;
+
+width:100%;
+height:100%;
+
+display:flex;
+
+flex-direction:column;
+
+justify-content:center;
+
+align-items:center;
+
+z-index:999999;
+
+background:
+radial-gradient(circle at center,#0d1f3c,#081120,#020305);
+
+overflow:hidden;
+
 }
 
 /* ============================================================
    BACKGROUND ANIMATION - Particles / Stars
    ============================================================ */
+
 #loader::before {
     content: '';
     position: absolute;
@@ -86,6 +102,10 @@ html,body{
     100% { transform: translateY(0) scale(1); }
 }
 
+/* ============================================================
+   ORB / GLOW ANIMATION
+   ============================================================ */
+
 #loader::after {
     content: '';
     position: absolute;
@@ -102,15 +122,35 @@ html,body{
     50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.8; }
 }
 
+/* ============================================================
+   GAME TITLE - SHORA GAMES
+   ============================================================ */
+
 #gameTitle{
-    font-size:65px;
-    font-weight:900;
-    letter-spacing:8px;
-    color:white;
-    text-shadow: 0 0 20px #00bfff, 0 0 40px #008cff, 0 0 80px rgba(0,180,255,0.3);
-    position:relative;
-    z-index:2;
-    animation: titleGlow 3s ease-in-out infinite;
+
+font-size:65px;
+
+font-weight:900;
+
+letter-spacing:8px;
+
+margin-top:0px;
+
+color:white;
+
+text-shadow:
+
+0 0 20px #00bfff,
+
+0 0 40px #008cff,
+
+0 0 80px rgba(0,180,255,0.3);
+
+position:relative;
+z-index:2;
+
+animation: titleGlow 3s ease-in-out infinite;
+
 }
 
 @keyframes titleGlow {
@@ -118,35 +158,66 @@ html,body{
     50% { text-shadow: 0 0 30px #00d4ff, 0 0 60px #0099ff, 0 0 100px rgba(0,180,255,0.4); }
 }
 
+/* ============================================================
+   NINJA RUN SUBTITLE
+   ============================================================ */
+
 #subTitle{
-    margin-top:6px;
-    font-size:18px;
-    font-weight:500;
-    letter-spacing:12px;
-    color:#82d4ff;
-    text-transform:uppercase;
-    position:relative;
-    z-index:2;
-    opacity:0.8;
+
+margin-top:6px;
+
+font-size:18px;
+
+font-weight:500;
+
+letter-spacing:12px;
+
+color:#82d4ff;
+
+text-transform:uppercase;
+
+position:relative;
+z-index:2;
+
+opacity:0.8;
+
 }
 
+/* ============================================================
+   POWERED BY TORNADO
+   ============================================================ */
+
 #poweredBy{
-    margin-top:30px;
-    font-size:13px;
-    font-weight:300;
-    letter-spacing:4px;
-    color:rgba(255,255,255,0.25);
-    position:relative;
-    z-index:2;
-    display:flex;
-    align-items:center;
-    gap:8px;
+
+margin-top:30px;
+
+font-size:13px;
+
+font-weight:300;
+
+letter-spacing:4px;
+
+color:rgba(255,255,255,0.25);
+
+position:relative;
+z-index:2;
+
+display:flex;
+
+align-items:center;
+
+gap:8px;
+
 }
 
 #poweredBy .tornado-icon {
-    display:inline-block;
-    font-size:18px;
-    animation: tornadoSpin 3s linear infinite;
+
+display:inline-block;
+
+font-size:18px;
+
+animation: tornadoSpin 3s linear infinite;
+
 }
 
 @keyframes tornadoSpin {
@@ -155,20 +226,38 @@ html,body{
 }
 
 #poweredBy .separator {
-    color:rgba(255,255,255,0.08);
-    font-size:18px;
+
+color:rgba(255,255,255,0.08);
+
+font-size:18px;
+
 }
 
+/* ============================================================
+   LOADING BAR CONTAINER
+   ============================================================ */
+
 .loadingContainer{
-    margin-top:40px;
-    width:380px;
-    height:4px;
-    background:rgba(255,255,255,0.04);
-    border-radius:4px;
-    overflow:hidden;
-    position:relative;
-    z-index:2;
-    box-shadow: 0 0 30px rgba(0,180,255,0.05);
+
+margin-top:40px;
+
+width:380px;
+
+height:4px;
+
+background:rgba(255,255,255,0.04);
+
+border-radius:4px;
+
+overflow:hidden;
+
+position:relative;
+z-index:2;
+
+box-shadow:
+
+0 0 30px rgba(0,180,255,0.05);
+
 }
 
 .loadingContainer::after {
@@ -184,20 +273,39 @@ html,body{
     100% { transform: translateX(100%); }
 }
 
+/* ============================================================
+   LOADING BAR
+   ============================================================ */
+
 .loadingBar{
-    height:100%;
-    width:0%;
-    background: linear-gradient(90deg,#00d4ff,#007bff,#00d4ff);
-    background-size: 200% 100%;
-    animation: load 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
-               loadShine 1.5s ease-in-out infinite;
-    border-radius:4px;
-    box-shadow: 0 0 20px rgba(0,180,255,0.3);
+
+height:100%;
+
+width:0%;
+
+background:
+
+linear-gradient(90deg,#00d4ff,#007bff,#00d4ff);
+
+background-size: 200% 100%;
+
+animation: 
+    load 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards,
+    loadShine 1.5s ease-in-out infinite;
+
+border-radius:4px;
+
+box-shadow:
+
+0 0 20px rgba(0,180,255,0.3);
+
 }
 
 @keyframes load{
-    0%{width:0%;}
-    100%{width:100%;}
+
+0%{width:0%;}
+100%{width:100%;}
+
 }
 
 @keyframes loadShine {
@@ -205,21 +313,37 @@ html,body{
     100% { background-position: 200% 0%; }
 }
 
+/* ============================================================
+   LOADING TEXT
+   ============================================================ */
+
 .loadingText{
-    margin-top:18px;
-    font-size:14px;
-    font-weight:300;
-    letter-spacing:6px;
-    color:rgba(255,255,255,0.3);
-    position:relative;
-    z-index:2;
-    animation: textPulse 1.5s ease-in-out infinite;
+
+margin-top:18px;
+
+font-size:14px;
+
+font-weight:300;
+
+letter-spacing:6px;
+
+color:rgba(255,255,255,0.3);
+
+position:relative;
+z-index:2;
+
+animation: textPulse 1.5s ease-in-out infinite;
+
 }
 
 @keyframes textPulse {
     0%, 100% { opacity: 0.3; letter-spacing: 6px; }
     50% { opacity: 0.6; letter-spacing: 8px; }
 }
+
+/* ============================================================
+   LOADING DOTS ANIMATION
+   ============================================================ */
 
 .loadingText .dots {
     display: inline-block;
@@ -240,326 +364,200 @@ html,body{
 }
 
 /* ============================================================
-   CANVAS - CRITICAL: NO PERCENTAGE STRETCHING!
+   CANVAS
    ============================================================ */
+
 canvas{
-    border-radius:20px;
-    box-shadow: 0 0 40px rgba(0,162,255,.45);
-    /* NO width:100% or height:100% - handled by JS */
+
+border-radius:20px;
+
+box-shadow:
+
+0 0 40px rgba(0,162,255,.45);
+
 }
 
 #c2canvasdiv{
-    display:none;
-    margin:auto;
-    position:fixed;
-    top:0;
-    left:0;
-    width:100%;
-    height:100%;
-    background:#000;
-    justify-content:center;
-    align-items:center;
-    z-index:1;
-}
 
-#c2canvasdiv canvas{
-    position:absolute;
-    top:50%;
-    left:50%;
-    transform:translate(-50%, -50%);
-    border-radius:0;
-    box-shadow:none;
-    background:#000;
+display:none;
+
+margin:auto;
+
 }
 
 /* ============================================================
    RESPONSIVE
    ============================================================ */
+
 @media (max-width: 768px) {
-    #gameTitle { font-size: 38px; letter-spacing: 5px; }
-    #subTitle { font-size: 14px; letter-spacing: 8px; }
-    .loadingContainer { width: 260px; }
-    #poweredBy { font-size: 11px; letter-spacing: 3px; }
-    #loader::after { width: 300px; height: 300px; }
+    #gameTitle {
+        font-size: 38px;
+        letter-spacing: 5px;
+    }
+    #subTitle {
+        font-size: 14px;
+        letter-spacing: 8px;
+    }
+    .loadingContainer {
+        width: 260px;
+    }
+    #poweredBy {
+        font-size: 11px;
+        letter-spacing: 3px;
+    }
+    #loader::after {
+        width: 300px;
+        height: 300px;
+    }
 }
 
 @media (max-width: 480px) {
-    #gameTitle { font-size: 28px; letter-spacing: 4px; }
-    #subTitle { font-size: 11px; letter-spacing: 6px; }
-    .loadingContainer { width: 200px; height: 3px; }
-    .loadingText { font-size: 11px; letter-spacing: 4px; }
-    #poweredBy { font-size: 10px; letter-spacing: 2px; margin-top: 20px; }
-    #loader::after { width: 200px; height: 200px; }
+    #gameTitle {
+        font-size: 28px;
+        letter-spacing: 4px;
+    }
+    #subTitle {
+        font-size: 11px;
+        letter-spacing: 6px;
+    }
+    .loadingContainer {
+        width: 200px;
+        height: 3px;
+    }
+    .loadingText {
+        font-size: 11px;
+        letter-spacing: 4px;
+    }
+    #poweredBy {
+        font-size: 10px;
+        letter-spacing: 2px;
+        margin-top: 20px;
+    }
+    #loader::after {
+        width: 200px;
+        height: 200px;
+    }
 }
+
 </style>
 
 </head>
 
 <body>
 
-<!-- ===== LOADER ===== -->
 <div id="loader">
-    <div id="gameTitle">SHORA GAMES</div>
-    <div id="subTitle">Ninja Run</div>
+
+    <!-- ============================================================
+       MAIN TITLE - SHORA GAMES
+       ============================================================ -->
+    <div id="gameTitle">
+        SHORA GAMES
+    </div>
+
+    <!-- ============================================================
+       SUBTITLE - Ninja Run
+       ============================================================ -->
+    <div id="subTitle">
+        Ninja Run
+    </div>
+
+    <!-- ============================================================
+       LOADING BAR
+       ============================================================ -->
     <div class="loadingContainer">
         <div class="loadingBar"></div>
     </div>
+
+    <!-- ============================================================
+       LOADING TEXT WITH DOTS ANIMATION
+       ============================================================ -->
     <div class="loadingText">
         LOADING<span class="dots"><span>.</span><span>.</span><span>.</span></span>
     </div>
+
+    <!-- ============================================================
+       POWERED BY TORNADO
+       ============================================================ -->
     <div id="poweredBy">
         <span class="tornado-icon">🌪️</span>
         <span class="separator">|</span>
         <span>POWERED BY TORNADO</span>
     </div>
+
 </div>
 
-<!-- ===== GAME CANVAS ===== -->
 <div id="c2canvasdiv">
-    <canvas id="c2canvas" width="1280" height="720">
-        Your browser does not support HTML5.
-    </canvas>
+
+<canvas id="c2canvas" width="1280" height="720">
+
+Your browser does not support HTML5.
+
+</canvas>
+
 </div>
 
-<!-- ===== SCRIPTS - LOAD ORDER IS CRITICAL! ===== -->
 <script src="jquery-2.1.1.min.js"></script>
-<script src="data.js"></script>
+
 <script src="c2runtime.js"></script>
 
 <script>
-/* ============================================================
-   DEVICE-RESPONSIVE CANVAS SCALING (letterbox, aspect-locked)
-   ============================================================ */
 
-var GAME_W = 1280;
-var GAME_H = 720;
-var GAME_ASPECT = GAME_W / GAME_H;
-var _resizeDebounce = null;
-var _runtimeCheckInterval = null;
-var gameStarted = false;
-var runtimeReady = false;
-
-function fitCanvasToScreen(){
-    var runtime = (typeof cr_getC2Runtime === "function") ? cr_getC2Runtime() : null;
-    if (!runtime) {
-        // Runtime not ready yet, schedule retry
-        if (!runtimeReady) {
-            setTimeout(fitCanvasToScreen, 100);
-        }
-        return;
-    }
-    
-    runtimeReady = true;
-
-    var availW = window.innerWidth;
-    var availH = window.innerHeight;
-    if (availW <= 0 || availH <= 0) return;
-
-    var availAspect = availW / availH;
-    var displayW, displayH;
-
-    if (availAspect > GAME_ASPECT){
-        displayH = availH;
-        displayW = displayH * GAME_ASPECT;
-    } else {
-        displayW = availW;
-        displayH = displayW / GAME_ASPECT;
-    }
-
-    displayW = Math.round(displayW);
-    displayH = Math.round(displayH);
-
-    // Apply to canvas
-    var canvas = document.getElementById('c2canvas');
-    if (canvas) {
-        canvas.style.width = displayW + 'px';
-        canvas.style.height = displayH + 'px';
-        canvas.style.position = 'absolute';
-        canvas.style.top = ((availH - displayH) / 2) + 'px';
-        canvas.style.left = ((availW - displayW) / 2) + 'px';
-        canvas.style.display = 'block';
-    }
-
-    // CRITICAL: Tell the engine the real displayed size, forced
-    try {
-        runtime["setSize"](displayW, displayH, true);
-        console.log('📐 Runtime set to:', displayW, 'x', displayH);
-    } catch (e) {
-        console.warn('⚠️ runtime.setSize error:', e);
-    }
-}
-
-function scheduleFitCanvas(){
-    if (_resizeDebounce) clearTimeout(_resizeDebounce);
-    _resizeDebounce = setTimeout(fitCanvasToScreen, 60);
-}
-
-// Resize events
 jQuery(window).resize(function(){
-    scheduleFitCanvas();
+
+cr_sizeCanvas(
+
+jQuery(window).width(),
+
+jQuery(window).height()
+
+);
+
 });
-
-window.addEventListener("orientationchange", function(){
-    setTimeout(fitCanvasToScreen, 100);
-    setTimeout(fitCanvasToScreen, 400);
-});
-
-if (window.visualViewport){
-    window.visualViewport.addEventListener("resize", function(){
-        scheduleFitCanvas();
-    });
-}
-
-// ============================================================
-// START THE GAME
-// ============================================================
 
 setTimeout(function(){
-    var loader = document.getElementById("loader");
-    if (loader) {
-        loader.style.opacity = "0";
-        loader.classList.add("hidden");
-    }
-    
-    setTimeout(function(){
-        var loader = document.getElementById("loader");
-        if (loader) {
-            loader.style.display = "none";
-        }
-        
-        var canvasDiv = document.getElementById("c2canvasdiv");
-        if (canvasDiv) {
-            canvasDiv.style.display = "flex";
-        }
-        
-        // Create the runtime
-        try {
-            cr_createRuntime("c2canvas");
-            gameStarted = true;
-            console.log('🎮 cr_createRuntime called');
-        } catch (e) {
-            console.error('❌ cr_createRuntime error:', e);
-        }
-        
-        // Fit canvas immediately and a few times after
-        setTimeout(fitCanvasToScreen, 50);
-        setTimeout(fitCanvasToScreen, 200);
-        setTimeout(fitCanvasToScreen, 500);
-        setTimeout(fitCanvasToScreen, 1000);
-        setTimeout(fitCanvasToScreen, 2000);
-        
-        console.log('🎮 Ninja Run game started');
-        console.log('📐 Canvas: 1280x720 (letterbox scaling)');
-        
-    }, 800);
-    
-}, 4000);
 
-// ============================================================
-// VISIBILITY CHANGE (Pause/Resume)
-// ============================================================
+document.getElementById("loader").style.opacity="0";
+
+setTimeout(function(){
+
+document.getElementById("loader").style.display="none";
+
+document.getElementById("c2canvasdiv").style.display="block";
+
+cr_createRuntime("c2canvas");
+
+},800);
+
+},4000);
 
 function onVisibilityChanged(){
-    if(document.hidden || document.mozHidden || document.webkitHidden || document.msHidden){
-        try { cr_setSuspended(true); } catch(e) {}
-    } else {
-        try { cr_setSuspended(false); } catch(e) {}
-        // Re-fit on visibility restore
-        setTimeout(fitCanvasToScreen, 100);
-    }
+
+if(document.hidden ||
+
+document.mozHidden ||
+
+document.webkitHidden ||
+
+document.msHidden)
+
+cr_setSuspended(true);
+
+else
+
+cr_setSuspended(false);
+
 }
 
-document.addEventListener("visibilitychange", onVisibilityChanged, false);
-document.addEventListener("mozvisibilitychange", onVisibilityChanged, false);
-document.addEventListener("webkitvisibilitychange", onVisibilityChanged, false);
-document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
+document.addEventListener("visibilitychange",onVisibilityChanged,false);
 
-// ============================================================
-// FIX AUDIO LISTENER ERROR
-// ============================================================
+document.addEventListener("mozvisibilitychange",onVisibilityChanged,false);
 
-function fixAudioListener() {
-    try {
-        var runtime = (typeof cr_getC2Runtime === "function") ? cr_getC2Runtime() : null;
-        if (!runtime) return false;
-        
-        if (runtime.glwrap && runtime.glwrap.ctx && runtime.glwrap.ctx.listener) {
-            var listener = runtime.glwrap.ctx.listener;
-            if (listener.setPosition) {
-                listener.setPosition(640, 360, -600);
-                console.log('✅ Audio listener position fixed');
-                return true;
-            }
-            if (listener.setOrientation) {
-                listener.setOrientation(0, 0, 1, 0, -1, 0);
-            }
-        }
-        return false;
-    } catch (e) {
-        return false;
-    }
-}
+document.addEventListener("webkitvisibilitychange",onVisibilityChanged,false);
 
-// Try to fix audio after runtime is ready
-var audioFixAttempts = 0;
-function attemptAudioFix() {
-    audioFixAttempts++;
-    if (fixAudioListener()) {
-        console.log('✅ Audio fix applied after', audioFixAttempts, 'attempts');
-        return;
-    }
-    if (audioFixAttempts < 20) {
-        setTimeout(attemptAudioFix, 500);
-    }
-}
+document.addEventListener("msvisibilitychange",onVisibilityChanged,false);
 
-setTimeout(attemptAudioFix, 500);
-setTimeout(attemptAudioFix, 1000);
-setTimeout(attemptAudioFix, 2000);
-
-// ============================================================
-// FALLBACK: Check if canvas is showing
-// ============================================================
-
-function checkCanvasVisibility() {
-    var canvas = document.getElementById('c2canvas');
-    if (canvas) {
-        var rect = canvas.getBoundingClientRect();
-        if (rect.width > 0 && rect.height > 0) {
-            console.log('✅ Canvas is visible:', rect.width, 'x', rect.height);
-            return true;
-        }
-    }
-    return false;
-}
-
-setTimeout(function() {
-    if (!checkCanvasVisibility()) {
-        console.warn('⚠️ Canvas not visible, attempting resize...');
-        fitCanvasToScreen();
-        setTimeout(checkCanvasVisibility, 500);
-    }
-}, 3000);
-
-// ============================================================
-// CONSOLE
-// ============================================================
-
-console.log('');
-console.log('🪙 ===========================================');
-console.log('🪙 NINJA RUN - COMPLETE GAME FILE (FIXED)');
-console.log('🪙 ===========================================');
-console.log('📐 Game Size: 1280x720');
-console.log('✅ data.js loaded');
-console.log('✅ c2runtime.js loaded');
-console.log('✅ Letterbox scaling: Enabled');
-console.log('✅ Audio listener fix: Applied');
-console.log('✅ Canvas visibility check: Enabled');
-console.log('===========================================');
 </script>
-
 <!-- ===== UNIFIED BRIDGE (Game Over + Timer) ===== -->
 <script src="../../js/ninja-run-bridge.js"></script>
-
 </body>
 </html>
