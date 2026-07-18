@@ -269,6 +269,7 @@ canvas{
     transform:translate(-50%, -50%);
     border-radius:0;
     box-shadow:none;
+    background:#000;
 }
 
 /* ============================================================
@@ -334,11 +335,21 @@ var GAME_W = 1280;
 var GAME_H = 720;
 var GAME_ASPECT = GAME_W / GAME_H;
 var _resizeDebounce = null;
+var _runtimeCheckInterval = null;
 var gameStarted = false;
+var runtimeReady = false;
 
 function fitCanvasToScreen(){
     var runtime = (typeof cr_getC2Runtime === "function") ? cr_getC2Runtime() : null;
-    if (!runtime) return;
+    if (!runtime) {
+        // Runtime not ready yet, schedule retry
+        if (!runtimeReady) {
+            setTimeout(fitCanvasToScreen, 100);
+        }
+        return;
+    }
+    
+    runtimeReady = true;
 
     var availW = window.innerWidth;
     var availH = window.innerHeight;
@@ -366,10 +377,16 @@ function fitCanvasToScreen(){
         canvas.style.position = 'absolute';
         canvas.style.top = ((availH - displayH) / 2) + 'px';
         canvas.style.left = ((availW - displayW) / 2) + 'px';
+        canvas.style.display = 'block';
     }
 
     // CRITICAL: Tell the engine the real displayed size, forced
-    runtime["setSize"](displayW, displayH, true);
+    try {
+        runtime["setSize"](displayW, displayH, true);
+        console.log('📐 Runtime set to:', displayW, 'x', displayH);
+    } catch (e) {
+        console.warn('⚠️ runtime.setSize error:', e);
+    }
 }
 
 function scheduleFitCanvas(){
@@ -398,22 +415,38 @@ if (window.visualViewport){
 // ============================================================
 
 setTimeout(function(){
-    document.getElementById("loader").style.opacity = "0";
+    var loader = document.getElementById("loader");
+    if (loader) {
+        loader.style.opacity = "0";
+        loader.classList.add("hidden");
+    }
     
     setTimeout(function(){
-        document.getElementById("loader").style.display = "none";
-        document.getElementById("c2canvasdiv").style.display = "flex";
+        var loader = document.getElementById("loader");
+        if (loader) {
+            loader.style.display = "none";
+        }
+        
+        var canvasDiv = document.getElementById("c2canvasdiv");
+        if (canvasDiv) {
+            canvasDiv.style.display = "flex";
+        }
         
         // Create the runtime
-        cr_createRuntime("c2canvas");
-        gameStarted = true;
+        try {
+            cr_createRuntime("c2canvas");
+            gameStarted = true;
+            console.log('🎮 cr_createRuntime called');
+        } catch (e) {
+            console.error('❌ cr_createRuntime error:', e);
+        }
         
         // Fit canvas immediately and a few times after
-        fitCanvasToScreen();
         setTimeout(fitCanvasToScreen, 50);
-        setTimeout(fitCanvasToScreen, 300);
+        setTimeout(fitCanvasToScreen, 200);
         setTimeout(fitCanvasToScreen, 500);
         setTimeout(fitCanvasToScreen, 1000);
+        setTimeout(fitCanvasToScreen, 2000);
         
         console.log('🎮 Ninja Run game started');
         console.log('📐 Canvas: 1280x720 (letterbox scaling)');
@@ -428,9 +461,9 @@ setTimeout(function(){
 
 function onVisibilityChanged(){
     if(document.hidden || document.mozHidden || document.webkitHidden || document.msHidden){
-        cr_setSuspended(true);
+        try { cr_setSuspended(true); } catch(e) {}
     } else {
-        cr_setSuspended(false);
+        try { cr_setSuspended(false); } catch(e) {}
         // Re-fit on visibility restore
         setTimeout(fitCanvasToScreen, 100);
     }
@@ -448,27 +481,65 @@ document.addEventListener("msvisibilitychange", onVisibilityChanged, false);
 function fixAudioListener() {
     try {
         var runtime = (typeof cr_getC2Runtime === "function") ? cr_getC2Runtime() : null;
-        if (!runtime) return;
+        if (!runtime) return false;
         
         if (runtime.glwrap && runtime.glwrap.ctx && runtime.glwrap.ctx.listener) {
             var listener = runtime.glwrap.ctx.listener;
             if (listener.setPosition) {
                 listener.setPosition(640, 360, -600);
                 console.log('✅ Audio listener position fixed');
+                return true;
             }
             if (listener.setOrientation) {
                 listener.setOrientation(0, 0, 1, 0, -1, 0);
             }
         }
+        return false;
     } catch (e) {
-        // Silent fail
+        return false;
     }
 }
 
 // Try to fix audio after runtime is ready
-setTimeout(fixAudioListener, 500);
-setTimeout(fixAudioListener, 1000);
-setTimeout(fixAudioListener, 2000);
+var audioFixAttempts = 0;
+function attemptAudioFix() {
+    audioFixAttempts++;
+    if (fixAudioListener()) {
+        console.log('✅ Audio fix applied after', audioFixAttempts, 'attempts');
+        return;
+    }
+    if (audioFixAttempts < 20) {
+        setTimeout(attemptAudioFix, 500);
+    }
+}
+
+setTimeout(attemptAudioFix, 500);
+setTimeout(attemptAudioFix, 1000);
+setTimeout(attemptAudioFix, 2000);
+
+// ============================================================
+// FALLBACK: Check if canvas is showing
+// ============================================================
+
+function checkCanvasVisibility() {
+    var canvas = document.getElementById('c2canvas');
+    if (canvas) {
+        var rect = canvas.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+            console.log('✅ Canvas is visible:', rect.width, 'x', rect.height);
+            return true;
+        }
+    }
+    return false;
+}
+
+setTimeout(function() {
+    if (!checkCanvasVisibility()) {
+        console.warn('⚠️ Canvas not visible, attempting resize...');
+        fitCanvasToScreen();
+        setTimeout(checkCanvasVisibility, 500);
+    }
+}, 3000);
 
 // ============================================================
 // CONSOLE
@@ -476,13 +547,14 @@ setTimeout(fixAudioListener, 2000);
 
 console.log('');
 console.log('🪙 ===========================================');
-console.log('🪙 NINJA RUN - COMPLETE GAME FILE');
+console.log('🪙 NINJA RUN - COMPLETE GAME FILE (FIXED)');
 console.log('🪙 ===========================================');
 console.log('📐 Game Size: 1280x720');
 console.log('✅ data.js loaded');
 console.log('✅ c2runtime.js loaded');
 console.log('✅ Letterbox scaling: Enabled');
 console.log('✅ Audio listener fix: Applied');
+console.log('✅ Canvas visibility check: Enabled');
 console.log('===========================================');
 </script>
 
