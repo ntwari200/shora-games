@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== COMPLETE RESET ===== */
+        /* ===== RESET ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
@@ -23,6 +23,9 @@
             top: 0;
             left: 0;
             touch-action: none;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         #gameWrapper {
@@ -356,6 +359,9 @@
             min-height: 0;
             position: relative;
             overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
         /* ===== CRITICAL: IFRAME STYLING ===== */
@@ -368,61 +374,6 @@
             position: absolute;
             top: 0;
             left: 0;
-        }
-
-        /* ===== TOUCH CONTROLS ===== */
-        #touchControls {
-            position: fixed;
-            pointer-events: none;
-            z-index: 50;
-            display: none;
-        }
-        #touchControls.active {
-            display: block;
-        }
-        #touchControls .touch-btn {
-            position: absolute;
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.15);
-            border: 2px solid rgba(255, 255, 255, 0.3);
-            color: #fff;
-            font-size: 1.5rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            pointer-events: all;
-            cursor: pointer;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            backdrop-filter: blur(4px);
-            transition: all 0.2s ease;
-        }
-        #touchControls .touch-btn:active {
-            transform: scale(0.9);
-            background: rgba(255, 255, 255, 0.25);
-        }
-        #touchControls .touch-btn.left {
-            left: 20px;
-            bottom: 20px;
-        }
-        #touchControls .touch-btn.right {
-            left: 100px;
-            bottom: 20px;
-        }
-        #touchControls .touch-btn.jump {
-            right: 20px;
-            bottom: 20px;
-            width: 80px;
-            height: 80px;
-            font-size: 1.8rem;
-            background: rgba(0, 191, 255, 0.2);
-            border-color: rgba(0, 191, 255, 0.4);
-        }
-        #touchControls .touch-btn.jump:active {
-            background: rgba(0, 191, 255, 0.4);
         }
 
         /* ===== LOADING OVERLAY ===== */
@@ -814,7 +765,7 @@
 
         ::-webkit-scrollbar { width: 0px; height: 0px; }
 
-        /* ===== RESPONSIVE ===== */
+        /* ===== RESPONSIVE HEADER ===== */
         @media (max-width: 480px) {
             .game-header .title { font-size: 0.6rem; }
             .game-header .title .sub { font-size: 0.4rem; }
@@ -827,11 +778,6 @@
             .warning-banner .warning-close { font-size: 0.5rem; padding: 2px 8px; }
             .warning-banner .warning-icon-wrapper { width: 24px; height: 24px; }
             .warning-banner .warning-icon { font-size: 0.8rem; }
-            #touchControls .touch-btn { width: 50px; height: 50px; font-size: 1.2rem; }
-            #touchControls .touch-btn.jump { width: 65px; height: 65px; font-size: 1.5rem; }
-            #touchControls .touch-btn.left { left: 10px; bottom: 10px; }
-            #touchControls .touch-btn.right { left: 75px; bottom: 10px; }
-            #touchControls .touch-btn.jump { right: 10px; bottom: 10px; }
         }
 
         @media (max-height: 500px) and (orientation: landscape) {
@@ -847,11 +793,6 @@
             .warning-banner .warning-close { font-size: 0.45rem; padding: 2px 6px; }
             .warning-banner .warning-icon-wrapper { width: 20px; height: 20px; }
             .warning-banner .warning-icon { font-size: 0.6rem; }
-            #touchControls .touch-btn { width: 40px; height: 40px; font-size: 1rem; }
-            #touchControls .touch-btn.jump { width: 55px; height: 55px; font-size: 1.3rem; }
-            #touchControls .touch-btn.left { left: 10px; bottom: 10px; }
-            #touchControls .touch-btn.right { left: 65px; bottom: 10px; }
-            #touchControls .touch-btn.jump { right: 10px; bottom: 10px; }
         }
     </style>
 </head>
@@ -954,13 +895,6 @@
         <div id="gameFrame">
             <!-- Game will be loaded here via iframe -->
         </div>
-
-        <!-- ===== TOUCH CONTROLS ===== -->
-        <div id="touchControls">
-            <div class="touch-btn left" id="touchLeft">◀</div>
-            <div class="touch-btn right" id="touchRight">▶</div>
-            <div class="touch-btn jump" id="touchJump">▲</div>
-        </div>
     </div>
 
     <!-- ===== GUIDE MODAL ===== -->
@@ -993,7 +927,7 @@
                     <span class="step-number">3</span>
                     <div class="step-content">
                         <div class="step-title">✅ Tap the Checkbox</div>
-                        <div class-step-desc>Tap the box next to <strong>"Desktop Site"</strong> to enable it</div>
+                        <div class="step-desc">Tap the box next to <strong>"Desktop Site"</strong> to enable it</div>
                     </div>
                     <span class="step-icon">✅</span>
                 </div>
@@ -1030,14 +964,12 @@
 
     <script>
         // ============================================================
-        // CONFIG
+        // CONFIG - READ MODE FROM URL
         // ============================================================
         const params = new URLSearchParams(window.location.search);
         const EVENT_ID = params.get('event') || '';
         const USER_ID = params.get('user') || '';
         const DEMO_MODE = params.get('demo') === 'true';
-
-        // Path to the game - MUST match your deployment
         const GAME_URL = '/games/ninja%20run/index.html';
 
         const IS_TOURNAMENT_MODE = !DEMO_MODE && EVENT_ID && USER_ID;
@@ -1047,17 +979,6 @@
         console.log('📋 Event ID:', EVENT_ID || 'N/A');
         console.log('👤 User ID:', USER_ID || 'N/A');
         console.log('📁 Game Path:', GAME_URL);
-
-        // ============================================================
-        // SIDS FROM data.js
-        // ============================================================
-        const SIDS = {
-            Player: 6015150563090787,
-            Bomb: 2366045084376254,
-            GameOver: 9673310750545146,
-            Restart: 3517756744458917,
-            Play: 4863784351268309
-        };
 
         // ============================================================
         // STATE
@@ -1072,7 +993,17 @@
         let redirectDone = false;
         let gameLoaded = false;
         let bridgeInjected = false;
-        let loadAttempts = 0;
+
+        // ============================================================
+        // SIDS FROM data.js
+        // ============================================================
+        const SIDS = {
+            Player: 6015150563090787,
+            Bomb: 2366045084376254,
+            GameOver: 9673310750545146,
+            Restart: 3517756744458917,
+            Play: 4863784351268309
+        };
 
         // ============================================================
         // ANTI-CHEAT SYSTEM
@@ -1285,7 +1216,7 @@
         }
 
         // ============================================================
-        // GAME OVER DETECTION - SIDS BASED
+        // GAME OVER DETECTION
         // ============================================================
 
         function getTypeBySid(runtime, sid) {
@@ -1326,10 +1257,6 @@
                         console.log('🔍 Game Over: GameOver variable = true');
                         return true;
                     }
-                    if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
-                        console.log('🔍 Game Over: gameOver variable = true');
-                        return true;
-                    }
                 }
 
             } catch (e) {}
@@ -1352,9 +1279,7 @@
                         }
                     }
                 }
-
                 return false;
-
             } catch (e) {
                 return false;
             }
@@ -1503,13 +1428,6 @@
                     }).catch(function(err) {
                         console.error('❌ Firebase error:', err);
                     });
-                    const userRef = db.ref('users/' + USER_ID);
-                    userRef.update({
-                        hasPlayedCurrentEvent: true,
-                        currentEventId: EVENT_ID,
-                        lastScore: finalScore,
-                        lastCoins: finalScore
-                    }).catch(function() {});
                 } catch (error) {
                     console.error('❌ Error submitting to Firebase:', error);
                 }
@@ -1608,15 +1526,6 @@
                         }
                     }
 
-                    if (!gameOverDetected && gameScore > 0) {
-                        if (detectGameOverInFrame()) {
-                            gameOverDetected = true;
-                            gameStarted = true;
-                            submitScore(gameScore);
-                            return;
-                        }
-                    }
-
                     if (gameScore > 0 && !gameStarted) {
                         gameStarted = true;
                         console.log('🎮 Game started (coins detected)');
@@ -1638,7 +1547,7 @@
         }
 
         // ============================================================
-        // INJECT BRIDGE INTO THE GAME
+        // INJECT BRIDGE
         // ============================================================
 
         function injectBridge() {
@@ -1757,10 +1666,6 @@
                                 if (runtime.globalVars) {
                                     if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
                                         console.log('🔍 Game Over: GameOver variable = true');
-                                        return true;
-                                    }
-                                    if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
-                                        console.log('🔍 Game Over: gameOver variable = true');
                                         return true;
                                     }
                                 }
@@ -1885,15 +1790,6 @@
 
                         waitForRuntime();
 
-                        window.addEventListener('message', function(event) {
-                            if (event.data && event.data.type === 'NINJA_RUN_FORCE_SUBMIT') {
-                                console.log('📨 Force submit requested');
-                                if (gameScore > 0 && !scoreSubmitted) {
-                                    submitScore(gameScore);
-                                }
-                            }
-                        });
-
                         window.__ninjaBridge = {
                             score: () => gameScore,
                             submit: submitScore,
@@ -1911,8 +1807,6 @@
                         };
 
                         console.log('✅ Ninja Run Bridge ready');
-                        console.log('📊 Debug: __ninjaBridge.status()');
-                        console.log('📊 Force submit: __ninjaBridge.forceSubmit()');
                     })();
                 `;
 
@@ -1933,46 +1827,7 @@
         }
 
         // ============================================================
-        // FIX AUDIO LISTENER
-        // ============================================================
-
-        function fixAudioListener() {
-            try {
-                const frame = document.getElementById('gameFrame');
-                if (!frame) return false;
-                
-                const iframe = frame.querySelector('iframe');
-                if (!iframe) return false;
-                
-                const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                if (!frameDoc) return false;
-                
-                const canvas = frameDoc.getElementById('c2canvas');
-                if (!canvas) return false;
-                
-                const runtime = canvas.c2runtime;
-                if (!runtime) return false;
-                
-                if (runtime.glwrap && runtime.glwrap.ctx && runtime.glwrap.ctx.listener) {
-                    const listener = runtime.glwrap.ctx.listener;
-                    const safeX = isFinite(runtime.width) ? runtime.width / 2 : 640;
-                    const safeY = isFinite(runtime.height) ? runtime.height / 2 : 360;
-                    const safeZ = isFinite(runtime.listenerZ) ? runtime.listenerZ : -600;
-                    
-                    if (listener.setPosition) {
-                        listener.setPosition(safeX, safeY, safeZ);
-                        console.log('✅ Audio listener fixed:', safeX, safeY, safeZ);
-                        return true;
-                    }
-                }
-                return false;
-            } catch (e) {
-                return false;
-            }
-        }
-
-        // ============================================================
-        // LOAD GAME - SIMPLIFIED
+        // LOAD GAME - THE CRITICAL FIX
         // ============================================================
 
         function loadGame() {
@@ -1981,8 +1836,10 @@
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
 
+            // Clear the frame
             frame.innerHTML = '';
 
+            // Create iframe
             const iframe = document.createElement('iframe');
             iframe.id = 'gameIframe';
             iframe.setAttribute('sandbox', 'allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-downloads');
@@ -2000,78 +1857,35 @@
             
             console.log('📁 Loading game from:', gameUrl);
 
-            // ===== IFRAME LOAD HANDLER =====
+            // ===== CRITICAL: IFRAME LOAD EVENT =====
             iframe.addEventListener('load', function() {
                 console.log('✅ Iframe loaded event fired');
                 
-                setTimeout(function() {
-                    try {
-                        const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
-                        if (frameDoc) {
-                            // Fix audio as soon as possible
-                            setTimeout(fixAudioListener, 100);
-                            
-                            const canvas = frameDoc.getElementById('c2canvas');
-                            if (canvas) {
-                                console.log('✅ Canvas found in iframe');
-                                gameLoaded = true;
-                                
-                                loadingOverlay.classList.add('hidden');
-                                document.getElementById('statusText').textContent = '🎮 Playing...';
-                                document.getElementById('statusDot').className = 'dot';
-                                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
-                                
-                                // Fix audio again
-                                setTimeout(fixAudioListener, 300);
-                                setTimeout(fixAudioListener, 500);
-                                
-                                setTimeout(injectBridge, 500);
-                                setTimeout(startScoreTracking, 1000);
-                                
-                                // Force canvas display
-                                canvas.style.display = 'block';
-                                canvas.style.width = '100%';
-                                canvas.style.height = '100%';
-                                
-                                return;
-                            } else {
-                                console.log('⏳ Canvas not yet available, waiting...');
-                                let attempts = 0;
-                                const checkCanvas = setInterval(function() {
-                                    attempts++;
-                                    const c = frameDoc.getElementById('c2canvas');
-                                    if (c) {
-                                        clearInterval(checkCanvas);
-                                        console.log('✅ Canvas found after', attempts, 'attempts');
-                                        gameLoaded = true;
-                                        
-                                        loadingOverlay.classList.add('hidden');
-                                        document.getElementById('statusText').textContent = '🎮 Playing...';
-                                        document.getElementById('statusDot').className = 'dot';
-                                        document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
-                                        
-                                        setTimeout(fixAudioListener, 200);
-                                        setTimeout(fixAudioListener, 500);
-                                        
-                                        setTimeout(injectBridge, 500);
-                                        setTimeout(startScoreTracking, 1000);
-                                        
-                                        c.style.display = 'block';
-                                        c.style.width = '100%';
-                                        c.style.height = '100%';
-                                    } else if (attempts > 30) {
-                                        clearInterval(checkCanvas);
-                                        console.log('⚠️ Canvas not found after 30 attempts');
-                                        // Force show loading error
-                                        loadingText.textContent = '⚠️ Game not loading properly';
-                                    }
-                                }, 300);
-                            }
+                // Game is loaded! Hide loading overlay.
+                gameLoaded = true;
+                loadingOverlay.classList.add('hidden');
+                document.getElementById('statusText').textContent = '🎮 Playing...';
+                document.getElementById('statusDot').className = 'dot';
+                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
+                
+                // Try to access the game content (same-origin only)
+                try {
+                    const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
+                    if (frameDoc) {
+                        const canvas = frameDoc.getElementById('c2canvas');
+                        if (canvas) {
+                            console.log('✅ Canvas found in iframe');
+                            // Canvas exists - game is running
                         }
-                    } catch (e) {
-                        console.warn('⚠️ Cannot access iframe content:', e);
+                        
+                        // Inject bridge after game loads
+                        setTimeout(injectBridge, 500);
+                        setTimeout(startScoreTracking, 1000);
                     }
-                }, 500);
+                } catch (e) {
+                    // Cross-origin or not accessible - but that's OK, the game is still running!
+                    console.log('ℹ️ Game loaded (cross-origin or not accessible, but visible)');
+                }
             });
 
             iframe.addEventListener('error', function(e) {
@@ -2080,12 +1894,13 @@
                 showToast('❌ Failed to load game. Please refresh.', 'error');
             });
 
+            // Set the src
             iframe.src = gameUrl;
             frame.appendChild(iframe);
 
             // ===== LOADING PROGRESS =====
             let progress = 0;
-            let checkAttempts = 0;
+            let loadAttempts = 0;
             const maxAttempts = 60;
 
             const progressInterval = setInterval(function() {
@@ -2094,8 +1909,9 @@
                 progressFill.style.width = progress + '%';
             }, 200);
 
+            // Fallback check - if iframe load doesn't fire for some reason
             const fallbackCheck = setInterval(function() {
-                checkAttempts++;
+                loadAttempts++;
                 
                 try {
                     const frameDoc = iframe.contentDocument || iframe.contentWindow?.document;
@@ -2113,21 +1929,14 @@
                             document.getElementById('statusDot').className = 'dot';
                             document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
                             
-                            setTimeout(fixAudioListener, 200);
-                            setTimeout(fixAudioListener, 500);
-                            
                             setTimeout(injectBridge, 500);
                             setTimeout(startScoreTracking, 1000);
-                            
-                            canvas.style.display = 'block';
-                            canvas.style.width = '100%';
-                            canvas.style.height = '100%';
                             return;
                         }
                     }
                 } catch (e) {}
                 
-                if (checkAttempts >= maxAttempts) {
+                if (loadAttempts >= maxAttempts) {
                     clearInterval(fallbackCheck);
                     clearInterval(progressInterval);
                     loadingText.textContent = '⚠️ Game taking too long to load';
@@ -2136,57 +1945,13 @@
                 }
             }, 500);
 
+            // Safety timeout
             setTimeout(function() {
                 if (!loadingOverlay.classList.contains('hidden')) {
                     clearInterval(progressInterval);
                     clearInterval(fallbackCheck);
                 }
             }, 35000);
-        }
-
-        // ============================================================
-        // TOUCH CONTROLS
-        // ============================================================
-
-        function setupTouchControls() {
-            const leftBtn = document.getElementById('touchLeft');
-            const rightBtn = document.getElementById('touchRight');
-            const jumpBtn = document.getElementById('touchJump');
-            
-            function createTouchEvent(type, key) {
-                return function(e) {
-                    e.preventDefault();
-                    const event = new KeyboardEvent(type, {
-                        key: key,
-                        keyCode: key === 'ArrowLeft' ? 37 : key === 'ArrowRight' ? 39 : 38,
-                        which: key === 'ArrowLeft' ? 37 : key === 'ArrowRight' ? 39 : 38,
-                        bubbles: true,
-                        cancelable: true
-                    });
-                    document.dispatchEvent(event);
-                };
-            }
-            
-            if (leftBtn) {
-                leftBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowLeft'));
-                leftBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowLeft'));
-                leftBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowLeft'));
-                leftBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowLeft'));
-            }
-            
-            if (rightBtn) {
-                rightBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowRight'));
-                rightBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowRight'));
-                rightBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowRight'));
-                rightBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowRight'));
-            }
-            
-            if (jumpBtn) {
-                jumpBtn.addEventListener('touchstart', createTouchEvent('keydown', 'ArrowUp'));
-                jumpBtn.addEventListener('touchend', createTouchEvent('keyup', 'ArrowUp'));
-                jumpBtn.addEventListener('mousedown', createTouchEvent('keydown', 'ArrowUp'));
-                jumpBtn.addEventListener('mouseup', createTouchEvent('keyup', 'ArrowUp'));
-            }
         }
 
         // ============================================================
@@ -2212,7 +1977,6 @@
             }
             if (event.data && event.data.type === 'NINJA_RUNTIME_READY') {
                 console.log('🎮 Runtime ready signal received');
-                setTimeout(fixAudioListener, 100);
             }
         });
 
@@ -2243,7 +2007,7 @@
             window.location.reload();
         });
 
-        setupTouchControls();
+        // Start loading the game
         loadGame();
 
         console.log('');
@@ -2256,7 +2020,6 @@
         console.log('✅ Bridge injection: Enabled');
         console.log('✅ Score tracking: Enabled');
         console.log('✅ Auto-Redirect: Enabled');
-        console.log('✅ Audio fix: Enabled');
         console.log('===========================================');
     </script>
 
