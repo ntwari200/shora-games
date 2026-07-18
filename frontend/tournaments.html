@@ -425,13 +425,14 @@
             min-width: 80px;
         }
         
-        /* ===== DEMO BUTTON ===== */
+        /* ===== DEMO BUTTON - ALWAYS VISIBLE ===== */
         .btn-card-demo {
             background: linear-gradient(135deg, #FF1744, #D50000);
             color: #fff;
             border: 1px solid rgba(255, 23, 68, 0.3);
             box-shadow: 0 0 20px rgba(255, 23, 68, 0.2);
             animation: demoPulse 2s ease-in-out infinite;
+            flex: 1 !important;
         }
         .btn-card-demo:hover { 
             transform: translateY(-2px); 
@@ -460,6 +461,20 @@
             font-size: 0.5rem;
             font-weight: 700;
             margin-left: 2px;
+        }
+
+        /* ===== ALWAYS PLAYED BLOCKED BUTTON ===== */
+        .btn-card-already-played {
+            background: rgba(255, 77, 109, 0.15);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            cursor: not-allowed;
+            opacity: 0.7;
+            flex: 1 !important;
+        }
+        .btn-card-already-played:hover {
+            transform: none !important;
+            box-shadow: none !important;
         }
         
         .btn-card-join {
@@ -2090,7 +2105,7 @@
         }
 
         // ========================================
-        // RENDER TOURNAMENTS
+        // RENDER TOURNAMENTS - UPDATED
         // ========================================
 
         function renderTournaments(tournaments) {
@@ -2188,20 +2203,30 @@
                     `;
                 }
                 
-                // ===== DEMO BUTTON =====
-                let demoButtonHtml = '';
-                if (isLive && !isLocked) {
-                    demoButtonHtml = `
-                        <button class="btn btn-card-demo" onclick="openDemoModal('${tournament.id}')" title="Practice before joining">
-                            <i class="fas fa-gamepad"></i> Demo <span class="demo-badge">FREE</span>
-                        </button>
-                    `;
-                }
+                // ===== DEMO BUTTON - ALWAYS VISIBLE =====
+                const demoButtonHtml = `
+                    <button class="btn btn-card-demo" onclick="openDemoModal('${tournament.id}')" title="Practice mode - Always available">
+                        <i class="fas fa-gamepad"></i> Demo <span class="demo-badge">FREE</span>
+                    </button>
+                `;
                 
-                // ===== ACTION BUTTON =====
+                // ===== ACTION BUTTON - UPDATED LOGIC =====
                 let buttonHtml = '';
                 
-                if (isEnded) {
+                // Check if user has already played this specific tournament
+                const hasPlayedThisTournament = currentUser && tournament.players && 
+                    tournament.players[currentUser.uid] && 
+                    tournament.players[currentUser.uid].hasPlayed === true;
+                
+                if (hasPlayedThisTournament) {
+                    // User already played - show "Already Played" button (disabled)
+                    buttonHtml = `
+                        <button class="btn btn-card-already-played" disabled>
+                            <i class="fas fa-check-circle"></i> Already Played
+                        </button>
+                    `;
+                } else if (isEnded) {
+                    // Tournament ended - show Rankings button only (no join/play)
                     buttonHtml = `
                         <button class="btn btn-card-view" onclick="viewTournamentDetails('${tournament.id}')">
                             <i class="fas fa-trophy"></i> View Rankings
@@ -2214,13 +2239,8 @@
                         </button>
                     `;
                 } else if (isLive && !isLocked) {
-                    if (userHasPlayedThisTournament) {
-                        buttonHtml = `
-                            <button class="btn btn-card-blocked" disabled>
-                                <i class="fas fa-ban"></i> Already Played
-                            </button>
-                        `;
-                    } else if (userHasJoined) {
+                    if (userHasJoined) {
+                        // User joined but hasn't played yet - show Play Now
                         buttonHtml = `
                             <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
                                 <i class="fas fa-play"></i> Play Now
@@ -3103,10 +3123,11 @@
         // CONSOLE
         // ========================================
 
-        console.log('%c🏆 SHORA GAMES - PROFESSIONAL TOURNAMENTS', 'color: #FFD700; font-size: 20px; font-weight: bold;');
-        console.log('%c📊 Live Rankings System Active', 'color: #00BFFF; font-size: 14px;');
-        console.log('%c🔄 Rankings persist until new tournament starts', 'color: #00E676; font-size: 14px;');
-        console.log('%c🏅 Formula 1 Style Leaderboard with Podium', 'color: #FFC857; font-size: 14px;');
+        console.log('%c🏆 SHORA GAMES - TOURNAMENTS (UPDATED)', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%c🎯 One Play Per Tournament Rule: ENFORCED', 'color: #FF4D6D; font-size: 14px;');
+        console.log('%c🎮 Demo Button: ALWAYS VISIBLE', 'color: #00BFFF; font-size: 14px;');
+        console.log('%c📊 Rankings: Always Available', 'color: #00E676; font-size: 14px;');
+        console.log('%c🔒 Already Played: Blocked Until New Event', 'color: #FFC857; font-size: 14px;');
         
         window.joinTournament = joinTournament;
         window.playGame = playGame;
