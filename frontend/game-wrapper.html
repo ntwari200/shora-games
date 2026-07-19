@@ -1301,30 +1301,15 @@
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
 
-            // ------------------------------------------------------------
-            // ENVIRONMENT SANITY CHECK
-            // The game engine (c2runtime.js) fetches data.js via XHR, and
-            // this wrapper reads the iframe's DOM cross-frame. Neither
-            // works reliably over file:// -- this MUST be served via
-            // http(s) (even a local static server) for the game to load.
-            // ------------------------------------------------------------
-            if (window.location.protocol === 'file:') {
-                console.error('❌ This page was opened directly from disk (file://). ' +
-                    'The game engine and this wrapper both require it to be served ' +
-                    'over http:// or https:// -- run it through a local/dev web server.');
-                showToast('⚠️ Must be served via http(s), not opened as a local file.', 'error');
-            }
+            const timestamp = Date.now();
+            const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
+            
+            console.log('📁 Loading game from:', gameUrl);
+            frame.src = gameUrl;
 
-            let hasFinishedLoading = false;
             let progress = 0;
             let loadAttempts = 0;
-            const maxAttempts = 100;       // ~20s of polling at 200ms, was 10s
-            const overallTimeoutMs = 25000; // was 10000 -- too tight for slow connections
-
-            const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + Date.now();
-
-            console.log('📁 Loading game from:', gameUrl);
-            console.log('📁 Resolved absolute URL:', new URL(gameUrl, window.location.href).href);
+            const maxAttempts = 50;
 
             const progressInterval = setInterval(function() {
                 progress += Math.random() * 8 + 2;
@@ -1332,59 +1317,6 @@
                 progressFill.style.width = progress + '%';
             }, 200);
 
-            function finishLoading(reason) {
-                if (hasFinishedLoading) return;
-                hasFinishedLoading = true;
-                clearInterval(progressInterval);
-                clearInterval(loadCheck);
-                console.log('✅ Game considered loaded (' + reason + ')');
-                progressFill.style.width = '100%';
-                loadingText.textContent = '✅ Game Loaded!';
-                setTimeout(function() {
-                    loadingOverlay.classList.add('hidden');
-                    document.getElementById('statusText').textContent = '🎮 Playing...';
-                    document.getElementById('statusDot').className = 'dot';
-                    document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
-                }, 400);
-                setTimeout(function() { injectBridge(); }, 1500);
-                setTimeout(function() { startScoreTracking(); }, 2000);
-            }
-
-            function failLoading(reason) {
-                if (hasFinishedLoading) return;
-                clearInterval(progressInterval);
-                clearInterval(loadCheck);
-                console.error('⚠️ Game failed to load:', reason);
-                console.error('⚠️ Check: (1) served via http(s)? (2) does "' + GAME_URL + '" actually exist relative to this page? (3) browser console for 404/CORS errors on the iframe request.');
-                loadingText.textContent = '⚠️ Game taking too long to load';
-                showToast('⚠️ Game failed to load. Please try again.', 'error');
-            }
-
-            // PRIMARY signal: the standard iframe load event. This fires
-            // reliably even when the iframe content is cross-origin (we
-            // just won't be able to read its DOM afterwards) -- unlike
-            // the contentDocument poll below, it can never be silently
-            // blocked by browser security, so it's the one thing we can
-            // always trust to know navigation actually completed.
-            frame.addEventListener('load', function() {
-                console.log('📡 iframe "load" event fired');
-                // Give the game's own internal loader a brief moment to
-                // paint before we declare victory, but don't require
-                // same-origin DOM access to proceed.
-                setTimeout(function(){ finishLoading('iframe load event'); }, 300);
-            });
-
-            frame.addEventListener('error', function(e) {
-                console.error('📡 iframe "error" event fired', e);
-                failLoading('iframe error event (likely a bad path / 404)');
-            });
-
-            frame.src = gameUrl;
-
-            // SECONDARY signal: same-origin DOM polling. Faster to detect
-            // than waiting for full load in some browsers, but silently
-            // does nothing if same-origin access is blocked -- that's
-            // fine, the load-event listener above still catches it.
             const loadCheck = setInterval(function() {
                 loadAttempts++;
                 try {
@@ -1392,25 +1324,38 @@
                     if (frameDoc) {
                         const canvas = frameDoc.getElementById('c2canvas');
                         if (canvas || (frameDoc.body && frameDoc.body.innerHTML && frameDoc.body.innerHTML.includes('c2canvas'))) {
-                            finishLoading('same-origin canvas detected');
+                            clearInterval(progressInterval);
+                            clearInterval(loadCheck);
+                            progressFill.style.width = '100%';
+                            loadingText.textContent = '✅ Game Loaded!';
+                            setTimeout(function() {
+                                loadingOverlay.classList.add('hidden');
+                                document.getElementById('statusText').textContent = '🎮 Playing...';
+                                document.getElementById('statusDot').className = 'dot';
+                                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
+                            }, 400);
+                            setTimeout(function() { injectBridge(); }, 1500);
+                            setTimeout(function() { startScoreTracking(); }, 2000);
                             return;
                         }
                     }
                 } catch (e) {
-                    // Cross-origin (or not-yet-navigated) -- this is
-                    // expected and handled by the load-event listener,
-                    // not an error on its own.
+                    // Still loading
                 }
-                if (loadAttempts >= maxAttempts && !hasFinishedLoading) {
-                    failLoading('timed out after ' + (maxAttempts * 200 / 1000) + 's of polling with no load event and no same-origin canvas found');
+                if (loadAttempts >= maxAttempts) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
+                    loadingText.textContent = '⚠️ Game taking too long to load';
+                    showToast('⚠️ Game failed to load. Please try again.', 'error');
                 }
             }, 200);
 
             setTimeout(function() {
-                if (!hasFinishedLoading) {
-                    failLoading('overall ' + (overallTimeoutMs / 1000) + 's timeout reached');
+                if (!loadingOverlay.classList.contains('hidden')) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
                 }
-            }, overallTimeoutMs);
+            }, 10000);
         }
 
         // ============================================================
