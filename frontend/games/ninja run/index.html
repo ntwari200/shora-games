@@ -5,7 +5,7 @@
 
 <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>SHORA GAMES | Ninja Run</title>
 
@@ -502,84 +502,17 @@ Your browser does not support HTML5.
 
 <script>
 
-/* ============================================================
-   DEVICE-RESPONSIVE CANVAS SCALING (letterbox, aspect-locked)
-   ------------------------------------------------------------
-   The game's fullscreen_mode is 0 ("Off"), so Construct 2's own
-   runtime.setSize() silently ignores every resize call unless we
-   pass force=true AND give it dimensions that preserve the
-   original 1280x720 aspect ratio. If we don't lock the aspect
-   ratio, the canvas stretches non-uniformly and every button's
-   real screen position drifts away from where the engine thinks
-   it is -- which is exactly what breaks Play/Restart/Help on
-   phones and tablets. This function is the fix: it always hands
-   the engine a size with the same aspect ratio as the original
-   1280x720 canvas, so the engine's own internal coordinate math
-   (canvasToLayer / layerToCanvas) stays correct on every device,
-   and #c2canvasdiv's flex-centering (already set on html,body)
-   centers the result automatically -- no manual positioning
-   needed, and no other layout rule has to change.
-   ============================================================ */
-
-var GAME_W = 1280;
-var GAME_H = 720;
-var GAME_ASPECT = GAME_W / GAME_H;
-var _resizeDebounce = null;
-
-function fitCanvasToScreen(){
-
-    var runtime = (typeof cr_getC2Runtime === "function") ? cr_getC2Runtime() : null;
-    if (!runtime) return;
-
-    var availW = window.innerWidth;
-    var availH = window.innerHeight;
-    if (availW <= 0 || availH <= 0) return;
-
-    var availAspect = availW / availH;
-
-    var displayW, displayH;
-    if (availAspect > GAME_ASPECT){
-        /* screen wider than the game -- letterbox left/right */
-        displayH = availH;
-        displayW = displayH * GAME_ASPECT;
-    } else {
-        /* screen narrower/taller than the game -- letterbox top/bottom */
-        displayW = availW;
-        displayH = displayW / GAME_ASPECT;
-    }
-
-    displayW = Math.round(displayW);
-    displayH = Math.round(displayH);
-
-    /* force=true is required: it's the only way setSize() actually
-       runs while fullscreen_mode is 0. This also updates the
-       runtime's internal width/height that Mouse/Touch coordinate
-       conversion relies on, so on-screen buttons and tap targets
-       stay mapped correctly no matter the device or orientation. */
-    runtime["setSize"](displayW, displayH, true);
-}
-
-function scheduleFitCanvas(){
-    if (_resizeDebounce) clearTimeout(_resizeDebounce);
-    _resizeDebounce = setTimeout(fitCanvasToScreen, 60);
-}
-
 jQuery(window).resize(function(){
-    scheduleFitCanvas();
-});
 
-window.addEventListener("orientationchange", function(){
-    /* mobile browsers report a stale innerWidth/innerHeight for a
-       moment right after rotating, so re-check a couple of times */
-    setTimeout(fitCanvasToScreen, 100);
-    setTimeout(fitCanvasToScreen, 400);
-});
+cr_sizeCanvas(
 
-if (window.visualViewport){
-    window.visualViewport.addEventListener("resize", function(){
-        scheduleFitCanvas();
-    });
-}
+jQuery(window).width(),
+
+jQuery(window).height()
+
+);
+
+});
 
 setTimeout(function(){
 
@@ -592,13 +525,6 @@ document.getElementById("loader").style.display="none";
 document.getElementById("c2canvasdiv").style.display="block";
 
 cr_createRuntime("c2canvas");
-
-/* size immediately on creation, then re-check shortly after in
-   case the browser was still settling viewport dimensions
-   (address bar show/hide, keyboard, etc.) */
-fitCanvasToScreen();
-setTimeout(fitCanvasToScreen, 50);
-setTimeout(fitCanvasToScreen, 300);
 
 },800);
 
