@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* ===== ALL STYLES (same as before - keeping it concise) ===== */
+        /* ===== ALL STYLES ===== */
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -463,7 +463,7 @@
             margin-left: 2px;
         }
 
-        /* ===== ALWAYS PLAYED BLOCKED BUTTON ===== */
+        /* ===== ALREADY PLAYED / GAME STARTED BLOCKED BUTTON ===== */
         .btn-card-already-played {
             background: rgba(255, 77, 109, 0.15);
             color: var(--danger);
@@ -488,17 +488,24 @@
             transform: none !important;
             box-shadow: none !important;
         }
+        
+        /* ===== PLAY NOW BUTTON ===== */
         .btn-card-play {
             background: linear-gradient(135deg, var(--gold), #FFA000);
             color: #000;
+            font-weight: 700;
         }
-        .btn-card-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
+        .btn-card-play:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); 
+        }
         .btn-card-play:disabled {
             opacity: 0.5;
             cursor: not-allowed;
             transform: none !important;
             box-shadow: none !important;
         }
+        
         .btn-card-blocked {
             background: rgba(255, 77, 109, 0.1);
             color: var(--danger);
@@ -517,17 +524,21 @@
             border: 1px solid rgba(255, 200, 87, 0.2);
             cursor: not-allowed;
         }
+        
+        /* ===== RANKINGS BUTTON - Enhanced ===== */
         .btn-card-rankings {
-            background: rgba(0, 191, 255, 0.1);
-            color: var(--primary);
-            border: 1px solid rgba(0, 191, 255, 0.15);
-            flex: 0.5;
-            min-width: auto;
-            padding: 8px 12px;
+            background: linear-gradient(135deg, #FFD700, #FFA000);
+            color: #000;
+            border: 1px solid rgba(255, 215, 0, 0.3);
+            flex: 1 !important;
+            font-weight: 700;
         }
-        .btn-card-rankings:hover { 
-            background: rgba(0, 191, 255, 0.2);
+        .btn-card-rankings:hover {
             transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
+        .btn-card-rankings i {
+            color: #000;
         }
 
         .tournament-card .card-body .card-players {
@@ -1615,113 +1626,6 @@
 
     </div>
 
-    <!-- ===== RANKINGS MODAL ===== -->
-    <div class="rankings-modal-overlay" id="rankingsModal">
-        <div class="rankings-modal">
-            <div class="rankings-header">
-                <div>
-                    <h2>🏆 <span id="rankingsTournamentName">Tournament</span></h2>
-                    <div class="rankings-subtitle" id="rankingsSubtitle">Live Rankings - Updated in Real-time</div>
-                </div>
-                <button class="rankings-close" onclick="closeRankingsModal()">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-
-            <!-- Live Update Indicator -->
-            <div class="live-indicator">
-                <span class="live-dot"></span>
-                <span>LIVE UPDATES</span>
-                <span class="update-time" id="updateTime">Just now</span>
-            </div>
-
-            <!-- Podium Section -->
-            <div class="podium-section" id="podiumSection">
-                <div class="podium">
-                    <div class="podium-place second">
-                        <div class="podium-rank">🥈</div>
-                        <div class="podium-avatar" id="secondAvatar">👤</div>
-                        <div class="podium-name" id="secondName">-</div>
-                        <div class="podium-score" id="secondScore">0</div>
-                        <div class="podium-position">2nd</div>
-                    </div>
-                    <div class="podium-place first">
-                        <div class="podium-rank">🥇</div>
-                        <div class="podium-avatar" id="firstAvatar">👤</div>
-                        <div class="podium-name" id="firstName">-</div>
-                        <div class="podium-score" id="firstScore">0</div>
-                        <div class="podium-position">1st</div>
-                    </div>
-                    <div class="podium-place third">
-                        <div class="podium-rank">🥉</div>
-                        <div class="podium-avatar" id="thirdAvatar">👤</div>
-                        <div class="podium-name" id="thirdName">-</div>
-                        <div class="podium-score" id="thirdScore">0</div>
-                        <div class="podium-position">3rd</div>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Prize Distribution Summary -->
-            <div class="prize-summary-bar" id="prizeSummaryBar">
-                <div class="prize-item">
-                    <span class="prize-label">🏅 Prize Pool</span>
-                    <span class="prize-value" id="prizePoolDisplay">0 RWF</span>
-                </div>
-                <div class="prize-item">
-                    <span class="prize-label">🥇 1st</span>
-                    <span class="prize-value gold" id="firstPrize">0 RWF</span>
-                </div>
-                <div class="prize-item">
-                    <span class="prize-label">🥈 2nd</span>
-                    <span class="prize-value silver" id="secondPrize">0 RWF</span>
-                </div>
-                <div class="prize-item">
-                    <span class="prize-label">🥉 3rd</span>
-                    <span class="prize-value bronze" id="thirdPrize">0 RWF</span>
-                </div>
-            </div>
-
-            <!-- Full Rankings Table -->
-            <div class="rankings-table-container">
-                <table class="rankings-table" id="rankingsTable">
-                    <thead>
-                        <tr>
-                            <th>#</th>
-                            <th>Player</th>
-                            <th>Score</th>
-                            <th>Change</th>
-                            <th>Prize</th>
-                        </tr>
-                    </thead>
-                    <tbody id="rankingsBody">
-                        <tr><td colspan="5" style="text-align:center;padding:40px;">
-                            <div class="loading-spinner" style="display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top:3px solid var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-                            <p style="margin-top:12px;color:var(--muted);">Loading rankings...</p>
-                        </td></tr>
-                    </tbody>
-                </table>
-            </div>
-
-            <!-- Champion Line -->
-            <div class="champion-line">
-                <div class="champion-line-text">
-                    🏆 <span id="championCount">Top 3</span> Prize Winners
-                </div>
-                <div class="champion-line-bar"></div>
-            </div>
-
-            <div class="rankings-actions">
-                <button class="btn btn-close-rankings" onclick="closeRankingsModal()">
-                    <i class="fas fa-times"></i> Close
-                </button>
-                <button class="btn btn-refresh-rankings" onclick="refreshRankings()">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
-        </div>
-    </div>
-
     <!-- ===== DEMO MODAL ===== -->
     <div class="demo-modal-overlay" id="demoModal">
         <div class="demo-modal">
@@ -1935,7 +1839,7 @@
         });
 
         // ========================================
-        // LOAD USER DATA
+        // LOAD USER DATA - Updated with hasStartedGame
         // ========================================
 
         async function loadUserData(uid) {
@@ -1951,7 +1855,8 @@
                         phone: data.phone || '',
                         hasPlayedCurrentEvent: data.hasPlayedCurrentEvent || false,
                         currentEventId: data.currentEventId || null,
-                        hasPracticed: data.hasPracticed || false
+                        hasPracticed: data.hasPracticed || false,
+                        hasStartedGame: data.hasStartedGame || false  // NEW: Track if user clicked Play Now
                     };
                     
                     if (userData.hasPlayedCurrentEvent && userData.currentEventId) {
@@ -1960,10 +1865,12 @@
                         if (!eventSnapshot.exists() || eventSnapshot.val().status === 'ended') {
                             await update(ref(db, `users/${uid}`), {
                                 hasPlayedCurrentEvent: false,
-                                currentEventId: null
+                                currentEventId: null,
+                                hasStartedGame: false
                             });
                             userData.hasPlayedCurrentEvent = false;
                             userData.currentEventId = null;
+                            userData.hasStartedGame = false;
                         }
                     }
                 }
@@ -2151,6 +2058,11 @@
                     tournament.players[currentUser.uid] && 
                     tournament.players[currentUser.uid].hasPlayed === true;
                 
+                // NEW: Check if user has started this specific tournament
+                const hasStartedThisTournament = currentUser && 
+                    userData.hasStartedGame === true && 
+                    userData.currentEventId === tournament.id;
+                
                 const isFull = playerCount >= maxPlayers;
                 
                 // ===== BUILD PRIZE DISPLAY HTML =====
@@ -2213,22 +2125,20 @@
                 // ===== ACTION BUTTON - UPDATED LOGIC =====
                 let buttonHtml = '';
                 
-                // Check if user has already played this specific tournament
-                const hasPlayedThisTournament = currentUser && tournament.players && 
-                    tournament.players[currentUser.uid] && 
-                    tournament.players[currentUser.uid].hasPlayed === true;
+                // Check if user has already played OR started this specific tournament
+                const isBlocked = hasStartedThisTournament || userHasPlayedThisTournament;
                 
-                if (hasPlayedThisTournament) {
-                    // User already played - show "Already Played" button (disabled)
+                if (isBlocked) {
+                    // User already started or played - show disabled button
                     buttonHtml = `
                         <button class="btn btn-card-already-played" disabled>
-                            <i class="fas fa-check-circle"></i> Already Played
+                            <i class="fas fa-ban"></i> ${userHasPlayedThisTournament ? 'Already Played' : 'Game Started'}
                         </button>
                     `;
                 } else if (isEnded) {
-                    // Tournament ended - show Rankings button only (no join/play)
+                    // Tournament ended - show Rankings button only
                     buttonHtml = `
-                        <button class="btn btn-card-view" onclick="viewTournamentDetails('${tournament.id}')">
+                        <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'">
                             <i class="fas fa-trophy"></i> View Rankings
                         </button>
                     `;
@@ -2240,7 +2150,7 @@
                     `;
                 } else if (isLive && !isLocked) {
                     if (userHasJoined) {
-                        // User joined but hasn't played yet - show Play Now
+                        // User joined but hasn't started - show Play Now
                         buttonHtml = `
                             <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
                                 <i class="fas fa-play"></i> Play Now
@@ -2339,10 +2249,12 @@
                             <div class="card-actions">
                                 ${demoButtonHtml}
                                 ${buttonHtml}
-                                <button class="btn btn-card-rankings" onclick="viewRankings('${tournament.id}')" title="View Rankings">
-                                    <i class="fas fa-ranking-star"></i>
+                                <!-- ===== SINGLE RANKINGS BUTTON - Redirects to rankings.html ===== -->
+                                <button class="btn btn-card-rankings" onclick="window.location.href='rankings.html?id=${tournament.id}'" title="View Full Rankings">
+                                    <i class="fas fa-trophy"></i> Rankings
                                 </button>
-                                <button class="btn btn-card-view" onclick="viewTournamentDetails('${tournament.id}')" style="flex:0.4;min-width:auto;padding:8px 12px;">
+                                <!-- ===== INFO BUTTON - Shows payout information ===== -->
+                                <button class="btn btn-card-view" onclick="showTournamentInfo('${tournament.id}')" style="flex:0.4;min-width:auto;padding:8px 12px;" title="Tournament Info & Payout">
                                     <i class="fas fa-info-circle"></i>
                                 </button>
                             </div>
@@ -2358,6 +2270,65 @@
                 }
             });
         }
+
+        // ========================================
+        // SHOW TOURNAMENT INFO - Updated with Payout Information
+        // ========================================
+
+        window.showTournamentInfo = function(tournamentId) {
+            const tournament = allTournaments.find(t => t.id === tournamentId);
+            if (!tournament) {
+                showToast('Tournament not found', 'error');
+                return;
+            }
+            
+            const players = tournament.players ? Object.values(tournament.players) : [];
+            const playerList = players.length > 0 ? 
+                players.map(p => `- ${p.username || 'Anonymous'} (Score: ${p.score || 0})`).join('\n') :
+                'No players yet';
+            
+            let prizeDetails = '';
+            const prizeDist = tournament.prizeDistribution || {};
+            for (const [rank, amount] of Object.entries(prizeDist)) {
+                const rankNames = {
+                    1: '🥇 1st', 2: '🥈 2nd', 3: '🥉 3rd',
+                    4: '4th', 5: '5th', 6: '6th', 7: '7th', 8: '8th', 9: '9th', 10: '10th'
+                };
+                prizeDetails += `\n${rankNames[rank] || rank + 'th'}: ${amount.toLocaleString()} RWF`;
+            }
+            
+            const message = `
+        🏆 ${tournament.name}
+        ━━━━━━━━━━━━━━━━━━━━━━
+        🎮 Game: ${tournament.game}
+        📅 Status: ${tournament.status.toUpperCase()}
+        💰 Entry Fee: ${tournament.entryFee.toLocaleString()} RWF
+        🏅 Prize Pool: ${tournament.prizePool.toLocaleString()} RWF
+        👥 Players: ${tournament.currentPlayers}/${tournament.maxPlayers}
+        ⏱️ Duration: ${tournament.duration} minutes
+        ${tournament.locked ? '🔒 Locked' : '🔓 Open'}
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        🎁 PRIZE DISTRIBUTION:
+        ${prizeDetails || 'No prize distribution set'}
+        ${tournament.participationBonus ? '\n🎁 Participation Bonus Available!' : ''}
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        💰 PAYOUT INFORMATION:
+        • Winners are paid AUTOMATICALLY
+        • Payouts are sent directly to your wallet
+        • Payments are processed within 24 hours
+        • Platform fee: ${tournament.platformFee || 10}%
+        • Winners are determined by highest score
+        • In case of a tie, the player who finished first wins
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        👥 Players List:
+        ${playerList}
+            `;
+            
+            alert(message);
+        };
 
         // ========================================
         // COUNTDOWN TIMER
@@ -2436,10 +2407,11 @@
                             if (usersSnapshot.exists()) {
                                 const users = usersSnapshot.val();
                                 for (const [uid, user] of Object.entries(users)) {
-                                    if (user.currentEventId === timerId || user.hasPlayedCurrentEvent === true) {
+                                    if (user.currentEventId === timerId || user.hasPlayedCurrentEvent === true || user.hasStartedGame === true) {
                                         await update(ref(db, `users/${uid}`), {
                                             hasPlayedCurrentEvent: false,
-                                            currentEventId: null
+                                            currentEventId: null,
+                                            hasStartedGame: false
                                         });
                                     }
                                 }
@@ -2490,211 +2462,6 @@
                     }
                 }
             }, 1000);
-        }
-
-        // ========================================
-        // RANKINGS SYSTEM
-        // ========================================
-
-        window.viewRankings = function(tournamentId) {
-            currentRankingsTournamentId = tournamentId;
-            const tournament = allTournaments.find(t => t.id === tournamentId);
-            if (!tournament) {
-                showToast('Tournament not found', 'error');
-                return;
-            }
-
-            document.getElementById('rankingsTournamentName').textContent = tournament.name;
-            document.getElementById('rankingsSubtitle').textContent = `${tournament.status.toUpperCase()} - ${tournament.currentPlayers || 0} players`;
-
-            // Show prize info
-            document.getElementById('prizePoolDisplay').textContent = `${tournament.prizePool || 0} RWF`;
-            
-            const prizeDist = tournament.prizeDistribution || {};
-            document.getElementById('firstPrize').textContent = `${prizeDist[1] || 0} RWF`;
-            document.getElementById('secondPrize').textContent = `${prizeDist[2] || 0} RWF`;
-            document.getElementById('thirdPrize').textContent = `${prizeDist[3] || 0} RWF`;
-
-            const winnerCount = Object.keys(prizeDist).length || 3;
-            document.getElementById('championCount').textContent = `Top ${winnerCount}`;
-
-            document.getElementById('rankingsModal').classList.add('show');
-            loadRankings(tournamentId);
-
-            // Start auto-refresh
-            if (rankingsInterval) clearInterval(rankingsInterval);
-            rankingsInterval = setInterval(() => {
-                if (document.getElementById('rankingsModal').classList.contains('show')) {
-                    loadRankings(tournamentId);
-                }
-            }, 10000);
-        };
-
-        window.closeRankingsModal = function() {
-            document.getElementById('rankingsModal').classList.remove('show');
-            if (rankingsInterval) {
-                clearInterval(rankingsInterval);
-                rankingsInterval = null;
-            }
-            currentRankingsTournamentId = null;
-        };
-
-        window.refreshRankings = function() {
-            if (currentRankingsTournamentId) {
-                loadRankings(currentRankingsTournamentId);
-                showToast('🔄 Rankings refreshed!', 'success');
-            }
-        };
-
-        async function loadRankings(tournamentId) {
-            const db = window.db;
-            if (!db) return;
-
-            try {
-                // Try to get rankings from history first
-                let rankingsRef = ref(db, `tournament_rankings/${tournamentId}`);
-                let snapshot = await get(rankingsRef);
-                
-                let tournamentData;
-                let playersData;
-                
-                if (snapshot.exists()) {
-                    // Use saved rankings
-                    const data = snapshot.val();
-                    tournamentData = {
-                        name: data.tournamentName || 'Tournament',
-                        prizePool: data.prizePool || 0,
-                        prizeDistribution: data.prizeDistribution || {}
-                    };
-                    playersData = data.players || {};
-                } else {
-                    // Get from current tournament
-                    const tournamentRef = ref(db, `tournaments/${tournamentId}`);
-                    snapshot = await get(tournamentRef);
-                    
-                    if (!snapshot.exists()) {
-                        showToast('Tournament data not found', 'error');
-                        return;
-                    }
-                    
-                    const data = snapshot.val();
-                    tournamentData = {
-                        name: data.name || 'Tournament',
-                        prizePool: data.prizePool || 0,
-                        prizeDistribution: data.prizeDistribution || {}
-                    };
-                    playersData = data.players || {};
-                }
-                
-                // Convert players to array and sort by score
-                const playerList = Object.entries(playersData).map(([uid, data]) => ({
-                    uid: uid,
-                    username: data.username || 'Anonymous',
-                    score: data.score || 0,
-                    hasPlayed: data.hasPlayed || false,
-                    joinedAt: data.joinedAt || new Date().toISOString()
-                }));
-
-                // Sort by score (highest first)
-                playerList.sort((a, b) => b.score - a.score);
-
-                // Update podium
-                updatePodium(playerList, tournamentData.prizeDistribution);
-
-                // Update table
-                updateRankingsTable(playerList, tournamentData.prizeDistribution);
-
-                // Update timestamp
-                document.getElementById('updateTime').textContent = new Date().toLocaleTimeString();
-
-            } catch (error) {
-                console.error('Error loading rankings:', error);
-                showToast('Error loading rankings', 'error');
-            }
-        }
-
-        function updatePodium(playerList, prizeDist) {
-            const top3 = playerList.slice(0, 3);
-            
-            const defaultData = { username: '-', score: 0 };
-            
-            const first = top3[0] || defaultData;
-            const second = top3[1] || defaultData;
-            const third = top3[2] || defaultData;
-
-            document.getElementById('firstName').textContent = first.username;
-            document.getElementById('firstScore').textContent = first.score.toLocaleString();
-            document.getElementById('firstAvatar').textContent = first.username.charAt(0).toUpperCase() || '👤';
-
-            document.getElementById('secondName').textContent = second.username;
-            document.getElementById('secondScore').textContent = second.score.toLocaleString();
-            document.getElementById('secondAvatar').textContent = second.username.charAt(0).toUpperCase() || '👤';
-
-            document.getElementById('thirdName').textContent = third.username;
-            document.getElementById('thirdScore').textContent = third.score.toLocaleString();
-            document.getElementById('thirdAvatar').textContent = third.username.charAt(0).toUpperCase() || '👤';
-        }
-
-        function updateRankingsTable(playerList, prizeDist) {
-            const tbody = document.getElementById('rankingsBody');
-            
-            if (playerList.length === 0) {
-                tbody.innerHTML = `
-                    <tr><td colspan="5" style="text-align:center;padding:40px;color:var(--muted);">
-                        <i class="fas fa-users" style="font-size:2rem;display:block;margin-bottom:10px;opacity:0.3;"></i>
-                        No players have joined yet
-                    </td></tr>
-                `;
-                return;
-            }
-
-            const winnerCount = Object.keys(prizeDist).length;
-
-            let html = '';
-            playerList.forEach((player, index) => {
-                const rank = index + 1;
-                const isWinner = rank <= winnerCount;
-                const prizeAmount = prizeDist[rank] || 0;
-                
-                let rankClass = '';
-                if (rank === 1) rankClass = 'gold';
-                else if (rank === 2) rankClass = 'silver';
-                else if (rank === 3) rankClass = 'bronze';
-                
-                // Simulate change for demo
-                const change = Math.floor(Math.random() * 3) - 1;
-                let changeHtml = '';
-                if (change > 0) {
-                    changeHtml = `<span class="change-up"><i class="fas fa-arrow-up"></i> ${change}</span>`;
-                } else if (change < 0) {
-                    changeHtml = `<span class="change-down"><i class="fas fa-arrow-down"></i> ${Math.abs(change)}</span>`;
-                } else {
-                    changeHtml = `<span class="change-same"><i class="fas fa-minus"></i></span>`;
-                }
-
-                const medalEmojis = { 1: '🥇', 2: '🥈', 3: '🥉' };
-                const rankDisplay = medalEmojis[rank] || `#${rank}`;
-
-                const championClass = isWinner ? 'champion-row' : '';
-
-                html += `
-                    <tr class="${championClass}">
-                        <td><span class="rank ${rankClass}">${rankDisplay}</span></td>
-                        <td>
-                            <div class="player-cell">
-                                <div class="player-avatar">${player.username.charAt(0).toUpperCase() || '👤'}</div>
-                                <span class="player-name">${player.username}</span>
-                                ${!player.hasPlayed ? '<span style="font-size:0.6rem;color:var(--muted);margin-left:4px;">(pending)</span>' : ''}
-                            </div>
-                        </td>
-                        <td class="score">${player.score.toLocaleString()}</td>
-                        <td>${changeHtml}</td>
-                        <td class="prize-amount">${isWinner ? prizeAmount.toLocaleString() + ' RWF' : '-'}</td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
         }
 
         // ========================================
@@ -2916,7 +2683,7 @@
         };
 
         // ========================================
-        // PLAY GAME
+        // PLAY GAME - Updated with hasStartedGame flag
         // ========================================
 
         window.playGame = async function(tournamentId) {
@@ -2950,6 +2717,19 @@
             if (tournament.locked) {
                 showToast('Tournament is locked', 'error');
                 return;
+            }
+            
+            // ===== NEW: Set hasStartedGame flag IMMEDIATELY =====
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    hasStartedGame: true
+                });
+                userData.hasStartedGame = true;
+                userData.currentEventId = tournamentId;
+                console.log('✅ Game start recorded - button will be disabled on refresh');
+            } catch (error) {
+                console.error('Error setting hasStartedGame:', error);
+                // Continue anyway - don't block the user
             }
             
             // OPEN TOURNAMENT MODE - pass event and user parameters
@@ -2997,14 +2777,15 @@
         }
 
         // ========================================
-        // UPDATE USER PLAYED STATUS
+        // UPDATE USER PLAYED STATUS - Updated to clear hasStartedGame
         // ========================================
 
         async function updateUserPlayed(tournamentId, userId, score) {
             try {
                 await update(ref(db, `users/${userId}`), {
                     hasPlayedCurrentEvent: true,
-                    currentEventId: tournamentId
+                    currentEventId: tournamentId,
+                    hasStartedGame: false  // Clear this flag once game is complete
                 });
                 
                 await update(ref(db, `tournaments/${tournamentId}/players/${userId}`), {
@@ -3014,6 +2795,7 @@
                 
                 userData.hasPlayedCurrentEvent = true;
                 userData.currentEventId = tournamentId;
+                userData.hasStartedGame = false;
                 updateUI();
                 showToast(`✅ Score: ${score} coins submitted!`, 'success');
                 loadTournaments();
@@ -3023,52 +2805,6 @@
                 showToast('⚠️ Error saving score. Please contact support.', 'error');
             }
         }
-
-        // ========================================
-        // VIEW TOURNAMENT DETAILS
-        // ========================================
-
-        window.viewTournamentDetails = function(tournamentId) {
-            const tournament = allTournaments.find(t => t.id === tournamentId);
-            if (!tournament) {
-                showToast('Tournament not found', 'error');
-                return;
-            }
-            
-            const players = tournament.players ? Object.values(tournament.players) : [];
-            const playerList = players.length > 0 ? 
-                players.map(p => `- ${p.username || 'Anonymous'} (Score: ${p.score || 0})`).join('\n') :
-                'No players yet';
-            
-            let prizeDetails = '';
-            const prizeDist = tournament.prizeDistribution || {};
-            for (const [rank, amount] of Object.entries(prizeDist)) {
-                const rankNames = {
-                    1: '🥇 1st', 2: '🥈 2nd', 3: '🥉 3rd',
-                    4: '4th', 5: '5th', 6: '6th', 7: '7th', 8: '8th', 9: '9th', 10: '10th'
-                };
-                prizeDetails += `\n${rankNames[rank] || rank + 'th'}: ${amount} RWF`;
-            }
-            
-            alert(`
-                🏆 ${tournament.name}
-                🎮 Game: ${tournament.game}
-                📅 Status: ${tournament.status.toUpperCase()}
-                💰 Entry Fee: ${tournament.entryFee} RWF
-                🏅 Prize Pool: ${tournament.prizePool} RWF
-                👥 Players: ${tournament.currentPlayers}/${tournament.maxPlayers}
-                ⏱️ Duration: ${tournament.duration} minutes
-                ${tournament.description ? `📝 ${tournament.description}` : ''}
-                ${tournament.locked ? '🔒 Locked' : '🔓 Open'}
-                
-                🎁 Prize Distribution:
-                ${prizeDetails || 'No prize distribution set'}
-                ${tournament.participationBonus ? '\n🎁 Participation Bonus Available!' : ''}
-                
-                👤 Players List:
-                ${playerList}
-            `);
-        };
 
         // ========================================
         // UPDATE BADGE
@@ -3126,12 +2862,12 @@
         console.log('%c🏆 SHORA GAMES - TOURNAMENTS (UPDATED)', 'color: #FFD700; font-size: 20px; font-weight: bold;');
         console.log('%c🎯 One Play Per Tournament Rule: ENFORCED', 'color: #FF4D6D; font-size: 14px;');
         console.log('%c🎮 Demo Button: ALWAYS VISIBLE', 'color: #00BFFF; font-size: 14px;');
-        console.log('%c📊 Rankings: Always Available', 'color: #00E676; font-size: 14px;');
+        console.log('%c📊 Rankings: Redirects to rankings.html', 'color: #00E676; font-size: 14px;');
         console.log('%c🔒 Already Played: Blocked Until New Event', 'color: #FFC857; font-size: 14px;');
+        console.log('%c💰 Payout Info: Auto-payments to winners', 'color: #FFD700; font-size: 14px;');
         
         window.joinTournament = joinTournament;
         window.playGame = playGame;
-        window.viewTournamentDetails = viewTournamentDetails;
         window.openDemoModal = openDemoModal;
         window.closeDemoModal = closeDemoModal;
         window.playDemo = playDemo;
@@ -3143,9 +2879,7 @@
         window.closeReminderModal = closeReminderModal;
         window.closeReminderAndPractice = closeReminderAndPractice;
         window.closeReminderAndJoin = closeReminderAndJoin;
-        window.viewRankings = viewRankings;
-        window.closeRankingsModal = closeRankingsModal;
-        window.refreshRankings = refreshRankings;
+        window.showTournamentInfo = showTournamentInfo;
     </script>
 
 </body>
