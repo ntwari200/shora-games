@@ -8,7 +8,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ... (all your styles) ... */
+        /* ===== ALL STYLES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
         html, body {
             width: 100%;
@@ -60,25 +60,171 @@
         .warning-banner .warning-link i { font-size: clamp(0.5rem, 1vw, 0.65rem); }
         .warning-banner .warning-close { background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.05); color: rgba(255, 255, 255, 0.3); cursor: pointer; font-size: clamp(0.6rem, 1vw, 0.75rem); transition: all 0.3s ease; padding: 4px 12px; border-radius: 30px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-family: 'Inter', sans-serif; }
         .warning-banner .warning-close:hover { color: #fff; background: rgba(255, 255, 255, 0.1); border-color: rgba(255, 255, 255, 0.1); }
-        .game-header { position: relative; z-index: 100; background: rgba(6, 17, 31, 0.92); backdrop-filter: blur(12px); padding: 8px 16px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid rgba(0, 191, 255, 0.08); flex-shrink: 0; min-height: 56px; gap: 8px; }
-        .game-header .title { font-family: 'Orbitron', monospace; font-size: 0.9rem; color: #00BFFF; display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+        
+        /* ===== GAME HEADER ===== */
+        .game-header { 
+            position: relative; 
+            z-index: 100; 
+            background: rgba(6, 17, 31, 0.92); 
+            backdrop-filter: blur(12px); 
+            padding: 8px 16px; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 1px solid rgba(0, 191, 255, 0.08); 
+            flex-shrink: 0; 
+            min-height: 56px; 
+            gap: 8px; 
+            flex-wrap: wrap;
+        }
+        .game-header .title { 
+            font-family: 'Orbitron', monospace; 
+            font-size: 0.9rem; 
+            color: #00BFFF; 
+            display: flex; 
+            align-items: center; 
+            gap: 6px; 
+            white-space: nowrap; 
+        }
         .game-header .title i { color: #FFD700; }
-        .game-header .title .sub { font-size: 0.5rem; color: #A7B5C5; font-family: 'Inter', sans-serif; }
-        .score-display { display: flex; align-items: center; gap: 4px; background: rgba(0, 191, 255, 0.06); border: 1px solid rgba(0, 191, 255, 0.1); border-radius: 12px; padding: 4px 12px; font-family: 'Orbitron', monospace; font-size: 0.85rem; color: #FFD700; }
+        .game-header .title .sub { 
+            font-size: 0.5rem; 
+            color: #A7B5C5; 
+            font-family: 'Inter', sans-serif; 
+        }
+        
+        /* ===== SCORE DISPLAY (Coins) ===== */
+        .score-display { 
+            display: flex; 
+            align-items: center; 
+            gap: 4px; 
+            background: rgba(0, 191, 255, 0.06); 
+            border: 1px solid rgba(0, 191, 255, 0.1); 
+            border-radius: 12px; 
+            padding: 4px 12px; 
+            font-family: 'Orbitron', monospace; 
+            font-size: 0.85rem; 
+            color: #FFD700; 
+        }
         .score-display i { color: #FFD700; font-size: 0.8rem; }
-        .score-display .score-value { font-weight: 700; min-width: 30px; text-align: center; color: #00E676; }
+        .score-display .score-value { 
+            font-weight: 700; 
+            min-width: 30px; 
+            text-align: center; 
+            color: #00E676; 
+        }
+
+        /* ===== TOURNAMENT COUNTDOWN TIMER ===== */
+        .tournament-timer {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid rgba(255, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: 4px 12px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+            color: #FF4D6D;
+            white-space: nowrap;
+            animation: timerGlow 2s ease-in-out infinite;
+        }
+        .tournament-timer i {
+            color: #FF4D6D;
+            font-size: 0.7rem;
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        .tournament-timer .time-value {
+            font-weight: 700;
+            min-width: 60px;
+            text-align: center;
+        }
+        .tournament-timer .time-label {
+            font-size: 0.5rem;
+            color: rgba(255, 77, 109, 0.6);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        .tournament-timer.urgent {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: rgba(255, 0, 0, 0.4);
+            animation: timerUrgent 0.5s ease-in-out infinite;
+        }
+        .tournament-timer.urgent .time-value {
+            color: #FF1744;
+        }
+        @keyframes timerGlow {
+            0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 0, 0.05); }
+            50% { box-shadow: 0 0 20px rgba(255, 0, 0, 0.15); }
+        }
+        @keyframes timerUrgent {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.7; transform: scale(0.98); }
+        }
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        /* ===== FINISH TIME DISPLAY ===== */
+        .finish-time-display {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.1);
+            border-radius: 8px;
+            padding: 4px 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem;
+            color: #A7B5C5;
+            white-space: nowrap;
+        }
+        .finish-time-display i {
+            color: #FFD700;
+            font-size: 0.6rem;
+        }
+        .finish-time-display .time-value {
+            font-weight: 600;
+            color: #FFD700;
+            min-width: 40px;
+            text-align: center;
+        }
+
+        /* ===== AUTO-SUBMIT BADGE ===== */
+        .auto-submit-badge {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 6px;
+            padding: 2px 8px;
+            font-size: 0.5rem;
+            color: #FFD700;
+            white-space: nowrap;
+            animation: pulse 2s ease-in-out infinite;
+        }
+        .auto-submit-badge i {
+            font-size: 0.5rem;
+        }
+
         .status-display { display: flex; align-items: center; gap: 6px; font-size: 0.65rem; color: #A7B5C5; }
         .status-display .dot { width: 8px; height: 8px; border-radius: 50%; background: #00E676; animation: pulse 1.5s infinite; display: inline-block; }
         @keyframes pulse { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.3; transform: scale(0.8); } }
         .status-display .dot.complete { background: #FFD700; animation: none; box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); }
         .status-display .dot.cheating { background: #FF4D6D; animation: none; box-shadow: 0 0 20px rgba(255, 77, 109, 0.3); }
+        
         .help-btn { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border-radius: 50%; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.03); color: #A7B5C5; cursor: pointer; transition: all 0.3s ease; font-size: 0.8rem; flex-shrink: 0; }
         .help-btn:hover { border-color: rgba(0, 191, 255, 0.3); color: #00BFFF; background: rgba(0, 191, 255, 0.05); transform: scale(1.1); }
+        
         .anti-cheat-badge { display: flex; align-items: center; gap: 6px; font-size: 0.55rem; color: rgba(0, 230, 118, 0.4); background: rgba(0, 230, 118, 0.03); padding: 2px 10px; border-radius: 20px; border: 1px solid rgba(0, 230, 118, 0.05); white-space: nowrap; }
         .anti-cheat-badge i { font-size: 0.5rem; }
         .anti-cheat-badge.active { color: #00E676; border-color: rgba(0, 230, 118, 0.2); }
+        
         #gameFrame { flex: 1; width: 100%; border: none; background: #000; min-height: 0; position: relative; }
         #gameFrame iframe { width: 100%; height: 100%; border: none; background: #000; }
+        
         #loadingOverlay { position: fixed; inset: 0; background: #06111F; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 1000; transition: opacity 0.5s ease; background: rgba(6, 17, 31, 0.95); backdrop-filter: blur(20px); padding: 20px; }
         #loadingOverlay.hidden { opacity: 0; pointer-events: none; }
         #loadingOverlay .spinner { width: clamp(40px, 8vw, 60px); height: clamp(40px, 8vw, 60px); border: 3px solid rgba(0, 191, 255, 0.1); border-top-color: #00BFFF; border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -86,10 +232,12 @@
         #loadingOverlay .text { margin-top: 16px; color: #A7B5C5; font-size: clamp(0.7rem, 2vw, 1rem); font-family: 'Orbitron', monospace; text-align: center; }
         #loadingOverlay .progress-bar { margin-top: 16px; width: clamp(150px, 40vw, 250px); height: 4px; background: rgba(255, 255, 255, 0.05); border-radius: 2px; overflow: hidden; }
         #loadingOverlay .progress-bar .fill { height: 100%; background: linear-gradient(90deg, #00BFFF, #6C63FF); border-radius: 2px; width: 0%; transition: width 0.3s ease; }
+        
         .toast-cyber { position: fixed; bottom: clamp(16px, 3vh, 40px); left: 50%; transform: translateX(-50%); background: rgba(6, 17, 31, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0, 230, 118, 0.3); border-radius: 50px; padding: clamp(8px, 1.5vh, 14px) clamp(16px, 3vw, 28px); color: #00E676; font-size: clamp(0.65rem, 1.5vw, 1rem); z-index: 9999; font-family: 'Inter', sans-serif; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); max-width: 90%; text-align: center; animation: slideUp 0.3s ease; }
         .toast-cyber.error { border-color: rgba(255, 77, 109, 0.3); color: #FF4D6D; }
         .toast-cyber.warning { border-color: rgba(255, 200, 87, 0.3); color: #FFD700; }
         @keyframes slideUp { from { opacity: 0; transform: translateX(-50%) translateY(20px); } to { opacity: 1; transform: translateX(-50%) translateY(0); } }
+        
         .guide-overlay { position: fixed; inset: 0; z-index: 9999; background: rgba(6, 17, 31, 0.92); backdrop-filter: blur(20px); display: none; align-items: center; justify-content: center; padding: 20px; animation: fadeIn 0.4s ease; }
         .guide-overlay.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
@@ -120,6 +268,7 @@
         .guide-nav .btn-prev:hover { background: rgba(255,255,255,0.08); }
         .guide-nav .btn-next { background: linear-gradient(135deg, #00BFFF, #6C63FF); color: #000; }
         .guide-nav .btn-next:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
+        
         .cheat-alert { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.15); backdrop-filter: blur(8px); z-index: 9998; display: none; align-items: center; justify-content: center; animation: fadeIn 0.5s ease; }
         .cheat-alert.active { display: flex; }
         .cheat-alert .cheat-modal { background: rgba(6, 17, 31, 0.95); border: 2px solid #FF4D6D; border-radius: 20px; padding: 40px; max-width: 420px; width: 90%; text-align: center; box-shadow: 0 0 60px rgba(255, 77, 109, 0.2); animation: shake 0.5s ease; }
@@ -130,6 +279,7 @@
         .cheat-alert .cheat-modal .cheat-detail { background: rgba(255, 77, 109, 0.05); border: 1px solid rgba(255, 77, 109, 0.1); border-radius: 8px; padding: 8px 16px; margin: 12px 0; font-family: 'Orbitron', monospace; font-size: 0.7rem; color: #FF4D6D; }
         .cheat-alert .cheat-modal .cheat-btn { background: linear-gradient(135deg, #FF4D6D, #D50000); border: none; color: #fff; padding: 10px 30px; border-radius: 10px; font-family: 'Inter', sans-serif; font-weight: 700; cursor: pointer; font-size: 0.85rem; transition: all 0.3s ease; margin-top: 8px; }
         .cheat-alert .cheat-modal .cheat-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 77, 109, 0.3); }
+        
         #gameOverOverlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.92); backdrop-filter: blur(16px); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 99999; font-family: 'Orbitron', monospace; color: #fff; animation: overlayFadeIn 0.5s ease; }
         #gameOverOverlay.active { display: flex; }
         @keyframes overlayFadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
@@ -227,23 +377,48 @@
             </div>
         </div>
 
+        <!-- ===== GAME HEADER ===== -->
         <div class="game-header">
             <div class="title">
                 <i class="fas fa-gamepad"></i>
                 <span>Ninja Run</span>
                 <span class="sub" id="modeLabel">| Tournament</span>
             </div>
+            
             <div class="score-display">
                 <i class="fas fa-star"></i>
                 <span class="score-value" id="scoreDisplay">0</span>
             </div>
+
+            <!-- ===== TOURNAMENT COUNTDOWN TIMER ===== -->
+            <div class="tournament-timer" id="tournamentTimer" style="display:none;">
+                <i class="fas fa-hourglass-end"></i>
+                <span class="time-label">Time Left</span>
+                <span class="time-value" id="timerDisplay">--:--</span>
+            </div>
+
+            <!-- ===== FINISH TIME DISPLAY ===== -->
+            <div class="finish-time-display" id="finishTimeDisplay" style="display:none;">
+                <i class="fas fa-clock"></i>
+                <span>Finish:</span>
+                <span class="time-value" id="finishTimeValue">--:--</span>
+            </div>
+
+            <!-- ===== AUTO-SUBMIT BADGE ===== -->
+            <div class="auto-submit-badge" id="autoSubmitBadge" style="display:none;">
+                <i class="fas fa-check-circle"></i>
+                <span>Auto-Submitted</span>
+            </div>
+
             <div class="status-display">
                 <span class="dot" id="statusDot"></span>
                 <span id="statusText">Loading...</span>
             </div>
+            
             <div class="anti-cheat-badge" id="antiCheatBadge">
                 <i class="fas fa-shield-alt"></i> <span id="antiCheatStatus">Active</span>
             </div>
+            
             <button class="help-btn" onclick="openGuide()">
                 <i class="fas fa-question"></i>
             </button>
@@ -328,7 +503,6 @@
         const USER_ID = params.get('user') || '';
         const DEMO_MODE = params.get('demo') === 'true';
 
-        // ===== CORRECT PATH: shora-games/frontend/games/ninja run/index.html =====
         const GAME_URL = 'games/ninja-run/index.html';
 
         const IS_TOURNAMENT_MODE = !DEMO_MODE && EVENT_ID && USER_ID;
@@ -337,10 +511,9 @@
         console.log('🎮 Mode:', IS_DEMO_MODE ? 'DEMO' : 'TOURNAMENT');
         console.log('📋 Event ID:', EVENT_ID || 'N/A');
         console.log('👤 User ID:', USER_ID || 'N/A');
-        console.log('📁 Game Path:', GAME_URL);
 
         // ============================================================
-        // SIDS FROM data.js (EXACT MATCH)
+        // SIDS
         // ============================================================
         const SIDS = {
             Player: 6015150563090787,
@@ -362,6 +535,15 @@
         let gameStartTime = Date.now();
         let redirectDone = false;
         let firstGameOver = true;
+        let autoSubmitTriggered = false;
+
+        // ===== Time Tracking =====
+        let gameStartTimestamp = 0;
+        let totalTimeSeconds = 0;
+        let finishTimestamp = null;
+        let timerAutoSubmitDone = false;
+        let tournamentTimerInterval = null;
+        let tournamentEndTime = null;
 
         // ============================================================
         // ANTI-CHEAT SYSTEM
@@ -470,6 +652,386 @@
         const antiCheat = new AntiCheatSystem();
 
         // ============================================================
+        // USER DATA
+        // ============================================================
+        let userData = { username: 'Player', phone: '' };
+
+        // ============================================================
+        // TIME TRACKING FUNCTIONS
+        // ============================================================
+
+        function markGameStart() {
+            if (gameStartTimestamp === 0) {
+                gameStartTimestamp = Date.now();
+                console.log('⏰ Game timer started');
+            }
+        }
+
+        function markGameEnd() {
+            if (totalTimeSeconds === 0 && gameStartTimestamp > 0) {
+                const endTime = Date.now();
+                totalTimeSeconds = Math.floor((endTime - gameStartTimestamp) / 1000);
+                finishTimestamp = new Date().toISOString();
+                console.log('⏰ Game ended. Time:', totalTimeSeconds, 'seconds at', finishTimestamp);
+            }
+        }
+
+        function getFinishTimeDisplay() {
+            if (totalTimeSeconds === 0) return '--:--';
+            const mins = Math.floor(totalTimeSeconds / 60);
+            const secs = totalTimeSeconds % 60;
+            return mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        }
+
+        function updateFinishTimeDisplay() {
+            const display = document.getElementById('finishTimeDisplay');
+            const value = document.getElementById('finishTimeValue');
+            if (totalTimeSeconds > 0) {
+                display.style.display = 'flex';
+                value.textContent = getFinishTimeDisplay();
+            }
+        }
+
+        // ============================================================
+        // STATE PERSISTENCE
+        // ============================================================
+
+        const SESSION_KEY = 'ninjaRunSession';
+
+        function saveGameState() {
+            if (IS_DEMO_MODE) return;
+            try {
+                const state = {
+                    score: gameScore,
+                    started: gameStarted,
+                    gameOver: gameOverDetected,
+                    startTime: gameStartTimestamp,
+                    timestamp: Date.now(),
+                    eventId: EVENT_ID,
+                    userId: USER_ID,
+                    totalTime: totalTimeSeconds,
+                    finishTime: finishTimestamp,
+                    antiCheatSummary: antiCheat.getSummary()
+                };
+                localStorage.setItem(SESSION_KEY, JSON.stringify(state));
+                sessionStorage.setItem(SESSION_KEY, JSON.stringify(state));
+                sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+            } catch (e) {
+                console.warn('⚠️ Could not save game state:', e);
+            }
+        }
+
+        function loadGameState() {
+            if (IS_DEMO_MODE) return null;
+            try {
+                let state = localStorage.getItem(SESSION_KEY);
+                if (!state) state = sessionStorage.getItem(SESSION_KEY);
+                if (!state) return null;
+                const parsed = JSON.parse(state);
+                const age = Date.now() - parsed.timestamp;
+                if (age > 600000) {
+                    clearGameState();
+                    return null;
+                }
+                if (parsed.eventId !== EVENT_ID || parsed.userId !== USER_ID) {
+                    clearGameState();
+                    return null;
+                }
+                if (sessionStorage.getItem('ninjaRunComplete') === 'true') {
+                    clearGameState();
+                    return null;
+                }
+                return parsed;
+            } catch (e) {
+                return null;
+            }
+        }
+
+        function clearGameState() {
+            localStorage.removeItem(SESSION_KEY);
+            sessionStorage.removeItem(SESSION_KEY);
+        }
+
+        // ============================================================
+        // TOURNAMENT COUNTDOWN TIMER
+        // ============================================================
+
+        async function fetchTournamentEndTime(eventId) {
+            if (!eventId || IS_DEMO_MODE) {
+                document.getElementById('tournamentTimer').style.display = 'none';
+                return;
+            }
+
+            try {
+                if (typeof firebase !== 'undefined' && firebase.database) {
+                    const db = firebase.database();
+                    const tournamentRef = db.ref(`tournaments/${eventId}`);
+                    const snapshot = await tournamentRef.once('value');
+                    if (snapshot.exists()) {
+                        const data = snapshot.val();
+                        if (data.endTime) {
+                            tournamentEndTime = new Date(data.endTime).getTime();
+                            startTournamentTimer();
+                            return;
+                        }
+                        if (data.duration) {
+                            tournamentEndTime = Date.now() + (data.duration * 60 * 1000);
+                            startTournamentTimer();
+                            return;
+                        }
+                    }
+                }
+                tournamentEndTime = Date.now() + (5 * 60 * 1000);
+                startTournamentTimer();
+            } catch (error) {
+                tournamentEndTime = Date.now() + (5 * 60 * 1000);
+                startTournamentTimer();
+            }
+        }
+
+        function startTournamentTimer() {
+            if (tournamentTimerInterval) clearInterval(tournamentTimerInterval);
+
+            const timerElement = document.getElementById('tournamentTimer');
+            const displayElement = document.getElementById('timerDisplay');
+            timerElement.style.display = 'flex';
+
+            tournamentTimerInterval = setInterval(async function() {
+                const now = Date.now();
+                const remaining = Math.max(0, tournamentEndTime - now);
+
+                if (remaining <= 0) {
+                    clearInterval(tournamentTimerInterval);
+                    tournamentTimerInterval = null;
+                    
+                    if (!timerAutoSubmitDone && !IS_DEMO_MODE) {
+                        timerAutoSubmitDone = true;
+                        console.log('⏰ Tournament time expired! Auto-submitting...');
+                        markGameEnd();
+                        const currentScore = gameScore || 0;
+                        await submitScore(currentScore, true);
+                        sessionStorage.setItem('ninjaRunScore', currentScore.toString());
+                        sessionStorage.setItem('ninjaRunPlayed', 'true');
+                        sessionStorage.setItem('ninjaRunFinalScore', currentScore.toString());
+                        sessionStorage.setItem('ninjaRunComplete', 'true');
+                        sessionStorage.setItem('ninjaRunTimerExpired', 'true');
+                        showToast('⏰ Tournament time ended! Score submitted.', 'warning');
+                        setTimeout(() => {
+                            window.location.href = `rankings.html?id=${EVENT_ID}`;
+                        }, 2000);
+                    }
+                    return;
+                }
+
+                const mins = Math.floor(remaining / 60000);
+                const secs = Math.floor((remaining % 60000) / 1000);
+                displayElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+                if (remaining < 60000) timerElement.classList.add('urgent');
+                else timerElement.classList.remove('urgent');
+
+            }, 1000);
+        }
+
+        // ============================================================
+        // AUTO-SUBMIT ON DISCONNECTION
+        // ============================================================
+
+        // Check for auto-submitted score on page load
+        function checkAutoSubmitStatus() {
+            if (IS_DEMO_MODE) return false;
+
+            const autoSubmitted = sessionStorage.getItem('ninjaRunAutoSubmitted') === 'true';
+            const complete = sessionStorage.getItem('ninjaRunComplete') === 'true';
+            const submittedScore = sessionStorage.getItem('ninjaRunFinalScore');
+            const disconnectTime = sessionStorage.getItem('ninjaRunDisconnectTime');
+
+            if (autoSubmitted || complete) {
+                const score = parseInt(submittedScore || '0');
+                console.log('📤 Found auto-submitted score:', score);
+                
+                // Show badge
+                const badge = document.getElementById('autoSubmitBadge');
+                badge.style.display = 'flex';
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> Auto-Submitted: ${score.toLocaleString()} coins`;
+                
+                showToast('✅ Score auto-submitted: ' + score.toLocaleString() + ' coins', 'success');
+                
+                // Clear flags
+                sessionStorage.removeItem('ninjaRunAutoSubmitted');
+                sessionStorage.removeItem('ninjaRunDisconnected');
+                sessionStorage.removeItem('ninjaRunDisconnectTime');
+                
+                // Redirect after showing message
+                setTimeout(() => {
+                    if (EVENT_ID) {
+                        window.location.href = `rankings.html?id=${EVENT_ID}`;
+                    } else {
+                        window.location.href = 'tournaments.html';
+                    }
+                }, 3000);
+                
+                return true;
+            }
+            return false;
+        }
+
+        // Handle page close
+        window.addEventListener('beforeunload', function(e) {
+            if (gameStarted && !scoreSubmitted && !IS_DEMO_MODE && !autoSubmitTriggered) {
+                console.log('🚨 Page closing - Auto-submitting current score...');
+                const currentScore = gameScore || 0;
+                markGameEnd();
+                
+                const data = JSON.stringify({
+                    tournament_id: EVENT_ID,
+                    user_id: USER_ID,
+                    username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                    phone: userData?.phone || '',
+                    score: currentScore,
+                    time_finished: totalTimeSeconds || 0,
+                    finished_at: finishTimestamp || new Date().toISOString(),
+                    auto_submitted: true,
+                    reason: 'page_closed'
+                });
+                
+                navigator.sendBeacon('https://shora-games-api.onrender.com/api/rankings/submit', data);
+                sessionStorage.setItem('ninjaRunScore', currentScore.toString());
+                sessionStorage.setItem('ninjaRunPlayed', 'true');
+                sessionStorage.setItem('ninjaRunFinalScore', currentScore.toString());
+                sessionStorage.setItem('ninjaRunComplete', 'true');
+                sessionStorage.setItem('ninjaRunAutoSubmitted', 'true');
+                sessionStorage.setItem('ninjaRunDisconnectTime', Date.now().toString());
+                autoSubmitTriggered = true;
+                console.log('📤 Score auto-submitted on page close:', currentScore);
+            }
+        });
+
+        // Handle internet disconnection
+        window.addEventListener('offline', function() {
+            console.log('📶 Internet disconnected!');
+            showToast('📶 Connection lost! Saving progress...', 'warning');
+            
+            if (gameStarted && !scoreSubmitted && !IS_DEMO_MODE) {
+                saveGameState();
+                const currentScore = gameScore || 0;
+                markGameEnd();
+                
+                const data = JSON.stringify({
+                    tournament_id: EVENT_ID,
+                    user_id: USER_ID,
+                    username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                    phone: userData?.phone || '',
+                    score: currentScore,
+                    time_finished: totalTimeSeconds || 0,
+                    finished_at: finishTimestamp || new Date().toISOString(),
+                    auto_submitted: true,
+                    reason: 'disconnected'
+                });
+                
+                try {
+                    navigator.sendBeacon('https://shora-games-api.onrender.com/api/rankings/submit', data);
+                    scoreSubmitted = true;
+                    autoSubmitTriggered = true;
+                    sessionStorage.setItem('ninjaRunScore', currentScore.toString());
+                    sessionStorage.setItem('ninjaRunPlayed', 'true');
+                    sessionStorage.setItem('ninjaRunFinalScore', currentScore.toString());
+                    sessionStorage.setItem('ninjaRunComplete', 'true');
+                    sessionStorage.setItem('ninjaRunAutoSubmitted', 'true');
+                    sessionStorage.setItem('ninjaRunDisconnectTime', Date.now().toString());
+                    console.log('📤 Score auto-submitted on disconnection:', currentScore);
+                } catch (e) {
+                    console.log('⚠️ Could not send beacon, score saved locally');
+                }
+            }
+        });
+
+        // Handle reconnection
+        window.addEventListener('online', function() {
+            console.log('📶 Internet reconnected!');
+            showToast('📶 Connection restored!', 'success');
+            
+            const autoSubmitted = sessionStorage.getItem('ninjaRunAutoSubmitted') === 'true';
+            const complete = sessionStorage.getItem('ninjaRunComplete') === 'true';
+            
+            if (autoSubmitted || complete) {
+                const submittedScore = sessionStorage.getItem('ninjaRunFinalScore') || '0';
+                showToast('✅ Score auto-submitted: ' + parseInt(submittedScore).toLocaleString() + ' coins', 'success');
+                sessionStorage.removeItem('ninjaRunDisconnected');
+                sessionStorage.removeItem('ninjaRunAutoSubmitted');
+                sessionStorage.removeItem('ninjaRunDisconnectTime');
+                
+                setTimeout(() => {
+                    if (EVENT_ID) {
+                        window.location.href = `rankings.html?id=${EVENT_ID}`;
+                    } else {
+                        window.location.href = 'tournaments.html';
+                    }
+                }, 3000);
+                return;
+            }
+            
+            if (!scoreSubmitted && !IS_DEMO_MODE) {
+                const savedState = loadGameState();
+                if (savedState) {
+                    gameScore = savedState.score;
+                    gameStarted = true;
+                    document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
+                    showToast('🔄 Resuming with ' + gameScore + ' coins', 'success');
+                    startScoreTracking();
+                }
+            }
+        });
+
+        // Tab hide detection - auto-submit after 2 seconds
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden && gameStarted && !scoreSubmitted && !IS_DEMO_MODE && !autoSubmitTriggered) {
+                setTimeout(() => {
+                    if (document.hidden && !scoreSubmitted && !autoSubmitTriggered) {
+                        console.log('🚨 Tab still hidden after 2s - Auto-submitting...');
+                        autoSubmitTriggered = true;
+                        const currentScore = gameScore || 0;
+                        markGameEnd();
+                        
+                        fetch('https://shora-games-api.onrender.com/api/rankings/submit', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                tournament_id: EVENT_ID,
+                                user_id: USER_ID,
+                                username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                                phone: userData?.phone || '',
+                                score: currentScore,
+                                time_finished: totalTimeSeconds || 0,
+                                finished_at: finishTimestamp || new Date().toISOString(),
+                                auto_submitted: true,
+                                reason: 'tab_hidden'
+                            })
+                        }).then(() => {
+                            sessionStorage.setItem('ninjaRunScore', currentScore.toString());
+                            sessionStorage.setItem('ninjaRunPlayed', 'true');
+                            sessionStorage.setItem('ninjaRunFinalScore', currentScore.toString());
+                            sessionStorage.setItem('ninjaRunComplete', 'true');
+                            sessionStorage.setItem('ninjaRunAutoSubmitted', 'true');
+                        }).catch(() => {
+                            const data = JSON.stringify({
+                                tournament_id: EVENT_ID,
+                                user_id: USER_ID,
+                                username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                                phone: userData?.phone || '',
+                                score: currentScore,
+                                time_finished: totalTimeSeconds || 0,
+                                finished_at: finishTimestamp || new Date().toISOString(),
+                                auto_submitted: true,
+                                reason: 'tab_hidden_fallback'
+                            });
+                            navigator.sendBeacon('https://shora-games-api.onrender.com/api/rankings/submit', data);
+                        });
+                    }
+                }, 2000);
+            }
+        });
+
+        // ============================================================
         // UI HELPERS
         // ============================================================
         function closeWarning() {
@@ -559,14 +1121,82 @@
             }, 3000);
         }
 
-        function showCheatAlert(reason) {
+        // ============================================================
+        // CHEAT ALERT - Updated with Zero Score Submission
+        // ============================================================
+
+        async function showCheatAlert(reason) {
             if (cheatAlertShown || IS_DEMO_MODE) return;
             cheatAlertShown = true;
+            
+            console.log('🚫 Cheating detected! Submitting zero score...');
+            const finalScore = 0;
+            scoreSubmitted = true;
+            
+            sessionStorage.setItem('ninjaRunScore', '0');
+            sessionStorage.setItem('ninjaRunPlayed', 'true');
+            sessionStorage.setItem('ninjaRunFinalScore', '0');
+            sessionStorage.setItem('ninjaRunComplete', 'true');
+            sessionStorage.setItem('ninjaRunCheated', 'true');
+            
+            markGameEnd();
+            
+            document.getElementById('scoreDisplay').textContent = '0';
+            document.getElementById('statusText').textContent = '🚫 Cheating Detected!';
+            document.getElementById('statusDot').className = 'dot cheating';
+            document.getElementById('antiCheatStatus').textContent = '🚫 Cheated';
+            document.getElementById('antiCheatBadge').classList.add('active');
+            
             document.getElementById('cheatDetail').textContent = 'Reason: ' + reason;
             document.getElementById('cheatAlert').classList.add('active');
-            document.getElementById('statusDot').className = 'dot cheating';
-            document.getElementById('statusText').textContent = '🚫 Cheating Detected!';
-            showToast('🚫 Cheating detected! Score not counted.', 'error');
+            showToast('🚫 Cheating detected! Score set to 0.', 'error');
+            
+            if (window.parent && window.parent !== window) {
+                try {
+                    window.parent.postMessage({
+                        type: 'NINJA_RUN_COMPLETE',
+                        score: 0,
+                        eventId: EVENT_ID,
+                        userId: USER_ID,
+                        timestamp: Date.now(),
+                        cheated: true,
+                        cheatReason: reason,
+                        sessionData: antiCheat.getSummary()
+                    }, '*');
+                } catch (e) {}
+            }
+            
+            // Submit zero score
+            if (EVENT_ID && USER_ID) {
+                try {
+                    if (typeof firebase !== 'undefined' && firebase.database) {
+                        const db = firebase.database();
+                        await db.ref('tournaments/' + EVENT_ID + '/players/' + USER_ID).update({
+                            score: 0, coins: 0, hasPlayed: true,
+                            submittedAt: Date.now(), cheated: true,
+                            cheatReason: reason, time_finished: totalTimeSeconds,
+                            finished_at: finishTimestamp,
+                            username: userData?.username || 'Player_' + USER_ID.slice(0, 6)
+                        });
+                    }
+                } catch (error) {}
+                
+                try {
+                    await fetch('https://shora-games-api.onrender.com/api/rankings/submit', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            tournament_id: EVENT_ID, user_id: USER_ID,
+                            username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                            phone: userData?.phone || '',
+                            score: 0, time_finished: totalTimeSeconds,
+                            finished_at: finishTimestamp,
+                            cheated: true, cheat_reason: reason
+                        })
+                    });
+                } catch (apiError) {}
+            }
+            
+            setTimeout(() => { showGameOverOverlay(0); }, 2000);
         }
 
         function closeCheatAlert() {
@@ -574,7 +1204,7 @@
         }
 
         // ============================================================
-        // GAME OVER DETECTION - SIDS BASED
+        // GAME OVER DETECTION
         // ============================================================
 
         function getTypeBySid(runtime, sid) {
@@ -587,8 +1217,6 @@
 
         function isGameOverUsingSIDS(runtime) {
             if (!runtime) return false;
-
-            // Signal 1: "Distances" group deactivated
             try {
                 const g = runtime.groups_by_name && runtime.groups_by_name['distances'];
                 if (g && g.group_active === false) {
@@ -596,15 +1224,11 @@
                     return true;
                 }
             } catch(e) {}
-
-            // Signal 2: Player instance destroyed (count == 0)
             const playerType = getTypeBySid(runtime, SIDS.Player);
             if (playerType && playerType.instances && playerType.instances.length === 0) {
                 console.log('🔍 Game Over: Player destroyed');
                 return true;
             }
-
-            // Signal 3: GameOver panel slid into view (Y ~360, resting Y is -600)
             const goType = getTypeBySid(runtime, SIDS.GameOver);
             if (goType && goType.instances && goType.instances.length) {
                 const y = goType.instances[0].y || 0;
@@ -613,7 +1237,6 @@
                     return true;
                 }
             }
-
             return false;
         }
 
@@ -623,12 +1246,9 @@
                 if (!frame) return false;
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
                 if (!frameDoc) return false;
-
                 const runtime = frameDoc.c2runtime || frame.contentWindow?.c2runtime;
                 if (runtime) {
-                    if (isGameOverUsingSIDS(runtime)) {
-                        return true;
-                    }
+                    if (isGameOverUsingSIDS(runtime)) return true;
                     if (runtime.globalVars) {
                         if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
                             console.log('🎯 GAME OVER via globalVars.GameOver');
@@ -640,7 +1260,6 @@
                         }
                     }
                 }
-
                 const gameOverSelectors = ['.gameover', '.game-over', '#gameover', '#game-over', '.gameover-screen', '.gameover-panel', '.gameover-overlay'];
                 for (const selector of gameOverSelectors) {
                     try {
@@ -648,17 +1267,14 @@
                         for (const el of elements) {
                             const rect = el.getBoundingClientRect();
                             if (rect.width > 0 && rect.height > 0 && 
-                                el.style.display !== 'none' && 
-                                el.offsetParent !== null) {
+                                el.style.display !== 'none' && el.offsetParent !== null) {
                                 console.log('🎯 GAME OVER via DOM:', selector);
                                 return true;
                             }
                         }
                     } catch (e) {}
                 }
-
                 return false;
-
             } catch (e) {
                 return false;
             }
@@ -668,65 +1284,67 @@
         // SHOW GAME OVER OVERLAY
         // ============================================================
 
-        function showGameOverOverlay(score) {
+        function showGameOverOverlay(score, autoSubmit = false) {
             if (document.getElementById('gameOverOverlay').classList.contains('active')) return;
 
             const overlay = document.getElementById('gameOverOverlay');
             const isDemo = IS_DEMO_MODE;
 
+            markGameEnd();
+
             document.getElementById('overlayTrophy').textContent = isDemo ? '🎮' : '🏆';
-            document.getElementById('overlayTitle').textContent = isDemo ? 'Demo Complete!' : 'Game Over!';
-            document.getElementById('overlayTitle').style.color = isDemo ? '#FFD700' : '#00E676';
+            document.getElementById('overlayTitle').textContent = isDemo ? 'Demo Complete!' : (autoSubmit ? '⏳ Auto-Submitted!' : 'Game Over!');
+            document.getElementById('overlayTitle').style.color = autoSubmit ? '#FFD700' : (isDemo ? '#FFD700' : '#00E676');
             document.getElementById('overlayScore').textContent = score.toLocaleString();
-            document.getElementById('overlayLabel').textContent = isDemo ? 'coins (demo)' : 'coins collected';
+            document.getElementById('overlayLabel').textContent = isDemo ? 'coins (demo)' : (autoSubmit ? 'coins auto-submitted' : 'coins collected');
 
             const statusEl = document.getElementById('overlayStatus');
             const redirectText = document.getElementById('overlayRedirectText');
 
             if (isDemo) {
-                statusEl.innerHTML = `
-                    <span style="color:#FFD700;font-size:0.8rem;">🎮 Demo Mode</span>
-                    <span style="color:#A7B5C5;font-size:0.7rem;">Free practice complete!</span>
-                `;
+                statusEl.innerHTML = `<span style="color:#FFD700;font-size:0.8rem;">🎮 Demo Mode</span><span style="color:#A7B5C5;font-size:0.7rem;">Free practice complete!</span>`;
                 redirectText.textContent = '🎮 Click below to play again';
                 document.querySelector('#gameOverOverlay .overlay-demo-btn').style.display = 'block';
             } else {
                 statusEl.innerHTML = `
                     <div class="overlay-submit-spinner"></div>
-                    <span class="overlay-submit-text">⏳ Submitting score...</span>
+                    <span class="overlay-submit-text">${autoSubmit ? '✅ Auto-submitted!' : '⏳ Submitting score...'}</span>
                 `;
-                redirectText.textContent = '⏳ Redirecting to tournament...';
+                redirectText.textContent = autoSubmit ? '⏳ Redirecting to rankings...' : '⏳ Redirecting to rankings...';
                 document.querySelector('#gameOverOverlay .overlay-demo-btn').style.display = 'none';
-                startRedirectTimer();
+                startRedirectTimer(autoSubmit);
             }
 
             overlay.classList.add('active');
             document.getElementById('blockerOverlay').classList.add('active');
 
-            document.getElementById('statusText').textContent = isDemo ? '✅ Demo Complete!' : '✅ Game Over!';
+            document.getElementById('statusText').textContent = isDemo ? '✅ Demo Complete!' : (autoSubmit ? '⏳ Auto-Submitted!' : '✅ Game Over!');
             document.getElementById('statusDot').className = 'dot complete';
-            document.getElementById('antiCheatStatus').textContent = isDemo ? '🎮 Demo' : '✅ Submitted';
+            document.getElementById('antiCheatStatus').textContent = isDemo ? '🎮 Demo' : (autoSubmit ? '✅ Auto-Submitted' : '✅ Submitted');
             document.getElementById('antiCheatBadge').classList.add('active');
+            
+            updateFinishTimeDisplay();
         }
 
         // ============================================================
         // REDIRECT TIMER
         // ============================================================
 
-        function startRedirectTimer() {
+        function startRedirectTimer(autoSubmit = false) {
             if (redirectDone) return;
             redirectDone = true;
 
             setTimeout(() => {
                 const statusEl = document.getElementById('overlayStatus');
                 statusEl.innerHTML = `
-                    <span style="color:#00E676;font-size:0.8rem;">✅ Score submitted!</span>
+                    <span style="color:#00E676;font-size:0.8rem;">✅ ${autoSubmit ? 'Auto-submitted!' : 'Score submitted!'}</span>
+                    <span style="color:#A7B5C5;font-size:0.7rem;margin-left:8px;">Time: ${getFinishTimeDisplay()}</span>
                 `;
             }, 2000);
 
             setTimeout(() => {
                 if (EVENT_ID) {
-                    window.location.href = 'tournaments.html?id=' + EVENT_ID;
+                    window.location.href = `rankings.html?id=${EVENT_ID}`;
                 } else {
                     window.location.href = 'tournaments.html';
                 }
@@ -734,12 +1352,17 @@
         }
 
         // ============================================================
-        // SUBMIT SCORE
+        // SUBMIT SCORE - Updated with Auto-Submit
         // ============================================================
 
-        function submitScore(score) {
+        async function submitScore(score, autoSubmit = false) {
             if (scoreSubmitted) return;
             const finalScore = parseInt(score) || gameScore || 0;
+
+            if (tournamentTimerInterval) {
+                clearInterval(tournamentTimerInterval);
+                tournamentTimerInterval = null;
+            }
 
             if (IS_DEMO_MODE) {
                 scoreSubmitted = true;
@@ -753,30 +1376,45 @@
                 return;
             }
 
-            if (finalScore === 0) {
+            if (finalScore === 0 && !autoSubmit) {
                 showToast('⚠️ No coins collected. Please try again!', 'warning');
                 return;
             }
 
-            const validation = antiCheat.isValidScore();
-            if (antiCheat.isCheating || !validation.valid) {
-                const reason = antiCheat.cheatReasons[0] || validation.reasons[0] || 'Suspicious activity detected';
-                showCheatAlert(reason);
-                return;
+            if (!autoSubmit) {
+                const validation = antiCheat.isValidScore();
+                if (antiCheat.isCheating || !validation.valid) {
+                    const reason = antiCheat.cheatReasons[0] || validation.reasons[0] || 'Suspicious activity detected';
+                    showCheatAlert(reason);
+                    return;
+                }
             }
+
+            markGameEnd();
 
             scoreSubmitted = true;
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunComplete', 'true');
-            sessionStorage.setItem('ninjaRunSessionData', JSON.stringify(antiCheat.getSummary()));
+            if (autoSubmit) {
+                sessionStorage.setItem('ninjaRunAutoSubmitted', 'true');
+            }
 
             document.getElementById('scoreDisplay').textContent = finalScore.toLocaleString();
             document.getElementById('statusText').textContent = '✅ Complete!';
             document.getElementById('statusDot').className = 'dot complete';
-            document.getElementById('antiCheatStatus').textContent = '✅ Verified';
+            document.getElementById('antiCheatStatus').textContent = autoSubmit ? '✅ Auto-Submitted' : '✅ Verified';
             document.getElementById('antiCheatBadge').classList.add('active');
+
+            updateFinishTimeDisplay();
+
+            // Show auto-submit badge
+            if (autoSubmit) {
+                const badge = document.getElementById('autoSubmitBadge');
+                badge.style.display = 'flex';
+                badge.innerHTML = `<i class="fas fa-check-circle"></i> Auto-Submitted: ${finalScore.toLocaleString()} coins`;
+            }
 
             // Send to parent
             if (window.parent && window.parent !== window) {
@@ -787,46 +1425,70 @@
                         eventId: EVENT_ID,
                         userId: USER_ID,
                         timestamp: Date.now(),
+                        time_finished: totalTimeSeconds,
+                        finished_at: finishTimestamp,
+                        auto_submitted: autoSubmit,
                         sessionData: antiCheat.getSummary()
                     }, '*');
                 } catch (e) {}
             }
 
             // Submit to Firebase
-            if (EVENT_ID && USER_ID && typeof firebase !== 'undefined' && firebase.database) {
+            if (EVENT_ID && USER_ID) {
                 try {
-                    const db = firebase.database();
-                    const scoreRef = db.ref('tournaments/' + EVENT_ID + '/players/' + USER_ID);
-                    scoreRef.update({
-                        score: finalScore,
-                        coins: finalScore,
-                        hasPlayed: true,
-                        submittedAt: Date.now(),
-                        sessionData: antiCheat.getSummary(),
-                        username: 'Player_' + USER_ID.slice(0, 6)
-                    }).then(() => {
-                        console.log('✅ Score submitted to Firebase:', finalScore);
-                    }).catch(function(err) {
-                        console.error('❌ Firebase error:', err);
-                    });
-                    const userRef = db.ref('users/' + USER_ID);
-                    userRef.update({
-                        hasPlayedCurrentEvent: true,
-                        currentEventId: EVENT_ID,
-                        lastScore: finalScore,
-                        lastCoins: finalScore
-                    }).catch(function() {});
+                    if (typeof firebase !== 'undefined' && firebase.database) {
+                        const db = firebase.database();
+                        await db.ref('tournaments/' + EVENT_ID + '/players/' + USER_ID).update({
+                            score: finalScore,
+                            coins: finalScore,
+                            hasPlayed: true,
+                            submittedAt: Date.now(),
+                            time_finished: totalTimeSeconds,
+                            finished_at: finishTimestamp,
+                            auto_submitted: autoSubmit,
+                            sessionData: antiCheat.getSummary(),
+                            username: userData?.username || 'Player_' + USER_ID.slice(0, 6)
+                        });
+                        console.log('✅ Score submitted to Firebase:', finalScore, autoSubmit ? '(auto)' : '');
+                    }
                 } catch (error) {
-                    console.error('❌ Error submitting to Firebase:', error);
+                    console.error('❌ Firebase error:', error);
                 }
             }
 
-            showToast('🏆 ' + finalScore.toLocaleString() + ' coins collected!', 'success');
-            showGameOverOverlay(finalScore);
+            // Submit to Neon API
+            try {
+                const response = await fetch('https://shora-games-api.onrender.com/api/rankings/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        tournament_id: EVENT_ID,
+                        user_id: USER_ID,
+                        username: userData?.username || 'Player_' + USER_ID.slice(0, 6),
+                        phone: userData?.phone || '',
+                        score: finalScore,
+                        time_finished: totalTimeSeconds,
+                        finished_at: finishTimestamp,
+                        auto_submitted: autoSubmit,
+                        cheated: false
+                    })
+                });
+                if (response.ok) {
+                    console.log('✅ Score submitted to Neon API:', finalScore, autoSubmit ? '(auto)' : '');
+                }
+            } catch (apiError) {
+                console.error('❌ Error submitting to API:', apiError);
+            }
+
+            clearGameState();
+            
+            const message = autoSubmit ? '⏳ Auto-submitted: ' + finalScore.toLocaleString() + ' coins!' : '🏆 ' + finalScore.toLocaleString() + ' coins collected!';
+            showToast(message, autoSubmit ? 'warning' : 'success');
+            showGameOverOverlay(finalScore, autoSubmit);
         }
 
         // ============================================================
-        // SCORE TRACKING - WITH SIDS-BASED DETECTION
+        // SCORE TRACKING - Track ONLY Coins
         // ============================================================
 
         function startScoreTracking() {
@@ -842,19 +1504,16 @@
                     if (!runtime) return;
 
                     let score = 0;
-
-                    // Track coins from runtime
+                    const coinKeywords = ['coins', 'coin', 'coincount', 'coin_counter', 'coin_count', 'totalcoins', 'Coins'];
+                    
                     const vars = runtime.all_global_vars || [];
                     for (let v of vars) {
                         if (v && v.name) {
                             const lowerName = v.name.toLowerCase();
-                            if (lowerName === 'coins' || lowerName === 'coin' || 
-                                lowerName === 'coincount' || lowerName === 'coin_counter' ||
-                                v.name === 'Coins') {
+                            if (coinKeywords.includes(lowerName) || v.name === 'Coins') {
                                 const val = v.data || 0;
                                 if (typeof val === 'number' && val > score) score = val;
                             }
-                            
                             if (v.name === 'GameOver' || v.name === 'gameOver' || v.name === 'GAME_OVER') {
                                 if (v.data === true || v.data === 1) {
                                     if (!gameOverDetected && score > 0) {
@@ -872,9 +1531,7 @@
                     if (runtime.globalVars) {
                         for (const key in runtime.globalVars) {
                             const lowerKey = key.toLowerCase();
-                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                                lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
-                                key === 'Coins') {
+                            if (coinKeywords.includes(lowerKey) || key === 'Coins') {
                                 const val = runtime.globalVars[key];
                                 if (typeof val === 'number' && val > score) score = val;
                             }
@@ -905,6 +1562,8 @@
                         antiCheat.updateScore(score);
                         document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
+                        
+                        if (gameStartTimestamp === 0) markGameStart();
                         if (!IS_DEMO_MODE && antiCheat.isCheating && !cheatAlertShown) {
                             showCheatAlert(antiCheat.cheatReasons[0] || 'Suspicious activity detected');
                         }
@@ -924,9 +1583,7 @@
                         console.log('🎮 Game started (coins detected)');
                     }
 
-                } catch (e) {
-                    // Silent fail
-                }
+                } catch (e) {}
             }, 300);
 
             setInterval(function() {
@@ -939,45 +1596,34 @@
                     }
                 }
             }, 1000);
+
+            // Auto-save every 5 seconds
+            setInterval(() => {
+                if (gameStarted && !gameOverDetected && !scoreSubmitted && !IS_DEMO_MODE) {
+                    saveGameState();
+                }
+            }, 5000);
         }
 
         // ============================================================
-        // INJECT BRIDGE INTO THE GAME IFRAME
+        // INJECT BRIDGE
         // ============================================================
 
         function injectBridge() {
             try {
                 const frame = document.getElementById('gameIframe');
-                if (!frame) {
-                    console.log('⚠️ Game iframe not found');
-                    return;
-                }
-
+                if (!frame) { console.log('⚠️ Game iframe not found'); return; }
                 const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                if (!frameDoc) {
-                    console.log('⚠️ Could not access iframe document');
-                    return;
-                }
-
-                // Check if bridge already injected
-                if (frameDoc.getElementById('ninjaBridgeScript')) {
-                    console.log('✅ Bridge already injected');
-                    return;
-                }
+                if (!frameDoc) { console.log('⚠️ Could not access iframe document'); return; }
+                if (frameDoc.getElementById('ninjaBridgeScript')) { console.log('✅ Bridge already injected'); return; }
 
                 const isDemo = IS_DEMO_MODE;
-
-                // Create bridge script inside the game
                 const script = frameDoc.createElement('script');
                 script.id = 'ninjaBridgeScript';
                 script.type = 'text/javascript';
                 script.textContent = `
                     (function() {
-                        console.log('🏃 Ninja Run Bridge v3 loaded inside game');
-                        console.log('🎯 Mode: ${isDemo ? 'DEMO' : 'TOURNAMENT'}');
-                        console.log('📋 Event: ${EVENT_ID || 'DEMO'}');
-                        console.log('👤 User: ${USER_ID || 'GUEST'}');
-
+                        console.log('🏃 Ninja Run Bridge loaded inside game');
                         let gameScore = 0;
                         let scoreSubmitted = false;
                         let runtime = null;
@@ -986,57 +1632,6 @@
                         let bridgeReady = false;
                         let gameStartTime = Date.now();
 
-                        // ========================================
-                        // FIND COINS IN THE GAME
-                        // ========================================
-
-                        function findCoinScore() {
-                            let score = 0;
-                            let found = false;
-
-                            try {
-                                if (runtime) {
-                                    if (runtime.globalVars) {
-                                        for (const key in runtime.globalVars) {
-                                            const lowerKey = key.toLowerCase();
-                                            if (lowerKey === 'coins' || lowerKey === 'coin' || 
-                                                lowerKey === 'coincount' || lowerKey === 'coin_counter' ||
-                                                key === 'Coins') {
-                                                const val = runtime.globalVars[key];
-                                                if (typeof val === 'number' && val > score) {
-                                                    score = val;
-                                                    found = true;
-                                                }
-                                            }
-                                        }
-                                    }
-                                    
-                                    if (runtime.all_global_vars) {
-                                        for (const v of runtime.all_global_vars) {
-                                            if (v && v.name) {
-                                                const lowerName = v.name.toLowerCase();
-                                                if (lowerName === 'coins' || lowerName === 'coin' || 
-                                                    lowerName === 'coincount' || lowerName === 'coin_counter' ||
-                                                    v.name === 'Coins') {
-                                                    const val = v.data || 0;
-                                                    if (typeof val === 'number' && val > score) {
-                                                        score = val;
-                                                        found = true;
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            } catch (e) {}
-
-                            return score;
-                        }
-
-                        // ========================================
-                        // DETECT GAME OVER USING SIDS
-                        // ========================================
-
                         const SIDS = {
                             Player: ${SIDS.Player},
                             Bomb: ${SIDS.Bomb},
@@ -1044,6 +1639,35 @@
                             Restart: ${SIDS.Restart},
                             Play: ${SIDS.Play}
                         };
+
+                        function findCoinScore() {
+                            let score = 0;
+                            try {
+                                if (runtime) {
+                                    if (runtime.globalVars) {
+                                        const coinKeywords = ['coins', 'coin', 'coincount', 'coin_counter', 'coin_count', 'totalcoins', 'Coins'];
+                                        for (const key in runtime.globalVars) {
+                                            if (coinKeywords.includes(key.toLowerCase()) || key === 'Coins') {
+                                                const val = runtime.globalVars[key];
+                                                if (typeof val === 'number' && val > score) score = val;
+                                            }
+                                        }
+                                    }
+                                    if (runtime.all_global_vars) {
+                                        const coinKeywords = ['coins', 'coin', 'coincount', 'coin_counter', 'coin_count', 'totalcoins', 'Coins'];
+                                        for (const v of runtime.all_global_vars) {
+                                            if (v && v.name) {
+                                                if (coinKeywords.includes(v.name.toLowerCase()) || v.name === 'Coins') {
+                                                    const val = v.data || 0;
+                                                    if (typeof val === 'number' && val > score) score = val;
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            } catch (e) {}
+                            return score;
+                        }
 
                         function getTypeBySid(sid) {
                             if (!runtime || !runtime.types_by_index) return null;
@@ -1055,68 +1679,33 @@
 
                         function detectGameOver() {
                             if (!runtime) return false;
-
                             try {
-                                // Signal 1: Distances group deactivated
                                 const g = runtime.groups_by_name && runtime.groups_by_name['distances'];
-                                if (g && g.group_active === false) {
-                                    console.log('🔍 Game Over: Distances group deactivated');
-                                    return true;
-                                }
-
-                                // Signal 2: Player destroyed
+                                if (g && g.group_active === false) return true;
                                 const playerType = getTypeBySid(SIDS.Player);
-                                if (playerType && playerType.instances && playerType.instances.length === 0) {
-                                    console.log('🔍 Game Over: Player destroyed');
-                                    return true;
-                                }
-
-                                // Signal 3: GameOver panel on screen
+                                if (playerType && playerType.instances && playerType.instances.length === 0) return true;
                                 const goType = getTypeBySid(SIDS.GameOver);
                                 if (goType && goType.instances && goType.instances.length) {
                                     const y = goType.instances[0].y || 0;
-                                    if (y > 100) {
-                                        console.log('🔍 Game Over: GameOver panel on screen (y=' + y + ')');
-                                        return true;
-                                    }
+                                    if (y > 100) return true;
                                 }
-
-                                // Signal 4: GameOver variable
                                 if (runtime.globalVars) {
-                                    if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) {
-                                        console.log('🔍 Game Over: GameOver variable = true');
-                                        return true;
-                                    }
-                                    if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) {
-                                        console.log('🔍 Game Over: gameOver variable = true');
-                                        return true;
-                                    }
+                                    if (runtime.globalVars['GameOver'] === true || runtime.globalVars['GameOver'] === 1) return true;
+                                    if (runtime.globalVars['gameOver'] === true || runtime.globalVars['gameOver'] === 1) return true;
                                 }
-
                             } catch (e) {}
-
                             return false;
                         }
-
-                        // ========================================
-                        // SUBMIT SCORE TO PARENT
-                        // ========================================
 
                         function submitScore(score) {
                             if (scoreSubmitted) return;
                             const finalScore = parseInt(score) || gameScore || 0;
                             if (finalScore === 0) return;
-                            
                             scoreSubmitted = true;
-                            console.log('📤 Submitting score:', finalScore);
-                            
-                            // Store in session storage
                             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunPlayed', 'true');
                             sessionStorage.setItem('ninjaRunFinalScore', finalScore.toString());
                             sessionStorage.setItem('ninjaRunComplete', 'true');
-                            
-                            // Send to parent via postMessage
                             if (window.parent && window.parent !== window) {
                                 try {
                                     window.parent.postMessage({
@@ -1128,36 +1717,21 @@
                                         isDemo: ${isDemo},
                                         timestamp: Date.now()
                                     }, '*');
-                                    console.log('✅ Score sent to parent');
-                                } catch(e) {
-                                    console.log('⚠️ Could not send to parent:', e);
-                                }
+                                } catch(e) {}
                             }
                         }
 
-                        // ========================================
-                        // START MONITORING
-                        // ========================================
-
                         function startMonitoring() {
-                            console.log('🔍 Starting game monitoring...');
                             bridgeReady = true;
                             gameStartTime = Date.now();
-
                             if (scoreInterval) clearInterval(scoreInterval);
-
                             scoreInterval = setInterval(function() {
                                 try {
                                     if (!runtime) return;
-                                    
-                                    // Get current coin score
                                     const currentScore = findCoinScore();
-                                    
-                                    // Update if changed
                                     if (currentScore > gameScore) {
                                         gameScore = currentScore;
                                         sessionStorage.setItem('ninjaRunLiveScore', gameScore.toString());
-                                        
                                         if (window.parent && window.parent !== window) {
                                             try {
                                                 window.parent.postMessage({
@@ -1168,43 +1742,22 @@
                                             } catch(e) {}
                                         }
                                     }
-                                    
-                                    // Check for game over
-                                    if (!gameOverDetected && gameScore > 0) {
-                                        if (detectGameOver()) {
-                                            gameOverDetected = true;
-                                            console.log('🎯 GAME OVER detected!');
-                                            const finalScore = findCoinScore() || gameScore;
-                                            setTimeout(function() {
-                                                submitScore(finalScore);
-                                            }, 1000);
-                                            return;
-                                        }
+                                    if (!gameOverDetected && gameScore > 0 && detectGameOver()) {
+                                        gameOverDetected = true;
+                                        setTimeout(function() { submitScore(gameScore); }, 1000);
                                     }
-                                    
-                                    // Check for timeout (max 5 minutes)
                                     if (!gameOverDetected && gameScore > 0) {
-                                        const elapsed = Date.now() - gameStartTime;
-                                        if (elapsed > 300000) {
-                                            console.log('⏰ Max game time exceeded');
+                                        if (Date.now() - gameStartTime > 300000) {
                                             gameOverDetected = true;
                                             submitScore(gameScore);
                                         }
                                     }
-                                    
                                 } catch(e) {}
                             }, 300);
                         }
 
-                        // ========================================
-                        // WAIT FOR RUNTIME
-                        // ========================================
-
                         function waitForRuntime() {
-                            console.log('⏳ Waiting for Construct 2 runtime...');
                             let attempts = 0;
-                            const maxAttempts = 50;
-
                             const checkRuntime = setInterval(function() {
                                 attempts++;
                                 try {
@@ -1213,7 +1766,6 @@
                                         clearInterval(checkRuntime);
                                         runtime = canvas.c2runtime;
                                         window.gameRuntime = runtime;
-                                        console.log('✅ Runtime detected via canvas');
                                         startMonitoring();
                                         return;
                                     }
@@ -1221,70 +1773,29 @@
                                         clearInterval(checkRuntime);
                                         runtime = window.c2runtime;
                                         window.gameRuntime = runtime;
-                                        console.log('✅ Runtime detected via window');
                                         startMonitoring();
                                         return;
                                     }
                                 } catch(e) {}
-                                if (attempts > maxAttempts) {
+                                if (attempts > 50) {
                                     clearInterval(checkRuntime);
-                                    console.log('⚠️ Runtime not found after ' + maxAttempts + ' attempts');
                                 }
                             }, 500);
                         }
 
                         waitForRuntime();
 
-                        // Listen for parent messages
-                        window.addEventListener('message', function(event) {
-                            if (event.data && event.data.type === 'NINJA_RUN_FORCE_SUBMIT') {
-                                console.log('📨 Force submit requested');
-                                if (gameScore > 0 && !scoreSubmitted) {
-                                    submitScore(gameScore);
-                                }
-                            }
-                            if (event.data && event.data.type === 'GET_NINJA_RUN_STATUS') {
-                                event.source.postMessage({
-                                    type: 'NINJA_RUN_STATUS_RESPONSE',
-                                    score: gameScore,
-                                    submitted: scoreSubmitted,
-                                    ready: bridgeReady
-                                }, '*');
-                            }
-                        });
-
-                        // Expose for debugging inside the game
                         window.__ninjaBridge = {
                             score: () => gameScore,
-                            submit: submitScore,
-                            status: () => ({
-                                score: gameScore,
-                                submitted: scoreSubmitted,
-                                ready: bridgeReady,
-                                gameOver: gameOverDetected
-                            }),
-                            forceSubmit: () => {
-                                if (gameScore > 0 && !scoreSubmitted) {
-                                    submitScore(gameScore);
-                                }
-                            }
+                            status: () => ({ score: gameScore, submitted: scoreSubmitted, ready: bridgeReady }),
+                            forceSubmit: () => { if (gameScore > 0 && !scoreSubmitted) submitScore(gameScore); }
                         };
-
-                        console.log('✅ Ninja Run Bridge ready');
-                        console.log('📊 Debug: __ninjaBridge.status()');
-                        console.log('📊 Force submit: __ninjaBridge.forceSubmit()');
                     })();
                 `;
 
-                // Append script to game's head
-                if (frameDoc.head) {
-                    frameDoc.head.appendChild(script);
-                    console.log('✅ Bridge injected into game');
-                } else {
-                    // If head not available, append to body
-                    frameDoc.body.appendChild(script);
-                    console.log('✅ Bridge injected into game body');
-                }
+                if (frameDoc.head) frameDoc.head.appendChild(script);
+                else frameDoc.body.appendChild(script);
+                console.log('✅ Bridge injected into game');
 
             } catch (e) {
                 console.log('⚠️ Error injecting bridge:', e);
@@ -1295,15 +1806,38 @@
         // LOAD GAME
         // ============================================================
 
+        // Check for auto-submit first
+        if (checkAutoSubmitStatus()) {
+            // Stop further loading
+            throw new Error('Auto-submit redirect');
+        }
+
         function loadGame() {
             const frame = document.getElementById('gameIframe');
             const loadingOverlay = document.getElementById('loadingOverlay');
             const progressFill = document.getElementById('progressFill');
             const loadingText = document.getElementById('loadingText');
 
+            // Check for saved state to resume
+            if (!IS_DEMO_MODE) {
+                const savedState = loadGameState();
+                if (savedState && !savedState.gameOver && !sessionStorage.getItem('ninjaRunComplete')) {
+                    console.log('🔄 Resuming game from saved state...');
+                    gameScore = savedState.score;
+                    gameStarted = true;
+                    gameStartTimestamp = savedState.startTime || Date.now();
+                    document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
+                    document.getElementById('statusText').textContent = '🔄 Resumed';
+                    showToast('🔄 Game resumed from where you left off!', 'success');
+                } else if (savedState && savedState.gameOver) {
+                    console.log('📤 Game was over, submitting saved score...');
+                    setTimeout(() => { submitScore(savedState.score); }, 1000);
+                    return;
+                }
+            }
+
             const timestamp = Date.now();
             const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
-            
             console.log('📁 Loading game from:', gameUrl);
             frame.src = gameUrl;
 
@@ -1333,15 +1867,19 @@
                                 document.getElementById('statusText').textContent = '🎮 Playing...';
                                 document.getElementById('statusDot').className = 'dot';
                                 document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
+                                
+                                if (!IS_DEMO_MODE && EVENT_ID) {
+                                    fetchTournamentEndTime(EVENT_ID);
+                                } else {
+                                    document.getElementById('tournamentTimer').style.display = 'none';
+                                }
                             }, 400);
                             setTimeout(function() { injectBridge(); }, 1500);
                             setTimeout(function() { startScoreTracking(); }, 2000);
                             return;
                         }
                     }
-                } catch (e) {
-                    // Still loading
-                }
+                } catch (e) {}
                 if (loadAttempts >= maxAttempts) {
                     clearInterval(progressInterval);
                     clearInterval(loadCheck);
@@ -1407,6 +1945,16 @@
             window.location.reload();
         });
 
+        // Get user data from parent
+        try {
+            const userDataFromParent = sessionStorage.getItem('shora_user_data');
+            if (userDataFromParent) {
+                const parsed = JSON.parse(userDataFromParent);
+                userData.username = parsed.username || 'Player';
+                userData.phone = parsed.phone || '';
+            }
+        } catch (e) {}
+
         loadGame();
 
         console.log('');
@@ -1418,10 +1966,11 @@
         console.log('🎯 SIDS: Player=%s, Bomb=%s, GameOver=%s', SIDS.Player, SIDS.Bomb, SIDS.GameOver);
         console.log('✅ Bridge injection: Enabled');
         console.log('✅ Game Over detection: SIDS + Variables');
-        console.log('🪙 Tracking: Coins');
-        console.log('✅ Auto-Redirect: Enabled');
+        console.log('🪙 Tracking: Coins ONLY');
+        console.log('⏰ Tournament Timer: Enabled');
+        console.log('⏱️ Finish Time Tracking: Enabled');
+        console.log('🔄 Auto-Submit on Disconnection: Enabled');
         console.log('===========================================');
     </script>
-
 </body>
 </html>
