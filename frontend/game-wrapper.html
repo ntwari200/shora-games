@@ -869,43 +869,58 @@ const db = getDatabase(app);
         // ============================================================
 
         // Check for auto-submitted score on page load
-        function checkAutoSubmitStatus() {
-            if (IS_DEMO_MODE) return false;
+       function checkAutoSubmitStatus() {
+    if (IS_DEMO_MODE) return false;
 
-            const autoSubmitted = sessionStorage.getItem('ninjaRunAutoSubmitted') === 'true';
-            const complete = sessionStorage.getItem('ninjaRunComplete') === 'true';
-            const submittedScore = sessionStorage.getItem('ninjaRunFinalScore');
-            const disconnectTime = sessionStorage.getItem('ninjaRunDisconnectTime');
+    const autoSubmitted = sessionStorage.getItem('ninjaRunAutoSubmitted') === 'true';
+    const complete = sessionStorage.getItem('ninjaRunComplete') === 'true';
+    const submittedScore = sessionStorage.getItem('ninjaRunFinalScore');
+    const disconnectTime = sessionStorage.getItem('ninjaRunDisconnectTime');
 
-            if (autoSubmitted || complete) {
-                const score = parseInt(submittedScore || '0');
-                console.log('📤 Found auto-submitted score:', score);
-                
-                // Show badge
-                const badge = document.getElementById('autoSubmitBadge');
-                badge.style.display = 'flex';
-                badge.innerHTML = `<i class="fas fa-check-circle"></i> Auto-Submitted: ${score.toLocaleString()} coins`;
-                
-                showToast('✅ Score auto-submitted: ' + score.toLocaleString() + ' coins', 'success');
-                
-                // Clear flags
-                sessionStorage.removeItem('ninjaRunAutoSubmitted');
-                sessionStorage.removeItem('ninjaRunDisconnected');
-                sessionStorage.removeItem('ninjaRunDisconnectTime');
-                
-                // Redirect after showing message
-                setTimeout(() => {
-                    if (EVENT_ID) {
-                        window.location.href = `rankings.html?id=${EVENT_ID}`;
-                    } else {
-                        window.location.href = 'tournaments.html';
-                    }
-                }, 3000);
-                
-                return true;
+    // ===== ONLY AUTO-SUBMIT IF DISCONNECT WAS RECENT (within 30 seconds) =====
+    const isRecent = disconnectTime && (Date.now() - parseInt(disconnectTime) < 30000);
+
+    if ((autoSubmitted || complete) && isRecent) {
+        const score = parseInt(submittedScore || '0');
+        console.log('📤 Found recent auto-submitted score:', score);
+        
+        const badge = document.getElementById('autoSubmitBadge');
+        badge.style.display = 'flex';
+        badge.innerHTML = `<i class="fas fa-check-circle"></i> Auto-Submitted: ${score.toLocaleString()} coins`;
+        
+        showToast('✅ Score auto-submitted: ' + score.toLocaleString() + ' coins', 'success');
+        
+        sessionStorage.removeItem('ninjaRunAutoSubmitted');
+        sessionStorage.removeItem('ninjaRunDisconnected');
+        sessionStorage.removeItem('ninjaRunDisconnectTime');
+        
+        setTimeout(() => {
+            if (EVENT_ID) {
+                window.location.href = `rankings.html?id=${EVENT_ID}`;
+            } else {
+                window.location.href = 'tournaments.html';
             }
-            return false;
-        }
+        }, 3000);
+        
+        return true;
+    }
+
+    // ===== CLEAR STALE FLAGS (older than 30 seconds) =====
+    if (autoSubmitted || complete) {
+        console.log('🧹 Clearing stale auto-submit flags');
+        sessionStorage.removeItem('ninjaRunAutoSubmitted');
+        sessionStorage.removeItem('ninjaRunDisconnected');
+        sessionStorage.removeItem('ninjaRunDisconnectTime');
+        sessionStorage.removeItem('ninjaRunScore');
+        sessionStorage.removeItem('ninjaRunPlayed');
+        sessionStorage.removeItem('ninjaRunFinalScore');
+        sessionStorage.removeItem('ninjaRunComplete');
+        sessionStorage.removeItem('ninjaRunCheated');
+        sessionStorage.removeItem('ninjaRunTimerExpired');
+    }
+
+    return false;
+}
 
         // Handle page close
         window.addEventListener('beforeunload', function(e) {
@@ -1844,90 +1859,110 @@ const db = getDatabase(app);
             throw new Error('Auto-submit redirect');
         }
 
-        function loadGame() {
-            const frame = document.getElementById('gameIframe');
-            const loadingOverlay = document.getElementById('loadingOverlay');
-            const progressFill = document.getElementById('progressFill');
-            const loadingText = document.getElementById('loadingText');
+       function loadGame() {
+    // ===== CHECK IF THIS IS A FRESH GAME OR A RESUME =====
+    const isFreshGame = sessionStorage.getItem('ninjaRunFreshStart') === 'true';
+    
+    // ===== CLEAR OLD FLAGS ON FRESH START =====
+    if (isFreshGame || !sessionStorage.getItem('ninjaRunGameStarted')) {
+        console.log('🧹 Fresh game start - clearing old flags');
+        sessionStorage.removeItem('ninjaRunAutoSubmitted');
+        sessionStorage.removeItem('ninjaRunDisconnected');
+        sessionStorage.removeItem('ninjaRunDisconnectTime');
+        sessionStorage.removeItem('ninjaRunScore');
+        sessionStorage.removeItem('ninjaRunPlayed');
+        sessionStorage.removeItem('ninjaRunFinalScore');
+        sessionStorage.removeItem('ninjaRunComplete');
+        sessionStorage.removeItem('ninjaRunCheated');
+        sessionStorage.removeItem('ninjaRunTimerExpired');
+        sessionStorage.removeItem('ninjaRunFreshStart');
+        sessionStorage.setItem('ninjaRunGameStarted', 'true');
+        console.log('✅ Cleared old session flags');
+    }
 
-            // Check for saved state to resume
-            if (!IS_DEMO_MODE) {
-                const savedState = loadGameState();
-                if (savedState && !savedState.gameOver && !sessionStorage.getItem('ninjaRunComplete')) {
-                    console.log('🔄 Resuming game from saved state...');
-                    gameScore = savedState.score;
-                    gameStarted = true;
-                    gameStartTimestamp = savedState.startTime || Date.now();
-                    document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
-                    document.getElementById('statusText').textContent = '🔄 Resumed';
-                    showToast('🔄 Game resumed from where you left off!', 'success');
-                } else if (savedState && savedState.gameOver) {
-                    console.log('📤 Game was over, submitting saved score...');
-                    setTimeout(() => { submitScore(savedState.score); }, 1000);
+    const frame = document.getElementById('gameIframe');
+    const loadingOverlay = document.getElementById('loadingOverlay');
+    const progressFill = document.getElementById('progressFill');
+    const loadingText = document.getElementById('loadingText');
+
+    // Check for saved state to resume (only if not a fresh start)
+    if (!IS_DEMO_MODE && !isFreshGame) {
+        const savedState = loadGameState();
+        if (savedState && !savedState.gameOver && !sessionStorage.getItem('ninjaRunComplete')) {
+            console.log('🔄 Resuming game from saved state...');
+            gameScore = savedState.score;
+            gameStarted = true;
+            gameStartTimestamp = savedState.startTime || Date.now();
+            document.getElementById('scoreDisplay').textContent = gameScore.toLocaleString();
+            document.getElementById('statusText').textContent = '🔄 Resumed';
+            showToast('🔄 Game resumed from where you left off!', 'success');
+        } else if (savedState && savedState.gameOver) {
+            console.log('📤 Game was over, submitting saved score...');
+            setTimeout(() => { submitScore(savedState.score); }, 1000);
+            return;
+        }
+    }
+
+    const timestamp = Date.now();
+    const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
+    console.log('📁 Loading game from:', gameUrl);
+    frame.src = gameUrl;
+
+    let progress = 0;
+    let loadAttempts = 0;
+    const maxAttempts = 50;
+
+    const progressInterval = setInterval(function() {
+        progress += Math.random() * 8 + 2;
+        if (progress > 95) progress = 95;
+        progressFill.style.width = progress + '%';
+    }, 200);
+
+    const loadCheck = setInterval(function() {
+        loadAttempts++;
+        try {
+            const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+            if (frameDoc) {
+                const canvas = frameDoc.getElementById('c2canvas');
+                if (canvas || (frameDoc.body && frameDoc.body.innerHTML && frameDoc.body.innerHTML.includes('c2canvas'))) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
+                    progressFill.style.width = '100%';
+                    loadingText.textContent = '✅ Game Loaded!';
+                    setTimeout(function() {
+                        loadingOverlay.classList.add('hidden');
+                        document.getElementById('statusText').textContent = '🎮 Playing...';
+                        document.getElementById('statusDot').className = 'dot';
+                        document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
+                        
+                        // ===== START TOURNAMENT TIMER =====
+                        if (!IS_DEMO_MODE && EVENT_ID) {
+                            fetchTournamentEndTime(EVENT_ID);
+                        } else {
+                            document.getElementById('tournamentTimer').style.display = 'none';
+                        }
+                    }, 400);
+                    setTimeout(function() { injectBridge(); }, 1500);
+                    setTimeout(function() { startScoreTracking(); }, 2000);
                     return;
                 }
             }
-
-            const timestamp = Date.now();
-            const gameUrl = GAME_URL + '?event=' + EVENT_ID + '&user=' + USER_ID + '&demo=' + IS_DEMO_MODE + '&t=' + timestamp;
-            console.log('📁 Loading game from:', gameUrl);
-            frame.src = gameUrl;
-
-            let progress = 0;
-            let loadAttempts = 0;
-            const maxAttempts = 50;
-
-            const progressInterval = setInterval(function() {
-                progress += Math.random() * 8 + 2;
-                if (progress > 95) progress = 95;
-                progressFill.style.width = progress + '%';
-            }, 200);
-
-            const loadCheck = setInterval(function() {
-                loadAttempts++;
-                try {
-                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
-                    if (frameDoc) {
-                        const canvas = frameDoc.getElementById('c2canvas');
-                        if (canvas || (frameDoc.body && frameDoc.body.innerHTML && frameDoc.body.innerHTML.includes('c2canvas'))) {
-                            clearInterval(progressInterval);
-                            clearInterval(loadCheck);
-                            progressFill.style.width = '100%';
-                            loadingText.textContent = '✅ Game Loaded!';
-                            setTimeout(function() {
-                                loadingOverlay.classList.add('hidden');
-                                document.getElementById('statusText').textContent = '🎮 Playing...';
-                                document.getElementById('statusDot').className = 'dot';
-                                document.getElementById('antiCheatStatus').textContent = IS_DEMO_MODE ? 'Demo' : 'Active';
-                                
-                                // ===== START TOURNAMENT TIMER =====
-                                if (!IS_DEMO_MODE && EVENT_ID) {
-                                    fetchTournamentEndTime(EVENT_ID);
-                                } else {
-                                    document.getElementById('tournamentTimer').style.display = 'none';
-                                }
-                            }, 400);
-                            setTimeout(function() { injectBridge(); }, 1500);
-                            setTimeout(function() { startScoreTracking(); }, 2000);
-                            return;
-                        }
-                    }
-                } catch (e) {}
-                if (loadAttempts >= maxAttempts) {
-                    clearInterval(progressInterval);
-                    clearInterval(loadCheck);
-                    loadingText.textContent = '⚠️ Game taking too long to load';
-                    showToast('⚠️ Game failed to load. Please try again.', 'error');
-                }
-            }, 200);
-
-            setTimeout(function() {
-                if (!loadingOverlay.classList.contains('hidden')) {
-                    clearInterval(progressInterval);
-                    clearInterval(loadCheck);
-                }
-            }, 10000);
+        } catch (e) {}
+        if (loadAttempts >= maxAttempts) {
+            clearInterval(progressInterval);
+            clearInterval(loadCheck);
+            loadingText.textContent = '⚠️ Game taking too long to load';
+            showToast('⚠️ Game failed to load. Please try again.', 'error');
         }
+    }, 200);
+
+    setTimeout(function() {
+        if (!loadingOverlay.classList.contains('hidden')) {
+            clearInterval(progressInterval);
+            clearInterval(loadCheck);
+        }
+    }, 10000);
+}
 
         // ============================================================
         // MESSAGE LISTENER
