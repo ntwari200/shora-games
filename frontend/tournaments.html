@@ -2688,96 +2688,80 @@
         // PLAY GAME - Updated with hasStartedGame flag
         // ========================================
 
-        window.playGame = async function(tournamentId) {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            const tournament = allTournaments.find(t => t.id === tournamentId);
-            if (!tournament) {
-                showToast('Tournament not found', 'error');
-                return;
-            }
-            
-            if (tournament.status !== 'live') {
-                showToast('Tournament is not active', 'error');
-                return;
-            }
-            
-            if (tournament.players && tournament.players[currentUser.uid] && 
-                tournament.players[currentUser.uid].hasPlayed === true) {
-                showToast('❌ You already played in this tournament!', 'error');
-                return;
-            }
-            
-            if (!tournament.players || !tournament.players[currentUser.uid]) {
-                showToast('Please join the tournament first!', 'error');
-                return;
-            }
-            
-            if (tournament.locked) {
-                showToast('Tournament is locked', 'error');
-                return;
-            }
-            
-            // ===== NEW: Set hasStartedGame flag IMMEDIATELY =====
-            try {
-                await update(ref(db, `users/${currentUser.uid}`), {
-                    hasStartedGame: true
-                });
-                userData.hasStartedGame = true;
-                userData.currentEventId = tournamentId;
-                console.log('✅ Game start recorded - button will be disabled on refresh');
-            } catch (error) {
-                console.error('Error setting hasStartedGame:', error);
-                // Continue anyway - don't block the user
-            }
-            
-            // OPEN TOURNAMENT MODE - pass event and user parameters
-            const userId = currentUser.uid;
-            const gameUrl = `/game-wrapper.html?event=${tournamentId}&user=${userId}`;
-            
-            const gameWindow = window.open(gameUrl, '_blank');
-            
-            if (!gameWindow) {
-                showToast('⚠️ Please allow pop-ups for this site', 'error');
-                return;
-            }
-            
-            showToast('🎮 Opening Ninja Run... Good luck!', 'success');
-            startGameMonitor(tournamentId, userId);
-        };
-
-        // ========================================
-        // GAME MONITOR
-        // ========================================
-
-        function startGameMonitor(tournamentId, userId) {
-            let checkCount = 0;
-            const maxChecks = 300;
-            
-            const monitorInterval = setInterval(() => {
-                checkCount++;
-                
-                const played = sessionStorage.getItem('ninjaRunPlayed');
-                const score = sessionStorage.getItem('ninjaRunScore');
-                
-                if (played === 'true' && score !== null) {
-                    clearInterval(monitorInterval);
-                    const scoreValue = parseInt(score);
-                    console.log(`🎯 Game completed with score: ${scoreValue}`);
-                    updateUserPlayed(tournamentId, userId, scoreValue);
-                    return;
-                }
-                
-                if (checkCount > maxChecks) {
-                    clearInterval(monitorInterval);
-                    console.log('⏰ Game monitor timed out');
-                }
-            }, 1000);
-        }
-
+    window.playGame = async function(tournamentId) {
+    if (!currentUser) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    
+    const tournament = allTournaments.find(t => t.id === tournamentId);
+    if (!tournament) {
+        showToast('Tournament not found', 'error');
+        return;
+    }
+    
+    if (tournament.status !== 'live') {
+        showToast('Tournament is not active', 'error');
+        return;
+    }
+    
+    if (tournament.players && tournament.players[currentUser.uid] && 
+        tournament.players[currentUser.uid].hasPlayed === true) {
+        showToast('❌ You already played in this tournament!', 'error');
+        return;
+    }
+    
+    if (!tournament.players || !tournament.players[currentUser.uid]) {
+        showToast('Please join the tournament first!', 'error');
+        return;
+    }
+    
+    if (tournament.locked) {
+        showToast('Tournament is locked', 'error');
+        return;
+    }
+    
+    // ===== SET FRESH START FLAG - Clear old session data =====
+    sessionStorage.setItem('ninjaRunFreshStart', 'true');
+    sessionStorage.removeItem('ninjaRunGameStarted');
+    sessionStorage.removeItem('ninjaRunAutoSubmitted');
+    sessionStorage.removeItem('ninjaRunDisconnected');
+    sessionStorage.removeItem('ninjaRunDisconnectTime');
+    sessionStorage.removeItem('ninjaRunScore');
+    sessionStorage.removeItem('ninjaRunPlayed');
+    sessionStorage.removeItem('ninjaRunFinalScore');
+    sessionStorage.removeItem('ninjaRunComplete');
+    sessionStorage.removeItem('ninjaRunCheated');
+    sessionStorage.removeItem('ninjaRunTimerExpired');
+    console.log('🏁 Fresh start flag set - old session data cleared');
+    
+    // ===== Set hasStartedGame flag IMMEDIATELY =====
+    try {
+        await update(ref(db, `users/${currentUser.uid}`), {
+            hasStartedGame: true
+        });
+        userData.hasStartedGame = true;
+        userData.currentEventId = tournamentId;
+        console.log('✅ Game start recorded - button will be disabled on refresh');
+    } catch (error) {
+        console.error('Error setting hasStartedGame:', error);
+        // Continue anyway - don't block the user
+    }
+    
+    // OPEN TOURNAMENT MODE - pass event and user parameters
+    const userId = currentUser.uid;
+    const gameUrl = `/game-wrapper.html?event=${tournamentId}&user=${userId}`;
+    
+    const gameWindow = window.open(gameUrl, '_blank');
+    
+    if (!gameWindow) {
+        showToast('⚠️ Please allow pop-ups for this site', 'error');
+        return;
+    }
+    
+    showToast('🎮 Opening Ninja Run... Good luck!', 'success');
+    startGameMonitor(tournamentId, userId);
+};
         // ========================================
         // UPDATE USER PLAYED STATUS - Updated to clear hasStartedGame
         // ========================================
