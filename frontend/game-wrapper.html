@@ -816,8 +816,7 @@ const db = getDatabase(app);
         tournamentEndTime = Date.now() + (5 * 60 * 1000);
         startTournamentTimer();
     }
-}
-       function startTournamentTimer() {
+}function startTournamentTimer() {
     if (tournamentTimerInterval) {
         clearInterval(tournamentTimerInterval);
     }
@@ -827,14 +826,11 @@ const db = getDatabase(app);
 
     timerElement.style.display = 'flex';
 
-    // ===== DEBUG LOGS =====
+    // ===== SHOW WHAT TIME WAS SET =====
     const now = Date.now();
     const totalSeconds = Math.floor((tournamentEndTime - now) / 1000);
     const totalMinutes = Math.floor(totalSeconds / 60);
-    console.log('⏰ TIMER DEBUG:');
-    console.log('  - End Time:', new Date(tournamentEndTime).toLocaleTimeString());
-    console.log('  - Total Seconds:', totalSeconds);
-    console.log('  - Total Minutes:', totalMinutes);
+    console.log('⏰ Timer set to:', totalMinutes, 'minutes', totalSeconds, 'seconds');
 
     tournamentTimerInterval = setInterval(function() {
         const now = Date.now();
@@ -846,8 +842,7 @@ const db = getDatabase(app);
             
             if (!timerAutoSubmitDone && !IS_DEMO_MODE) {
                 timerAutoSubmitDone = true;
-                console.log('⏰ Tournament time expired! Auto-submitting...');
-                markGameEnd();
+                console.log('⏰ Time expired! Auto-submitting...');
                 const currentScore = gameScore || 0;
                 submitScore(currentScore, true);
                 setTimeout(() => {
@@ -869,7 +864,7 @@ const db = getDatabase(app);
 
     }, 1000);
 }
-        // ============================================================
+       // ============================================================
         // AUTO-SUBMIT ON DISCONNECTION
         // ============================================================
 
