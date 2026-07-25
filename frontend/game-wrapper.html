@@ -493,8 +493,31 @@
             </div>
         </div>
     </div>
+<script type="importmap">
+{
+    "imports": {
+        "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
+        "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
+        "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
+    }
+}
+</script>
+    <script type="module">
+        // ===== IMPORT FIREBASE =====
+import { initializeApp } from "firebase/app";
+import { getDatabase, ref, get } from "firebase/database";
 
-    <script>
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+    apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
+    authDomain: "shora-games.firebaseapp.com",
+    projectId: "shora-games",
+    databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
+};
+
+// ===== INITIALIZE FIREBASE =====
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
         // ============================================================
         // CONFIG
         // ============================================================
@@ -756,98 +779,40 @@
         // TOURNAMENT COUNTDOWN TIMER - UPDATED TO READ endTime
         // ============================================================
 
-      async function fetchTournamentEndTime(eventId) {
+  async function fetchTournamentEndTime(eventId) {
     if (!eventId || IS_DEMO_MODE) {
         document.getElementById('tournamentTimer').style.display = 'none';
         return;
     }
 
     try {
-        console.log('🔍 Fetching tournament data for ID:', eventId);
+        console.log('🔍 Fetching tournament:', eventId);
         
-        // ===== CHECK FIREBASE =====
-        if (typeof firebase !== 'undefined' && firebase.database) {
-            const db = firebase.database();
-            const tournamentRef = db.ref(`tournaments/${eventId}`);
-            const snapshot = await tournamentRef.once('value');
+        // ===== READ FROM FIREBASE =====
+        const tournamentRef = ref(db, `tournaments/${eventId}`);
+        const snapshot = await get(tournamentRef);
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            console.log('✅ Tournament found! Duration:', data.duration, 'minutes');
             
-            if (snapshot.exists()) {
-                const data = snapshot.val();
-                console.log('📋 Tournament data found:', data);
-                console.log('📋 Tournament name:', data.name);
-                console.log('📋 Duration:', data.duration, 'minutes');
-                console.log('📋 endTime:', data.endTime);
-                
-                // ===== OPTION 1: Use endTime directly =====
-                if (data.endTime) {
-                    tournamentEndTime = new Date(data.endTime).getTime();
-                    console.log('✅ Using endTime:', new Date(tournamentEndTime).toLocaleTimeString());
-                    startTournamentTimer();
-                    return;
-                }
-                
-                // ===== OPTION 2: Use duration + createdAt =====
-                if (data.duration) {
-                    // Calculate end time from duration
-                    const durationMs = data.duration * 60 * 1000;
-                    tournamentEndTime = Date.now() + durationMs;
-                    console.log('✅ Calculated endTime from duration:', data.duration, 'minutes');
-                    console.log('✅ End time will be:', new Date(tournamentEndTime).toLocaleTimeString());
-                    startTournamentTimer();
-                    return;
-                }
-                
-                console.warn('⚠️ No duration or endTime found in tournament data');
-            } else {
-                console.warn('⚠️ Tournament not found in Firebase:', eventId);
-                console.log('📋 Trying alternative path...');
-                
-                // Try alternative path (shora-games/tournaments)
-                const altRef = db.ref(`shora-games/tournaments/${eventId}`);
-                const altSnapshot = await altRef.once('value');
-                if (altSnapshot.exists()) {
-                    const data = altSnapshot.val();
-                    console.log('📋 Found in shora-games/tournaments:', data);
-                    
-                    if (data.duration) {
-                        tournamentEndTime = Date.now() + (data.duration * 60 * 1000);
-                        console.log('✅ Using duration from alt path:', data.duration, 'minutes');
-                        startTournamentTimer();
-                        return;
-                    }
-                }
+            // Calculate end time from duration
+            if (data.duration) {
+                const durationMs = data.duration * 60 * 1000;
+                tournamentEndTime = Date.now() + durationMs;
+                console.log('✅ Timer set to:', data.duration, 'minutes');
+                startTournamentTimer();
+                return;
             }
         }
-
-        // ===== FALLBACK: Check Neon API =====
-        try {
-            console.log('📋 Trying Neon API...');
-            const response = await fetch(`https://shora-games-api.onrender.com/api/tournaments/${eventId}`);
-            if (response.ok) {
-                const data = await response.json();
-                if (data.tournament) {
-                    const t = data.tournament;
-                    console.log('📋 Tournament from API:', t.name);
-                    
-                    if (t.duration) {
-                        tournamentEndTime = Date.now() + (t.duration * 60 * 1000);
-                        console.log('✅ Using duration from API:', t.duration, 'minutes');
-                        startTournamentTimer();
-                        return;
-                    }
-                }
-            }
-        } catch (apiError) {
-            console.warn('⚠️ API fallback failed:', apiError);
-        }
-
-        // ===== ULTIMATE FALLBACK =====
-        console.warn('⚠️ No tournament data found. Using 5 minute fallback.');
+        
+        // ===== FALLBACK: 5 minutes =====
+        console.warn('⚠️ Using 5 minute fallback');
         tournamentEndTime = Date.now() + (5 * 60 * 1000);
         startTournamentTimer();
 
     } catch (error) {
-        console.error('❌ Error in fetchTournamentEndTime:', error);
+        console.error('❌ Error:', error);
         tournamentEndTime = Date.now() + (5 * 60 * 1000);
         startTournamentTimer();
     }
