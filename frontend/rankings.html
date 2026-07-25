@@ -1222,63 +1222,95 @@
         // LOAD TOURNAMENT DATA
         // ========================================
 
-        async function loadTournamentData(tournamentId) {
+      async function loadRankings(tournamentId) {
+    try {
+        console.log('📊 Loading rankings for tournament:', tournamentId);
+        
+        let players = [];
+        let dataSource = 'none';
+        
+        // ===== TRY NEON API FIRST =====
+        try {
+            const response = await fetch(`${API_BASE}/rankings/${tournamentId}`);
+            if (response.ok) {
+                players = await response.json();
+                dataSource = 'Neon API';
+                console.log('✅ Rankings loaded from Neon API:', players.length, 'players');
+            } else {
+                console.warn('⚠️ Neon API returned status:', response.status);
+            }
+        } catch (apiError) {
+            console.warn('⚠️ Neon API error:', apiError.message);
+        }
+        
+        // ===== FALLBACK TO FIREBASE =====
+        if (players.length === 0) {
+            console.log('📊 No data from Neon, trying Firebase...');
             try {
-                const response = await fetch(`${API_BASE}/tournaments/${tournamentId}`);
-                if (!response.ok) throw new Error('Failed to fetch tournament');
+                const tournamentRef = ref(db, `tournaments/${tournamentId}/players`);
+                const snapshot = await get(tournamentRef);
                 
-                const data = await response.json();
-                const tournament = data.tournament;
-                
-                if (!tournament) {
-                    showToast('Tournament not found', 'error');
-                    return;
-                }
-                
-                // Update header
-                document.getElementById('tournamentSubtitle').textContent = tournament.name || 'Tournament';
-                
-                // Update prize pool
-                document.getElementById('prizePoolAmount').textContent = (tournament.prize_pool || 0).toLocaleString();
-                
-                // Update status badge
-                const statusBadge = document.getElementById('statusBadge');
-                const status = tournament.status || 'soon';
-                statusBadge.className = `status-badge ${status}`;
-                const statusIcons = { live: 'fa-circle', ended: 'fa-circle', soon: 'fa-clock' };
-                const statusTexts = { live: 'LIVE', ended: 'ENDED', soon: 'UPCOMING' };
-                statusBadge.innerHTML = `<i class="fas ${statusIcons[status] || 'fa-circle'}"></i> ${statusTexts[status] || status.toUpperCase()}`;
-                
-                // Update prize distribution preview
-                const prizeDist = tournament.prize_distribution || {};
-                const prizeKeys = Object.keys(prizeDist);
-                
-                const p1 = document.getElementById('p1');
-                const p2 = document.getElementById('p2');
-                const p3 = document.getElementById('p3');
-                const morePrizes = document.getElementById('morePrizes');
-                
-                p1.textContent = prizeDist[1] ? prizeDist[1].toLocaleString() + ' RWF' : '0 RWF';
-                p2.textContent = prizeDist[2] ? prizeDist[2].toLocaleString() + ' RWF' : '0 RWF';
-                p3.textContent = prizeDist[3] ? prizeDist[3].toLocaleString() + ' RWF' : '0 RWF';
-                
-                if (prizeKeys.length > 3) {
-                    morePrizes.style.display = 'inline';
-                    morePrizes.innerHTML = `<span class="rank-label">+${prizeKeys.length - 3} more</span>`;
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    players = Object.entries(data).map(([uid, player]) => ({
+                        user_id: uid,
+                        username: player.username || 'Anonymous',
+                        phone: player.phone || '',
+                        score: player.score || 0,
+                        time_finished: player.time_finished || 0,
+                        has_played: player.has_played || false,
+                        position: player.position || 0,
+                        prize_won: player.prize_won || 0,
+                        finished_at: player.finished_at || null
+                    }));
+                    dataSource = 'Firebase';
+                    console.log('✅ Rankings loaded from Firebase:', players.length, 'players');
                 } else {
-                    morePrizes.style.display = 'none';
+                    console.log('ℹ️ No players found in Firebase');
                 }
-                
-                // Update player count
-                const players = data.players || [];
-                document.getElementById('playerCount').textContent = players.filter(p => p.has_played).length;
-                
-            } catch (error) {
-                console.error('Error loading tournament data:', error);
-                showToast('Error loading tournament data', 'error');
+            } catch (firebaseError) {
+                console.error('❌ Firebase error:', firebaseError.message);
             }
         }
-
+        
+        // Filter only players who have played
+        const playedPlayers = players.filter(p => p.has_played === true);
+        console.log('👥 Players who have played:', playedPlayers.length);
+        console.log('📊 Data source:', dataSource);
+        
+        // Store for comparison
+        previousRankings = [...currentRankings];
+        currentRankings = playedPlayers;
+        
+        // Render the table
+        renderRankings(playedPlayers);
+        
+        // Update UI
+        document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
+        document.getElementById('playerCount').textContent = playedPlayers.length;
+        
+    } catch (error) {
+        console.error('❌ Error loading rankings:', error);
+        showToast('Error loading rankings: ' + error.message, 'error');
+        
+        // Show error in table
+        const tbody = document.getElementById('rankingsBody');
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-exclamation-triangle"></i></span>
+                        <h3>Error Loading Rankings</h3>
+                        <p>${error.message}</p>
+                        <p style="font-size:0.7rem;color:var(--muted);margin-top:8px;">
+                            Check console for details
+                        </p>
+                    </div>
+                </td>
+            </tr>
+        `;
+    }
+}
         // ========================================
         // LOAD RANKINGS FROM API
         // ========================================
