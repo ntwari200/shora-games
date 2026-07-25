@@ -339,6 +339,7 @@ app.post('/api/tournaments/:id/join', async (req, res) => {
 });
 
 // ===== UPDATED: Submit score with full data =====
+// ===== SUBMIT SCORE - UPDATED =====
 app.post('/api/rankings/submit', async (req, res) => {
     const { 
         tournament_id, 
@@ -352,6 +353,15 @@ app.post('/api/rankings/submit', async (req, res) => {
         cheat_reason,
         auto_submitted
     } = req.body;
+
+    console.log('📥 Received score submission:', {
+        tournament_id,
+        user_id,
+        username,
+        score,
+        time_finished,
+        cheated
+    });
 
     if (!tournament_id || !user_id || score === undefined) {
         return res.status(400).json({ 
@@ -370,23 +380,18 @@ app.post('/api/rankings/submit', async (req, res) => {
             return res.status(404).json({ error: 'Tournament not found' });
         }
 
-        const tournament = tournamentResult.rows[0];
-        
-        // Only allow submission for live tournaments (or allow if auto_submitted)
-        if (tournament.status !== 'live' && !auto_submitted) {
-            return res.status(400).json({ error: 'Tournament is not live' });
-        }
-
-        // Check if user already exists
+        // Check if player already exists
         const existingPlayer = await pool.query(
             'SELECT * FROM tournament_players WHERE tournament_id = $1 AND user_id = $2',
             [tournament_id, user_id]
         );
 
         let result;
-        
+        const finalUsername = username || 'Player_' + user_id.slice(0, 6);
+        const finalPhone = phone || '';
+
         if (existingPlayer.rows.length > 0) {
-            // Update existing player
+            // UPDATE existing player
             result = await pool.query(
                 `UPDATE tournament_players 
                  SET score = $1, 
@@ -395,8 +400,8 @@ app.post('/api/rankings/submit', async (req, res) => {
                      finished_at = COALESCE($3, CURRENT_TIMESTAMP),
                      cheated = $4,
                      cheat_reason = $5,
-                     username = COALESCE($6, username),
-                     phone = COALESCE($7, phone)
+                     username = $6,
+                     phone = $7
                  WHERE tournament_id = $8 AND user_id = $9
                  RETURNING *`,
                 [
@@ -405,14 +410,15 @@ app.post('/api/rankings/submit', async (req, res) => {
                     finished_at || null,
                     cheated || false,
                     cheat_reason || null,
-                    username || existingPlayer.rows[0].username,
-                    phone || existingPlayer.rows[0].phone,
+                    finalUsername,
+                    finalPhone,
                     tournament_id, 
                     user_id
                 ]
             );
+            console.log('✅ Updated existing player:', result.rows[0].id);
         } else {
-            // Insert new player
+            // INSERT new player
             result = await pool.query(
                 `INSERT INTO tournament_players (
                     tournament_id, user_id, username, phone, score, 
@@ -422,8 +428,8 @@ app.post('/api/rankings/submit', async (req, res) => {
                 [
                     tournament_id, 
                     user_id, 
-                    username || 'Player_' + user_id.slice(0, 6), 
-                    phone || '', 
+                    finalUsername, 
+                    finalPhone, 
                     score, 
                     time_finished || 0, 
                     finished_at || new Date().toISOString(),
@@ -431,7 +437,29 @@ app.post('/api/rankings/submit', async (req, res) => {
                     cheat_reason || null
                 ]
             );
+            console.log('✅ Inserted new player:', result.rows[0].id);
         }
+
+        // Recalculate positions
+        await recalculatePositions(tournament_id);
+
+        // Get updated position
+        const positionResult = await pool.query(
+            'SELECT position FROM tournament_players WHERE id = $1',
+            [result.rows[0].id]
+        );
+
+        res.json({ 
+            success: true, 
+            player: result.rows[0],
+            position: positionResult.rows[0]?.position || 0
+        });
+
+    } catch (err) {
+        console.error('❌ Error submitting score:', err);
+        res.status(500).json({ error: err.message });
+    }
+});
 
         // Recalculate positions
         const playerCount = await recalculatePositions(tournament_id);
