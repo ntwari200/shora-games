@@ -2015,259 +2015,264 @@
         // RENDER TOURNAMENTS - UPDATED
         // ========================================
 
-        function renderTournaments(tournaments) {
-            const grid = document.getElementById('tournamentGrid');
-            
-            if (tournaments.length === 0) {
-                grid.innerHTML = `
-                    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);">
-                        <i class="fas fa-trophy" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
-                        <h3 style="color:var(--text);font-family:'Orbitron',monospace;font-size:1.1rem;">No Active Tournaments</h3>
-                        <p style="margin-top:6px;font-size:0.9rem;">Check back soon for new events!</p>
-                    </div>
-                `;
-                return;
-            }
+       function renderTournaments(tournaments) {
+    const grid = document.getElementById('tournamentGrid');
+    
+    if (tournaments.length === 0) {
+        grid.innerHTML = `
+            <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);">
+                <i class="fas fa-trophy" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
+                <h3 style="color:var(--text);font-family:'Orbitron',monospace;font-size:1.1rem;">No Active Tournaments</h3>
+                <p style="margin-top:6px;font-size:0.9rem;">Check back soon for new events!</p>
+            </div>
+        `;
+        return;
+    }
 
-            grid.innerHTML = tournaments.map(tournament => {
-                const isLive = tournament.status === 'live';
-                const isEnded = tournament.status === 'ended';
-                const isSoon = tournament.status === 'soon' || tournament.status === 'upcoming';
-                const isLocked = tournament.locked;
-                const playerCount = tournament.currentPlayers || 0;
-                const maxPlayers = tournament.maxPlayers || 50;
-                const progress = (playerCount / maxPlayers) * 100;
-                
-                let timeRemaining = null;
-                let countdownDisplay = '';
-                
-                if (isSoon) {
-                    const startTime = tournament.startTime || new Date(Date.now() + 3600000).toISOString();
-                    timeRemaining = getTimeRemaining(startTime);
-                    countdownDisplay = formatCountdown(timeRemaining, timeRemaining.days > 0);
-                } else if (isLive) {
-                    const endTime = tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
-                    timeRemaining = getTimeRemaining(endTime);
-                    countdownDisplay = formatCountdown(timeRemaining, false);
-                }
-                
-                const statusDisplay = getStatusDisplay(tournament.status, isLocked, timeRemaining);
-                
-                const userHasJoined = currentUser && tournament.players && tournament.players[currentUser.uid];
-                const userHasPlayedThisTournament = currentUser && tournament.players && 
-                    tournament.players[currentUser.uid] && 
-                    tournament.players[currentUser.uid].hasPlayed === true;
-                
-                // NEW: Check if user has started this specific tournament
-                const hasStartedThisTournament = currentUser && 
-                    userData.hasStartedGame === true && 
-                    userData.currentEventId === tournament.id;
-                
-                const isFull = playerCount >= maxPlayers;
-                
-                // ===== BUILD PRIZE DISPLAY HTML =====
-                let prizeHtml = '';
-                const prizeDist = tournament.prizeDistribution || {};
-                const prizeKeys = Object.keys(prizeDist);
-                
-                if (prizeKeys.length > 0 || tournament.prizePool > 0) {
-                    const rankEmojis = { 1: '🥇', 2: '🥈', 3: '🥉' };
-                    const rankClasses = { 1: 'gold', 2: 'silver', 3: 'bronze' };
-                    
-                    let topPrizesHtml = '';
-                    let moreWinnersHtml = '';
-                    
-                    for (let i = 1; i <= 3; i++) {
-                        if (prizeDist[i]) {
-                            const emoji = rankEmojis[i] || '🏅';
-                            const cls = rankClasses[i] || '';
-                            topPrizesHtml += `
-                                <div class="prize-rank ${cls}">
-                                    <span class="rank-icon">${emoji}</span>
-                                    <span class="rank-amount">${prizeDist[i].toLocaleString()} RWF</span>
-                                </div>
-                            `;
-                        }
-                    }
-                    
-                    if (prizeKeys.length > 3) {
-                        moreWinnersHtml = `
-                            <div class="more-winners">
-                                +${prizeKeys.length - 3} more winners
-                            </div>
-                        `;
-                    }
-                    
-                    prizeHtml = `
-                        <div class="prize-display">
-                            <div class="prize-pool">
-                                <span class="pool-amount">${tournament.prizePool.toLocaleString()} RWF</span>
-                                <span class="pool-label">🏆 Prize Pool</span>
-                            </div>
-                            ${topPrizesHtml ? `<div class="top-prizes">${topPrizesHtml}</div>` : ''}
-                            ${tournament.participationBonus ? `
-                                <div class="participation-bonus">
-                                    <i class="fas fa-gift"></i> Participation Bonus Available
-                                </div>
-                            ` : ''}
-                            ${moreWinnersHtml}
+    grid.innerHTML = tournaments.map(tournament => {
+        const isLive = tournament.status === 'live';
+        const isEnded = tournament.status === 'ended';
+        const isSoon = tournament.status === 'soon' || tournament.status === 'upcoming';
+        const isLocked = tournament.locked;
+        const playerCount = tournament.currentPlayers || 0;
+        const maxPlayers = tournament.maxPlayers || 50;
+        const progress = (playerCount / maxPlayers) * 100;
+        
+        let timeRemaining = null;
+        let countdownDisplay = '';
+        
+        if (isSoon) {
+            const startTime = tournament.startTime || new Date(Date.now() + 3600000).toISOString();
+            timeRemaining = getTimeRemaining(startTime);
+            countdownDisplay = formatCountdown(timeRemaining, timeRemaining.days > 0);
+        } else if (isLive) {
+            const endTime = tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString();
+            timeRemaining = getTimeRemaining(endTime);
+            countdownDisplay = formatCountdown(timeRemaining, false);
+        }
+        
+        const statusDisplay = getStatusDisplay(tournament.status, isLocked, timeRemaining);
+        
+        const userHasJoined = currentUser && tournament.players && tournament.players[currentUser.uid];
+        const userHasPlayedThisTournament = currentUser && tournament.players && 
+            tournament.players[currentUser.uid] && 
+            tournament.players[currentUser.uid].hasPlayed === true;
+        
+        // NEW: Check if user has started this specific tournament
+        const hasStartedThisTournament = currentUser && 
+            userData.hasStartedGame === true && 
+            userData.currentEventId === tournament.id;
+        
+        const isFull = playerCount >= maxPlayers;
+        
+        // ===== KEY FIX: Only block if tournament is LIVE =====
+        const shouldBlock = (isLive && (userHasPlayedThisTournament || hasStartedThisTournament));
+        
+        // ===== BUILD PRIZE DISPLAY HTML =====
+        let prizeHtml = '';
+        const prizeDist = tournament.prizeDistribution || {};
+        const prizeKeys = Object.keys(prizeDist);
+        
+        if (prizeKeys.length > 0 || tournament.prizePool > 0) {
+            const rankEmojis = { 1: '🥇', 2: '🥈', 3: '🥉' };
+            const rankClasses = { 1: 'gold', 2: 'silver', 3: 'bronze' };
+            
+            let topPrizesHtml = '';
+            let moreWinnersHtml = '';
+            
+            for (let i = 1; i <= 3; i++) {
+                if (prizeDist[i]) {
+                    const emoji = rankEmojis[i] || '🏅';
+                    const cls = rankClasses[i] || '';
+                    topPrizesHtml += `
+                        <div class="prize-rank ${cls}">
+                            <span class="rank-icon">${emoji}</span>
+                            <span class="rank-amount">${prizeDist[i].toLocaleString()} RWF</span>
                         </div>
                     `;
                 }
-                
-                // ===== DEMO BUTTON - ALWAYS VISIBLE =====
-                const demoButtonHtml = `
-                    <button class="btn btn-card-demo" onclick="openDemoModal('${tournament.id}')" title="Practice mode - Always available">
-                        <i class="fas fa-gamepad"></i> Demo <span class="demo-badge">FREE</span>
+            }
+            
+            if (prizeKeys.length > 3) {
+                moreWinnersHtml = `
+                    <div class="more-winners">
+                        +${prizeKeys.length - 3} more winners
+                    </div>
+                `;
+            }
+            
+            prizeHtml = `
+                <div class="prize-display">
+                    <div class="prize-pool">
+                        <span class="pool-amount">${tournament.prizePool.toLocaleString()} RWF</span>
+                        <span class="pool-label">🏆 Prize Pool</span>
+                    </div>
+                    ${topPrizesHtml ? `<div class="top-prizes">${topPrizesHtml}</div>` : ''}
+                    ${tournament.participationBonus ? `
+                        <div class="participation-bonus">
+                            <i class="fas fa-gift"></i> Participation Bonus Available
+                        </div>
+                    ` : ''}
+                    ${moreWinnersHtml}
+                </div>
+            `;
+        }
+        
+        // ===== DEMO BUTTON - ALWAYS VISIBLE =====
+        const demoButtonHtml = `
+            <button class="btn btn-card-demo" onclick="openDemoModal('${tournament.id}')" title="Practice mode - Always available">
+                <i class="fas fa-gamepad"></i> Demo <span class="demo-badge">FREE</span>
+            </button>
+        `;
+        
+        // ===== ACTION BUTTON - UPDATED LOGIC =====
+        let buttonHtml = '';
+        
+        // ===== KEY FIX: Only block if tournament is LIVE =====
+        if (shouldBlock) {
+            // User already started or played in THIS tournament (only when live)
+            buttonHtml = `
+                <button class="btn btn-card-already-played" disabled>
+                    <i class="fas fa-ban"></i> ${userHasPlayedThisTournament ? 'Already Played' : 'Game Started'}
+                </button>
+            `;
+        } else if (isEnded) {
+            // Tournament ended - show Rankings button only
+            buttonHtml = `
+                <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'">
+                    <i class="fas fa-trophy"></i> View Rankings
+                </button>
+            `;
+        } else if (isLocked && !userHasJoined) {
+            buttonHtml = `
+                <button class="btn btn-card-blocked" disabled>
+                    <i class="fas fa-lock"></i> Locked
+                </button>
+            `;
+        } else if (isLive && !isLocked) {
+            if (userHasJoined) {
+                // User joined but hasn't started - show Play Now
+                buttonHtml = `
+                    <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
+                        <i class="fas fa-play"></i> Play Now
                     </button>
                 `;
-                
-                // ===== ACTION BUTTON - UPDATED LOGIC =====
-                let buttonHtml = '';
-                
-                // Check if user has already played OR started this specific tournament
-                const isBlocked = hasStartedThisTournament || userHasPlayedThisTournament;
-                
-                if (isBlocked) {
-                    // User already started or played - show disabled button
-                    buttonHtml = `
-                        <button class="btn btn-card-already-played" disabled>
-                            <i class="fas fa-ban"></i> ${userHasPlayedThisTournament ? 'Already Played' : 'Game Started'}
-                        </button>
-                    `;
-                } else if (isEnded) {
-                    // Tournament ended - show Rankings button only
-                    buttonHtml = `
-                        <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'">
-                            <i class="fas fa-trophy"></i> View Rankings
-                        </button>
-                    `;
-                } else if (isLocked && !userHasJoined) {
-                    buttonHtml = `
-                        <button class="btn btn-card-blocked" disabled>
-                            <i class="fas fa-lock"></i> Locked
-                        </button>
-                    `;
-                } else if (isLive && !isLocked) {
-                    if (userHasJoined) {
-                        // User joined but hasn't started - show Play Now
-                        buttonHtml = `
-                            <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
-                                <i class="fas fa-play"></i> Play Now
-                            </button>
-                        `;
-                    } else if (isFull) {
-                        buttonHtml = `
-                            <button class="btn btn-card-blocked" disabled>
-                                <i class="fas fa-users"></i> Full (${playerCount}/${maxPlayers})
-                            </button>
-                        `;
-                    } else {
-                        buttonHtml = `
-                            <button class="btn btn-card-join" onclick="handleJoinClick('${tournament.id}')">
-                                <i class="fas fa-ticket-alt"></i> Join (${tournament.entryFee} RWF)
-                            </button>
-                        `;
-                    }
-                } else if (isSoon) {
-                    buttonHtml = `
-                        <button class="btn btn-card-waiting" disabled>
-                            <i class="fas fa-clock"></i> ${countdownDisplay || 'Coming Soon'}
-                        </button>
-                    `;
-                }
-
-                // ===== LOCK BADGE =====
-                let lockBadgeHtml = '';
-                if (isLocked && !isEnded) {
-                    lockBadgeHtml = `<span class="card-lock-badge">🔒 Locked</span>`;
-                } else if (!isLocked && isLive) {
-                    lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
-                }
-
-                // ===== IMAGE =====
-                const imageHtml = tournament.image ? 
-                    `<img src="${tournament.image}" alt="${tournament.name}" onerror="this.style.display='none';this.parentElement.querySelector('.placeholder-icon').style.display='flex';">` :
-                    '';
-
-                return `
-                    <div class="tournament-card" data-id="${tournament.id}" data-status="${tournament.status}">
-                        <div class="card-cover">
-                            ${imageHtml}
-                            <span class="placeholder-icon" style="${tournament.image ? 'display:none;' : 'display:flex;'}"><i class="fas fa-trophy"></i></span>
-                            <span class="card-status-badge ${statusDisplay.class}">${statusDisplay.text}</span>
-                            ${lockBadgeHtml}
-                            
-                            ${(isLive || isSoon) ? `
-                            <div class="card-countdown">
-                                <span class="countdown-label">
-                                    <i class="fas fa-${isLive ? 'hourglass-end' : 'hourglass-start'}"></i>
-                                    ${isLive ? 'Ends in' : 'Starts in'}
-                                </span>
-                                <span class="countdown-timer ${isLive && timeRemaining && timeRemaining.total < 300 ? 'urgent' : ''}" 
-                                      data-timer="${tournament.id}">
-                                    ${isLive ? countdownDisplay || '00:00' : countdownDisplay || '--:--:--'}
-                                </span>
-                            </div>
-                            ` : ''}
-                        </div>
-                        <div class="card-body">
-                            <div class="card-title">${tournament.name}</div>
-                            <div class="card-game"><i class="fas fa-gamepad" style="color:var(--primary);font-size:0.65rem;"></i> ${tournament.game}</div>
-                            
-                            <div class="card-meta">
-                                <div class="meta-item">
-                                    <i class="fas fa-coins"></i>
-                                    Entry: <strong>${tournament.entryFee.toLocaleString()} RWF</strong>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-trophy"></i>
-                                    Prize: <strong class="gold">${tournament.prizePool.toLocaleString()} RWF</strong>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-clock"></i>
-                                    Duration: <strong>${tournament.duration} min</strong>
-                                </div>
-                                <div class="meta-item">
-                                    <i class="fas fa-user-friends"></i>
-                                    Players: <strong>${playerCount}/${maxPlayers}</strong>
-                                </div>
-                            </div>
-
-                            ${prizeHtml}
-
-                            <div class="card-players">
-                                <span style="font-size:0.6rem;color:var(--muted);">Progress</span>
-                                <div class="progress-bar">
-                                    <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
-                                </div>
-                                <span class="count"><strong>${playerCount}</strong> / ${maxPlayers}</span>
-                            </div>
-
-                            ${tournament.description ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">${tournament.description}</div>` : ''}
-
-                            <div class="card-actions">
-                                ${demoButtonHtml}
-                                ${buttonHtml}
-                                
-                                <!-- ===== INFO BUTTON - Shows payout information ===== -->
-                                <button class="btn btn-card-view" onclick="showTournamentInfo('${tournament.id}')" style="flex:0.4;min-width:auto;padding:8px 12px;" title="Tournament Info & Payout">
-                                    <i class="fas fa-info-circle"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
+            } else if (isFull) {
+                buttonHtml = `
+                    <button class="btn btn-card-blocked" disabled>
+                        <i class="fas fa-users"></i> Full (${playerCount}/${maxPlayers})
+                    </button>
                 `;
-            }).join('');
-
-            // Start countdown timers
-            tournaments.forEach(t => {
-                if (t.status === 'live' || t.status === 'soon' || t.status === 'upcoming') {
-                    startCountdown(t);
-                }
-            });
+            } else {
+                buttonHtml = `
+                    <button class="btn btn-card-join" onclick="handleJoinClick('${tournament.id}')">
+                        <i class="fas fa-ticket-alt"></i> Join (${tournament.entryFee} RWF)
+                    </button>
+                `;
+            }
+        } else if (isSoon) {
+            buttonHtml = `
+                <button class="btn btn-card-waiting" disabled>
+                    <i class="fas fa-clock"></i> ${countdownDisplay || 'Coming Soon'}
+                </button>
+            `;
         }
 
+        // ===== LOCK BADGE =====
+        let lockBadgeHtml = '';
+        if (isLocked && !isEnded) {
+            lockBadgeHtml = `<span class="card-lock-badge">🔒 Locked</span>`;
+        } else if (!isLocked && isLive) {
+            lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
+        }
+
+        // ===== IMAGE =====
+        const imageHtml = tournament.image ? 
+            `<img src="${tournament.image}" alt="${tournament.name}" onerror="this.style.display='none';this.parentElement.querySelector('.placeholder-icon').style.display='flex';">` :
+            '';
+
+        return `
+            <div class="tournament-card" data-id="${tournament.id}" data-status="${tournament.status}">
+                <div class="card-cover">
+                    ${imageHtml}
+                    <span class="placeholder-icon" style="${tournament.image ? 'display:none;' : 'display:flex;'}"><i class="fas fa-trophy"></i></span>
+                    <span class="card-status-badge ${statusDisplay.class}">${statusDisplay.text}</span>
+                    ${lockBadgeHtml}
+                    
+                    ${(isLive || isSoon) ? `
+                    <div class="card-countdown">
+                        <span class="countdown-label">
+                            <i class="fas fa-${isLive ? 'hourglass-end' : 'hourglass-start'}"></i>
+                            ${isLive ? 'Ends in' : 'Starts in'}
+                        </span>
+                        <span class="countdown-timer ${isLive && timeRemaining && timeRemaining.total < 300 ? 'urgent' : ''}" 
+                              data-timer="${tournament.id}">
+                            ${isLive ? countdownDisplay || '00:00' : countdownDisplay || '--:--:--'}
+                        </span>
+                    </div>
+                    ` : ''}
+                </div>
+                <div class="card-body">
+                    <div class="card-title">${tournament.name}</div>
+                    <div class="card-game"><i class="fas fa-gamepad" style="color:var(--primary);font-size:0.65rem;"></i> ${tournament.game}</div>
+                    
+                    <div class="card-meta">
+                        <div class="meta-item">
+                            <i class="fas fa-coins"></i>
+                            Entry: <strong>${tournament.entryFee.toLocaleString()} RWF</strong>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-trophy"></i>
+                            Prize: <strong class="gold">${tournament.prizePool.toLocaleString()} RWF</strong>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-clock"></i>
+                            Duration: <strong>${tournament.duration} min</strong>
+                        </div>
+                        <div class="meta-item">
+                            <i class="fas fa-user-friends"></i>
+                            Players: <strong>${playerCount}/${maxPlayers}</strong>
+                        </div>
+                    </div>
+
+                    ${prizeHtml}
+
+                    <div class="card-players">
+                        <span style="font-size:0.6rem;color:var(--muted);">Progress</span>
+                        <div class="progress-bar">
+                            <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
+                        </div>
+                        <span class="count"><strong>${playerCount}</strong> / ${maxPlayers}</span>
+                    </div>
+
+                    ${tournament.description ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">${tournament.description}</div>` : ''}
+
+                    <div class="card-actions">
+                        ${demoButtonHtml}
+                        ${buttonHtml}
+                        
+                        <!-- ===== VIEW RANKINGS BUTTON ===== -->
+                        <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'" style="flex:0.4;min-width:auto;padding:8px 12px;" title="View Rankings">
+                            <i class="fas fa-trophy"></i>
+                        </button>
+                        
+                        <!-- ===== INFO BUTTON ===== -->
+                        <button class="btn btn-card-view" onclick="showTournamentInfo('${tournament.id}')" style="flex:0.4;min-width:auto;padding:8px 12px;" title="Tournament Info & Payout">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Start countdown timers
+    tournaments.forEach(t => {
+        if (t.status === 'live' || t.status === 'soon' || t.status === 'upcoming') {
+            startCountdown(t);
+        }
+    });
+}
         // ========================================
         // SHOW TOURNAMENT INFO - Updated with Payout Information
         // ========================================
