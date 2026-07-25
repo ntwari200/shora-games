@@ -21,7 +21,6 @@ try {
     if (process.env.FIREBASE_SERVICE_ACCOUNT) {
         serviceAccount = JSON.parse(process.env.FIREBASE_SERVICE_ACCOUNT);
     } else {
-        // For local dev
         serviceAccount = require('./serviceAccountKey.json');
     }
 } catch (error) {
@@ -79,6 +78,55 @@ async function updateUserBalance(uid, newBalance) {
     } catch (error) {
         console.error('Error updating balance:', error);
         return false;
+    }
+}
+
+// ===== RECALCULATE POSITIONS =====
+async function recalculatePositions(tournamentId) {
+    try {
+        // Get all players sorted by score
+        const players = await pool.query(
+            `SELECT id, user_id, score, time_finished 
+             FROM tournament_players 
+             WHERE tournament_id = $1 AND has_played = true
+             ORDER BY score DESC, time_finished ASC`,
+            [tournamentId]
+        );
+
+        // Update positions
+        for (let i = 0; i < players.rows.length; i++) {
+            const position = i + 1;
+            await pool.query(
+                'UPDATE tournament_players SET position = $1 WHERE id = $2',
+                [position, players.rows[i].id]
+            );
+        }
+
+        // Get tournament prize distribution
+        const tournament = await pool.query(
+            'SELECT prize_distribution FROM tournaments WHERE id = $1',
+            [tournamentId]
+        );
+
+        if (tournament.rows.length > 0) {
+            const prizeDist = tournament.rows[0].prize_distribution || {};
+            
+            // Update prize won for each player
+            for (let i = 0; i < players.rows.length; i++) {
+                const position = i + 1;
+                const prizeWon = prizeDist[position] || 0;
+                await pool.query(
+                    'UPDATE tournament_players SET prize_won = $1 WHERE id = $2',
+                    [prizeWon, players.rows[i].id]
+                );
+            }
+        }
+
+        console.log(`✅ Positions recalculated for tournament ${tournamentId}`);
+        return players.rows.length;
+    } catch (error) {
+        console.error('Error recalculating positions:', error);
+        return 0;
     }
 }
 
@@ -149,14 +197,15 @@ app.get('/api/rankings/:tournamentId', async (req, res) => {
         const result = await pool.query(
             `SELECT 
                 user_id, username, phone, score, time_finished,
-                position, prize_won, has_played, finished_at
+                position, prize_won, has_played, finished_at, cheated, cheat_reason
              FROM tournament_players 
              WHERE tournament_id = $1
-             ORDER BY position ASC NULLS LAST, score DESC`,
+             ORDER BY position ASC NULLS LAST, score DESC, time_finished ASC`,
             [tournamentId]
         );
         res.json(result.rows);
     } catch (err) {
+        console.error('Error fetching rankings:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -166,7 +215,7 @@ app.post('/api/tournaments', async (req, res) => {
     const {
         id, name, game, image_url, entry_fee, prize_pool,
         platform_fee_percent, distribution_model, prize_distribution,
-        max_players, min_players, duration, status, locked, description
+        max_players, min_players, duration, status, locked, description, end_time, created_at
     } = req.body;
 
     if (!id || !name || !game) {
@@ -178,8 +227,8 @@ app.post('/api/tournaments', async (req, res) => {
             `INSERT INTO tournaments (
                 id, name, game, image_url, entry_fee, prize_pool,
                 platform_fee_percent, distribution_model, prize_distribution,
-                max_players, min_players, duration, status, locked, description
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+                max_players, min_players, duration, status, locked, description, end_time, created_at
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $16, $17)
             ON CONFLICT (id) DO UPDATE SET
                 name = EXCLUDED.name, game = EXCLUDED.game,
                 image_url = EXCLUDED.image_url, entry_fee = EXCLUDED.entry_fee,
@@ -190,6 +239,7 @@ app.post('/api/tournaments', async (req, res) => {
                 max_players = EXCLUDED.max_players, min_players = EXCLUDED.min_players,
                 duration = EXCLUDED.duration, status = EXCLUDED.status,
                 locked = EXCLUDED.locked, description = EXCLUDED.description,
+                end_time = EXCLUDED.end_time,
                 updated_at = CURRENT_TIMESTAMP
             RETURNING *`,
             [
@@ -197,11 +247,13 @@ app.post('/api/tournaments', async (req, res) => {
                 platform_fee_percent || 10, distribution_model || 'dynamic',
                 JSON.stringify(prize_distribution || {}),
                 max_players || 50, min_players || 2, duration || 30,
-                status || 'soon', locked || false, description || ''
+                status || 'soon', locked || false, description || '',
+                end_time || null, created_at || new Date().toISOString()
             ]
         );
         res.json(result.rows[0]);
     } catch (err) {
+        console.error('Error creating tournament:', err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -281,19 +333,34 @@ app.post('/api/tournaments/:id/join', async (req, res) => {
         });
 
     } catch (err) {
+        console.error('Error joining tournament:', err);
         res.status(500).json({ error: err.message });
     }
 });
 
-// Submit score
+// ===== UPDATED: Submit score with full data =====
 app.post('/api/rankings/submit', async (req, res) => {
-    const { tournament_id, user_id, score, time_finished } = req.body;
+    const { 
+        tournament_id, 
+        user_id, 
+        username, 
+        phone, 
+        score, 
+        time_finished, 
+        finished_at,
+        cheated,
+        cheat_reason,
+        auto_submitted
+    } = req.body;
 
     if (!tournament_id || !user_id || score === undefined) {
-        return res.status(400).json({ error: 'tournament_id, user_id, score required' });
+        return res.status(400).json({ 
+            error: 'tournament_id, user_id, and score required' 
+        });
     }
 
     try {
+        // Check if tournament exists
         const tournamentResult = await pool.query(
             'SELECT * FROM tournaments WHERE id = $1',
             [tournament_id]
@@ -304,35 +371,84 @@ app.post('/api/rankings/submit', async (req, res) => {
         }
 
         const tournament = tournamentResult.rows[0];
-        if (tournament.status !== 'live') {
+        
+        // Only allow submission for live tournaments (or allow if auto_submitted)
+        if (tournament.status !== 'live' && !auto_submitted) {
             return res.status(400).json({ error: 'Tournament is not live' });
         }
 
+        // Check if user already exists
         const existingPlayer = await pool.query(
             'SELECT * FROM tournament_players WHERE tournament_id = $1 AND user_id = $2',
             [tournament_id, user_id]
         );
 
-        if (existingPlayer.rows.length === 0) {
-            return res.status(400).json({ error: 'User has not joined' });
+        let result;
+        
+        if (existingPlayer.rows.length > 0) {
+            // Update existing player
+            result = await pool.query(
+                `UPDATE tournament_players 
+                 SET score = $1, 
+                     time_finished = $2, 
+                     has_played = true,
+                     finished_at = COALESCE($3, CURRENT_TIMESTAMP),
+                     cheated = $4,
+                     cheat_reason = $5,
+                     username = COALESCE($6, username),
+                     phone = COALESCE($7, phone)
+                 WHERE tournament_id = $8 AND user_id = $9
+                 RETURNING *`,
+                [
+                    score, 
+                    time_finished || 0, 
+                    finished_at || null,
+                    cheated || false,
+                    cheat_reason || null,
+                    username || existingPlayer.rows[0].username,
+                    phone || existingPlayer.rows[0].phone,
+                    tournament_id, 
+                    user_id
+                ]
+            );
+        } else {
+            // Insert new player
+            result = await pool.query(
+                `INSERT INTO tournament_players (
+                    tournament_id, user_id, username, phone, score, 
+                    time_finished, finished_at, has_played, cheated, cheat_reason
+                ) VALUES ($1, $2, $3, $4, $5, $6, $7, true, $8, $9)
+                RETURNING *`,
+                [
+                    tournament_id, 
+                    user_id, 
+                    username || 'Player_' + user_id.slice(0, 6), 
+                    phone || '', 
+                    score, 
+                    time_finished || 0, 
+                    finished_at || new Date().toISOString(),
+                    cheated || false,
+                    cheat_reason || null
+                ]
+            );
         }
 
-        if (existingPlayer.rows[0].has_played === true) {
-            return res.status(400).json({ error: 'Already played' });
-        }
+        // Recalculate positions
+        const playerCount = await recalculatePositions(tournament_id);
 
-        const result = await pool.query(
-            `UPDATE tournament_players 
-             SET score = $1, time_finished = $2, has_played = true,
-                 finished_at = CURRENT_TIMESTAMP
-             WHERE tournament_id = $3 AND user_id = $4
-             RETURNING *`,
-            [score, time_finished || 0, tournament_id, user_id]
-        );
+        console.log(`✅ Score submitted: ${score} for user ${user_id} in tournament ${tournament_id}`);
 
-        res.json({ success: true, player: result.rows[0] });
+        res.json({ 
+            success: true, 
+            player: result.rows[0],
+            position: result.rows[0].position || (await pool.query(
+                'SELECT position FROM tournament_players WHERE id = $1',
+                [result.rows[0].id]
+            )).rows[0]?.position || 0
+        });
 
     } catch (err) {
+        console.error('Error submitting score:', err);
         res.status(500).json({ error: err.message });
     }
 });
