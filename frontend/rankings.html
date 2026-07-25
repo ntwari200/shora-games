@@ -1315,34 +1315,7 @@
         // LOAD RANKINGS FROM API
         // ========================================
 
-        async function loadRankings(tournamentId) {
-            try {
-                const response = await fetch(`${API_BASE}/rankings/${tournamentId}`);
-                if (!response.ok) throw new Error('Failed to fetch rankings');
-                
-                const players = await response.json();
-                
-                // Store previous rankings for comparison
-                previousRankings = [...currentRankings];
-                currentRankings = players;
-                
-                // Render the table
-                renderRankings(players);
-                
-                // Update last updated time
-                document.getElementById('lastUpdated').textContent = new Date().toLocaleTimeString();
-                
-                // Update player count
-                const playedCount = players.filter(p => p.has_played).length;
-                document.getElementById('playerCount').textContent = playedCount;
-                
-            } catch (error) {
-                console.error('Error loading rankings:', error);
-                showToast('Error loading rankings', 'error');
-            }
-        }
-
-        // ========================================
+       =====================================
         // RENDER RANKINGS - PREMIER LEAGUE / F1 STYLE
         // ========================================
 
