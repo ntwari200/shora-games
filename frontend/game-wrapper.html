@@ -852,60 +852,58 @@
         startTournamentTimer();
     }
 }
-        function startTournamentTimer() {
-            if (tournamentTimerInterval) {
-                clearInterval(tournamentTimerInterval);
+       function startTournamentTimer() {
+    if (tournamentTimerInterval) {
+        clearInterval(tournamentTimerInterval);
+    }
+
+    const timerElement = document.getElementById('tournamentTimer');
+    const displayElement = document.getElementById('timerDisplay');
+
+    timerElement.style.display = 'flex';
+
+    // ===== DEBUG LOGS =====
+    const now = Date.now();
+    const totalSeconds = Math.floor((tournamentEndTime - now) / 1000);
+    const totalMinutes = Math.floor(totalSeconds / 60);
+    console.log('⏰ TIMER DEBUG:');
+    console.log('  - End Time:', new Date(tournamentEndTime).toLocaleTimeString());
+    console.log('  - Total Seconds:', totalSeconds);
+    console.log('  - Total Minutes:', totalMinutes);
+
+    tournamentTimerInterval = setInterval(function() {
+        const now = Date.now();
+        const remaining = Math.max(0, tournamentEndTime - now);
+
+        if (remaining <= 0) {
+            clearInterval(tournamentTimerInterval);
+            tournamentTimerInterval = null;
+            
+            if (!timerAutoSubmitDone && !IS_DEMO_MODE) {
+                timerAutoSubmitDone = true;
+                console.log('⏰ Tournament time expired! Auto-submitting...');
+                markGameEnd();
+                const currentScore = gameScore || 0;
+                submitScore(currentScore, true);
+                setTimeout(() => {
+                    window.location.href = `rankings.html?id=${EVENT_ID}`;
+                }, 2000);
             }
-
-            const timerElement = document.getElementById('tournamentTimer');
-            const displayElement = document.getElementById('timerDisplay');
-
-            timerElement.style.display = 'flex';
-
-            // Log for debugging
-            console.log('⏰ Timer started with endTime:', new Date(tournamentEndTime).toLocaleTimeString());
-            console.log('⏰ Total seconds remaining:', Math.floor((tournamentEndTime - Date.now()) / 1000));
-
-            tournamentTimerInterval = setInterval(function() {
-                const now = Date.now();
-                const remaining = Math.max(0, tournamentEndTime - now);
-
-                if (remaining <= 0) {
-                    clearInterval(tournamentTimerInterval);
-                    tournamentTimerInterval = null;
-                    
-                    if (!timerAutoSubmitDone && !IS_DEMO_MODE) {
-                        timerAutoSubmitDone = true;
-                        console.log('⏰ Tournament time expired! Auto-submitting...');
-                        markGameEnd();
-                        const currentScore = gameScore || 0;
-                        submitScore(currentScore, true);
-                        sessionStorage.setItem('ninjaRunScore', currentScore.toString());
-                        sessionStorage.setItem('ninjaRunPlayed', 'true');
-                        sessionStorage.setItem('ninjaRunFinalScore', currentScore.toString());
-                        sessionStorage.setItem('ninjaRunComplete', 'true');
-                        sessionStorage.setItem('ninjaRunTimerExpired', 'true');
-                        showToast('⏰ Tournament time ended! Score submitted.', 'warning');
-                        setTimeout(() => {
-                            window.location.href = `rankings.html?id=${EVENT_ID}`;
-                        }, 2000);
-                    }
-                    return;
-                }
-
-                const mins = Math.floor(remaining / 60000);
-                const secs = Math.floor((remaining % 60000) / 1000);
-                displayElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
-
-                if (remaining < 60000) {
-                    timerElement.classList.add('urgent');
-                } else {
-                    timerElement.classList.remove('urgent');
-                }
-
-            }, 1000);
+            return;
         }
 
+        const mins = Math.floor(remaining / 60000);
+        const secs = Math.floor((remaining % 60000) / 1000);
+        displayElement.textContent = `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+
+        if (remaining < 60000) {
+            timerElement.classList.add('urgent');
+        } else {
+            timerElement.classList.remove('urgent');
+        }
+
+    }, 1000);
+}
         // ============================================================
         // AUTO-SUBMIT ON DISCONNECTION
         // ============================================================
