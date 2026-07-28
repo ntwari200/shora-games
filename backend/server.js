@@ -338,8 +338,7 @@ app.post('/api/tournaments/:id/join', async (req, res) => {
     }
 });
 
-// ===== UPDATED: Submit score with full data =====
-// ===== SUBMIT SCORE - UPDATED =====
+// ===== SUBMIT SCORE - CLEAN VERSION =====
 app.post('/api/rankings/submit', async (req, res) => {
     const { 
         tournament_id, 
@@ -370,7 +369,7 @@ app.post('/api/rankings/submit', async (req, res) => {
     }
 
     try {
-        // Check if tournament exists
+        // ===== 1. Check if tournament exists =====
         const tournamentResult = await pool.query(
             'SELECT * FROM tournaments WHERE id = $1',
             [tournament_id]
@@ -380,7 +379,7 @@ app.post('/api/rankings/submit', async (req, res) => {
             return res.status(404).json({ error: 'Tournament not found' });
         }
 
-        // Check if player already exists
+        // ===== 2. Check if player already exists =====
         const existingPlayer = await pool.query(
             'SELECT * FROM tournament_players WHERE tournament_id = $1 AND user_id = $2',
             [tournament_id, user_id]
@@ -391,7 +390,7 @@ app.post('/api/rankings/submit', async (req, res) => {
         const finalPhone = phone || '';
 
         if (existingPlayer.rows.length > 0) {
-            // UPDATE existing player
+            // ===== UPDATE existing player =====
             result = await pool.query(
                 `UPDATE tournament_players 
                  SET score = $1, 
@@ -418,7 +417,7 @@ app.post('/api/rankings/submit', async (req, res) => {
             );
             console.log('✅ Updated existing player:', result.rows[0].id);
         } else {
-            // INSERT new player
+            // ===== INSERT new player =====
             result = await pool.query(
                 `INSERT INTO tournament_players (
                     tournament_id, user_id, username, phone, score, 
@@ -440,14 +439,16 @@ app.post('/api/rankings/submit', async (req, res) => {
             console.log('✅ Inserted new player:', result.rows[0].id);
         }
 
-        // Recalculate positions
+        // ===== 3. Recalculate positions =====
         await recalculatePositions(tournament_id);
 
-        // Get updated position
+        // ===== 4. Get updated position =====
         const positionResult = await pool.query(
             'SELECT position FROM tournament_players WHERE id = $1',
             [result.rows[0].id]
         );
+
+        console.log(`✅ Score submitted: ${score} for user ${user_id} in tournament ${tournament_id}`);
 
         res.json({ 
             success: true, 
@@ -457,26 +458,6 @@ app.post('/api/rankings/submit', async (req, res) => {
 
     } catch (err) {
         console.error('❌ Error submitting score:', err);
-        res.status(500).json({ error: err.message });
-    }
-});
-
-        // Recalculate positions
-        const playerCount = await recalculatePositions(tournament_id);
-
-        console.log(`✅ Score submitted: ${score} for user ${user_id} in tournament ${tournament_id}`);
-
-        res.json({ 
-            success: true, 
-            player: result.rows[0],
-            position: result.rows[0].position || (await pool.query(
-                'SELECT position FROM tournament_players WHERE id = $1',
-                [result.rows[0].id]
-            )).rows[0]?.position || 0
-        });
-
-    } catch (err) {
-        console.error('Error submitting score:', err);
         res.status(500).json({ error: err.message });
     }
 });
