@@ -1462,8 +1462,6 @@ async function loadTournamentData(tournamentId) {
         // LOAD TOURNAMENT DATA
         // ========================================
 // ========================================
-// LOAD RANKINGS - WITH PRIZE DISTRIBUTION
-// ========================================
 // ========================================
 // LOAD RANKINGS - WITH PRIZE CALCULATION
 // ========================================
@@ -1487,7 +1485,8 @@ async function loadRankings(tournamentId) {
                     max_players: tournamentData.max_players,
                     platform_fee: tournamentData.platform_fee_percent,
                     distribution_model: tournamentData.distribution_model,
-                    participation_bonus: tournamentData.participation_bonus
+                    participation_bonus: tournamentData.participation_bonus,
+                    prize_distribution: tournamentData.prize_distribution
                 });
             } else {
                 console.warn('⚠️ Could not fetch tournament data:', response.status);
@@ -1540,21 +1539,24 @@ async function loadRankings(tournamentId) {
             }
         });
         
-        // ===== CALCULATE PRIZE DISTRIBUTION =====
-        const actualPlayerCount = players.filter(p => p.has_played === true).length || tournamentData.max_players || 2;
+        // ===== GET DISTRIBUTION MODEL FROM TOURNAMENT DATA =====
+        const distributionModel = tournamentData.distribution_model || 'dynamic';
         const entryFee = tournamentData.entry_fee || 100;
         const platformFee = tournamentData.platform_fee_percent || 10;
-        const distributionModel = tournamentData.distribution_model || 'dynamic';
         const participationBonus = tournamentData.participation_bonus || false;
         
-        console.log('📊 Calculating prizes with:', {
-            playerCount: actualPlayerCount,
-            entryFee: entryFee,
-            platformFee: platformFee,
-            distributionModel: distributionModel,
-            participationBonus: participationBonus
-        });
+        // Count actual players who have played
+        const playedPlayersList = players.filter(p => p.has_played === true);
+        const actualPlayerCount = playedPlayersList.length > 0 ? playedPlayersList.length : (tournamentData.max_players || 2);
         
+        console.log('📊 Calculating prizes with:');
+        console.log('  - Distribution Model:', distributionModel);
+        console.log('  - Player Count:', actualPlayerCount);
+        console.log('  - Entry Fee:', entryFee);
+        console.log('  - Platform Fee:', platformFee);
+        console.log('  - Participation Bonus:', participationBonus);
+        
+        // ===== CALCULATE PRIZE DISTRIBUTION =====
         const prizeResult = calculatePrizeDistribution(
             actualPlayerCount,
             entryFee,
@@ -1563,7 +1565,10 @@ async function loadRankings(tournamentId) {
             participationBonus
         );
         
-        console.log('🏆 Prize distribution calculated:', prizeResult.prizes);
+        console.log('🏆 Prize distribution calculated:');
+        console.log('  - Prize Pool:', prizeResult.prizePool);
+        console.log('  - Distribution:', prizeResult.prizes);
+        console.log('  - Winner Count:', prizeResult.winnerCount);
         
         // ===== MERGE USER DATA AND APPLY PRIZES =====
         players.forEach((player, index) => {
@@ -1624,7 +1629,6 @@ async function loadRankings(tournamentId) {
     }
 }
 
-
 // ========================================
 // UPDATE PRIZE DISTRIBUTION PREVIEW
 // ========================================
@@ -1632,60 +1636,44 @@ async function loadRankings(tournamentId) {
 // PRIZE CALCULATION SYSTEM - SAME AS ADMIN
 // ========================================
 
-function calculatePrizeDistribution(playerCount, entryFee, platformFee, distributionModel, participationBonus) {
-    const totalCollected = playerCount * entryFee;
-    const platformFeeAmount = totalCollected * (platformFee / 100);
-    const prizePool = totalCollected - platformFeeAmount;
+function updatePrizeDistributionPreview(prizeResult, distributionModel) {
+    const p1 = document.getElementById('p1');
+    const p2 = document.getElementById('p2');
+    const p3 = document.getElementById('p3');
+    const morePrizes = document.getElementById('morePrizes');
+    const prizePoolAmount = document.getElementById('prizePoolAmount');
+    const prizePoolBadge = document.getElementById('prizePoolBadge');
     
-    let distribution;
-    if (distributionModel === 'dynamic') {
-        if (playerCount <= 3) {
-            distribution = { 1: 70, 2: 30 };
-        } else if (playerCount <= 5) {
-            distribution = { 1: 60, 2: 25, 3: 15 };
-        } else if (playerCount <= 10) {
-            distribution = { 1: 50, 2: 25, 3: 15, 4: 10 };
-        } else if (playerCount <= 20) {
-            distribution = { 1: 40, 2: 22, 3: 15, 4: 10, 5: 8, 6: 5 };
-        } else if (playerCount <= 40) {
-            distribution = { 1: 35, 2: 20, 3: 15, 4: 10, 5: 8, 6: 6, 7: 4, 8: 2 };
-        } else {
-            distribution = { 1: 30, 2: 18, 3: 14, 4: 10, 5: 8, 6: 6, 7: 5, 8: 4, 9: 3, 10: 2 };
-        }
-    } else if (distributionModel === 'top3') {
-        distribution = { 1: 60, 2: 25, 3: 15 };
-    } else if (distributionModel === 'top5') {
-        distribution = { 1: 40, 2: 25, 3: 15, 4: 10, 5: 10 };
-    } else { // winner takes all
-        distribution = { 1: 100 };
+    // Update prize pool
+    if (prizePoolAmount) {
+        prizePoolAmount.textContent = prizeResult.prizePool.toLocaleString();
     }
     
-    const prizes = {};
-    let totalPercentage = 0;
-    for (const [rank, percent] of Object.entries(distribution)) {
-        prizes[rank] = Math.round((prizePool * percent) / 100);
-        totalPercentage += percent;
+    // Update individual prizes
+    p1.textContent = prizeResult.prizes[1] ? prizeResult.prizes[1].toLocaleString() + ' RWF' : '0 RWF';
+    p2.textContent = prizeResult.prizes[2] ? prizeResult.prizes[2].toLocaleString() + ' RWF' : '0 RWF';
+    p3.textContent = prizeResult.prizes[3] ? prizeResult.prizes[3].toLocaleString() + ' RWF' : '0 RWF';
+    
+    // Show more prizes
+    const prizeKeys = Object.keys(prizeResult.prizes);
+    if (prizeKeys.length > 3) {
+        morePrizes.style.display = 'inline';
+        morePrizes.innerHTML = `<span class="rank-label">+${prizeKeys.length - 3} more</span>`;
+    } else {
+        morePrizes.style.display = 'none';
     }
     
-    let participationAmount = 0;
-    if (participationBonus) {
-        const remainingPlayers = playerCount - Object.keys(distribution).length;
-        if (remainingPlayers > 0) {
-            const bonusPool = Math.round(prizePool * 0.05);
-            participationAmount = Math.min(Math.round(bonusPool / remainingPlayers), 50);
-        }
+    // ===== UPDATE TITLE WITH DISTRIBUTION MODEL =====
+    const previewTitle = document.querySelector('.prize-distribution-preview .title');
+    if (previewTitle) {
+        const modelNames = {
+            'dynamic': '🎯 Dynamic Distribution',
+            'winner': '👑 Winner Takes All',
+            'top3': '🥇 Top 3 Distribution',
+            'top5': '🏅 Top 5 Distribution'
+        };
+        previewTitle.textContent = modelNames[distributionModel] || '🎯 Prize Distribution';
     }
-    
-    return {
-        totalCollected,
-        platformFee: platformFeeAmount,
-        prizePool,
-        distribution,
-        prizes,
-        participationAmount,
-        winnerCount: Object.keys(distribution).length,
-        remainingPlayers: playerCount - Object.keys(distribution).length
-    };
 }
 // ========================================
 // UPDATE PRIZE DISTRIBUTION PREVIEW
