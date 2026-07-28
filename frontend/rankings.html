@@ -1279,62 +1279,47 @@ async function loadTournamentData(tournamentId) {
         // ========================================
         // LOAD TOURNAMENT DATA
         // ========================================
+// ========================================
+// LOAD RANKINGS - ALWAYS USE NEON FIRST
+// ========================================
 
-      async function loadRankings(tournamentId) {
+async function loadRankings(tournamentId) {
     try {
         console.log('📊 Loading rankings for tournament:', tournamentId);
         
         let players = [];
-        let dataSource = 'none';
         
-        // ===== TRY NEON API FIRST =====
+        // ===== ONLY USE NEON API (FULL DATA) =====
         try {
             const response = await fetch(`${API_BASE}/rankings/${tournamentId}`);
+            
             if (response.ok) {
                 players = await response.json();
-                dataSource = 'Neon API';
                 console.log('✅ Rankings loaded from Neon API:', players.length, 'players');
+                
+                // Log sample data to verify
+                if (players.length > 0) {
+                    console.log('📊 Sample player:', {
+                        username: players[0].username,
+                        phone: players[0].phone,
+                        score: players[0].score,
+                        time_finished: players[0].time_finished
+                    });
+                }
             } else {
                 console.warn('⚠️ Neon API returned status:', response.status);
+                // Only fallback to Firebase if Neon fails
+                players = await loadRankingsFromFirebase(tournamentId);
             }
         } catch (apiError) {
             console.warn('⚠️ Neon API error:', apiError.message);
-        }
-        
-        // ===== FALLBACK TO FIREBASE =====
-        if (players.length === 0) {
-            console.log('📊 No data from Neon, trying Firebase...');
-            try {
-                const tournamentRef = ref(db, `tournaments/${tournamentId}/players`);
-                const snapshot = await get(tournamentRef);
-                
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    players = Object.entries(data).map(([uid, player]) => ({
-                        user_id: uid,
-                        username: player.username || 'Anonymous',
-                        phone: player.phone || '',
-                        score: player.score || 0,
-                        time_finished: player.time_finished || 0,
-                        has_played: player.has_played || false,
-                        position: player.position || 0,
-                        prize_won: player.prize_won || 0,
-                        finished_at: player.finished_at || null
-                    }));
-                    dataSource = 'Firebase';
-                    console.log('✅ Rankings loaded from Firebase:', players.length, 'players');
-                } else {
-                    console.log('ℹ️ No players found in Firebase');
-                }
-            } catch (firebaseError) {
-                console.error('❌ Firebase error:', firebaseError.message);
-            }
+            // Fallback to Firebase
+            players = await loadRankingsFromFirebase(tournamentId);
         }
         
         // Filter only players who have played
         const playedPlayers = players.filter(p => p.has_played === true);
         console.log('👥 Players who have played:', playedPlayers.length);
-        console.log('📊 Data source:', dataSource);
         
         // Store for comparison
         previousRankings = [...currentRankings];
@@ -1369,7 +1354,40 @@ async function loadTournamentData(tournamentId) {
         `;
     }
 }
-        // ========================================
+
+// ========================================
+// LOAD RANKINGS FROM FIREBASE (FALLBACK)
+// ========================================
+
+async function loadRankingsFromFirebase(tournamentId) {
+    try {
+        console.log('📊 Loading from Firebase fallback...');
+        const tournamentRef = ref(db, `tournaments/${tournamentId}/players`);
+        const snapshot = await get(tournamentRef);
+        
+        if (snapshot.exists()) {
+            const data = snapshot.val();
+            const players = Object.entries(data).map(([uid, player]) => ({
+                user_id: uid,
+                username: player.username || 'Anonymous',
+                phone: player.phone || '',
+                score: player.score || 0,
+                time_finished: player.time_finished || 0,
+                has_played: player.has_played || false,
+                position: player.position || 0,
+                prize_won: player.prize_won || 0,
+                finished_at: player.finished_at || null
+            }));
+            console.log('✅ Firebase fallback loaded:', players.length, 'players');
+            return players;
+        }
+        return [];
+    } catch (error) {
+        console.error('❌ Firebase fallback error:', error);
+        return [];
+    }
+}
+      // ========================================
         // LOAD RANKINGS FROM API
         // ========================================
 
@@ -1377,150 +1395,150 @@ async function loadTournamentData(tournamentId) {
         // RENDER RANKINGS - PREMIER LEAGUE / F1 STYLE
         // ========================================
 
-        function renderRankings(players) {
-            const tbody = document.getElementById('rankingsBody');
+     function renderRankings(players) {
+    const tbody = document.getElementById('rankingsBody');
 
-            if (!players || players.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <span class="icon"><i class="fas fa-flag-checkered"></i></span>
-                                <h3>No Rankings Yet</h3>
-                                <p>Be the first player to complete the tournament!</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+    if (!players || players.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-flag-checkered"></i></span>
+                        <h3>No Rankings Yet</h3>
+                        <p>Be the first player to complete the tournament!</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-            // Filter only players who have played
-            const playedPlayers = players.filter(p => p.has_played === true);
-            
-            if (playedPlayers.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="6">
-                            <div class="empty-state">
-                                <span class="icon"><i class="fas fa-hourglass-start"></i></span>
-                                <h3>Waiting for Players</h3>
-                                <p>No players have completed the game yet. Be the first!</p>
-                            </div>
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
+    // Filter only players who have played
+    const playedPlayers = players.filter(p => p.has_played === true);
+    
+    if (playedPlayers.length === 0) {
+        tbody.innerHTML = `
+            <tr>
+                <td colspan="6">
+                    <div class="empty-state">
+                        <span class="icon"><i class="fas fa-hourglass-start"></i></span>
+                        <h3>Waiting for Players</h3>
+                        <p>No players have completed the game yet. Be the first!</p>
+                    </div>
+                </td>
+            </tr>
+        `;
+        return;
+    }
 
-            // Build ranking map for previous comparison
-            const prevRankMap = {};
-            previousRankings.forEach(p => {
-                prevRankMap[p.user_id] = p.position || 999;
-            });
+    // Build ranking map for previous comparison
+    const prevRankMap = {};
+    previousRankings.forEach(p => {
+        prevRankMap[p.user_id] = p.position || 999;
+    });
 
-            let html = '';
-            const medals = ['🥇', '🥈', '🥉'];
-            const posClasses = ['pos-1', 'pos-2', 'pos-3'];
+    let html = '';
+    const medals = ['🥇', '🥈', '🥉'];
+    const posClasses = ['pos-1', 'pos-2', 'pos-3'];
 
-            playedPlayers.forEach((player, index) => {
-                const rank = player.position || (index + 1);
-                const prevRank = prevRankMap[player.user_id] || rank;
-                const rankDiff = prevRank - rank;
-                const isChampion = rank <= 3;
+    playedPlayers.forEach((player, index) => {
+        const rank = player.position || (index + 1);
+        const prevRank = prevRankMap[player.user_id] || rank;
+        const rankDiff = prevRank - rank;
+        const isChampion = rank <= 3;
 
-                // Determine change class
-                let changeClass = 'hold';
-                let changeIcon = '<i class="fas fa-minus"></i>';
-                if (rankDiff > 0) {
-                    changeClass = 'gain';
-                    changeIcon = `<i class="fas fa-arrow-up"></i> +${rankDiff}`;
-                } else if (rankDiff < 0) {
-                    changeClass = 'lose';
-                    changeIcon = `<i class="fas fa-arrow-down"></i> ${rankDiff}`;
-                }
-
-                // Medal or position number
-                let posDisplay = rank <= 3 ? 
-                    `<span class="medal">${medals[rank - 1]}</span>` : 
-                    `<span class="pos-number">${rank}</span>`;
-
-                const posClass = rank <= 3 ? posClasses[rank - 1] : '';
-
-                // Format time
-                let timeDisplay = '--';
-                if (player.time_finished && player.time_finished > 0) {
-                    const mins = Math.floor(player.time_finished / 60);
-                    const secs = player.time_finished % 60;
-                    timeDisplay = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
-                }
-
-                // Phone number formatting
-                const phoneDisplay = player.phone && player.phone !== 'N/A' && player.phone !== '' ? 
-                    player.phone : 
-                    '—';
-
-                // Prize display
-                const prizeDisplay = player.prize_won > 0 ? 
-                    `${player.prize_won.toLocaleString()} RWF` : 
-                    '—';
-
-                // Row animation class
-                const rowClass = isFirstLoad ? '' : (rankDiff > 0 ? 'pos-move-up' : (rankDiff < 0 ? 'pos-move-down' : ''));
-
-                html += `
-                    <tr class="${posClass} ${isChampion ? 'champion-row' : ''} ${rowClass}" data-user="${player.user_id}">
-                        <td class="pos-col">
-                            <span class="pos-number">${posDisplay}</span>
-                            <span class="pos-change ${changeClass}">${changeIcon}</span>
-                        </td>
-                        <td class="player-col">
-                            <div class="player-info">
-                                <div class="player-avatar">${player.username ? player.username.charAt(0).toUpperCase() : '?'}</div>
-                                <div>
-                                    <div class="player-name">
-                                        ${player.username || 'Anonymous'}
-                                        ${isChampion ? `<span class="badge">${rank === 1 ? '🏆 CHAMPION' : rank === 2 ? '🥈 2ND' : '🥉 3RD'}</span>` : ''}
-                                    </div>
-                                    <div class="player-phone">
-                                        <i class="fas fa-phone"></i> ${phoneDisplay}
-                                    </div>
-                                </div>
-                            </div>
-                        </td>
-                        <td class="player-phone" style="font-size:0.7rem;color:var(--muted);">
-                            ${phoneDisplay}
-                        </td>
-                        <td class="score-col">
-                            <span class="score-icon"><i class="fas fa-star"></i></span>
-                            ${player.score ? player.score.toLocaleString() : '0'}
-                        </td>
-                        <td class="time-col">
-                            <i class="fas fa-clock"></i> ${timeDisplay}
-                        </td>
-                        <td class="prize-col">
-                            ${player.prize_won > 0 ? `<span class="prize-amount">${prizeDisplay}</span>` : '—'}
-                        </td>
-                    </tr>
-                `;
-            });
-
-            tbody.innerHTML = html;
-            isFirstLoad = false;
-
-            // Highlight position changes with a pulse effect
-            if (!isFirstLoad) {
-                const changedRows = tbody.querySelectorAll('.pos-move-up, .pos-move-down');
-                changedRows.forEach((row, index) => {
-                    setTimeout(() => {
-                        row.classList.add('pos-highlight');
-                        setTimeout(() => {
-                            row.classList.remove('pos-highlight');
-                        }, 2000);
-                    }, index * 100);
-                });
-            }
+        // Determine change class
+        let changeClass = 'hold';
+        let changeIcon = '<i class="fas fa-minus"></i>';
+        if (rankDiff > 0) {
+            changeClass = 'gain';
+            changeIcon = `<i class="fas fa-arrow-up"></i> +${rankDiff}`;
+        } else if (rankDiff < 0) {
+            changeClass = 'lose';
+            changeIcon = `<i class="fas fa-arrow-down"></i> ${rankDiff}`;
         }
+
+        // Medal or position number
+        let posDisplay = rank <= 3 ? 
+            `<span class="medal">${medals[rank - 1]}</span>` : 
+            `<span class="pos-number">${rank}</span>`;
+
+        const posClass = rank <= 3 ? posClasses[rank - 1] : '';
+
+        // Format time - SHOW ACTUAL TIME
+        let timeDisplay = '--';
+        if (player.time_finished && player.time_finished > 0) {
+            const mins = Math.floor(player.time_finished / 60);
+            const secs = player.time_finished % 60;
+            timeDisplay = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
+        }
+
+        // Phone number - SHOW ACTUAL PHONE
+        const phoneDisplay = player.phone && player.phone !== 'N/A' && player.phone !== '' ? 
+            player.phone : 
+            '—';
+
+        // Prize display
+        const prizeDisplay = player.prize_won > 0 ? 
+            `${player.prize_won.toLocaleString()} RWF` : 
+            '—';
+
+        // Row animation class
+        const rowClass = isFirstLoad ? '' : (rankDiff > 0 ? 'pos-move-up' : (rankDiff < 0 ? 'pos-move-down' : ''));
+
+        html += `
+            <tr class="${posClass} ${isChampion ? 'champion-row' : ''} ${rowClass}" data-user="${player.user_id}">
+                <td class="pos-col">
+                    <span class="pos-number">${posDisplay}</span>
+                    <span class="pos-change ${changeClass}">${changeIcon}</span>
+                </td>
+                <td class="player-col">
+                    <div class="player-info">
+                        <div class="player-avatar">${player.username ? player.username.charAt(0).toUpperCase() : '?'}</div>
+                        <div>
+                            <div class="player-name">
+                                ${player.username || 'Anonymous'}
+                                ${isChampion ? `<span class="badge">${rank === 1 ? '🏆 CHAMPION' : rank === 2 ? '🥈 2ND' : '🥉 3RD'}</span>` : ''}
+                            </div>
+                            <div class="player-phone">
+                                <i class="fas fa-phone"></i> ${phoneDisplay}
+                            </div>
+                        </div>
+                    </div>
+                </td>
+                <td class="player-phone" style="font-size:0.7rem;color:var(--muted);">
+                    ${phoneDisplay}
+                </td>
+                <td class="score-col">
+                    <span class="score-icon"><i class="fas fa-star"></i></span>
+                    ${player.score ? player.score.toLocaleString() : '0'}
+                </td>
+                <td class="time-col">
+                    <i class="fas fa-clock"></i> ${timeDisplay}
+                </td>
+                <td class="prize-col">
+                    ${player.prize_won > 0 ? `<span class="prize-amount">${prizeDisplay}</span>` : '—'}
+                </td>
+            </tr>
+        `;
+    });
+
+    tbody.innerHTML = html;
+    isFirstLoad = false;
+
+    // Highlight position changes with a pulse effect
+    if (!isFirstLoad) {
+        const changedRows = tbody.querySelectorAll('.pos-move-up, .pos-move-down');
+        changedRows.forEach((row, index) => {
+            setTimeout(() => {
+                row.classList.add('pos-highlight');
+                setTimeout(() => {
+                    row.classList.remove('pos-highlight');
+                }, 2000);
+            }, index * 100);
+        });
+    }
+}
 
         // ========================================
         // SHOW EMPTY STATE
