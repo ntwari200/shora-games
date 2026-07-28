@@ -1280,7 +1280,7 @@ async function loadTournamentData(tournamentId) {
         // LOAD TOURNAMENT DATA
         // ========================================
 // ========================================
-// LOAD RANKINGS - ALWAYS USE NEON FIRST
+// LOAD RANKINGS - OPTIMIZED BATCH VERSION
 // ========================================
 
 async function loadRankings(tournamentId) {
@@ -1289,33 +1289,65 @@ async function loadRankings(tournamentId) {
         
         let players = [];
         
-        // ===== ONLY USE NEON API (FULL DATA) =====
+        // ===== GET RANKINGS FROM NEON =====
         try {
             const response = await fetch(`${API_BASE}/rankings/${tournamentId}`);
             
             if (response.ok) {
                 players = await response.json();
                 console.log('✅ Rankings loaded from Neon API:', players.length, 'players');
-                
-                // Log sample data to verify
-                if (players.length > 0) {
-                    console.log('📊 Sample player:', {
-                        username: players[0].username,
-                        phone: players[0].phone,
-                        score: players[0].score,
-                        time_finished: players[0].time_finished
-                    });
-                }
             } else {
                 console.warn('⚠️ Neon API returned status:', response.status);
-                // Only fallback to Firebase if Neon fails
-                players = await loadRankingsFromFirebase(tournamentId);
+                showToast('Error loading rankings from Neon', 'error');
+                return;
             }
         } catch (apiError) {
-            console.warn('⚠️ Neon API error:', apiError.message);
-            // Fallback to Firebase
-            players = await loadRankingsFromFirebase(tournamentId);
+            console.error('❌ Neon API error:', apiError.message);
+            showToast('Error connecting to Neon', 'error');
+            return;
         }
+        
+        // ===== FETCH ALL USER DATA FROM FIREBASE IN PARALLEL =====
+        console.log('📊 Fetching user data from Firebase...');
+        
+        const userIds = players.filter(p => p.user_id).map(p => p.user_id);
+        const userPromises = userIds.map(async (userId) => {
+            try {
+                const userRef = ref(db, `users/${userId}`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    return { userId, data: snapshot.val() };
+                }
+                return { userId, data: null };
+            } catch (error) {
+                console.error(`❌ Firebase error for ${userId}:`, error);
+                return { userId, data: null };
+            }
+        });
+        
+        const userResults = await Promise.all(userPromises);
+        
+        // Create a map of user data
+        const userDataMap = {};
+        userResults.forEach(({ userId, data }) => {
+            if (data) {
+                userDataMap[userId] = data;
+            }
+        });
+        
+        // ===== MERGE USER DATA INTO RANKINGS =====
+        players.forEach((player, index) => {
+            if (player.user_id && userDataMap[player.user_id]) {
+                const userData = userDataMap[player.user_id];
+                players[index].username = userData.username || player.username || 'Anonymous';
+                players[index].phone = userData.phone || player.phone || '';
+            } else if (!player.username || player.username === 'Anonymous') {
+                players[index].username = 'Anonymous';
+                players[index].phone = '';
+            }
+        });
+        
+        console.log(`✅ Merged Firebase user data for ${Object.keys(userDataMap).length} users`);
         
         // Filter only players who have played
         const playedPlayers = players.filter(p => p.has_played === true);
@@ -1336,7 +1368,6 @@ async function loadRankings(tournamentId) {
         console.error('❌ Error loading rankings:', error);
         showToast('Error loading rankings: ' + error.message, 'error');
         
-        // Show error in table
         const tbody = document.getElementById('rankingsBody');
         tbody.innerHTML = `
             <tr>
