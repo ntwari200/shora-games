@@ -1196,7 +1196,65 @@
             
             selector.innerHTML = html;
         }
+// ========================================
+// LOAD TOURNAMENT DATA
+// ========================================
 
+async function loadTournamentData(tournamentId) {
+    try {
+        const response = await fetch(`${API_BASE}/tournaments/${tournamentId}`);
+        if (!response.ok) throw new Error('Failed to fetch tournament');
+        
+        const data = await response.json();
+        const tournament = data.tournament;
+        
+        if (!tournament) {
+            console.warn('⚠️ Tournament not found:', tournamentId);
+            return;
+        }
+        
+        // Update header
+        document.getElementById('tournamentSubtitle').textContent = tournament.name || 'Tournament';
+        
+        // Update prize pool
+        document.getElementById('prizePoolAmount').textContent = (tournament.prize_pool || 0).toLocaleString();
+        
+        // Update status badge
+        const statusBadge = document.getElementById('statusBadge');
+        const status = tournament.status || 'soon';
+        statusBadge.className = `status-badge ${status}`;
+        const statusIcons = { live: 'fa-circle', ended: 'fa-circle', soon: 'fa-clock' };
+        const statusTexts = { live: 'LIVE', ended: 'ENDED', soon: 'UPCOMING' };
+        statusBadge.innerHTML = `<i class="fas ${statusIcons[status] || 'fa-circle'}"></i> ${statusTexts[status] || status.toUpperCase()}`;
+        
+        // Update prize distribution preview
+        const prizeDist = tournament.prize_distribution || {};
+        const prizeKeys = Object.keys(prizeDist);
+        
+        const p1 = document.getElementById('p1');
+        const p2 = document.getElementById('p2');
+        const p3 = document.getElementById('p3');
+        const morePrizes = document.getElementById('morePrizes');
+        
+        p1.textContent = prizeDist[1] ? prizeDist[1].toLocaleString() + ' RWF' : '0 RWF';
+        p2.textContent = prizeDist[2] ? prizeDist[2].toLocaleString() + ' RWF' : '0 RWF';
+        p3.textContent = prizeDist[3] ? prizeDist[3].toLocaleString() + ' RWF' : '0 RWF';
+        
+        if (prizeKeys.length > 3) {
+            morePrizes.style.display = 'inline';
+            morePrizes.innerHTML = `<span class="rank-label">+${prizeKeys.length - 3} more</span>`;
+        } else {
+            morePrizes.style.display = 'none';
+        }
+        
+        // Update player count
+        const players = data.players || [];
+        document.getElementById('playerCount').textContent = players.filter(p => p.has_played).length;
+        
+    } catch (error) {
+        console.error('❌ Error loading tournament data:', error);
+    }
+}
         // ========================================
         // SWITCH EVENT
         // ========================================
