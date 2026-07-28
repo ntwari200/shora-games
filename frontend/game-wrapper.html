@@ -721,23 +721,44 @@ async function loadUserDataFromFirebase() {
         // ============================================================
         // TIME TRACKING FUNCTIONS
         // ============================================================
+function markGameStart() {
+    if (gameStartTimestamp === 0) {
+        gameStartTimestamp = Date.now();
+        console.log('⏰ Game timer started at:', new Date(gameStartTimestamp).toLocaleTimeString());
+    }
+}
 
-        function markGameStart() {
-            if (gameStartTimestamp === 0) {
-                gameStartTimestamp = Date.now();
-                console.log('⏰ Game timer started');
-            }
+function markGameEnd() {
+    const endTime = Date.now();
+    
+    // If gameStartTimestamp is 0, set it to endTime - 1 second (fallback)
+    if (gameStartTimestamp === 0) {
+        gameStartTimestamp = endTime - 1000;
+        console.warn('⚠️ Game start timestamp was 0, using fallback');
+    }
+    
+    // Calculate time
+    totalTimeSeconds = Math.floor((endTime - gameStartTimestamp) / 1000);
+    finishTimestamp = new Date().toISOString();
+    
+    console.log('⏰ Game ended. Time:', totalTimeSeconds, 'seconds at', finishTimestamp);
+}
+function forceSetGameTime() {
+    if (totalTimeSeconds === 0) {
+        // If we have a start timestamp, use it
+        if (gameStartTimestamp > 0) {
+            const endTime = Date.now();
+            totalTimeSeconds = Math.floor((endTime - gameStartTimestamp) / 1000);
+            finishTimestamp = new Date().toISOString();
+            console.log('⏰ Forced time set from timestamp:', totalTimeSeconds, 'seconds');
+        } else {
+            // Ultimate fallback - assume 30 seconds
+            totalTimeSeconds = 30;
+            finishTimestamp = new Date().toISOString();
+            console.warn('⚠️ Using fallback time: 30 seconds');
         }
-
-        function markGameEnd() {
-            if (totalTimeSeconds === 0 && gameStartTimestamp > 0) {
-                const endTime = Date.now();
-                totalTimeSeconds = Math.floor((endTime - gameStartTimestamp) / 1000);
-                finishTimestamp = new Date().toISOString();
-                console.log('⏰ Game ended. Time:', totalTimeSeconds, 'seconds at', finishTimestamp);
-            }
-        }
-
+    }
+}
         function getFinishTimeDisplay() {
             if (totalTimeSeconds === 0) return '--:--';
             const mins = Math.floor(totalTimeSeconds / 60);
@@ -1530,7 +1551,7 @@ async function fetchTournamentEndTime(eventId) {
             }
 
             markGameEnd();
-
+forceSetGameTime();
             scoreSubmitted = true;
             sessionStorage.setItem('ninjaRunScore', finalScore.toString());
             sessionStorage.setItem('ninjaRunPlayed', 'true');
