@@ -1464,36 +1464,36 @@ async function loadTournamentData(tournamentId) {
 // ========================================
 // LOAD RANKINGS - WITH PRIZE DISTRIBUTION
 // ========================================
+// ========================================
+// LOAD RANKINGS - WITH PRIZE CALCULATION
+// ========================================
 
 async function loadRankings(tournamentId) {
     try {
         console.log('📊 Loading rankings for tournament:', tournamentId);
         
         let players = [];
-        let prizeDistribution = {};
-        let distributionModel = 'dynamic';
-        let prizePool = 0;
+        let tournamentData = {};
         
-        // ===== GET TOURNAMENT DATA FIRST =====
+        // ===== GET TOURNAMENT DATA FROM API =====
         try {
             const response = await fetch(`${API_BASE}/tournaments/${tournamentId}`);
             if (response.ok) {
                 const data = await response.json();
-                const tournament = data.tournament;
-                if (tournament) {
-                    // Get prize distribution from tournament
-                    prizeDistribution = tournament.prize_distribution || {};
-                    distributionModel = tournament.distribution_model || 'dynamic';
-                    prizePool = tournament.prize_pool || 0;
-                    console.log('🏆 Prize Distribution:', {
-                        model: distributionModel,
-                        distribution: prizeDistribution,
-                        pool: prizePool
-                    });
-                }
+                tournamentData = data.tournament || {};
+                console.log('🏆 Tournament data:', {
+                    name: tournamentData.name,
+                    entry_fee: tournamentData.entry_fee,
+                    max_players: tournamentData.max_players,
+                    platform_fee: tournamentData.platform_fee_percent,
+                    distribution_model: tournamentData.distribution_model,
+                    participation_bonus: tournamentData.participation_bonus
+                });
+            } else {
+                console.warn('⚠️ Could not fetch tournament data:', response.status);
             }
         } catch (error) {
-            console.warn('⚠️ Could not fetch tournament data:', error);
+            console.warn('⚠️ Error fetching tournament data:', error);
         }
         
         // ===== GET RANKINGS FROM NEON =====
@@ -1540,7 +1540,32 @@ async function loadRankings(tournamentId) {
             }
         });
         
-        // ===== MERGE USER DATA INTO RANKINGS AND APPLY PRIZES =====
+        // ===== CALCULATE PRIZE DISTRIBUTION =====
+        const actualPlayerCount = players.filter(p => p.has_played === true).length || tournamentData.max_players || 2;
+        const entryFee = tournamentData.entry_fee || 100;
+        const platformFee = tournamentData.platform_fee_percent || 10;
+        const distributionModel = tournamentData.distribution_model || 'dynamic';
+        const participationBonus = tournamentData.participation_bonus || false;
+        
+        console.log('📊 Calculating prizes with:', {
+            playerCount: actualPlayerCount,
+            entryFee: entryFee,
+            platformFee: platformFee,
+            distributionModel: distributionModel,
+            participationBonus: participationBonus
+        });
+        
+        const prizeResult = calculatePrizeDistribution(
+            actualPlayerCount,
+            entryFee,
+            platformFee,
+            distributionModel,
+            participationBonus
+        );
+        
+        console.log('🏆 Prize distribution calculated:', prizeResult.prizes);
+        
+        // ===== MERGE USER DATA AND APPLY PRIZES =====
         players.forEach((player, index) => {
             // Merge user data
             if (player.user_id && userDataMap[player.user_id]) {
@@ -1552,14 +1577,9 @@ async function loadRankings(tournamentId) {
                 players[index].phone = '';
             }
             
-            // ===== APPLY PRIZE DISTRIBUTION =====
+            // ===== APPLY PRIZE BASED ON POSITION =====
             const rank = player.position || (index + 1);
-            // Use prize from distribution if available, otherwise use default
-            if (prizeDistribution[rank] !== undefined) {
-                players[index].prize_won = prizeDistribution[rank];
-            } else {
-                players[index].prize_won = 0;
-            }
+            players[index].prize_won = prizeResult.prizes[rank] || 0;
         });
         
         console.log(`✅ Merged Firebase user data for ${Object.keys(userDataMap).length} users`);
@@ -1569,7 +1589,7 @@ async function loadRankings(tournamentId) {
         console.log('👥 Players who have played:', playedPlayers.length);
         
         // ===== UPDATE PRIZE DISTRIBUTION PREVIEW =====
-        updatePrizeDistributionPreview(prizeDistribution, prizePool, distributionModel);
+        updatePrizeDistributionPreview(prizeResult, distributionModel);
         
         // Store for comparison
         previousRankings = [...currentRankings];
@@ -1604,63 +1624,99 @@ async function loadRankings(tournamentId) {
     }
 }
 
+
+// ========================================
+// UPDATE PRIZE DISTRIBUTION PREVIEW
+// ========================================
+// ========================================
+// PRIZE CALCULATION SYSTEM - SAME AS ADMIN
+// ========================================
+
+function calculatePrizeDistribution(playerCount, entryFee, platformFee, distributionModel, participationBonus) {
+    const totalCollected = playerCount * entryFee;
+    const platformFeeAmount = totalCollected * (platformFee / 100);
+    const prizePool = totalCollected - platformFeeAmount;
+    
+    let distribution;
+    if (distributionModel === 'dynamic') {
+        if (playerCount <= 3) {
+            distribution = { 1: 70, 2: 30 };
+        } else if (playerCount <= 5) {
+            distribution = { 1: 60, 2: 25, 3: 15 };
+        } else if (playerCount <= 10) {
+            distribution = { 1: 50, 2: 25, 3: 15, 4: 10 };
+        } else if (playerCount <= 20) {
+            distribution = { 1: 40, 2: 22, 3: 15, 4: 10, 5: 8, 6: 5 };
+        } else if (playerCount <= 40) {
+            distribution = { 1: 35, 2: 20, 3: 15, 4: 10, 5: 8, 6: 6, 7: 4, 8: 2 };
+        } else {
+            distribution = { 1: 30, 2: 18, 3: 14, 4: 10, 5: 8, 6: 6, 7: 5, 8: 4, 9: 3, 10: 2 };
+        }
+    } else if (distributionModel === 'top3') {
+        distribution = { 1: 60, 2: 25, 3: 15 };
+    } else if (distributionModel === 'top5') {
+        distribution = { 1: 40, 2: 25, 3: 15, 4: 10, 5: 10 };
+    } else { // winner takes all
+        distribution = { 1: 100 };
+    }
+    
+    const prizes = {};
+    let totalPercentage = 0;
+    for (const [rank, percent] of Object.entries(distribution)) {
+        prizes[rank] = Math.round((prizePool * percent) / 100);
+        totalPercentage += percent;
+    }
+    
+    let participationAmount = 0;
+    if (participationBonus) {
+        const remainingPlayers = playerCount - Object.keys(distribution).length;
+        if (remainingPlayers > 0) {
+            const bonusPool = Math.round(prizePool * 0.05);
+            participationAmount = Math.min(Math.round(bonusPool / remainingPlayers), 50);
+        }
+    }
+    
+    return {
+        totalCollected,
+        platformFee: platformFeeAmount,
+        prizePool,
+        distribution,
+        prizes,
+        participationAmount,
+        winnerCount: Object.keys(distribution).length,
+        remainingPlayers: playerCount - Object.keys(distribution).length
+    };
+}
 // ========================================
 // UPDATE PRIZE DISTRIBUTION PREVIEW
 // ========================================
 
-function updatePrizeDistributionPreview(prizeDist, prizePool, model) {
+function updatePrizeDistributionPreview(prizeResult, distributionModel) {
     const p1 = document.getElementById('p1');
     const p2 = document.getElementById('p2');
     const p3 = document.getElementById('p3');
     const morePrizes = document.getElementById('morePrizes');
+    const prizePoolAmount = document.getElementById('prizePoolAmount');
+    const prizePoolBadge = document.getElementById('prizePoolBadge');
     
-    // Get distribution labels based on model
-    let labels = {
-        1: '🥇 1st',
-        2: '🥈 2nd',
-        3: '🥉 3rd'
-    };
-    
-    if (model === 'winner') {
-        labels = { 1: '👑 Winner' };
-    } else if (model === 'top3') {
-        labels = {
-            1: '🥇 1st',
-            2: '🥈 2nd',
-            3: '🥉 3rd'
-        };
-    } else if (model === 'top5') {
-        labels = {
-            1: '🥇 1st',
-            2: '🥈 2nd',
-            3: '🥉 3rd',
-            4: '4th',
-            5: '5th'
-        };
-    } else {
-        // Dynamic - use default labels
-        labels = {
-            1: '🥇 1st',
-            2: '🥈 2nd',
-            3: '🥉 3rd',
-            4: '4th',
-            5: '5th',
-            6: '6th',
-            7: '7th',
-            8: '8th',
-            9: '9th',
-            10: '10th'
-        };
+    // Update prize pool
+    if (prizePoolAmount) {
+        prizePoolAmount.textContent = prizeResult.prizePool.toLocaleString();
+    }
+    if (prizePoolBadge) {
+        const span = prizePoolBadge.querySelector('span');
+        if (span) {
+            span.textContent = prizeResult.prizePool.toLocaleString();
+        }
     }
     
-    // Update prize display
-    const prizeKeys = Object.keys(prizeDist);
+    // Update individual prizes
+    p1.textContent = prizeResult.prizes[1] ? prizeResult.prizes[1].toLocaleString() + ' RWF' : '0 RWF';
+    p2.textContent = prizeResult.prizes[2] ? prizeResult.prizes[2].toLocaleString() + ' RWF' : '0 RWF';
+    p3.textContent = prizeResult.prizes[3] ? prizeResult.prizes[3].toLocaleString() + ' RWF' : '0 RWF';
     
-    p1.textContent = prizeDist[1] ? prizeDist[1].toLocaleString() + ' RWF' : '0 RWF';
-    p2.textContent = prizeDist[2] ? prizeDist[2].toLocaleString() + ' RWF' : '0 RWF';
-    p3.textContent = prizeDist[3] ? prizeDist[3].toLocaleString() + ' RWF' : '0 RWF';
-    
-    // Show more prizes if there are more than 3
+    // Show more prizes
+    const prizeKeys = Object.keys(prizeResult.prizes);
     if (prizeKeys.length > 3) {
         morePrizes.style.display = 'inline';
         morePrizes.innerHTML = `<span class="rank-label">+${prizeKeys.length - 3} more</span>`;
@@ -1677,15 +1733,21 @@ function updatePrizeDistributionPreview(prizeDist, prizePool, model) {
             'top3': '🥇 Top 3 Distribution',
             'top5': '🏅 Top 5 Distribution'
         };
-        previewTitle.textContent = modelNames[model] || '🎯 Prize Distribution';
+        previewTitle.textContent = modelNames[distributionModel] || '🎯 Prize Distribution';
     }
     
-    // Update prize pool badge
-    const prizePoolBadge = document.getElementById('prizePoolBadge');
-    if (prizePoolBadge) {
-        const amountSpan = prizePoolBadge.querySelector('span');
-        if (amountSpan) {
-            amountSpan.textContent = prizePool.toLocaleString();
+    // Show participation bonus if available
+    const participationBonusEl = document.querySelector('.prize-distribution-preview .participation-bonus');
+    if (participationBonusEl) {
+        if (prizeResult.participationAmount > 0) {
+            participationBonusEl.style.display = 'block';
+            participationBonusEl.innerHTML = `
+                <i class="fas fa-gift"></i> 
+                Participation Bonus: ${prizeResult.participationAmount.toLocaleString()} RWF each 
+                (${prizeResult.remainingPlayers} players)
+            `;
+        } else {
+            participationBonusEl.style.display = 'none';
         }
     }
 }
