@@ -418,7 +418,449 @@ body {
 .rankings-table tbody tr:last-child {
     border-bottom: none;
 }
+/* ========================================
+   HORIZONTAL SCROLL FOR RANKINGS TABLE
+   ======================================== */
 
+.rankings-table-wrapper {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: var(--radius);
+    overflow: hidden;
+    max-height: 600px;
+    overflow-y: auto;
+    overflow-x: auto;  /* ← ADD THIS */
+    -webkit-overflow-scrolling: touch;  /* ← SMOOTH SCROLL ON IOS */
+    position: relative;
+}
+
+/* ===== SCROLL INDICATOR ===== */
+.rankings-table-wrapper::after {
+    content: '← Swipe →';
+    position: sticky;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: none;
+    text-align: center;
+    padding: 8px;
+    font-size: 0.6rem;
+    color: var(--muted);
+    background: rgba(6, 17, 31, 0.9);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    letter-spacing: 1px;
+    opacity: 0.7;
+    z-index: 5;
+}
+
+/* Show scroll indicator on mobile only */
+@media (max-width: 768px) {
+    .rankings-table-wrapper::after {
+        display: block;
+    }
+}
+
+/* ===== SCROLLBAR STYLING ===== */
+.rankings-table-wrapper::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.rankings-table-wrapper::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.02);
+}
+.rankings-table-wrapper::-webkit-scrollbar-thumb {
+    background: rgba(0, 191, 255, 0.3);
+    border-radius: 3px;
+}
+.rankings-table-wrapper::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 191, 255, 0.5);
+}
+
+/* ===== TABLE RESPONSIVE ===== */
+.rankings-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    min-width: 700px;  /* ← ENSURES TABLE DOESN'T COMPRESS */
+    table-layout: fixed;
+}
+
+/* ===== COLUMN WIDTHS ===== */
+.rankings-table .pos-col {
+    width: 60px;
+    min-width: 60px;
+    max-width: 60px;
+    padding: 12px 8px 12px 16px;
+    text-align: center;
+}
+
+.rankings-table .player-col {
+    width: auto;
+    min-width: 180px;
+    max-width: 280px;
+    padding: 10px 12px;
+}
+
+.rankings-table .phone-col {
+    width: 150px;
+    min-width: 130px;
+    max-width: 170px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7rem;
+    color: var(--muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.rankings-table .score-col {
+    width: 90px;
+    min-width: 80px;
+    max-width: 100px;
+    padding: 10px 12px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.9rem;
+    text-align: center;
+}
+
+.rankings-table .time-col {
+    width: 110px;
+    min-width: 100px;
+    max-width: 120px;
+    padding: 10px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.75rem;
+}
+
+.rankings-table .prize-col {
+    width: 130px;
+    min-width: 110px;
+    max-width: 150px;
+    padding: 10px 16px 10px 12px;
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+    font-size: 0.85rem;
+    color: var(--gold);
+    text-align: right;
+}
+
+/* ========================================
+   RESPONSIVE - SMALL DEVICES
+   ======================================== */
+
+@media (max-width: 768px) {
+    .container {
+        padding: 10px 8px 30px;
+    }
+    
+    .rankings-table-wrapper {
+        max-height: 500px;
+        border-radius: 12px;
+        margin: 0 -4px;
+    }
+    
+    .rankings-table-wrapper::after {
+        display: block;
+        font-size: 0.55rem;
+        padding: 6px;
+    }
+    
+    .rankings-table {
+        font-size: 0.7rem;
+        min-width: 650px;
+    }
+    
+    .rankings-table .pos-col {
+        width: 45px;
+        min-width: 45px;
+        max-width: 45px;
+        padding: 8px 4px 8px 8px;
+        font-size: 0.7rem;
+    }
+    
+    .rankings-table .player-col {
+        min-width: 140px;
+        max-width: 200px;
+        padding: 8px 10px;
+    }
+    
+    .rankings-table .phone-col {
+        width: 120px;
+        min-width: 100px;
+        max-width: 140px;
+        font-size: 0.6rem;
+        padding: 8px 10px;
+    }
+    
+    .rankings-table .score-col {
+        width: 70px;
+        min-width: 60px;
+        max-width: 80px;
+        font-size: 0.7rem;
+        padding: 8px 8px;
+    }
+    
+    .rankings-table .time-col {
+        width: 90px;
+        min-width: 80px;
+        max-width: 100px;
+        font-size: 0.65rem;
+        padding: 8px 8px;
+    }
+    
+    .rankings-table .prize-col {
+        width: 100px;
+        min-width: 80px;
+        max-width: 120px;
+        font-size: 0.7rem;
+        padding: 8px 10px;
+    }
+    
+    .rankings-table .player-avatar {
+        width: 28px;
+        height: 28px;
+        font-size: 0.6rem;
+    }
+    
+    .rankings-table .player-name {
+        font-size: 0.7rem;
+    }
+    
+    .rankings-table thead th {
+        padding: 10px 8px;
+        font-size: 0.5rem;
+        letter-spacing: 1px;
+    }
+    
+    .page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+    
+    .page-header h1 {
+        font-size: 1rem;
+    }
+    
+    .tournament-info {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    
+    .live-timing-strip {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 4px;
+        padding: 10px 14px;
+    }
+    
+    .prize-distribution-preview {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 12px 14px;
+    }
+    
+    .prize-distribution-preview .prize-items {
+        width: 100%;
+        justify-content: space-around;
+        gap: 4px;
+    }
+    
+    .event-selector {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    
+    .event-selector select {
+        min-width: unset;
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 8px 4px 20px;
+    }
+    
+    .rankings-table-wrapper {
+        max-height: 400px;
+        border-radius: 10px;
+        margin: 0 -2px;
+    }
+    
+    .rankings-table-wrapper::after {
+        font-size: 0.5rem;
+        padding: 4px;
+    }
+    
+    .rankings-table {
+        font-size: 0.6rem;
+        min-width: 500px;
+    }
+    
+    .rankings-table .pos-col {
+        width: 32px;
+        min-width: 32px;
+        max-width: 32px;
+        padding: 6px 2px 6px 4px;
+        font-size: 0.55rem;
+    }
+    
+    .rankings-table .player-col {
+        min-width: 100px;
+        max-width: 140px;
+        padding: 6px 6px;
+    }
+    
+    .rankings-table .phone-col {
+        width: 90px;
+        min-width: 70px;
+        max-width: 110px;
+        font-size: 0.5rem;
+        padding: 6px 6px;
+    }
+    
+    .rankings-table .score-col {
+        width: 55px;
+        min-width: 45px;
+        max-width: 65px;
+        font-size: 0.55rem;
+        padding: 6px 4px;
+    }
+    
+    .rankings-table .time-col {
+        width: 70px;
+        min-width: 60px;
+        max-width: 80px;
+        font-size: 0.5rem;
+        padding: 6px 4px;
+    }
+    
+    .rankings-table .prize-col {
+        width: 80px;
+        min-width: 60px;
+        max-width: 100px;
+        font-size: 0.55rem;
+        padding: 6px 6px;
+    }
+    
+    .rankings-table .player-avatar {
+        width: 20px;
+        height: 20px;
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table .player-name {
+        font-size: 0.6rem;
+    }
+    
+    .rankings-table .player-info {
+        gap: 4px;
+    }
+    
+    .rankings-table .player-phone {
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table thead th {
+        padding: 6px 4px;
+        font-size: 0.4rem;
+        letter-spacing: 0.5px;
+    }
+    
+    .rankings-table .pos-change {
+        font-size: 0.45rem;
+        padding: 1px 4px;
+        min-width: 18px;
+    }
+    
+    .rankings-table .medal {
+        font-size: 0.8rem;
+    }
+    
+    .rankings-table .score-icon {
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table .time-col i,
+    .rankings-table .score-col .score-icon {
+        display: none;
+    }
+    
+    .prize-distribution-preview .prize-item {
+        font-size: 0.55rem;
+    }
+    
+    .prize-distribution-preview .prize-item .amount {
+        font-size: 0.6rem;
+    }
+    
+    .page-header h1 {
+        font-size: 0.9rem;
+    }
+    
+    .live-timing-strip .live-text {
+        font-size: 0.55rem;
+    }
+    .live-timing-strip .update-info {
+        font-size: 0.55rem;
+    }
+    .live-timing-strip .player-count {
+        font-size: 0.6rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .rankings-table {
+        min-width: 400px;
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table .player-col {
+        min-width: 70px;
+        max-width: 100px;
+    }
+    
+    .rankings-table .phone-col {
+        width: 70px;
+        min-width: 50px;
+        max-width: 85px;
+        font-size: 0.45rem;
+    }
+    
+    .rankings-table .score-col {
+        width: 40px;
+        min-width: 35px;
+        max-width: 50px;
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table .time-col {
+        width: 55px;
+        min-width: 45px;
+        max-width: 65px;
+        font-size: 0.45rem;
+    }
+    
+    .rankings-table .prize-col {
+        width: 60px;
+        min-width: 50px;
+        max-width: 75px;
+        font-size: 0.5rem;
+    }
+    
+    .rankings-table .pos-col {
+        width: 25px;
+        min-width: 25px;
+        max-width: 25px;
+        padding: 4px 2px;
+        font-size: 0.5rem;
+    }
+}
 /* ===== STRIPED ROWS ===== */
 .rankings-table tbody tr:nth-child(even) {
     background: rgba(255, 255, 255, 0.01);
