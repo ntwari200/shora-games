@@ -13,6 +13,58 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ===== LAZY LOADING IMAGE ===== */
+.tournament-card .card-cover {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+    overflow: hidden;
+}
+
+.tournament-card .card-cover .card-image-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.tournament-card .card-cover .card-image-wrapper .blur-placeholder {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    opacity: 1;
+    transition: opacity 0.5s ease;
+    z-index: 2;
+    color: var(--muted);
+}
+
+.tournament-card .card-cover .card-image-wrapper .blur-placeholder i {
+    opacity: 0.15;
+}
+
+.tournament-card .card-cover .card-image-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.6s ease;
+    z-index: 1;
+    position: relative;
+}
+
+.tournament-card .card-cover .card-image-wrapper img.loaded {
+    opacity: 1;
+}
+
+.tournament-card .card-cover .card-image-wrapper img.loaded ~ .blur-placeholder {
+    opacity: 0;
+    pointer-events: none;
+}
         /* ===== ALL STYLES ===== */
         :root {
             --bg: #06111F;
@@ -2182,16 +2234,46 @@ function renderTournaments(tournaments) {
             lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
         }
 
-        // ===== IMAGE =====
-        const imageHtml = tournament.image ? 
-            `<img src="${tournament.image}" alt="${tournament.name}" onerror="this.style.display='none';this.parentElement.querySelector('.placeholder-icon').style.display='flex';">` :
-            '';
+        // ===== OPTIMIZED IMAGE WITH LAZY LOADING AND WEBP =====
+        let imageHtml = '';
+        const PLACEHOLDER_SVG = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><rect width="400" height="200" fill="%230B1F36"/><text x="200" y="110" text-anchor="middle" font-size="40" fill="%2300BFFF" opacity="0.15">🏆</text></svg>`;
+
+        if (tournament.image) {
+            let imageUrl = tournament.image;
+            // Add WebP format for smaller size (ImgBB supports this)
+            if (imageUrl.includes('i.ibb.co') || imageUrl.includes('imgbb')) {
+                imageUrl = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 'format=webp&quality=80';
+            }
+            
+            imageHtml = `
+                <div class="card-image-wrapper">
+                    <div class="blur-placeholder">
+                        <i class="fas fa-trophy"></i>
+                    </div>
+                    <img 
+                        src="${imageUrl}" 
+                        alt="${tournament.name}"
+                        loading="lazy"
+                        decoding="async"
+                        onload="this.classList.add('loaded')"
+                        onerror="this.style.display='none';this.parentElement.querySelector('.blur-placeholder').style.display='flex';this.parentElement.querySelector('.blur-placeholder').innerHTML='<i class=\\'fas fa-image\\' style=\\'opacity:0.2;font-size:2rem;\\'></i>'"
+                    >
+                </div>
+            `;
+        } else {
+            imageHtml = `
+                <div class="card-image-wrapper">
+                    <div class="blur-placeholder" style="display:flex;background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+                        <i class="fas fa-trophy" style="opacity:0.2;font-size:3rem;"></i>
+                    </div>
+                </div>
+            `;
+        }
 
         return `
             <div class="tournament-card" data-id="${tournament.id}" data-status="${tournament.status}">
                 <div class="card-cover">
                     ${imageHtml}
-                    <span class="placeholder-icon" style="${tournament.image ? 'display:none;' : 'display:flex;'}"><i class="fas fa-trophy"></i></span>
                     <span class="card-status-badge ${statusDisplay.class}">${statusDisplay.text}</span>
                     ${lockBadgeHtml}
                     
