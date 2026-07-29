@@ -2233,18 +2233,16 @@ function renderTournaments(tournaments) {
         } else if (!isLocked && isLive) {
             lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
         }
-
-      // ===== SIMPLE IMAGE LOADING - WORKS WITH IMGBB =====
+// ===== SIMPLE IMAGE LOADING - FULLY WORKING =====
 let imageHtml = '';
 
 if (tournament.image) {
-    // Direct image URL from ImgBB
     imageHtml = `
         <img 
             src="${tournament.image}" 
             alt="${tournament.name}"
             style="width:100%;height:100%;object-fit:cover;"
-            onerror="this.style.display='none';this.parentElement.querySelector('.fallback-icon').style.display='flex';"
+            onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-icon').style.display='flex';"
         >
         <span class="fallback-icon" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
             <i class="fas fa-trophy"></i>
@@ -2257,6 +2255,7 @@ if (tournament.image) {
         </span>
     `;
 }
+
             imageHtml = `
                 <div class="card-image-wrapper">
                     <div class="blur-placeholder">
