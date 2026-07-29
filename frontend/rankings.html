@@ -1519,8 +1519,7 @@ function calculatePrizeDistribution(playerCount, entryFee, platformFee, distribu
     };
 }
 // ========================================
-// ========================================
-// LOAD RANKINGS - WITH PRIZE CALCULATION
+// LOAD RANKINGS - USING ADMIN DISTRIBUTION
 // ========================================
 
 async function loadRankings(tournamentId) {
@@ -1529,30 +1528,75 @@ async function loadRankings(tournamentId) {
         
         let players = [];
         let tournamentData = {};
+        let prizeDistribution = {};
+        let distributionModel = 'dynamic';
+        let entryFee = 100;
+        let platformFee = 10;
+        let participationBonus = false;
+        let maxPlayers = 50;
+        let prizePool = 0;
         
-        // ===== GET TOURNAMENT DATA FROM API =====
+        // ===== STEP 1: GET TOURNAMENT DATA FROM FIREBASE (MOST ACCURATE) =====
         try {
-            const response = await fetch(`${API_BASE}/tournaments/${tournamentId}`);
-            if (response.ok) {
-                const data = await response.json();
-                tournamentData = data.tournament || {};
-                console.log('🏆 Tournament data:', {
-                    name: tournamentData.name,
-                    entry_fee: tournamentData.entry_fee,
-                    max_players: tournamentData.max_players,
-                    platform_fee: tournamentData.platform_fee_percent,
-                    distribution_model: tournamentData.distribution_model,
-                    participation_bonus: tournamentData.participation_bonus,
-                    prize_distribution: tournamentData.prize_distribution
-                });
+            const tournamentRef = ref(db, `tournaments/${tournamentId}`);
+            const snapshot = await get(tournamentRef);
+            
+            if (snapshot.exists()) {
+                const data = snapshot.val();
+                console.log('🏆 Tournament data from Firebase:', data);
+                
+                // Extract distribution data
+                distributionModel = data.distributionModel || 'dynamic';
+                prizeDistribution = data.prizeDistribution || {};
+                entryFee = data.entryFee || 100;
+                platformFee = data.platformFee || 10;
+                participationBonus = data.participationBonus || false;
+                maxPlayers = data.maxPlayers || 50;
+                prizePool = data.prizePool || 0;
+                
+                console.log('📊 Distribution Model from Firebase:', distributionModel);
+                console.log('📊 Prize Distribution from Firebase:', prizeDistribution);
             } else {
-                console.warn('⚠️ Could not fetch tournament data:', response.status);
+                console.warn('⚠️ Tournament not found in Firebase:', tournamentId);
             }
-        } catch (error) {
-            console.warn('⚠️ Error fetching tournament data:', error);
+        } catch (firebaseError) {
+            console.warn('⚠️ Firebase error:', firebaseError.message);
         }
         
-        // ===== GET RANKINGS FROM NEON =====
+        // ===== STEP 2: IF NO DATA IN FIREBASE, TRY NEON API =====
+        if (!prizeDistribution || Object.keys(prizeDistribution).length === 0) {
+            try {
+                const response = await fetch(`${API_BASE}/tournaments/${tournamentId}`);
+                if (response.ok) {
+                    const data = await response.json();
+                    const tournament = data.tournament || {};
+                    
+                    // If prize_distribution exists in Neon, use it
+                    if (tournament.prize_distribution && Object.keys(tournament.prize_distribution).length > 0) {
+                        prizeDistribution = tournament.prize_distribution;
+                        distributionModel = tournament.distribution_model || 'dynamic';
+                        entryFee = tournament.entry_fee || 100;
+                        platformFee = tournament.platform_fee_percent || 10;
+                        participationBonus = tournament.participation_bonus || false;
+                        maxPlayers = tournament.max_players || 50;
+                        prizePool = tournament.prize_pool || 0;
+                        console.log('📊 Using prize distribution from Neon API:', prizeDistribution);
+                    } else {
+                        // Calculate from distribution model
+                        distributionModel = tournament.distribution_model || 'dynamic';
+                        entryFee = tournament.entry_fee || 100;
+                        platformFee = tournament.platform_fee_percent || 10;
+                        participationBonus = tournament.participation_bonus || false;
+                        maxPlayers = tournament.max_players || 50;
+                        prizePool = tournament.prize_pool || 0;
+                    }
+                }
+            } catch (apiError) {
+                console.warn('⚠️ API error:', apiError.message);
+            }
+        }
+        
+        // ===== STEP 3: GET RANKINGS FROM NEON =====
         try {
             const response = await fetch(`${API_BASE}/rankings/${tournamentId}`);
             if (response.ok) {
@@ -1569,7 +1613,7 @@ async function loadRankings(tournamentId) {
             return;
         }
         
-        // ===== FETCH USER DATA FROM FIREBASE =====
+        // ===== STEP 4: FETCH USER DATA FROM FIREBASE =====
         console.log('📊 Fetching user data from Firebase...');
         
         const userIds = players.filter(p => p.user_id).map(p => p.user_id);
@@ -1596,38 +1640,50 @@ async function loadRankings(tournamentId) {
             }
         });
         
-        // ===== GET DISTRIBUTION MODEL FROM TOURNAMENT DATA =====
-        const distributionModel = tournamentData.distribution_model || 'dynamic';
-        const entryFee = tournamentData.entry_fee || 100;
-        const platformFee = tournamentData.platform_fee_percent || 10;
-        const participationBonus = tournamentData.participation_bonus || false;
-        
-        // Count actual players who have played
+        // ===== STEP 5: GET ACTUAL PLAYER COUNT =====
         const playedPlayersList = players.filter(p => p.has_played === true);
-        const actualPlayerCount = playedPlayersList.length > 0 ? playedPlayersList.length : (tournamentData.max_players || 2);
+        const actualPlayerCount = playedPlayersList.length > 0 ? playedPlayersList.length : maxPlayers;
         
-        console.log('📊 Calculating prizes with:');
-        console.log('  - Distribution Model:', distributionModel);
-        console.log('  - Player Count:', actualPlayerCount);
-        console.log('  - Entry Fee:', entryFee);
-        console.log('  - Platform Fee:', platformFee);
-        console.log('  - Participation Bonus:', participationBonus);
+        console.log('📊 Distribution Model:', distributionModel);
+        console.log('📊 Player Count:', actualPlayerCount);
+        console.log('📊 Entry Fee:', entryFee);
+        console.log('📊 Platform Fee:', platformFee);
         
-        // ===== CALCULATE PRIZE DISTRIBUTION =====
-        const prizeResult = calculatePrizeDistribution(
-            actualPlayerCount,
-            entryFee,
-            platformFee,
-            distributionModel,
-            participationBonus
-        );
+        // ===== STEP 6: CALCULATE PRIZE DISTRIBUTION =====
+        let prizeResult;
         
-        console.log('🏆 Prize distribution calculated:');
-        console.log('  - Prize Pool:', prizeResult.prizePool);
-        console.log('  - Distribution:', prizeResult.prizes);
-        console.log('  - Winner Count:', prizeResult.winnerCount);
+        // If prize_distribution is directly available from admin, use it
+        if (prizeDistribution && Object.keys(prizeDistribution).length > 0) {
+            console.log('📊 Using pre-calculated prize distribution from admin');
+            const totalCollected = actualPlayerCount * entryFee;
+            const platformFeeAmount = totalCollected * (platformFee / 100);
+            const calculatedPrizePool = totalCollected - platformFeeAmount;
+            
+            prizeResult = {
+                totalCollected: totalCollected,
+                platformFee: platformFeeAmount,
+                prizePool: calculatedPrizePool,
+                distribution: prizeDistribution,
+                prizes: prizeDistribution,
+                participationAmount: 0,
+                winnerCount: Object.keys(prizeDistribution).length,
+                remainingPlayers: actualPlayerCount - Object.keys(prizeDistribution).length
+            };
+        } else {
+            // Otherwise calculate from distribution model
+            console.log('📊 Calculating prizes from distribution model:', distributionModel);
+            prizeResult = calculatePrizeDistribution(
+                actualPlayerCount,
+                entryFee,
+                platformFee,
+                distributionModel,
+                participationBonus
+            );
+        }
         
-        // ===== MERGE USER DATA AND APPLY PRIZES =====
+        console.log('🏆 Final Prize Distribution:', prizeResult.prizes);
+        
+        // ===== STEP 7: MERGE USER DATA AND APPLY PRIZES =====
         players.forEach((player, index) => {
             // Merge user data
             if (player.user_id && userDataMap[player.user_id]) {
@@ -1650,7 +1706,7 @@ async function loadRankings(tournamentId) {
         const playedPlayers = players.filter(p => p.has_played === true);
         console.log('👥 Players who have played:', playedPlayers.length);
         
-        // ===== UPDATE PRIZE DISTRIBUTION PREVIEW =====
+        // ===== STEP 8: UPDATE PRIZE DISTRIBUTION PREVIEW =====
         updatePrizeDistributionPreview(prizeResult, distributionModel);
         
         // Store for comparison
@@ -1685,7 +1741,6 @@ async function loadRankings(tournamentId) {
         `;
     }
 }
-
 // ========================================
 
 // ========================================
