@@ -2549,132 +2549,167 @@ function renderTournaments(tournaments) {
             showToast('🎮 Demo mode - Practice as much as you want!', 'success');
         };
 
+      // ========================================
+// JOIN REMINDER FUNCTIONS - COMPLETE
+// ========================================
+
+window.handleJoinClick = function(tournamentId) {
+    if (!currentUser) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    
+    // Check if user already practiced
+    if (userData.hasPracticed) {
+        // Join directly if they've practiced before
+        joinTournament(tournamentId);
+        return;
+    }
+    
+    // Store the tournament ID and show reminder
+    pendingJoinTournamentId = tournamentId;
+    document.getElementById('reminderModal').classList.add('show');
+};
+
+window.closeReminderModal = function() {
+    document.getElementById('reminderModal').classList.remove('show');
+    pendingJoinTournamentId = null;
+};
+
+window.closeReminderAndPractice = function() {
+    console.log('🎮 User chose to practice');
+    const tournamentId = pendingJoinTournamentId;
+    closeReminderModal();
+    
+    if (tournamentId) {
+        // Open the demo modal for this tournament
+        openDemoModal(tournamentId);
+        pendingJoinTournamentId = null;
+    } else {
+        showToast('No tournament selected', 'error');
+    }
+};
+
+window.closeReminderAndJoin = function() {
+    console.log('💰 User chose to join anyway');
+    const tournamentId = pendingJoinTournamentId;
+    closeReminderModal();
+    
+    if (tournamentId) {
+        // Mark user as practiced (so they don't see reminder again)
+        if (currentUser) {
+            update(ref(db, `users/${currentUser.uid}`), {
+                hasPracticed: true
+            }).then(() => {
+                userData.hasPracticed = true;
+                console.log('✅ User marked as practiced');
+            }).catch((error) => {
+                console.error('❌ Error updating hasPracticed:', error);
+            });
+        }
+        
+        // Join the tournament (pays entry fee and redirects to game)
+        joinTournament(tournamentId);
+        pendingJoinTournamentId = null;
+    } else {
+        showToast('No tournament selected', 'error');
+    }
+};
         // ========================================
-        // JOIN REMINDER FUNCTIONS
-        // ========================================
+    // ========================================
+// JOIN TOURNAMENT - COMPLETE
+// ========================================
 
-        window.handleJoinClick = function(tournamentId) {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            // If user already practiced, join directly
-            if (userData.hasPracticed) {
-                joinTournament(tournamentId);
-                return;
-            }
-            
-            pendingJoinTournamentId = tournamentId;
-            document.getElementById('reminderModal').classList.add('show');
+window.joinTournament = async function(tournamentId) {
+    if (!currentUser) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    
+    const tournament = allTournaments.find(t => t.id === tournamentId);
+    if (!tournament) {
+        showToast('Tournament not found', 'error');
+        return;
+    }
+    
+    if (tournament.status !== 'live') {
+        showToast('Tournament is not active', 'error');
+        return;
+    }
+    
+    if (tournament.locked) {
+        showToast('Tournament is locked', 'error');
+        return;
+    }
+    
+    const entryFee = tournament.entryFee || 100;
+    
+    // Check balance
+    if (userData.balance < entryFee) {
+        showToast(`Insufficient balance! Need ${entryFee} RWF`, 'error');
+        return;
+    }
+    
+    // Check if tournament is full
+    const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
+    if (playerCount >= (tournament.maxPlayers || 50)) {
+        showToast('Tournament is full!', 'error');
+        return;
+    }
+    
+    // Check if already joined
+    if (tournament.players && tournament.players[currentUser.uid]) {
+        showToast('You already joined this tournament!', 'error');
+        return;
+    }
+    
+    try {
+        // Deduct entry fee
+        const newBalance = userData.balance - entryFee;
+        await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
+        userData.balance = newBalance;
+        document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
+        
+        // Add player to tournament
+        const playerData = {
+            username: userData.username,
+            joinedAt: new Date().toISOString(),
+            hasPlayed: false,
+            score: 0,
+            rank: 0
         };
-
-        window.closeReminderModal = function() {
-            document.getElementById('reminderModal').classList.remove('show');
-            pendingJoinTournamentId = null;
-        };
-
-        window.closeReminderAndPractice = function() {
-            closeReminderModal();
-            if (pendingJoinTournamentId) {
-                openDemoModal(pendingJoinTournamentId);
-                pendingJoinTournamentId = null;
-            }
-        };
-
-        window.closeReminderAndJoin = function() {
-            closeReminderModal();
-            if (pendingJoinTournamentId) {
-                if (currentUser) {
-                    update(ref(db, `users/${currentUser.uid}`), {
-                        hasPracticed: true
-                    });
-                    userData.hasPracticed = true;
-                }
-                joinTournament(pendingJoinTournamentId);
-                pendingJoinTournamentId = null;
-            }
-        };
-
-        // ========================================
-        // JOIN TOURNAMENT
-        // ========================================
-
-        window.joinTournament = async function(tournamentId) {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            const tournament = allTournaments.find(t => t.id === tournamentId);
-            if (!tournament) {
-                showToast('Tournament not found', 'error');
-                return;
-            }
-            
-            if (tournament.status !== 'live') {
-                showToast('Tournament is not active', 'error');
-                return;
-            }
-            
-            if (tournament.locked) {
-                showToast('Tournament is locked', 'error');
-                return;
-            }
-            
-            const entryFee = tournament.entryFee || 100;
-            
-            if (userData.balance < entryFee) {
-                showToast(`Insufficient balance! Need ${entryFee} RWF`, 'error');
-                return;
-            }
-            
-            const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
-            if (playerCount >= (tournament.maxPlayers || 50)) {
-                showToast('Tournament is full!', 'error');
-                return;
-            }
-            
-            if (tournament.players && tournament.players[currentUser.uid]) {
-                showToast('You already joined this tournament!', 'error');
-                return;
-            }
-            
-            try {
-                const newBalance = userData.balance - entryFee;
-                await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
-                userData.balance = newBalance;
-                document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
-                
-                const playerData = {
-                    username: userData.username,
-                    joinedAt: new Date().toISOString(),
-                    hasPlayed: false,
-                    score: 0,
-                    rank: 0
-                };
-                
-                const tournamentRef = ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`);
-                await set(tournamentRef, playerData);
-                
-                const newCount = playerCount + 1;
-                await update(ref(db, `tournaments/${tournamentId}`), {
-                    currentPlayers: newCount,
-                    updatedAt: new Date().toISOString()
-                });
-                
-                await update(ref(db, `users/${currentUser.uid}`), {
-                    currentEventId: tournamentId
-                });
-                
-                showToast(`✅ Joined tournament! Entry fee: ${entryFee} RWF`, 'success');
-                loadTournaments();
-                
-            } catch (error) {
-                console.error('Error joining tournament:', error);
-                showToast('Error joining tournament. Please try again.', 'error');
-            }
-        };
+        
+        const tournamentRef = ref(db, `tournaments/${tournamentId}/players/${currentUser.uid}`);
+        await set(tournamentRef, playerData);
+        
+        // Update player count
+        const newCount = playerCount + 1;
+        await update(ref(db, `tournaments/${tournamentId}`), {
+            currentPlayers: newCount,
+            updatedAt: new Date().toISOString()
+        });
+        
+        // Update user's current event
+        await update(ref(db, `users/${currentUser.uid}`), {
+            currentEventId: tournamentId
+        });
+        
+        showToast(`✅ Joined tournament! Entry fee: ${entryFee} RWF`, 'success');
+        
+        // Reload tournaments to update UI
+        loadTournaments();
+        
+        // ===== AUTO-OPEN GAME AFTER JOIN =====
+        // Open the game immediately after joining
+        setTimeout(() => {
+            playGame(tournamentId);
+        }, 1500);
+        
+    } catch (error) {
+        console.error('Error joining tournament:', error);
+        showToast('Error joining tournament. Please try again.', 'error');
+    }
+};
 
         // ========================================
         // PLAY GAME - Updated with hasStartedGame flag
