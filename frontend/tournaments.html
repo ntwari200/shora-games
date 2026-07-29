@@ -1954,64 +1954,72 @@
         // PROCESS TOURNAMENTS
         // ========================================
 
-        function processTournaments(data) {
-            // Preload the first tournament image for faster initial load
-if (tournaments.length > 0 && tournaments[0].image) {
-    const preloadLink = document.createElement('link');
-    preloadLink.rel = 'preload';
-    preloadLink.as = 'image';
-    preloadLink.href = tournaments[0].image + '?format=webp&quality=75';
-    document.head.appendChild(preloadLink);
-}
-            const tournaments = [];
-            let totalPlayers = 0;
+ function processTournaments(data) {
+    const tournaments = [];
+    let totalPlayers = 0;
 
-            for (const [id, tournament] of Object.entries(data || {})) {
-                if (!tournament || typeof tournament !== 'object') continue;
-                if (tournament.hidden) continue;
-                
-                const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
-                
-                tournaments.push({
-                    id: id,
-                    name: tournament.name || 'Unnamed Tournament',
-                    game: tournament.game || 'Unknown Game',
-                    image: tournament.image || '',
-                    entryFee: tournament.entryFee || 100,
-                    prizePool: tournament.prizePool || 0,
-                    prizeDistribution: tournament.prizeDistribution || {},
-                    participationBonus: tournament.participationBonus || false,
-                    distributionModel: tournament.distributionModel || 'dynamic',
-                    platformFee: tournament.platformFee || 10,
-                    minPlayers: tournament.minPlayers || 2,
-                    maxPlayers: tournament.maxPlayers || 50,
-                    currentPlayers: playerCount,
-                    duration: tournament.duration || 30,
-                    status: tournament.status || 'soon',
-                    locked: tournament.locked || false,
-                    description: tournament.description || '',
-                    players: tournament.players || {},
-                    createdAt: tournament.createdAt || new Date().toISOString(),
-                    updatedAt: tournament.updatedAt || new Date().toISOString(),
-                    startTime: tournament.startTime || new Date().toISOString(),
-                    endTime: tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString(),
-                    isRankingsAvailable: tournament.isRankingsAvailable || false
-                });
-                
-                totalPlayers += playerCount;
-            }
+    for (const [id, tournament] of Object.entries(data || {})) {
+        if (!tournament || typeof tournament !== 'object') continue;
+        if (tournament.hidden) continue;
+        
+        const playerCount = tournament.players ? Object.keys(tournament.players).length : 0;
+        
+        tournaments.push({
+            id: id,
+            name: tournament.name || 'Unnamed Tournament',
+            game: tournament.game || 'Unknown Game',
+            image: tournament.image || '',
+            entryFee: tournament.entryFee || 100,
+            prizePool: tournament.prizePool || 0,
+            prizeDistribution: tournament.prizeDistribution || {},
+            participationBonus: tournament.participationBonus || false,
+            distributionModel: tournament.distributionModel || 'dynamic',
+            platformFee: tournament.platformFee || 10,
+            minPlayers: tournament.minPlayers || 2,
+            maxPlayers: tournament.maxPlayers || 50,
+            currentPlayers: playerCount,
+            duration: tournament.duration || 30,
+            status: tournament.status || 'soon',
+            locked: tournament.locked || false,
+            description: tournament.description || '',
+            players: tournament.players || {},
+            createdAt: tournament.createdAt || new Date().toISOString(),
+            updatedAt: tournament.updatedAt || new Date().toISOString(),
+            startTime: tournament.startTime || new Date().toISOString(),
+            endTime: tournament.endTime || new Date(Date.now() + (tournament.duration || 30) * 60000).toISOString(),
+            isRankingsAvailable: tournament.isRankingsAvailable || false
+        });
+        
+        totalPlayers += playerCount;
+    }
 
-            tournaments.sort((a, b) => {
-                const order = { live: 0, upcoming: 1, soon: 1, ended: 2 };
-                return (order[a.status] || 1) - (order[b.status] || 1);
-            });
+    tournaments.sort((a, b) => {
+        const order = { live: 0, upcoming: 1, soon: 1, ended: 2 };
+        return (order[a.status] || 1) - (order[b.status] || 1);
+    });
 
-            allTournaments = tournaments;
-            document.getElementById('totalPlayers').textContent = totalPlayers;
-            
-            renderTournaments(tournaments);
-            updateBadge(tournaments);
+    // ===== PRELOAD FIRST TOURNAMENT IMAGE (MOBILE OPTIMIZATION) =====
+    if (tournaments.length > 0 && tournaments[0].image) {
+        const preloadLink = document.createElement('link');
+        preloadLink.rel = 'preload';
+        preloadLink.as = 'image';
+        let imageUrl = tournaments[0].image;
+        if (imageUrl.includes('i.ibb.co') || imageUrl.includes('imgbb')) {
+            const baseUrl = imageUrl.split('?')[0];
+            imageUrl = baseUrl + '?format=webp&quality=75';
         }
+        preloadLink.href = imageUrl;
+        document.head.appendChild(preloadLink);
+        console.log('🖼️ Preloading first tournament image');
+    }
+
+    // Update global variable
+    allTournaments = tournaments;
+    document.getElementById('totalPlayers').textContent = totalPlayers;
+    
+    renderTournaments(tournaments);
+    updateBadge(tournaments);
+}
 
         // ========================================
         // COUNTDOWN HELPERS
