@@ -2015,7 +2015,7 @@
         // RENDER TOURNAMENTS - UPDATED
         // ========================================
 
-       function renderTournaments(tournaments) {
+function renderTournaments(tournaments) {
     const grid = document.getElementById('tournamentGrid');
     
     if (tournaments.length === 0) {
@@ -2058,14 +2058,14 @@
             tournament.players[currentUser.uid] && 
             tournament.players[currentUser.uid].hasPlayed === true;
         
-        // NEW: Check if user has started this specific tournament
+        // Check if user has started this specific tournament
         const hasStartedThisTournament = currentUser && 
             userData.hasStartedGame === true && 
             userData.currentEventId === tournament.id;
         
         const isFull = playerCount >= maxPlayers;
         
-        // ===== KEY FIX: Only block if tournament is LIVE =====
+        // Only block if tournament is LIVE
         const shouldBlock = (isLive && (userHasPlayedThisTournament || hasStartedThisTournament));
         
         // ===== BUILD PRIZE DISPLAY HTML =====
@@ -2128,16 +2128,13 @@
         // ===== ACTION BUTTON - UPDATED LOGIC =====
         let buttonHtml = '';
         
-        // ===== KEY FIX: Only block if tournament is LIVE =====
         if (shouldBlock) {
-            // User already started or played in THIS tournament (only when live)
             buttonHtml = `
                 <button class="btn btn-card-already-played" disabled>
                     <i class="fas fa-ban"></i> ${userHasPlayedThisTournament ? 'Already Played' : 'Game Started'}
                 </button>
             `;
         } else if (isEnded) {
-            // Tournament ended - show Rankings button only
             buttonHtml = `
                 <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'">
                     <i class="fas fa-trophy"></i> View Rankings
@@ -2151,7 +2148,6 @@
             `;
         } else if (isLive && !isLocked) {
             if (userHasJoined) {
-                // User joined but hasn't started - show Play Now
                 buttonHtml = `
                     <button class="btn btn-card-play" onclick="playGame('${tournament.id}')">
                         <i class="fas fa-play"></i> Play Now
@@ -2247,14 +2243,10 @@
 
                     ${tournament.description ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">${tournament.description}</div>` : ''}
 
+                    <!-- ===== CARD ACTIONS - 3 BUTTONS ===== -->
                     <div class="card-actions">
                         ${demoButtonHtml}
                         ${buttonHtml}
-                        
-                        <!-- ===== VIEW RANKINGS BUTTON ===== -->
-                        <button class="btn btn-card-view" onclick="window.location.href='rankings.html?id=${tournament.id}'" style="flex:0.4;min-width:auto;padding:8px 12px;" title="View Rankings">
-                            <i class="fas fa-trophy"></i>
-                        </button>
                         
                         <!-- ===== INFO BUTTON ===== -->
                         <button class="btn btn-card-view" onclick="showTournamentInfo('${tournament.id}')" style="flex:0.4;min-width:auto;padding:8px 12px;" title="Tournament Info & Payout">
