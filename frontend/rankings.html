@@ -1459,8 +1459,65 @@ async function loadTournamentData(tournamentId) {
         };
 
         // ========================================
-        // LOAD TOURNAMENT DATA
         // ========================================
+// PRIZE CALCULATION SYSTEM - SAME AS ADMIN
+// ========================================
+
+function calculatePrizeDistribution(playerCount, entryFee, platformFee, distributionModel, participationBonus) {
+    const totalCollected = playerCount * entryFee;
+    const platformFeeAmount = totalCollected * (platformFee / 100);
+    const prizePool = totalCollected - platformFeeAmount;
+    
+    let distribution;
+    if (distributionModel === 'dynamic') {
+        if (playerCount <= 3) {
+            distribution = { 1: 70, 2: 30 };
+        } else if (playerCount <= 5) {
+            distribution = { 1: 60, 2: 25, 3: 15 };
+        } else if (playerCount <= 10) {
+            distribution = { 1: 50, 2: 25, 3: 15, 4: 10 };
+        } else if (playerCount <= 20) {
+            distribution = { 1: 40, 2: 22, 3: 15, 4: 10, 5: 8, 6: 5 };
+        } else if (playerCount <= 40) {
+            distribution = { 1: 35, 2: 20, 3: 15, 4: 10, 5: 8, 6: 6, 7: 4, 8: 2 };
+        } else {
+            distribution = { 1: 30, 2: 18, 3: 14, 4: 10, 5: 8, 6: 6, 7: 5, 8: 4, 9: 3, 10: 2 };
+        }
+    } else if (distributionModel === 'top3') {
+        distribution = { 1: 60, 2: 25, 3: 15 };
+    } else if (distributionModel === 'top5') {
+        distribution = { 1: 40, 2: 25, 3: 15, 4: 10, 5: 10 };
+    } else { // winner takes all
+        distribution = { 1: 100 };
+    }
+    
+    const prizes = {};
+    let totalPercentage = 0;
+    for (const [rank, percent] of Object.entries(distribution)) {
+        prizes[rank] = Math.round((prizePool * percent) / 100);
+        totalPercentage += percent;
+    }
+    
+    let participationAmount = 0;
+    if (participationBonus) {
+        const remainingPlayers = playerCount - Object.keys(distribution).length;
+        if (remainingPlayers > 0) {
+            const bonusPool = Math.round(prizePool * 0.05);
+            participationAmount = Math.min(Math.round(bonusPool / remainingPlayers), 50);
+        }
+    }
+    
+    return {
+        totalCollected,
+        platformFee: platformFeeAmount,
+        prizePool,
+        distribution,
+        prizes,
+        participationAmount,
+        winnerCount: Object.keys(distribution).length,
+        remainingPlayers: playerCount - Object.keys(distribution).length
+    };
+}
 // ========================================
 // ========================================
 // LOAD RANKINGS - WITH PRIZE CALCULATION
