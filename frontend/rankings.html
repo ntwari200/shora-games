@@ -2286,7 +2286,7 @@ async function loadRankingsFromFirebase(tournamentId) {
         // ========================================
 
     
-     function renderRankings(players) {
+  function renderRankings(players) {
     const tbody = document.getElementById('rankingsBody');
 
     if (!players || players.length === 0) {
@@ -2304,9 +2304,26 @@ async function loadRankingsFromFirebase(tournamentId) {
         return;
     }
 
+    // ===== FILTER PLAYERS WHO HAVE PLAYED =====
     const playedPlayers = players.filter(p => p.has_played === true);
     
-    if (playedPlayers.length === 0) {
+    // ===== SORT PLAYERS BY SCORE (HIGHEST FIRST) =====
+    const sortedPlayers = [...playedPlayers].sort((a, b) => {
+        // First by score (highest first)
+        if (b.score !== a.score) return b.score - a.score;
+        // If same score, by time (fastest first)
+        return (a.time_finished || 999999) - (b.time_finished || 999999);
+    });
+
+    // ===== ASSIGN POSITIONS BASED ON SORT ORDER =====
+    sortedPlayers.forEach((player, index) => {
+        // If position is not set or is 0, assign based on index
+        if (!player.position || player.position === 0) {
+            player.position = index + 1;
+        }
+    });
+
+    if (sortedPlayers.length === 0) {
         tbody.innerHTML = `
             <tr>
                 <td colspan="6">
@@ -2321,6 +2338,7 @@ async function loadRankingsFromFirebase(tournamentId) {
         return;
     }
 
+    // ===== BUILD RANKING MAP FOR PREVIOUS COMPARISON =====
     const prevRankMap = {};
     previousRankings.forEach(p => {
         prevRankMap[p.user_id] = p.position || 999;
@@ -2330,12 +2348,15 @@ async function loadRankingsFromFirebase(tournamentId) {
     const medals = ['🥇', '🥈', '🥉'];
     const posClasses = ['pos-1', 'pos-2', 'pos-3'];
 
-    playedPlayers.forEach((player, index) => {
-        const rank = player.position || (index + 1);
+    // ===== RENDER EACH PLAYER =====
+    sortedPlayers.forEach((player, index) => {
+        // Use position from data, or calculate from index
+        const rank = (player.position && player.position > 0) ? player.position : (index + 1);
         const prevRank = prevRankMap[player.user_id] || rank;
         const rankDiff = prevRank - rank;
         const isChampion = rank <= 3;
 
+        // ===== DETERMINE POSITION CHANGE (GREEN/RED/YELLOW) =====
         let changeClass = 'hold';
         let changeIcon = '<i class="fas fa-minus"></i>';
         if (rankDiff > 0) {
@@ -2343,15 +2364,17 @@ async function loadRankingsFromFirebase(tournamentId) {
             changeIcon = `<i class="fas fa-arrow-up"></i> +${rankDiff}`;
         } else if (rankDiff < 0) {
             changeClass = 'lose';
-            changeIcon = `<i class="fas fa-arrow-down"></i> ${rankDiff}`;
+            changeIcon = `<i class="fas fa-arrow-down"></i> ${Math.abs(rankDiff)}`;
         }
 
+        // ===== MEDAL OR POSITION NUMBER =====
         let posDisplay = rank <= 3 ? 
             `<span class="medal">${medals[rank - 1]}</span>` : 
             `<span class="pos-number">${rank}</span>`;
 
         const posClass = rank <= 3 ? posClasses[rank - 1] : '';
 
+        // ===== FORMAT TIME =====
         let timeDisplay = '--';
         if (player.time_finished && player.time_finished > 0) {
             const mins = Math.floor(player.time_finished / 60);
@@ -2359,7 +2382,10 @@ async function loadRankingsFromFirebase(tournamentId) {
             timeDisplay = mins > 0 ? `${mins}m ${secs}s` : `${secs}s`;
         }
 
+        // ===== PLAYER NAME =====
         const playerName = player.username || 'Anonymous';
+        
+        // ===== PHONE NUMBER =====
         const phoneDisplay = player.phone && player.phone !== 'N/A' && player.phone !== '' ? 
             player.phone : 
             '—';
@@ -2369,8 +2395,10 @@ async function loadRankingsFromFirebase(tournamentId) {
             `${player.prize_won.toLocaleString()} RWF` : 
             '—';
 
+        // ===== ROW ANIMATION CLASS =====
         const rowClass = isFirstLoad ? '' : (rankDiff > 0 ? 'pos-move-up' : (rankDiff < 0 ? 'pos-move-down' : ''));
 
+        // ===== BUILD HTML ROW =====
         html += `
             <tr class="${posClass} ${isChampion ? 'champion-row' : ''} ${rowClass}" data-user="${player.user_id}">
                 <td class="pos-col">
@@ -2408,9 +2436,11 @@ async function loadRankingsFromFirebase(tournamentId) {
         `;
     });
 
+    // ===== INSERT INTO TABLE =====
     tbody.innerHTML = html;
     isFirstLoad = false;
 
+    // ===== HIGHLIGHT POSITION CHANGES WITH PULSE EFFECT =====
     if (!isFirstLoad) {
         const changedRows = tbody.querySelectorAll('.pos-move-up, .pos-move-down');
         changedRows.forEach((row, index) => {
@@ -2423,7 +2453,6 @@ async function loadRankingsFromFirebase(tournamentId) {
         });
     }
 }
-        // ========================================
         // SHOW EMPTY STATE
         // ========================================
 
