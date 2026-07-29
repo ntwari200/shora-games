@@ -2234,17 +2234,29 @@ function renderTournaments(tournaments) {
             lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
         }
 
-        // ===== OPTIMIZED IMAGE WITH LAZY LOADING AND WEBP =====
-        let imageHtml = '';
-        const PLACEHOLDER_SVG = `data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 200"><rect width="400" height="200" fill="%230B1F36"/><text x="200" y="110" text-anchor="middle" font-size="40" fill="%2300BFFF" opacity="0.15">🏆</text></svg>`;
+      // ===== SIMPLE IMAGE LOADING - WORKS WITH IMGBB =====
+let imageHtml = '';
 
-        if (tournament.image) {
-            let imageUrl = tournament.image;
-            // Add WebP format for smaller size (ImgBB supports this)
-            if (imageUrl.includes('i.ibb.co') || imageUrl.includes('imgbb')) {
-                imageUrl = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 'format=webp&quality=80';
-            }
-            
+if (tournament.image) {
+    // Direct image URL from ImgBB
+    imageHtml = `
+        <img 
+            src="${tournament.image}" 
+            alt="${tournament.name}"
+            style="width:100%;height:100%;object-fit:cover;"
+            onerror="this.style.display='none';this.parentElement.querySelector('.fallback-icon').style.display='flex';"
+        >
+        <span class="fallback-icon" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+            <i class="fas fa-trophy"></i>
+        </span>
+    `;
+} else {
+    imageHtml = `
+        <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+            <i class="fas fa-trophy"></i>
+        </span>
+    `;
+}
             imageHtml = `
                 <div class="card-image-wrapper">
                     <div class="blur-placeholder">
