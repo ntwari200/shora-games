@@ -2256,31 +2256,6 @@ if (tournament.image) {
     `;
 }
 
-            imageHtml = `
-                <div class="card-image-wrapper">
-                    <div class="blur-placeholder">
-                        <i class="fas fa-trophy"></i>
-                    </div>
-                    <img 
-                        src="${imageUrl}" 
-                        alt="${tournament.name}"
-                        loading="lazy"
-                        decoding="async"
-                        onload="this.classList.add('loaded')"
-                        onerror="this.style.display='none';this.parentElement.querySelector('.blur-placeholder').style.display='flex';this.parentElement.querySelector('.blur-placeholder').innerHTML='<i class=\\'fas fa-image\\' style=\\'opacity:0.2;font-size:2rem;\\'></i>'"
-                    >
-                </div>
-            `;
-        } else {
-            imageHtml = `
-                <div class="card-image-wrapper">
-                    <div class="blur-placeholder" style="display:flex;background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
-                        <i class="fas fa-trophy" style="opacity:0.2;font-size:3rem;"></i>
-                    </div>
-                </div>
-            `;
-        }
-
         return `
             <div class="tournament-card" data-id="${tournament.id}" data-status="${tournament.status}">
                 <div class="card-cover">
