@@ -1630,51 +1630,7 @@ async function loadRankings(tournamentId) {
 }
 
 // ========================================
-// UPDATE PRIZE DISTRIBUTION PREVIEW
-// ========================================
-// ========================================
-// PRIZE CALCULATION SYSTEM - SAME AS ADMIN
-// ========================================
 
-function updatePrizeDistributionPreview(prizeResult, distributionModel) {
-    const p1 = document.getElementById('p1');
-    const p2 = document.getElementById('p2');
-    const p3 = document.getElementById('p3');
-    const morePrizes = document.getElementById('morePrizes');
-    const prizePoolAmount = document.getElementById('prizePoolAmount');
-    const prizePoolBadge = document.getElementById('prizePoolBadge');
-    
-    // Update prize pool
-    if (prizePoolAmount) {
-        prizePoolAmount.textContent = prizeResult.prizePool.toLocaleString();
-    }
-    
-    // Update individual prizes
-    p1.textContent = prizeResult.prizes[1] ? prizeResult.prizes[1].toLocaleString() + ' RWF' : '0 RWF';
-    p2.textContent = prizeResult.prizes[2] ? prizeResult.prizes[2].toLocaleString() + ' RWF' : '0 RWF';
-    p3.textContent = prizeResult.prizes[3] ? prizeResult.prizes[3].toLocaleString() + ' RWF' : '0 RWF';
-    
-    // Show more prizes
-    const prizeKeys = Object.keys(prizeResult.prizes);
-    if (prizeKeys.length > 3) {
-        morePrizes.style.display = 'inline';
-        morePrizes.innerHTML = `<span class="rank-label">+${prizeKeys.length - 3} more</span>`;
-    } else {
-        morePrizes.style.display = 'none';
-    }
-    
-    // ===== UPDATE TITLE WITH DISTRIBUTION MODEL =====
-    const previewTitle = document.querySelector('.prize-distribution-preview .title');
-    if (previewTitle) {
-        const modelNames = {
-            'dynamic': '🎯 Dynamic Distribution',
-            'winner': '👑 Winner Takes All',
-            'top3': '🥇 Top 3 Distribution',
-            'top5': '🏅 Top 5 Distribution'
-        };
-        previewTitle.textContent = modelNames[distributionModel] || '🎯 Prize Distribution';
-    }
-}
 // ========================================
 // UPDATE PRIZE DISTRIBUTION PREVIEW
 // ========================================
