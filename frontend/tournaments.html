@@ -2249,35 +2249,42 @@ function renderTournaments(tournaments) {
         } else if (!isLocked && isLive) {
             lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
         }
-// ===== SIMPLE IMAGE LOADING - FULLY WORKING =====
-// ===== MOBILE-OPTIMIZED IMAGE LOADING =====
+// ===== IMAGE WITH MULTIPLE FALLBACKS =====
 let imageHtml = '';
 
 if (tournament.image) {
-    // Add WebP format for smaller size on mobile
-    let imageUrl = tournament.image;
-    
-    // Only add WebP if it's an ImgBB URL
-    if (imageUrl.includes('i.ibb.co') || imageUrl.includes('imgbb')) {
-        // Remove any existing query params and add WebP
-        const baseUrl = imageUrl.split('?')[0];
-        imageUrl = baseUrl + '?format=webp&quality=75';
-    }
+    // Try different URL formats
+    const originalUrl = tournament.image;
+    const webpUrl = originalUrl.includes('?') ? originalUrl + '&format=webp' : originalUrl + '?format=webp';
+    const directUrl = originalUrl.replace('i.ibb.co', 'i.ibb.co');
     
     imageHtml = `
-        <img 
-            src="${imageUrl}" 
-            alt="${tournament.name}"
-            loading="lazy"
-            decoding="async"
-            style="width:100%;height:100%;object-fit:cover;"
-            onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-icon').style.display='flex';"
-        >
+        <picture>
+            <!-- Try WebP first (smaller) -->
+            <source srcset="${webpUrl}" type="image/webp">
+            <!-- Fallback to original -->
+            <source srcset="${originalUrl}">
+            <!-- Final fallback - placeholder -->
+            <img 
+                src="${originalUrl}" 
+                alt="${tournament.name}"
+                loading="lazy"
+                style="width:100%;height:100%;object-fit:cover;"
+                onerror="this.style.display='none'; this.parentNode.querySelector('.fallback-icon').style.display='flex';"
+            >
+        </picture>
         <span class="fallback-icon" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
             <i class="fas fa-trophy"></i>
         </span>
     `;
 } else {
+    imageHtml = `
+        <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+            <i class="fas fa-trophy"></i>
+        </span>
+    `;
+}
+else {
     imageHtml = `
         <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
             <i class="fas fa-trophy"></i>
