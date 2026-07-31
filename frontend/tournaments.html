@@ -2249,24 +2249,30 @@ function renderTournaments(tournaments) {
         } else if (!isLocked && isLive) {
             lockBadgeHtml = `<span class="card-lock-badge unlocked">🔓 Open</span>`;
         }
-// ===== IMAGE WITH MULTIPLE FALLBACKS =====
+// ===== IMAGE WITH MULTIPLE HOSTS =====
 let imageHtml = '';
 
 if (tournament.image) {
-    // Try different URL formats
-    const originalUrl = tournament.image;
-    const webpUrl = originalUrl.includes('?') ? originalUrl + '&format=webp' : originalUrl + '?format=webp';
-    const directUrl = originalUrl.replace('i.ibb.co', 'i.ibb.co');
+    // Generate alternative URLs from different hosts
+    const imgbbUrl = tournament.image;
+    // Try to extract image ID for alternative hosting
+    const imgId = imgbbUrl.split('/').pop().split('.')[0];
     
+    // Alternative hosts (if you have them)
+    const alternativeUrls = [
+        imgbbUrl,
+        // If you have Cloudinary setup
+        // `https://res.cloudinary.com/demo/image/upload/w_400,h_180,c_fill,q_auto,f_auto/${imgId}`,
+    ];
+    
+    // Use picture element with multiple sources
     imageHtml = `
         <picture>
-            <!-- Try WebP first (smaller) -->
-            <source srcset="${webpUrl}" type="image/webp">
-            <!-- Fallback to original -->
-            <source srcset="${originalUrl}">
-            <!-- Final fallback - placeholder -->
+            ${alternativeUrls.map(url => `
+                <source srcset="${url}">
+            `).join('')}
             <img 
-                src="${originalUrl}" 
+                src="${imgbbUrl}" 
                 alt="${tournament.name}"
                 loading="lazy"
                 style="width:100%;height:100%;object-fit:cover;"
@@ -2277,8 +2283,7 @@ if (tournament.image) {
             <i class="fas fa-trophy"></i>
         </span>
     `;
-} 
-else {
+} else {
     imageHtml = `
         <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
             <i class="fas fa-trophy"></i>
