@@ -13,6 +13,152 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ========================================
+   MOBILE OPTIMIZATION - SMALL DEVICES
+   ======================================== */
+
+/* Make tournament cards bigger on small phones */
+@media (max-width: 480px) {
+    .tournament-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .tournament-card {
+        border-radius: 12px !important;
+        margin: 0 4px !important;
+    }
+
+    /* ===== BIGGER IMAGE COVER ===== */
+    .tournament-card .card-cover {
+        height: 200px !important;  /* Increased from 120px */
+        min-height: 200px !important;
+    }
+
+    .tournament-card .card-cover img {
+        width: 100% !important;
+        height: 100% !important;
+        object-fit: cover !important;
+        min-height: 200px !important;
+    }
+
+    /* ===== BIGGER CARD BODY ===== */
+    .tournament-card .card-body {
+        padding: 16px !important;
+    }
+
+    .tournament-card .card-body .card-title {
+        font-size: 1rem !important;
+    }
+
+    .tournament-card .card-body .card-meta {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }
+
+    .tournament-card .card-body .card-actions .btn {
+        font-size: 0.7rem !important;
+        padding: 8px 12px !important;
+        min-width: 70px !important;
+    }
+}
+
+/* ===== EXTRA SMALL PHONES (Airtel, etc.) ===== */
+@media (max-width: 380px) {
+    .tournament-card .card-cover {
+        height: 180px !important;
+        min-height: 180px !important;
+    }
+
+    .tournament-card .card-cover img {
+        min-height: 180px !important;
+    }
+
+    .tournament-card .card-body {
+        padding: 12px !important;
+    }
+
+    .tournament-card .card-body .card-meta {
+        grid-template-columns: 1fr !important;
+    }
+
+    .tournament-card .card-body .card-actions {
+        flex-direction: column !important;
+        gap: 6px !important;
+    }
+
+    .tournament-card .card-body .card-actions .btn {
+        width: 100% !important;
+        justify-content: center !important;
+    }
+}
+
+/* ===== IMAGE CONTAINER FIX ===== */
+.tournament-card .card-cover {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Make sure images fill the cover completely */
+.tournament-card .card-cover img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+/* Fallback icon in center */
+.tournament-card .card-cover .fallback-icon {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+    opacity: 0.3;
+    color: var(--primary);
+    background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+}
+
+/* ===== STATUS BADGE POSITIONING ===== */
+.tournament-card .card-cover .card-status-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    z-index: 5;
+    font-size: 0.55rem;
+    padding: 4px 12px;
+}
+
+.tournament-card .card-cover .card-lock-badge {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 5;
+    font-size: 0.5rem;
+    padding: 3px 10px;
+}
+
+/* ===== COUNTDOWN OVERLAY ===== */
+.tournament-card .card-countdown {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 6px 12px;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(8px);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 5;
+}
         /* ===== LAZY LOADING IMAGE ===== */
 .tournament-card .card-cover {
     position: relative;
