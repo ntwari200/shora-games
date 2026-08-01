@@ -827,7 +827,10 @@
                 </div>
             </div>
         </div>
-
+<!-- Add this somewhere in your HTML for testing -->
+<button onclick="resetBanner()" style="position:fixed;bottom:80px;right:10px;z-index:9999;background:#333;color:#fff;padding:4px 8px;border:none;border-radius:4px;font-size:10px;opacity:0.5;">
+    Reset Banner
+</button>
         <!-- ===== GAME HEADER ===== -->
         <div class="game-header">
             <div class="title">
@@ -889,6 +892,7 @@
                 <h2>Enable Desktop Site</h2>
                 <p>Follow these steps to switch to desktop view on Chrome</p>
             </div>
+            
             <div class="step-list">
                 <div class="step-item">
                     <span class="step-number">1</span>
@@ -1929,7 +1933,29 @@ setTimeout(function() {
 
 console.log('✅ Script loaded - waiting for DOM');
         // CHEAT ALERT - Updated with Zero Score Submission
-        // ============================================================
+    function resetBanner() {
+    localStorage.removeItem('warningBannerDismissed');
+    const banner = document.getElementById('warningBanner');
+    if (banner) {
+        banner.style.display = 'block';
+        banner.style.opacity = '1';
+        banner.style.transform = 'translateY(0)';
+        banner.style.maxHeight = '200px';
+        banner.style.padding = '12px 16px';
+        banner.style.margin = '0';
+        banner.style.borderBottom = '3px solid #FF4D6D';
+        banner.style.overflow = 'visible';
+        banner.style.transition = 'none';
+    }
+    // Clear timer and restart
+    if (warningAutoDismissTimer) {
+        clearTimeout(warningAutoDismissTimer);
+        warningAutoDismissTimer = null;
+    }
+    autoDismissWarning();
+    console.log('🔄 Banner reset and auto-dismiss started');
+    showToast('🔄 Banner reset! Will auto-dismiss in 5 seconds', 'warning');
+}    // ============================================================
 
         async function showCheatAlert(reason) {
             if (cheatAlertShown || IS_DEMO_MODE) return;
