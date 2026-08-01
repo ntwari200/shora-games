@@ -1933,8 +1933,13 @@ setTimeout(function() {
 
 console.log('✅ Script loaded - waiting for DOM');
         // CHEAT ALERT - Updated with Zero Score Submission
-    function resetBanner() {
+// ============================================================
+// RESET BANNER - For Testing
+// ============================================================
+
+function resetBanner() {
     localStorage.removeItem('warningBannerDismissed');
+    
     const banner = document.getElementById('warningBanner');
     if (banner) {
         banner.style.display = 'block';
@@ -1945,17 +1950,33 @@ console.log('✅ Script loaded - waiting for DOM');
         banner.style.margin = '0';
         banner.style.borderBottom = '3px solid #FF4D6D';
         banner.style.overflow = 'visible';
-        banner.style.transition = 'none';
+        // Remove inline styles that were hiding it
+        banner.style.removeProperty('opacity');
+        banner.style.removeProperty('transform');
+        banner.style.removeProperty('max-height');
+        banner.style.removeProperty('padding');
+        banner.style.removeProperty('margin');
+        banner.style.removeProperty('border-bottom');
+        banner.style.removeProperty('overflow');
+        // Remove the display:none that was hiding it
+        banner.style.removeProperty('display');
     }
-    // Clear timer and restart
-    if (warningAutoDismissTimer) {
-        clearTimeout(warningAutoDismissTimer);
-        warningAutoDismissTimer = null;
+    
+    if (window.warningAutoDismissTimer) {
+        clearTimeout(window.warningAutoDismissTimer);
+        window.warningAutoDismissTimer = null;
     }
-    autoDismissWarning();
-    console.log('🔄 Banner reset and auto-dismiss started');
+    
+    if (typeof autoDismissWarning === 'function') {
+        autoDismissWarning();
+    }
+    
+    console.log('🔄 Banner reset! Will auto-dismiss in 5 seconds');
     showToast('🔄 Banner reset! Will auto-dismiss in 5 seconds', 'warning');
-}    // ============================================================
+}
+
+// Expose to global scope
+window.resetBanner = resetBanner; // ============================================================
 
         async function showCheatAlert(reason) {
             if (cheatAlertShown || IS_DEMO_MODE) return;
