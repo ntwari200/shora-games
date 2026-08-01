@@ -1674,12 +1674,11 @@ function closeWarning() {
     banner.style.borderBottom = 'none';
     banner.style.overflow = 'hidden';
     
-    // Remember user's choice
+    // ✅ REMOVED: localStorage.setItem('warningBannerDismissed', 'true');
+    // Use sessionStorage instead (clears when tab closes)
     try {
-        localStorage.setItem('warningBannerDismissed', 'true');
-    } catch (e) {
-        console.warn('Could not save to localStorage');
-    }
+        sessionStorage.setItem('warningBannerDismissed', 'true');
+    } catch (e) {}
     
     // Remove from DOM after animation
     setTimeout(function() {
@@ -1687,9 +1686,12 @@ function closeWarning() {
     }, 500);
 }
 
+    
+
 // ============================================================
 // AUTO-DISMISS WARNING BANNER AFTER 5 SECONDS
 // ============================================================
+
 
 function autoDismissWarning() {
     // Clear any existing timer
@@ -1710,7 +1712,6 @@ function autoDismissWarning() {
         closeWarning();
     }, 5000); // 5 seconds
 }
-
 // ============================================================
 // GUIDE CONTROLS - Enhanced
 // ============================================================
@@ -1936,9 +1937,11 @@ console.log('✅ Script loaded - waiting for DOM');
 // ============================================================
 // RESET BANNER - For Testing
 // ============================================================
+// ============================================================
 
 function resetBanner() {
-    localStorage.removeItem('warningBannerDismissed');
+    // Clear sessionStorage
+    sessionStorage.removeItem('warningBannerDismissed');
     
     const banner = document.getElementById('warningBanner');
     if (banner) {
@@ -1950,7 +1953,6 @@ function resetBanner() {
         banner.style.margin = '0';
         banner.style.borderBottom = '3px solid #FF4D6D';
         banner.style.overflow = 'visible';
-        // Remove inline styles that were hiding it
         banner.style.removeProperty('opacity');
         banner.style.removeProperty('transform');
         banner.style.removeProperty('max-height');
@@ -1958,25 +1960,50 @@ function resetBanner() {
         banner.style.removeProperty('margin');
         banner.style.removeProperty('border-bottom');
         banner.style.removeProperty('overflow');
-        // Remove the display:none that was hiding it
         banner.style.removeProperty('display');
     }
     
-    if (window.warningAutoDismissTimer) {
-        clearTimeout(window.warningAutoDismissTimer);
-        window.warningAutoDismissTimer = null;
+    if (warningAutoDismissTimer) {
+        clearTimeout(warningAutoDismissTimer);
+        warningAutoDismissTimer = null;
     }
     
-    if (typeof autoDismissWarning === 'function') {
-        autoDismissWarning();
-    }
-    
+    autoDismissWarning();
     console.log('🔄 Banner reset! Will auto-dismiss in 5 seconds');
     showToast('🔄 Banner reset! Will auto-dismiss in 5 seconds', 'warning');
 }
 
-// Expose to global scope
-window.resetBanner = resetBanner; // ============================================================
+// ============================================================
+// INIT - Check if banner was dismissed in THIS SESSION
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🔧 [DOMContentLoaded] Initializing...');
+    
+    // ✅ Use sessionStorage instead of localStorage
+    // This only remembers dismissal for the current tab session
+    try {
+        const dismissed = sessionStorage.getItem('warningBannerDismissed') === 'true';
+        if (dismissed) {
+            const banner = document.getElementById('warningBanner');
+            if (banner) {
+                banner.style.display = 'none';
+                console.log('ℹ️ Banner hidden (dismissed in this session)');
+                return;
+            }
+        }
+    } catch (e) {
+        console.warn('Could not read sessionStorage');
+    }
+    
+    // Start auto-dismiss timer (banner is visible)
+    console.log('⏰ Starting auto-dismiss timer (DOMContentLoaded)');
+    autoDismissWarning();
+    
+    console.log('✅ Guide and Warning Banner controls initialized');
+    console.log('📖 Press "?" to open guide');
+    console.log('⏰ Warning banner will auto-dismiss in 5 seconds');
+});
 
         async function showCheatAlert(reason) {
             if (cheatAlertShown || IS_DEMO_MODE) return;
