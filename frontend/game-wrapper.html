@@ -1641,19 +1641,23 @@ async function fetchTournamentEndTime(eventId) {
                 }, 2000);
             }
         });
-
-        // ============================================================
-        // UI HELPERS
-        // ============================================================
-      // ============================================================
-// WARNING BANNER CONTROLS - Enhanced
 // ============================================================
+// WARNING BANNER CONTROLS - WITH AUTO-DISMISS
+// ============================================================
+
+let warningAutoDismissTimer = null;
 
 function closeWarning() {
     const banner = document.getElementById('warningBanner');
     if (!banner) {
         console.warn('⚠️ Warning banner not found');
         return;
+    }
+    
+    // Clear auto-dismiss timer
+    if (warningAutoDismissTimer) {
+        clearTimeout(warningAutoDismissTimer);
+        warningAutoDismissTimer = null;
     }
     
     // Smooth hide animation
@@ -1677,6 +1681,30 @@ function closeWarning() {
     setTimeout(function() {
         banner.style.display = 'none';
     }, 500);
+}
+
+// ============================================================
+// AUTO-DISMISS WARNING BANNER AFTER 5 SECONDS
+// ============================================================
+
+function autoDismissWarning() {
+    // Clear any existing timer
+    if (warningAutoDismissTimer) {
+        clearTimeout(warningAutoDismissTimer);
+        warningAutoDismissTimer = null;
+    }
+    
+    // Check if banner exists and is visible
+    const banner = document.getElementById('warningBanner');
+    if (!banner || banner.style.display === 'none') {
+        return;
+    }
+    
+    // Auto-dismiss after 5 seconds
+    warningAutoDismissTimer = setTimeout(function() {
+        console.log('⏰ Auto-dismissing warning banner after 5 seconds');
+        closeWarning();
+    }, 5000); // 5 seconds
 }
 
 // ============================================================
@@ -1857,17 +1885,21 @@ document.addEventListener('DOMContentLoaded', function() {
             const banner = document.getElementById('warningBanner');
             if (banner) {
                 banner.style.display = 'none';
+                return;
             }
         }
     } catch (e) {
         console.warn('Could not read localStorage');
     }
     
+    // Start auto-dismiss timer (only if banner is visible)
+    autoDismissWarning();
+    
     console.log('✅ Guide and Warning Banner controls initialized');
     console.log('📖 Press "?" to open guide');
+    console.log('⏰ Warning banner will auto-dismiss in 5 seconds');
 });
 
-        // ============================================================
         // CHEAT ALERT - Updated with Zero Score Submission
         // ============================================================
 
@@ -2782,7 +2814,7 @@ window.nextStep = nextStep;
 window.prevStep = prevStep;
 window.updateGuide = updateGuide;
 window.showToast = showToast;
-
+window.autoDismissWarning = autoDismissWarning;
         console.log('');
         console.log('🪙 ===========================================');
         console.log('🪙 NINJA RUN - COMPLETE TOURNAMENT INTEGRATION');
