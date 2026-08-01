@@ -2770,6 +2770,18 @@ document.addEventListener('DOMContentLoaded', function() {
         } catch (e) {}
 await loadUserDataFromFirebase();
         loadGame();
+        // ============================================================
+// EXPOSE FUNCTIONS TO GLOBAL SCOPE
+// ============================================================
+
+// Make functions globally accessible for onclick attributes
+window.closeWarning = closeWarning;
+window.openGuide = openGuide;
+window.closeGuide = closeGuide;
+window.nextStep = nextStep;
+window.prevStep = prevStep;
+window.updateGuide = updateGuide;
+window.showToast = showToast;
 
         console.log('');
         console.log('🪙 ===========================================');
