@@ -1878,28 +1878,56 @@ function showToast(message, type = 'info') {
 // ============================================================
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Check if user dismissed banner before
+    console.log('🔧 [DOMContentLoaded] Initializing...');
+    
     try {
         const dismissed = localStorage.getItem('warningBannerDismissed') === 'true';
         if (dismissed) {
             const banner = document.getElementById('warningBanner');
             if (banner) {
                 banner.style.display = 'none';
+                console.log('ℹ️ Banner hidden (previously dismissed)');
                 return;
             }
         }
-    } catch (e) {
-        console.warn('Could not read localStorage');
-    }
+    } catch (e) {}
     
-    // Start auto-dismiss timer (only if banner is visible)
+    // Start auto-dismiss
+    console.log('⏰ Starting auto-dismiss timer (DOMContentLoaded)');
     autoDismissWarning();
-    
-    console.log('✅ Guide and Warning Banner controls initialized');
-    console.log('📖 Press "?" to open guide');
-    console.log('⏰ Warning banner will auto-dismiss in 5 seconds');
 });
 
+// Method 2: Fallback - Run after 1 second
+// This ensures auto-dismiss works even if DOMContentLoaded fires too early
+setTimeout(function() {
+    console.log('🔧 [Fallback] Checking banner status...');
+    
+    // Check if already dismissed
+    try {
+        const dismissed = localStorage.getItem('warningBannerDismissed') === 'true';
+        if (dismissed) {
+            const banner = document.getElementById('warningBanner');
+            if (banner && banner.style.display !== 'none') {
+                banner.style.display = 'none';
+                console.log('ℹ️ Banner hidden (fallback - previously dismissed)');
+            }
+            return;
+        }
+    } catch (e) {}
+    
+    // Check if banner is visible and no timer is running
+    const banner = document.getElementById('warningBanner');
+    if (banner && banner.style.display !== 'none' && !warningAutoDismissTimer) {
+        console.log('⏰ Starting auto-dismiss timer (fallback)');
+        autoDismissWarning();
+    } else if (banner && banner.style.display === 'none') {
+        console.log('ℹ️ Banner already hidden');
+    } else if (warningAutoDismissTimer) {
+        console.log('ℹ️ Timer already running');
+    }
+}, 1000);
+
+console.log('✅ Script loaded - waiting for DOM');
         // CHEAT ALERT - Updated with Zero Score Submission
         // ============================================================
 
