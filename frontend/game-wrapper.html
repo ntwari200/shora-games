@@ -1645,76 +1645,227 @@ async function fetchTournamentEndTime(eventId) {
         // ============================================================
         // UI HELPERS
         // ============================================================
-        function closeWarning() {
+      // ============================================================
+// WARNING BANNER CONTROLS - Enhanced
+// ============================================================
+
+function closeWarning() {
+    const banner = document.getElementById('warningBanner');
+    if (!banner) {
+        console.warn('⚠️ Warning banner not found');
+        return;
+    }
+    
+    // Smooth hide animation
+    banner.style.transition = 'opacity 0.4s ease, transform 0.4s ease, max-height 0.4s ease, padding 0.4s ease, margin 0.4s ease';
+    banner.style.opacity = '0';
+    banner.style.transform = 'translateY(-20px) scale(0.95)';
+    banner.style.maxHeight = '0';
+    banner.style.padding = '0';
+    banner.style.margin = '0';
+    banner.style.borderBottom = 'none';
+    banner.style.overflow = 'hidden';
+    
+    // Remember user's choice
+    try {
+        localStorage.setItem('warningBannerDismissed', 'true');
+    } catch (e) {
+        console.warn('Could not save to localStorage');
+    }
+    
+    // Remove from DOM after animation
+    setTimeout(function() {
+        banner.style.display = 'none';
+    }, 500);
+}
+
+// ============================================================
+// GUIDE CONTROLS - Enhanced
+// ============================================================
+
+let currentStep = 0;
+const totalSteps = 5;
+
+function openGuide() {
+    const overlay = document.getElementById('guideOverlay');
+    if (!overlay) {
+        console.warn('⚠️ Guide overlay not found');
+        // Fallback: Show simple alert
+        alert('📱 How to enable Desktop Site:\n\n1. Tap Chrome menu (⋮)\n2. Find "Desktop Site"\n3. Tap the checkbox\n4. Page reloads automatically');
+        return;
+    }
+    overlay.classList.add('active');
+    currentStep = 0;
+    updateGuide();
+    
+    // Log for debugging
+    console.log('📖 Guide opened');
+}
+
+function closeGuide() {
+    const overlay = document.getElementById('guideOverlay');
+    if (overlay) {
+        overlay.classList.remove('active');
+        console.log('📖 Guide closed');
+    }
+}
+
+function nextStep() {
+    if (currentStep < totalSteps - 1) {
+        currentStep++;
+        updateGuide();
+        // Auto-scroll to current step
+        const stepItems = document.querySelectorAll('.step-item');
+        if (stepItems[currentStep]) {
+            stepItems[currentStep].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    } else {
+        // On last step, close guide
+        closeGuide();
+        // Show success message
+        showToast('✅ You\'re all set! Enjoy the game!', 'success');
+    }
+}
+
+function prevStep() {
+    if (currentStep > 0) {
+        currentStep--;
+        updateGuide();
+        // Auto-scroll to current step
+        const stepItems = document.querySelectorAll('.step-item');
+        if (stepItems[currentStep]) {
+            stepItems[currentStep].scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+}
+
+function updateGuide() {
+    const dots = document.querySelectorAll('.guide-progress .dot');
+    const stepItems = document.querySelectorAll('.step-item');
+    const prevBtn = document.querySelector('.btn-prev');
+    const nextBtn = document.getElementById('guideNextBtn');
+    
+    // Update dots
+    dots.forEach((dot, index) => {
+        dot.className = 'dot';
+        if (index < currentStep) dot.classList.add('done');
+        if (index === currentStep) dot.classList.add('active');
+    });
+    
+    // Update step items highlighting
+    stepItems.forEach((item, index) => {
+        item.style.borderColor = 'rgba(255,255,255,0.04)';
+        item.style.background = 'rgba(255,255,255,0.02)';
+        if (index === currentStep) {
+            item.style.borderColor = 'rgba(0, 191, 255, 0.3)';
+            item.style.background = 'rgba(0, 191, 255, 0.05)';
+        }
+    });
+    
+    // Update Previous button
+    if (prevBtn) {
+        prevBtn.style.opacity = currentStep === 0 ? '0.3' : '1';
+        prevBtn.style.pointerEvents = currentStep === 0 ? 'none' : 'auto';
+    }
+    
+    // Update Next button
+    if (nextBtn) {
+        if (currentStep === totalSteps - 1) {
+            nextBtn.textContent = '🎮 Got it!';
+            nextBtn.style.background = 'linear-gradient(135deg, #00E676, #00C853)';
+            nextBtn.style.color = '#000';
+        } else {
+            nextBtn.textContent = 'Next →';
+            nextBtn.style.background = 'linear-gradient(135deg, #00BFFF, #6C63FF)';
+            nextBtn.style.color = '#000';
+        }
+    }
+}
+
+// ============================================================
+// KEYBOARD SHORTCUTS
+// ============================================================
+
+document.addEventListener('keydown', function(e) {
+    const overlay = document.getElementById('guideOverlay');
+    const isGuideActive = overlay && overlay.classList.contains('active');
+    
+    // '?' key - Open guide
+    if (e.key === '?' || (e.shiftKey && e.key === '/')) {
+        e.preventDefault();
+        openGuide();
+    }
+    
+    // ESC key - Close guide
+    if (e.key === 'Escape') {
+        if (isGuideActive) {
+            e.preventDefault();
+            closeGuide();
+        }
+    }
+    
+    // Arrow Right or Space - Next step
+    if (e.key === 'ArrowRight' || e.key === ' ') {
+        if (isGuideActive) {
+            e.preventDefault();
+            nextStep();
+        }
+    }
+    
+    // Arrow Left - Previous step
+    if (e.key === 'ArrowLeft') {
+        if (isGuideActive) {
+            e.preventDefault();
+            prevStep();
+        }
+    }
+});
+
+// ============================================================
+// TOAST HELPER
+// ============================================================
+
+function showToast(message, type = 'info') {
+    // Remove existing toast
+    const existing = document.querySelector('.toast-cyber');
+    if (existing) existing.remove();
+    
+    const toast = document.createElement('div');
+    toast.className = 'toast-cyber';
+    if (type === 'error') toast.classList.add('error');
+    if (type === 'warning') toast.classList.add('warning');
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    // Auto-remove after 3 seconds
+    setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transition = 'opacity 0.5s ease';
+        setTimeout(() => toast.remove(), 500);
+    }, 3000);
+}
+
+// ============================================================
+// INIT - Check if banner was dismissed
+// ============================================================
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Check if user dismissed banner before
+    try {
+        const dismissed = localStorage.getItem('warningBannerDismissed') === 'true';
+        if (dismissed) {
             const banner = document.getElementById('warningBanner');
-            banner.style.transition = 'opacity 0.4s ease, transform 0.4s ease';
-            banner.style.opacity = '0';
-            banner.style.transform = 'translateY(-20px)';
-            setTimeout(() => { banner.style.display = 'none'; }, 400);
-        }
-
-        let currentStep = 0;
-        const totalSteps = 5;
-
-        function openGuide() {
-            document.getElementById('guideOverlay').classList.add('active');
-            currentStep = 0;
-            updateGuide();
-        }
-
-        function closeGuide() {
-            document.getElementById('guideOverlay').classList.remove('active');
-        }
-
-        function nextStep() {
-            if (currentStep < totalSteps - 1) { currentStep++; updateGuide(); }
-        }
-
-        function prevStep() {
-            if (currentStep > 0) { currentStep--; updateGuide(); }
-        }
-
-        function updateGuide() {
-            const dots = document.querySelectorAll('.guide-progress .dot');
-            dots.forEach((dot, index) => {
-                dot.className = 'dot';
-                if (index < currentStep) dot.classList.add('done');
-                if (index === currentStep) dot.classList.add('active');
-            });
-            const stepItems = document.querySelectorAll('.step-item');
-            stepItems.forEach((item, index) => {
-                item.style.borderColor = 'rgba(255,255,255,0.04)';
-                item.style.background = 'rgba(255,255,255,0.02)';
-                if (index === currentStep) {
-                    item.style.borderColor = 'rgba(0, 191, 255, 0.3)';
-                    item.style.background = 'rgba(0, 191, 255, 0.05)';
-                }
-            });
-            const prevBtn = document.querySelector('.btn-prev');
-            const nextBtn = document.getElementById('guideNextBtn');
-            prevBtn.style.opacity = currentStep === 0 ? '0.3' : '1';
-            prevBtn.style.pointerEvents = currentStep === 0 ? 'none' : 'auto';
-            if (currentStep === totalSteps - 1) {
-                nextBtn.textContent = '🎮 Got it!';
-                nextBtn.style.background = 'linear-gradient(135deg, #00E676, #00C853)';
-            } else {
-                nextBtn.textContent = 'Next →';
-                nextBtn.style.background = 'linear-gradient(135deg, #00BFFF, #6C63FF)';
+            if (banner) {
+                banner.style.display = 'none';
             }
         }
-
-        document.addEventListener('keydown', function(e) {
-            if (e.key === '?' || (e.shiftKey && e.key === '/')) { e.preventDefault(); openGuide(); }
-            if (e.key === 'Escape') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) closeGuide();
-            }
-            if (e.key === 'ArrowRight' || e.key === ' ') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) { e.preventDefault(); nextStep(); }
-            }
-            if (e.key === 'ArrowLeft') {
-                if (document.getElementById('guideOverlay').classList.contains('active')) { e.preventDefault(); prevStep(); }
-            }
-        });
+    } catch (e) {
+        console.warn('Could not read localStorage');
+    }
+    
+    console.log('✅ Guide and Warning Banner controls initialized');
+    console.log('📖 Press "?" to open guide');
+});
 
         function showToast(message, type) {
             const existing = document.querySelector('.toast-cyber');
