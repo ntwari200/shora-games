@@ -4,7 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Game Lobby - Shora Games</title>
-    <link rel="icon" type="image/png" href="/assets/icons/shora-icon.png">
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -110,6 +112,7 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            cursor: pointer;
         }
 
         .logo i {
@@ -166,6 +169,7 @@
             transition: var(--transition);
             border: 1px solid rgba(255,255,255,0.05);
             background: rgba(255,255,255,0.02);
+            cursor: pointer;
         }
 
         .nav-right .logout-btn:hover {
@@ -207,46 +211,12 @@
             font-size: 0.8rem;
         }
 
-        /* ===== CATEGORY FILTERS ===== */
-        .category-filters {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            overflow-x: auto;
-            padding-bottom: 4px;
-            flex-wrap: wrap;
-        }
-
-        .category-filters .filter-btn {
-            padding: 8px 20px;
-            border-radius: 30px;
-            border: 1px solid rgba(255,255,255,0.08);
-            background: transparent;
-            color: var(--muted);
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 500;
-            font-size: 0.8rem;
-            cursor: pointer;
-            transition: var(--transition);
-            white-space: nowrap;
-        }
-
-        .category-filters .filter-btn:hover {
-            border-color: var(--primary);
-            color: var(--text);
-        }
-
-        .category-filters .filter-btn.active {
-            background: var(--primary);
-            border-color: var(--primary);
-            color: #000;
-        }
-
-        /* ===== GAMES GRID ===== */
+        /* ===== GAMES GRID - SINGLE GAME FOCUS ===== */
         .games-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 16px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
         }
 
         .game-card {
@@ -259,6 +229,9 @@
             text-decoration: none;
             color: var(--text);
             display: block;
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
         }
 
         .game-card:hover {
@@ -268,11 +241,11 @@
         }
 
         .game-card .game-image {
-            height: 140px;
+            height: 200px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 3.5rem;
+            font-size: 4.5rem;
             background: linear-gradient(160deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.03));
             position: relative;
         }
@@ -293,79 +266,113 @@
         }
 
         .game-card .game-image .play-overlay i {
-            font-size: 3rem;
+            font-size: 3.5rem;
             color: var(--primary);
             text-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
         }
 
         .game-card .game-info {
-            padding: 14px 16px;
+            padding: 20px 24px;
+            text-align: center;
         }
 
         .game-card .game-info .game-name {
-            font-weight: 600;
-            font-size: 1rem;
-            margin-bottom: 2px;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.4rem;
+            color: var(--primary);
+            margin-bottom: 4px;
         }
 
         .game-card .game-info .game-category {
-            font-size: 0.65rem;
-            color: var(--primary);
+            font-size: 0.7rem;
+            color: var(--gold);
             text-transform: uppercase;
-            letter-spacing: 1px;
+            letter-spacing: 2px;
+        }
+
+        .game-card .game-info .game-description {
+            font-size: 0.85rem;
+            color: var(--muted);
+            margin: 12px 0 16px;
+            line-height: 1.6;
         }
 
         .game-card .game-info .game-meta {
             display: flex;
-            justify-content: space-between;
-            margin-top: 8px;
-            font-size: 0.7rem;
+            justify-content: center;
+            gap: 24px;
+            font-size: 0.75rem;
             color: var(--muted);
         }
 
         .game-card .game-info .game-meta span {
             display: flex;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
         }
 
         .game-card .game-info .game-meta i {
-            font-size: 0.6rem;
             color: var(--primary);
         }
 
         .game-card .game-info .game-fee {
-            margin-top: 8px;
-            padding: 6px 12px;
+            margin-top: 16px;
+            padding: 8px 20px;
             background: rgba(255, 215, 0, 0.08);
-            border-radius: 8px;
-            font-size: 0.7rem;
+            border-radius: 30px;
+            font-size: 0.8rem;
             color: var(--gold);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 8px;
         }
 
         .game-card .game-info .game-fee i {
-            font-size: 0.6rem;
+            font-size: 0.7rem;
+        }
+
+        .play-btn {
+            margin-top: 20px;
+            padding: 12px 40px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border: none;
+            border-radius: 40px;
+            color: #000;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
         }
 
         /* ===== RESPONSIVE ===== */
-        @media (max-width: 1024px) {
-            .games-grid { grid-template-columns: repeat(3, 1fr); }
-        }
-
         @media (max-width: 768px) {
-            .games-grid { grid-template-columns: repeat(2, 1fr); }
             .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
             .nav-right { justify-content: space-between; }
             .page-header { flex-direction: column; align-items: flex-start; }
+            .game-card .game-image { height: 160px; font-size: 3.5rem; }
+            .game-card .game-info { padding: 16px; }
+            .game-card .game-info .game-name { font-size: 1.2rem; }
+            .game-card .game-info .game-meta { flex-wrap: wrap; gap: 12px; }
         }
 
         @media (max-width: 480px) {
-            .games-grid { grid-template-columns: 1fr; }
             .container { padding: 10px 10px 30px; }
-            .category-filters .filter-btn { font-size: 0.7rem; padding: 6px 14px; }
+            .game-card .game-image { height: 140px; font-size: 3rem; }
+            .game-card .game-info .game-name { font-size: 1rem; }
+            .game-card .game-info .game-description { font-size: 0.75rem; }
+            .game-card .game-info .game-meta { font-size: 0.65rem; gap: 8px; }
+            .play-btn { padding: 10px 30px; font-size: 0.85rem; }
+            .game-card .game-info .game-fee { font-size: 0.7rem; padding: 6px 16px; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -382,7 +389,7 @@
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <div class="nav-row">
-            <div class="logo">
+            <div class="logo" onclick="window.location.href='dashboard.html'">
                 <i class="fas fa-gamepad"></i> SHORA
             </div>
             <div class="nav-right">
@@ -393,9 +400,9 @@
                     <i class="fas fa-coins"></i>
                     <span id="balanceDisplay">0</span> RWF
                 </span>
-                <a href="login.html" class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> Logout
-                </a>
+                <button class="logout-btn" id="logoutBtn">
+                    <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
+                </button>
             </div>
         </div>
     </nav>
@@ -414,22 +421,11 @@
             </div>
         </div>
 
-        <!-- Category Filters -->
-        <div class="category-filters">
-            <button class="filter-btn active" data-category="all">🎯 All Games</button>
-            <button class="filter-btn" data-category="arcade">🕹️ Arcade</button>
-            <button class="filter-btn" data-category="racing">🏎️ Racing</button>
-            <button class="filter-btn" data-category="puzzle">🧩 Puzzle</button>
-            <button class="filter-btn" data-category="strategy">♟️ Strategy</button>
-            <button class="filter-btn" data-category="sports">⚽ Sports</button>
-            <button class="filter-btn" data-category="featured">⭐ Featured</button>
-        </div>
-
-        <!-- Games Grid -->
+        <!-- ===== SINGLE GAME FOCUS ===== -->
         <div class="games-grid">
 
-            <!-- NinjaRun Game Card -->
-            <a href="/games/game-wrapper-ninjarun.html" class="game-card">
+            <!-- Capstone Endless Runner Game Card -->
+            <div class="game-card" id="gameCard">
                 <div class="game-image">
                     🏃
                     <div class="play-overlay">
@@ -437,61 +433,23 @@
                     </div>
                 </div>
                 <div class="game-info">
-                    <div class="game-name">NinjaRun</div>
-                    <div class="game-category">⭐ Featured | Arcade</div>
+                    <div class="game-name">Capstone Endless Runner</div>
+                    <div class="game-category">⭐ Featured Game</div>
+                    <div class="game-description">
+                        Dash, jump, dodge frogs, and collect diamonds in this thrilling 
+                        endless runner adventure! How far can you go?
+                    </div>
                     <div class="game-meta">
-                        <span><i class="fas fa-users"></i> 1,284 players</span>
-                        <span><i class="fas fa-trophy"></i> 200 RWF</span>
+                        <span><i class="fas fa-users"></i> <span id="playerCount">1,284</span> players</span>
+                        <span><i class="fas fa-trophy"></i> <span id="prizePool">200</span> RWF</span>
+                        <span><i class="fas fa-clock"></i> <span id="gameDuration">5</span> min</span>
                     </div>
                     <div class="game-fee">
-                        <i class="fas fa-coins"></i> Entry: 100 RWF
+                        <i class="fas fa-coins"></i> Entry Fee: <span id="entryFee">100</span> RWF
                     </div>
-                </div>
-            </a>
-
-            <!-- More Game Cards (Coming Soon) -->
-            <div class="game-card" style="opacity:0.5;cursor:default;">
-                <div class="game-image">🎮</div>
-                <div class="game-info">
-                    <div class="game-name">More Games</div>
-                    <div class="game-category">Coming Soon</div>
-                    <div class="game-meta">
-                        <span><i class="fas fa-users"></i> 0 players</span>
-                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
-                    </div>
-                    <div class="game-fee">
-                        <i class="fas fa-clock"></i> In Development
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" style="opacity:0.5;cursor:default;">
-                <div class="game-image">🚀</div>
-                <div class="game-info">
-                    <div class="game-name">Coming Soon</div>
-                    <div class="game-category">Arcade</div>
-                    <div class="game-meta">
-                        <span><i class="fas fa-users"></i> 0 players</span>
-                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
-                    </div>
-                    <div class="game-fee">
-                        <i class="fas fa-clock"></i> In Development
-                    </div>
-                </div>
-            </div>
-
-            <div class="game-card" style="opacity:0.5;cursor:default;">
-                <div class="game-image">♟️</div>
-                <div class="game-info">
-                    <div class="game-name">Coming Soon</div>
-                    <div class="game-category">Strategy</div>
-                    <div class="game-meta">
-                        <span><i class="fas fa-users"></i> 0 players</span>
-                        <span><i class="fas fa-trophy"></i> 0 RWF</span>
-                    </div>
-                    <div class="game-fee">
-                        <i class="fas fa-clock"></i> In Development
-                    </div>
+                    <button class="play-btn" onclick="playGame()">
+                        <i class="fas fa-play"></i> Play Now
+                    </button>
                 </div>
             </div>
 
@@ -510,9 +468,17 @@
     </script>
 
     <script type="module">
+        // ========================================
+        // IMPORTS
+        // ========================================
+
         import { initializeApp } from "firebase/app";
         import { getDatabase, ref, onValue, get, child } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
+
+        // ========================================
+        // FIREBASE CONFIG
+        // ========================================
 
         const firebaseConfig = {
             apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
@@ -525,22 +491,156 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
 
+        // ========================================
+        // STATE
+        // ========================================
+
+        let currentUser = null;
+        let userData = { balance: 0, username: 'Player' };
+
+        // ========================================
+        // AUTH STATE
+        // ========================================
+
         onAuthStateChanged(auth, async (user) => {
             if (user) {
-                const snapshot = await get(child(ref(db), `users/${user.uid}`));
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    document.getElementById('navUsername').textContent = data.username || 'Player';
-                    document.getElementById('balanceDisplay').textContent = (data.balance || 0).toLocaleString();
-                }
+                currentUser = user;
+                await loadUserData(user.uid);
+                updateUI();
+                loadGameStats();
             } else {
                 window.location.href = 'login.html';
             }
         });
 
-        console.log('%c🎮 SHORA GAMES - LOBBY', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c🏃 NinjaRun ready!', 'color: #00E676;');
-        console.log('%c📁 Game path: games/ninja run/index.html', 'color: #A7B5C5;');
+        // ========================================
+        // LOAD USER DATA
+        // ========================================
+
+        async function loadUserData(uid) {
+            try {
+                const userRef = ref(db, `users/${uid}`);
+                const snapshot = await get(userRef);
+                if (snapshot.exists()) {
+                    const data = snapshot.val();
+                    userData = {
+                        balance: data.balance || 0,
+                        username: data.username || 'Player',
+                        email: data.email || '',
+                        phone: data.phone || ''
+                    };
+                }
+                document.getElementById('navUsername').textContent = userData.username;
+                document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
+            } catch (error) {
+                console.error('Error loading user data:', error);
+            }
+        }
+
+        // ========================================
+        // UPDATE UI
+        // ========================================
+
+        function updateUI() {
+            document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
+            document.getElementById('navUsername').textContent = userData.username;
+        }
+
+        // ========================================
+        // LOAD GAME STATS (from Neon API)
+        // ========================================
+
+        async function loadGameStats() {
+            try {
+                // Try to get latest tournament stats
+                const response = await fetch('https://shora-games-api.onrender.com/api/tournaments');
+                if (response.ok) {
+                    const tournaments = await response.json();
+                    const liveTournaments = tournaments.filter(t => t.status === 'live');
+                    
+                    if (liveTournaments.length > 0) {
+                        const latest = liveTournaments[0];
+                        document.getElementById('playerCount').textContent = (latest.current_players || 0).toLocaleString();
+                        document.getElementById('prizePool').textContent = (latest.prize_pool || 200).toLocaleString();
+                        document.getElementById('entryFee').textContent = (latest.entry_fee || 100).toLocaleString();
+                        document.getElementById('gameDuration').textContent = latest.duration || 5;
+                    }
+                }
+            } catch (error) {
+                console.log('ℹ️ Using default game stats');
+            }
+        }
+
+        // ========================================
+        // PLAY GAME
+        // ========================================
+
+        window.playGame = function() {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+            
+            // Navigate to the new game wrapper
+            window.location.href = 'game-wrapper-capstone.html';
+        };
+
+        // ========================================
+        // TOAST
+        // ========================================
+
+        function showToast(message, type = 'info') {
+            // Simple toast implementation
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(6,17,31,0.95);
+                backdrop-filter: blur(12px);
+                border: 1px solid ${type === 'error' ? '#FF4D6D' : 'rgba(0,191,255,0.3)'};
+                border-radius: 50px;
+                padding: 10px 24px;
+                color: ${type === 'error' ? '#FF4D6D' : '#00BFFF'};
+                font-size: 0.85rem;
+                z-index: 9999;
+                max-width: 90%;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                animation: slideUp 0.3s ease;
+                font-family: 'Inter', sans-serif;
+            `;
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.5s ease';
+                setTimeout(() => toast.remove(), 500);
+            }, 3000);
+        }
+
+        // ========================================
+        // LOGOUT
+        // ========================================
+
+        document.getElementById('logoutBtn').addEventListener('click', function(e) {
+            e.preventDefault();
+            if (confirm('Are you sure you want to logout?')) {
+                localStorage.removeItem('shora_user');
+                window.location.href = 'login.html';
+            }
+        });
+
+        // ========================================
+        // CONSOLE
+        // ========================================
+
+        console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
+        console.log('%c🏃 Capstone Endless Runner - Ready to play!', 'color: #00E676;');
+        console.log('%c📁 Game path: game-wrapper-capstone.html', 'color: #A7B5C5;');
+        console.log('%c👤 User:', userData.username, '| Balance:', userData.balance, 'RWF', 'color: #FFD700;');
+
+        window.showToast = showToast;
     </script>
 
 </body>
