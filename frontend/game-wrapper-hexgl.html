@@ -1,652 +1,470 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Game Lobby - Shora Games</title>
     <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <meta name="theme-color" content="#06111F">
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HexGL - Shora Games</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        :root {
-            --bg: #06111F;
-            --bg2: #0B1F36;
-            --primary: #00BFFF;
-            --secondary: #6C63FF;
-            --success: #00E676;
-            --danger: #FF4D6D;
-            --gold: #FFD700;
-            --text: #F5F7FA;
-            --muted: #A7B5C5;
-            --shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-            --radius: 16px;
-            --transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-        }
-
+        /* ===== ALL STYLES ===== */
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        body {
-            font-family: 'Inter', 'Space Grotesk', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .bg-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .bg-layer::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0D1B2A 100%);
-        }
-
-        .bg-layer::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
+        html, body {
             width: 100%;
             height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: glowPulse 8s ease-in-out infinite;
+            overflow: hidden;
+            background: #06111F;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            padding: 0;
+            position: fixed;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+        #gameWrapper {
+            width: 100%;
+            height: 100vh;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            background: #000;
+            position: relative;
+            overflow: hidden;
         }
 
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
-        }
+        /* ============================================================
+           LOADING OVERLAY - SHORA STYLE
+           ============================================================ */
 
-        .grid-overlay {
+        #loadingOverlay {
             position: fixed;
             inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        /* ===== NAVBAR ===== */
-        .navbar {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: rgba(6, 17, 31, 0.85);
-            backdrop-filter: blur(16px);
-            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
-            padding: 10px 0;
-        }
-
-        .nav-row {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 0 16px;
+            background: #06111F;
             display: flex;
+            flex-direction: column;
             align-items: center;
-            justify-content: space-between;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .logo {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-        }
-
-        .logo i {
-            font-size: 1.4rem;
-            -webkit-text-fill-color: var(--primary);
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .nav-right .balance-display {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: var(--success);
-            font-size: 0.95rem;
-            background: rgba(0, 230, 118, 0.05);
-            padding: 4px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 230, 118, 0.1);
-        }
-
-        .nav-right .balance-display i {
-            font-size: 0.9rem;
-            color: var(--gold);
-        }
-
-        .nav-right .username-display {
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-right .username-display i {
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .nav-right .logout-btn {
-            color: var(--muted);
-            text-decoration: none;
-            font-size: 0.75rem;
-            padding: 6px 14px;
-            border-radius: 8px;
-            transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.02);
-            cursor: pointer;
-        }
-
-        .nav-right .logout-btn:hover {
-            background: rgba(255, 77, 109, 0.1);
-            border-color: var(--danger);
-            color: var(--danger);
-        }
-
-        /* ===== CONTAINER ===== */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 16px 16px 40px;
-            position: relative;
-            z-index: 2;
-        }
-
-        /* ===== HEADER ===== */
-        .page-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 24px;
-            flex-wrap: wrap;
-            gap: 12px;
-        }
-
-        .page-header h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
-        }
-
-        .page-header h1 span {
-            color: var(--primary);
-        }
-
-        .page-header .sub {
-            color: var(--muted);
-            font-size: 0.8rem;
-        }
-
-        /* ===== GAMES GRID - SINGLE GAME FOCUS ===== */
-        .games-grid {
-            display: flex;
             justify-content: center;
-            align-items: center;
-            min-height: 400px;
-        }
-
-        .game-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.05);
-            border-radius: var(--radius);
+            z-index: 1000;
+            transition: opacity 0.8s ease, transform 0.8s ease;
+            background: radial-gradient(circle at center, #0d1f3c, #081120, #020305);
             overflow: hidden;
-            transition: var(--transition);
-            cursor: pointer;
-            text-decoration: none;
-            color: var(--text);
-            display: block;
-            max-width: 420px;
-            width: 100%;
-            margin: 0 auto;
         }
 
-        .game-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.1);
-        }
-
-        .game-card .game-image {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4.5rem;
-            background: linear-gradient(160deg, rgba(255, 107, 107, 0.15), rgba(255, 200, 87, 0.05));
-            position: relative;
-        }
-
-        .game-card .game-image .play-overlay {
+        #loadingOverlay::before {
+            content: '';
             position: absolute;
             inset: 0;
-            background: rgba(6, 17, 31, 0.7);
+            background-image: 
+                radial-gradient(2px 2px at 20% 30%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(2px 2px at 40% 70%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(2px 2px at 60% 20%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(2px 2px at 80% 80%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 10% 50%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 50% 40%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 70% 60%, rgba(255,255,255,0.4), transparent),
+                radial-gradient(1px 1px at 90% 30%, rgba(255,255,255,0.3), transparent),
+                radial-gradient(1px 1px at 30% 90%, rgba(255,255,255,0.2), transparent),
+                radial-gradient(1px 1px at 55% 10%, rgba(255,255,255,0.3), transparent);
+            background-size: 200px 200px;
+            opacity: 0.6;
+            animation: starFloat 20s linear infinite;
+            pointer-events: none;
+        }
+
+        @keyframes starFloat {
+            0% { transform: translateY(0) scale(1); }
+            50% { transform: translateY(-50px) scale(1.05); }
+            100% { transform: translateY(0) scale(1); }
+        }
+
+        #loadingOverlay::after {
+            content: '';
+            position: absolute;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(0, 180, 255, 0.06), transparent 70%);
+            border-radius: 50%;
+            animation: orbFloat 8s ease-in-out infinite;
+            pointer-events: none;
+        }
+
+        @keyframes orbFloat {
+            0%, 100% { transform: translate(-50%, -50%) scale(1); opacity: 0.5; }
+            50% { transform: translate(-50%, -50%) scale(1.3); opacity: 0.8; }
+        }
+
+        #loadingOverlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: scale(1.05);
+        }
+
+        /* ===== LOADING CONTENT ===== */
+        .loading-content {
+            position: relative;
+            z-index: 2;
             display: flex;
+            flex-direction: column;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
         }
 
-        .game-card:hover .game-image .play-overlay {
-            opacity: 1;
-        }
-
-        .game-card .game-image .play-overlay i {
-            font-size: 3.5rem;
-            color: var(--primary);
-            text-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
-        }
-
-        .game-card .game-info {
-            padding: 20px 24px;
+        .loading-title {
+            font-family: 'Orbitron', monospace;
+            font-size: clamp(2rem, 6vw, 4rem);
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #fff;
+            text-shadow: 0 0 20px #00bfff, 0 0 40px #008cff, 0 0 80px rgba(0, 180, 255, 0.3);
+            animation: titleGlow 3s ease-in-out infinite;
             text-align: center;
         }
 
-        .game-card .game-info .game-name {
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            font-size: 1.4rem;
-            color: var(--primary);
-            margin-bottom: 4px;
+        @keyframes titleGlow {
+            0%, 100% { text-shadow: 0 0 20px #00bfff, 0 0 40px #008cff, 0 0 80px rgba(0,180,255,0.2); }
+            50% { text-shadow: 0 0 30px #00d4ff, 0 0 60px #0099ff, 0 0 100px rgba(0,180,255,0.4); }
         }
 
-        .game-card .game-info .game-category {
-            font-size: 0.7rem;
-            color: var(--gold);
+        .loading-subtitle {
+            margin-top: 6px;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
+            font-weight: 500;
+            letter-spacing: 10px;
+            color: #82d4ff;
             text-transform: uppercase;
-            letter-spacing: 2px;
-        }
-
-        .game-card .game-info .game-description {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin: 12px 0 16px;
-            line-height: 1.6;
-        }
-
-        .game-card .game-info .game-meta {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            font-size: 0.75rem;
-            color: var(--muted);
-        }
-
-        .game-card .game-info .game-meta span {
+            opacity: 0.8;
             display: flex;
             align-items: center;
-            gap: 6px;
+            gap: 12px;
         }
 
-        .game-card .game-info .game-meta i {
-            color: var(--primary);
+        .loading-subtitle i {
+            color: #FFD700;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
         }
 
-        .game-card .game-info .game-fee {
-            margin-top: 16px;
-            padding: 8px 20px;
-            background: rgba(255, 215, 0, 0.08);
-            border-radius: 30px;
-            font-size: 0.8rem;
-            color: var(--gold);
-            display: inline-flex;
+        .loading-powered {
+            margin-top: 30px;
+            font-size: clamp(0.6rem, 1.2vw, 0.8rem);
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: rgba(255, 255, 255, 0.25);
+            display: flex;
             align-items: center;
             gap: 8px;
         }
 
-        .game-card .game-info .game-fee i {
-            font-size: 0.7rem;
+        .loading-powered .tornado-icon {
+            display: inline-block;
+            font-size: 18px;
+            animation: tornadoSpin 3s linear infinite;
         }
 
-        .play-btn {
-            margin-top: 20px;
-            padding: 12px 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
+        @keyframes tornadoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-bar-container {
+            margin-top: 40px;
+            width: clamp(200px, 40vw, 380px);
+            height: 4px;
+            background: rgba(255, 255, 255, 0.04);
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 0 30px rgba(0, 180, 255, 0.05);
+        }
+
+        .loading-bar-container::after {
+            content: '';
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(90deg, transparent, rgba(0, 180, 255, 0.05), transparent);
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        .loading-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #00d4ff, #007bff, #00d4ff);
+            background-size: 200% 100%;
+            animation: load 3.5s cubic-bezier(0.16, 1, 0.3, 1) forwards, loadShine 1.5s ease-in-out infinite;
+            border-radius: 4px;
+            box-shadow: 0 0 20px rgba(0, 180, 255, 0.3);
+        }
+
+        @keyframes load {
+            0% { width: 0%; }
+            100% { width: 100%; }
+        }
+
+        @keyframes loadShine {
+            0% { background-position: 0% 0%; }
+            100% { background-position: 200% 0%; }
+        }
+
+        .loading-text {
+            margin-top: 18px;
+            font-size: clamp(0.6rem, 1.2vw, 0.85rem);
+            font-weight: 300;
+            letter-spacing: 6px;
+            color: rgba(255, 255, 255, 0.3);
+            animation: textPulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes textPulse {
+            0%, 100% { opacity: 0.3; letter-spacing: 6px; }
+            50% { opacity: 0.6; letter-spacing: 8px; }
+        }
+
+        .loading-text .dots {
+            display: inline-block;
+            min-width: 24px;
+        }
+
+        .loading-text .dots span {
+            display: inline-block;
+            animation: dotBounce 1.4s ease-in-out infinite;
+        }
+
+        .loading-text .dots span:nth-child(2) { animation-delay: 0.2s; }
+        .loading-text .dots span:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotBounce {
+            0%, 80%, 100% { transform: scale(0); opacity: 0; }
+            40% { transform: scale(1); opacity: 1; }
+        }
+
+        /* ============================================================
+           GAME FRAME
+           ============================================================ */
+
+        #gameFrame {
+            flex: 1;
+            width: 100%;
             border: none;
-            border-radius: 40px;
-            color: #000;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1rem;
-            cursor: pointer;
-            transition: var(--transition);
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
+            background: #000;
+            min-height: 0;
+            position: relative;
+            display: none;
         }
 
-        .play-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
+        #gameFrame iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
         }
 
-        /* ===== RESPONSIVE ===== */
+        #gameFrame.active {
+            display: block;
+        }
+
+        /* ============================================================
+           RESPONSIVE
+           ============================================================ */
+
         @media (max-width: 768px) {
-            .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
-            .nav-right { justify-content: space-between; }
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .game-card .game-image { height: 160px; font-size: 3.5rem; }
-            .game-card .game-info { padding: 16px; }
-            .game-card .game-info .game-name { font-size: 1.2rem; }
-            .game-card .game-info .game-meta { flex-wrap: wrap; gap: 12px; }
+            .loading-title { font-size: 2.5rem; letter-spacing: 4px; }
+            .loading-subtitle { font-size: 0.9rem; letter-spacing: 6px; }
+            .loading-bar-container { width: 260px; }
         }
 
         @media (max-width: 480px) {
-            .container { padding: 10px 10px 30px; }
-            .game-card .game-image { height: 140px; font-size: 3rem; }
-            .game-card .game-info .game-name { font-size: 1rem; }
-            .game-card .game-info .game-description { font-size: 0.75rem; }
-            .game-card .game-info .game-meta { font-size: 0.65rem; gap: 8px; }
-            .play-btn { padding: 10px 30px; font-size: 0.85rem; }
-            .game-card .game-info .game-fee { font-size: 0.7rem; padding: 6px 16px; }
+            .loading-title { font-size: 1.8rem; letter-spacing: 3px; }
+            .loading-subtitle { font-size: 0.7rem; letter-spacing: 4px; }
+            .loading-bar-container { width: 200px; height: 3px; }
+            .loading-text { font-size: 0.6rem; letter-spacing: 4px; }
+            .loading-powered { font-size: 0.5rem; letter-spacing: 2px; }
         }
-
-        ::-webkit-scrollbar { width: 4px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(0, 191, 255, 0.3); border-radius: 2px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(0, 191, 255, 0.5); }
     </style>
 </head>
 <body>
 
-    <div class="bg-layer"></div>
-    <div class="grid-overlay"></div>
+    <!-- ============================================================
+    LOADING OVERLAY - SHORA STYLE
+    ============================================================ -->
 
-    <!-- ===== NAVBAR ===== -->
-    <nav class="navbar">
-        <div class="nav-row">
-            <div class="logo" onclick="window.location.href='dashboard.html'">
-                <i class="fas fa-gamepad"></i> SHORA
+    <div id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-title">SHORA GAMES</div>
+            <div class="loading-subtitle" id="gameSubtitle">
+                <i class="fas fa-racing-flag"></i>
+                HEXGL
+                <i class="fas fa-racing-flag"></i>
             </div>
-            <div class="nav-right">
-                <span class="username-display" id="usernameDisplay">
-                    <i class="fas fa-user"></i> <span id="navUsername">Player</span>
-                </span>
-                <span class="balance-display">
-                    <i class="fas fa-coins"></i>
-                    <span id="balanceDisplay">0</span> RWF
-                </span>
-                <button class="logout-btn" id="logoutBtn">
-                    <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
-                </button>
+            
+            <div class="loading-bar-container">
+                <div class="loading-bar" id="progressBar"></div>
             </div>
-        </div>
-    </nav>
-
-    <!-- ===== MAIN CONTENT ===== -->
-    <div class="container">
-
-        <!-- Page Header -->
-        <div class="page-header">
-            <div>
-                <h1>🎮 <span>Game Lobby</span></h1>
-                <div class="sub">Choose a game to play and start winning!</div>
+            
+            <div class="loading-text">
+                LOADING<span class="dots"><span>.</span><span>.</span><span>.</span></span>
             </div>
-            <div style="font-size:0.8rem;color:var(--muted);">
-                <i class="fas fa-users"></i> <span id="onlinePlayers">0</span> players online
+            
+            <div class="loading-powered">
+                <span class="tornado-icon">🌪️</span>
+                <span>|</span>
+                <span>POWERED BY TORNADO</span>
             </div>
-        </div>
-
-        <!-- ===== SINGLE GAME FOCUS ===== -->
-        <div class="games-grid">
-
-            <!-- ✅ HEXGL - Game Card -->
-            <div class="game-card" id="gameCard">
-                <div class="game-image">
-                    🏎️
-                    <div class="play-overlay">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
-                </div>
-                <div class="game-info">
-                    <div class="game-name">HexGL</div>
-                    <div class="game-category">⭐ Featured Game | Racing</div>
-                    <div class="game-description">
-                        Experience futuristic high-speed racing in HexGL! 
-                        Drift through neon tracks, dodge traffic, and set the fastest lap time 
-                        in this adrenaline-pumping 3D racing game.
-                    </div>
-                    <div class="game-meta">
-                        <span><i class="fas fa-users"></i> <span id="playerCount">856</span> players</span>
-                        <span><i class="fas fa-trophy"></i> <span id="prizePool">500</span> RWF</span>
-                        <span><i class="fas fa-clock"></i> <span id="gameDuration">5</span> min</span>
-                    </div>
-                    <div class="game-fee">
-                        <i class="fas fa-coins"></i> Entry Fee: <span id="entryFee">200</span> RWF
-                    </div>
-                    <button class="play-btn" onclick="playGame()">
-                        <i class="fas fa-play"></i> Play Now
-                    </button>
-                </div>
-            </div>
-
         </div>
     </div>
 
-    <!-- ===== FIREBASE IMPORTS ===== -->
-    <script type="importmap">
-        {
-            "imports": {
-                "firebase/app": "https://www.gstatic.com/firebasejs/10.10.0/firebase-app.js",
-                "firebase/database": "https://www.gstatic.com/firebasejs/10.10.0/firebase-database.js",
-                "firebase/auth": "https://www.gstatic.com/firebasejs/10.10.0/firebase-auth.js"
-            }
-        }
-    </script>
+    <!-- ============================================================
+    GAME FRAME
+    ============================================================ -->
 
-    <script type="module">
-        // ========================================
-        // IMPORTS
-        // ========================================
+    <div id="gameWrapper">
+        <div id="gameFrame">
+            <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups" allowfullscreen></iframe>
+        </div>
+    </div>
 
-        import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, child } from "firebase/database";
-        import { getAuth, onAuthStateChanged } from "firebase/auth";
+    <!-- ============================================================
+    JAVASCRIPT
+    ============================================================ -->
 
-        // ========================================
-        // FIREBASE CONFIG
-        // ========================================
+    <script>
+        // ============================================================
+        // CONFIG
+        // ============================================================
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyDTcM9aUFhOpJTdQTSZAF_1XMEt6GL48Hs",
-            authDomain: "shora-games.firebaseapp.com",
-            projectId: "shora-games",
-            databaseURL: "https://shora-games-default-rtdb.firebaseio.com/"
-        };
+        // Game name
+        const GAME_NAME = 'HexGL';
 
-        const app = initializeApp(firebaseConfig);
-        const db = getDatabase(app);
-        const auth = getAuth(app);
+        // Game path - update this to where your HexGL index.html is located
+        const GAME_URL = 'games/hexgl/index.html';
 
-        // ========================================
-        // STATE
-        // ========================================
+        // Get parameters from URL
+        const params = new URLSearchParams(window.location.search);
+        const DEMO_MODE = params.get('demo') === 'true';
 
-        let currentUser = null;
-        let userData = { balance: 0, username: 'Player' };
+        console.log('🏎️ Game:', GAME_NAME);
+        console.log('🎯 Mode:', DEMO_MODE ? 'DEMO' : 'NORMAL');
+        console.log('📁 Game Path:', GAME_URL);
 
-        // ========================================
-        // AUTH STATE
-        // ========================================
+        // ============================================================
+        // LOAD GAME
+        // ============================================================
 
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                await loadUserData(user.uid);
-                updateUI();
-                loadGameStats();
-            } else {
-                window.location.href = 'login.html';
-            }
-        });
+        function loadGame() {
+            const frame = document.getElementById('gameIframe');
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            const progressBar = document.getElementById('progressBar');
 
-        // ========================================
-        // LOAD USER DATA
-        // ========================================
+            // Update subtitle with game name
+            document.getElementById('gameSubtitle').textContent = GAME_NAME;
 
-        async function loadUserData(uid) {
-            try {
-                const userRef = ref(db, `users/${uid}`);
-                const snapshot = await get(userRef);
-                if (snapshot.exists()) {
-                    const data = snapshot.val();
-                    userData = {
-                        balance: data.balance || 0,
-                        username: data.username || 'Player',
-                        email: data.email || '',
-                        phone: data.phone || ''
-                    };
-                }
-                document.getElementById('navUsername').textContent = userData.username;
-                document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
-            } catch (error) {
-                console.error('Error loading user data:', error);
-            }
-        }
+            // Load the game
+            const timestamp = Date.now();
+            const gameUrl = GAME_URL + '?demo=' + DEMO_MODE + '&t=' + timestamp;
+            
+            console.log('📁 Loading game from:', gameUrl);
+            frame.src = gameUrl;
 
-        // ========================================
-        // UPDATE UI
-        // ========================================
+            // Simulate loading progress
+            let progress = 0;
+            
+            const progressInterval = setInterval(function() {
+                progress += Math.random() * 8 + 2;
+                if (progress > 95) progress = 95;
+                progressBar.style.width = progress + '%';
+            }, 200);
 
-        function updateUI() {
-            document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
-            document.getElementById('navUsername').textContent = userData.username;
-        }
-
-        // ========================================
-        // LOAD GAME STATS (from Neon API)
-        // ========================================
-
-        async function loadGameStats() {
-            try {
-                const response = await fetch('https://shora-games-api.onrender.com/api/tournaments');
-                if (response.ok) {
-                    const tournaments = await response.json();
-                    const liveTournaments = tournaments.filter(t => t.status === 'live');
-                    
-                    if (liveTournaments.length > 0) {
-                        const latest = liveTournaments[0];
-                        document.getElementById('playerCount').textContent = (latest.current_players || 856).toLocaleString();
-                        document.getElementById('prizePool').textContent = (latest.prize_pool || 500).toLocaleString();
-                        document.getElementById('entryFee').textContent = (latest.entry_fee || 200).toLocaleString();
-                        document.getElementById('gameDuration').textContent = latest.duration || 5;
+            // Check when game is loaded
+            const loadCheck = setInterval(function() {
+                try {
+                    const frameDoc = frame.contentDocument || frame.contentWindow?.document;
+                    if (frameDoc) {
+                        // Check if game content is loaded
+                        const bodyContent = frameDoc.body?.innerHTML || '';
+                        if (bodyContent.length > 100) {
+                            clearInterval(progressInterval);
+                            clearInterval(loadCheck);
+                            progressBar.style.width = '100%';
+                            
+                            // Wait a moment then show the game
+                            setTimeout(function() {
+                                loadingOverlay.classList.add('hidden');
+                                document.getElementById('gameFrame').classList.add('active');
+                                console.log('✅ HexGL loaded successfully!');
+                            }, 500);
+                            return;
+                        }
                     }
+                } catch (e) {
+                    // Still loading or cross-origin
                 }
-            } catch (error) {
-                console.log('ℹ️ Using default game stats');
-            }
+            }, 300);
+
+            // Fallback: if game doesn't load in 10 seconds, show anyway
+            setTimeout(function() {
+                if (!loadingOverlay.classList.contains('hidden')) {
+                    clearInterval(progressInterval);
+                    clearInterval(loadCheck);
+                    progressBar.style.width = '100%';
+                    
+                    setTimeout(function() {
+                        loadingOverlay.classList.add('hidden');
+                        document.getElementById('gameFrame').classList.add('active');
+                        console.log('⏰ Game load timeout - showing anyway');
+                    }, 500);
+                }
+            }, 10000);
         }
 
-        // ========================================
-        // PLAY GAME - LAUNCH HEXGL (FIXED PATH)
-        // ========================================
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
 
-       // ========================================
-// PLAY GAME - LAUNCH HEXGL
-// ========================================
-
-// ========================================
-// PLAY GAME - LAUNCH HEXGL
-// ========================================
-
-window.playGame = function() {
-    if (!currentUser) {
-        showToast('Please login first', 'error');
-        return;
-    }
-    
-    // ✅ Navigate to HexGL game wrapper (same folder)
-    window.location.href = 'game-wrapper-hexgl.html';
-};
-        // ========================================
-        // TOAST
-        // ========================================
-
-        function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(6,17,31,0.95);
-                backdrop-filter: blur(12px);
-                border: 1px solid ${type === 'error' ? '#FF4D6D' : 'rgba(0,191,255,0.3)'};
-                border-radius: 50px;
-                padding: 10px 24px;
-                color: ${type === 'error' ? '#FF4D6D' : '#00BFFF'};
-                font-size: 0.85rem;
-                z-index: 9999;
-                max-width: 90%;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                animation: slideUp 0.3s ease;
-                font-family: 'Inter', sans-serif;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
-        }
-
-        // ========================================
-        // LOGOUT
-        // ========================================
-
-        document.getElementById('logoutBtn').addEventListener('click', function(e) {
-            e.preventDefault();
-            if (confirm('Are you sure you want to logout?')) {
-                localStorage.removeItem('shora_user');
-                window.location.href = 'login.html';
+        document.addEventListener('keydown', function(e) {
+            // ESC = Go back to lobby
+            if (e.key === 'Escape') {
+                window.location.href = '/game-lobby.html';
             }
         });
 
-        // ========================================
-        // CONSOLE
-        // ========================================
+        // ============================================================
+        // PREVENT SCROLLING
+        // ============================================================
 
-        console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c🏎️ HexGL - Ready to race!', 'color: #FFD700; font-size: 14px;');
-        console.log('%c📁 Game path: /game-wrapper-hexgl.html', 'color: #A7B5C5;');
-        console.log('%c👤 User:', userData.username, '| Balance:', userData.balance, 'RWF', 'color: #FFD700;');
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
-        window.showToast = showToast;
+        // ============================================================
+        // INIT
+        // ============================================================
+
+        loadGame();
+
+        console.log('');
+        console.log('🏎️ ===========================================');
+        console.log('🏎️', GAME_NAME, '- GAME WRAPPER');
+        console.log('🏎️ ===========================================');
+        console.log('🎯 Mode:', DEMO_MODE ? 'DEMO' : 'NORMAL');
+        console.log('📁 Game Path:', GAME_URL);
+        console.log('✅ Loader: Professional Shora style');
+        console.log('🌪️ Powered by Tornado');
+        console.log('===========================================');
     </script>
 
 </body>
