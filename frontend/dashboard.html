@@ -236,11 +236,8 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            border: 1px dashed rgba(255, 215, 0, 0.15);
-            color: var(--muted);
-            font-size: 0.7rem;
-            transition: var(--transition);
             overflow: hidden;
+            transition: var(--transition);
         }
 
         .ad-card .ad-image img {
@@ -256,12 +253,16 @@
             background: transparent;
         }
 
-        .ad-card .ad-image.has-image i,
-        .ad-card .ad-image.has-image span {
-            display: none;
+        .ad-card .ad-image .placeholder {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted);
+            font-size: 0.7rem;
         }
 
-        .ad-card .ad-image i {
+        .ad-card .ad-image .placeholder i {
             font-size: 2.5rem;
             color: var(--gold);
             opacity: 0.4;
@@ -379,7 +380,6 @@
             .toast-cyber { font-size: 0.7rem; padding: 8px 16px; bottom: 10px; }
             .ad-card .ad-content { padding: 12px 14px; gap: 10px; }
             .ad-card .ad-image { height: 60px; }
-            .ad-card .ad-image i { font-size: 1.8rem; }
             .ad-card .ad-text h3 { font-size: 0.8rem; }
             .ad-card .ad-text p { font-size: 0.7rem; }
         }
@@ -521,8 +521,7 @@
                 <div class="ad-badge">📢 SPONSORED</div>
                 <div class="ad-content">
                     <div class="ad-image" id="adImage">
-                        <i class="fas fa-image"></i>
-                        <span>Loading advertisement...</span>
+                        <!-- Advertisement image will load here -->
                     </div>
                     <div class="ad-text">
                         <h3 id="adTitle">🎮 Play & Win Big!</h3>
@@ -651,6 +650,12 @@
         let isMaintenanceActive = false;
 
         // ========================================
+        // ADVERTISEMENT IMAGE URL (GITHUB)
+        // ========================================
+
+        const ADVERTISEMENT_IMAGE_URL = 'https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/ChatGPT%20Image%20Aug%2010%2C%202026%2C%2001_32_13%20PM.png';
+
+        // ========================================
         // MAINTENANCE MODE CHECK
         // ========================================
 
@@ -683,7 +688,7 @@
                 updateUI();
                 startBalanceAnimation();
                 checkMaintenanceMode();
-                loadAdvertisementImage(); // ✅ Load ad image from shared location
+                loadAdvertisementImage(); // ✅ Load ad image
             } else {
                 window.location.href = 'login.html';
             }
@@ -742,39 +747,22 @@
         }
 
         // ========================================
-        // LOAD ADVERTISEMENT IMAGE FROM SHARED LOCATION
+        // LOAD ADVERTISEMENT IMAGE
         // ========================================
 
         function loadAdvertisementImage() {
-            try {
-                const adRef = ref(db, 'settings/advertisement');
-                onValue(adRef, (snapshot) => {
-                    const data = snapshot.val();
-                    const adImage = document.querySelector('.ad-image');
-                    
-                    if (!adImage) return;
-                    
-                    if (data && data.image) {
-                        adImage.innerHTML = `<img src="${data.image}" alt="Advertisement" style="width:100%; height:100%; object-fit:cover; border-radius:8px;">`;
-                        adImage.style.border = 'none';
-                        adImage.style.padding = '0';
-                        adImage.style.background = 'transparent';
-                        adImage.classList.add('has-image');
-                        console.log('🖼️ Advertisement image loaded from shared location');
-                    } else {
-                        adImage.innerHTML = `
-                            <i class="fas fa-image" style="font-size:2.5rem; color:var(--gold); opacity:0.4; margin-bottom:6px;"></i>
-                            <span style="color:var(--muted); font-size:0.7rem;">No Advertisement</span>
-                        `;
-                        adImage.style.border = '1px dashed rgba(255, 215, 0, 0.15)';
-                        adImage.style.padding = '20px';
-                        adImage.style.background = 'linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.05))';
-                        adImage.classList.remove('has-image');
-                    }
-                });
-            } catch (error) {
-                console.error('Error loading advertisement image:', error);
-            }
+            const adImage = document.querySelector('.ad-image');
+            if (!adImage) return;
+            
+            // ✅ Use the GitHub image URL
+            adImage.innerHTML = `
+                <img src="${ADVERTISEMENT_IMAGE_URL}" 
+                     alt="Advertisement" 
+                     style="width:100%; height:100%; object-fit:cover; border-radius:8px;"
+                     onerror="this.parentElement.innerHTML='<div class=\\'placeholder\\'><i class=\\'fas fa-image\\'></i><span>Ad image not found</span></div>'">
+            `;
+            adImage.classList.add('has-image');
+            console.log('🖼️ Advertisement image loaded from GitHub');
         }
 
         // ========================================
@@ -996,7 +984,7 @@
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
         console.log('%c💰 Balance only - Clean dashboard', 'color: #FFD700;');
-        console.log('%c📢 Advertisement card loaded from shared location', 'color: #00BFFF;');
+        console.log('%c🖼️ Advertisement image loaded from GitHub', 'color: #00BFFF;');
     </script>
 
 </body>
