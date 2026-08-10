@@ -573,18 +573,16 @@
 
         // ========================================
         // PLAY GAME - LAUNCH HEXGL
-        // ========================================
-
-        window.playGame = function() {
-            if (!currentUser) {
-                showToast('Please login first', 'error');
-                return;
-            }
-            
-            // ✅ Navigate to HexGL game wrapper
-            window.location.href = 'games/game-wrapper-hexgl.html';
-        };
-
+      
+window.playGame = function() {
+    if (!currentUser) {
+        showToast('Please login first', 'error');
+        return;
+    }
+    
+    // ✅ Navigate to HexGL game wrapper (same folder)
+    window.location.href = 'game-wrapper-hexgl.html';
+};
         // ========================================
         // TOAST
         // ========================================
