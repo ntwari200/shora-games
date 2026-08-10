@@ -195,111 +195,206 @@
         .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
 
         /* ===== ADVERTISEMENT CARD ===== */
-        .ad-card {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: var(--radius);
-            overflow: hidden;
-            transition: var(--transition);
-            position: relative;
-        }
+       /* ===== ADVERTISEMENT CARD - LARGER & RESPONSIVE ===== */
+.ad-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: var(--transition);
+    position: relative;
+    min-height: 200px;
+}
 
-        .ad-card:hover {
-            border-color: var(--gold);
-            transform: translateY(-2px);
-            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.05);
-        }
+.ad-card:hover {
+    border-color: var(--gold);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 40px rgba(255, 215, 0, 0.05);
+}
 
-        .ad-card .ad-content {
-            display: grid;
-            grid-template-columns: 1fr 2fr;
-            gap: 16px;
-            padding: 16px 20px;
-            align-items: center;
-        }
+.ad-card .ad-content {
+    display: grid;
+    grid-template-columns: 1fr 1.5fr;
+    gap: 20px;
+    padding: 20px 24px;
+    align-items: center;
+}
 
-        .ad-card .ad-badge {
-            position: absolute;
-            top: 10px;
-            right: 14px;
-            font-size: 0.55rem;
-            color: rgba(255, 215, 0, 0.4);
-            letter-spacing: 2px;
-            font-weight: 600;
-        }
+.ad-card .ad-badge {
+    position: absolute;
+    top: 12px;
+    right: 16px;
+    font-size: 0.6rem;
+    color: rgba(255, 215, 0, 0.5);
+    letter-spacing: 2px;
+    font-weight: 600;
+    background: rgba(0,0,0,0.3);
+    padding: 4px 12px;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 215, 0, 0.1);
+}
 
-        .ad-card .ad-image {
-            background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.05));
-            border-radius: 12px;
-            height: 120px;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            transition: var(--transition);
-        }
+.ad-card .ad-image {
+    background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.05));
+    border-radius: 12px;
+    height: 200px;
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    transition: var(--transition);
+    border: 1px solid rgba(255, 215, 0, 0.08);
+}
 
-        .ad-card .ad-image img {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-            border-radius: 8px;
-        }
+.ad-card .ad-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
 
-        .ad-card .ad-image.has-image {
-            border: none;
-            padding: 0;
-            background: transparent;
-        }
+.ad-card .ad-image.has-image {
+    border: none;
+    padding: 0;
+    background: transparent;
+}
 
-        .ad-card .ad-image .placeholder {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            color: var(--muted);
-            font-size: 0.7rem;
-        }
+.ad-card .ad-image .placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    font-size: 0.8rem;
+}
 
-        .ad-card .ad-image .placeholder i {
-            font-size: 2.5rem;
-            color: var(--gold);
-            opacity: 0.4;
-            margin-bottom: 6px;
-        }
+.ad-card .ad-image .placeholder i {
+    font-size: 3rem;
+    color: var(--gold);
+    opacity: 0.4;
+    margin-bottom: 8px;
+}
 
-        .ad-card .ad-text h3 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1rem;
-            color: var(--gold);
-            margin-bottom: 4px;
-        }
+.ad-card .ad-text h3 {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.2rem;
+    color: var(--gold);
+    margin-bottom: 6px;
+}
 
-        .ad-card .ad-text p {
-            font-size: 0.8rem;
-            color: var(--muted);
-            margin-bottom: 10px;
-        }
+.ad-card .ad-text p {
+    font-size: 0.9rem;
+    color: var(--muted);
+    margin-bottom: 12px;
+    line-height: 1.5;
+}
 
-        .ad-card .btn-ad {
-            padding: 6px 18px;
-            border: none;
-            border-radius: 30px;
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 600;
-            font-size: 0.7rem;
-            cursor: pointer;
-            transition: var(--transition);
-            background: linear-gradient(135deg, var(--gold), #FFA000);
-            color: #000;
-        }
+.ad-card .btn-ad {
+    padding: 10px 24px;
+    border: none;
+    border-radius: 30px;
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 600;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: var(--transition);
+    background: linear-gradient(135deg, var(--gold), #FFA000);
+    color: #000;
+}
 
-        .ad-card .btn-ad:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
-        }
+.ad-card .btn-ad:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
 
+/* ===== RESPONSIVE AD CARD ===== */
+@media (max-width: 768px) {
+    .ad-card .ad-content {
+        grid-template-columns: 1fr;
+        text-align: center;
+        padding: 16px 18px;
+        gap: 14px;
+    }
+    
+    .ad-card .ad-image {
+        height: 160px;
+        min-height: 140px;
+        width: 100%;
+        max-width: 400px;
+        margin: 0 auto;
+    }
+    
+    .ad-card .ad-badge {
+        top: 8px;
+        right: 10px;
+        font-size: 0.5rem;
+        padding: 3px 10px;
+    }
+    
+    .ad-card .ad-text h3 {
+        font-size: 1rem;
+    }
+    
+    .ad-card .ad-text p {
+        font-size: 0.8rem;
+    }
+    
+    .ad-card .btn-ad {
+        font-size: 0.7rem;
+        padding: 8px 20px;
+    }
+}
+
+@media (max-width: 480px) {
+    .ad-card .ad-content {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+    
+    .ad-card .ad-image {
+        height: 130px;
+        min-height: 110px;
+        border-radius: 8px;
+    }
+    
+    .ad-card .ad-text h3 {
+        font-size: 0.85rem;
+    }
+    
+    .ad-card .ad-text p {
+        font-size: 0.7rem;
+        margin-bottom: 8px;
+    }
+    
+    .ad-card .btn-ad {
+        font-size: 0.65rem;
+        padding: 6px 16px;
+    }
+    
+    .ad-card .ad-badge {
+        font-size: 0.4rem;
+        padding: 2px 8px;
+        top: 6px;
+        right: 8px;
+    }
+}
+
+@media (max-width: 360px) {
+    .ad-card .ad-image {
+        height: 100px;
+        min-height: 90px;
+    }
+    
+    .ad-card .ad-text h3 {
+        font-size: 0.75rem;
+    }
+    
+    .ad-card .ad-text p {
+        font-size: 0.65rem;
+    }
+}
         /* ===== SIDEBAR ===== */
         .sidebar { display: flex; flex-direction: column; gap: 12px; }
 
