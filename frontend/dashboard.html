@@ -67,7 +67,7 @@
             flex-wrap: wrap;
         }
 
-        .logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 8px; }
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 8px; cursor: pointer; }
         .logo i { font-size: 1.4rem; -webkit-text-fill-color: var(--primary); }
 
         .nav-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
@@ -75,7 +75,7 @@
         .nav-right .balance-display i { font-size: 0.9rem; color: var(--gold); }
         .nav-right .username-display { color: var(--text); font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
         .nav-right .username-display i { color: var(--primary); font-size: 0.9rem; }
-        .nav-right .logout-btn { color: var(--muted); text-decoration: none; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); }
+        .nav-right .logout-btn { color: var(--muted); text-decoration: none; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); cursor: pointer; }
         .nav-right .logout-btn:hover { background: rgba(255, 77, 109, 0.1); border-color: var(--danger); color: var(--danger); }
 
         /* ===== USER NAVIGATION ===== */
@@ -168,20 +168,16 @@
         .profile-card .status-badge.blocked { background: rgba(255, 77, 109, 0.1); color: var(--danger); border-color: rgba(255, 77, 109, 0.2); }
         .profile-card .status-badge.pending { background: rgba(255, 200, 87, 0.1); color: var(--gold); border-color: rgba(255, 200, 87, 0.2); }
 
-        /* ===== STATS CARDS ===== */
-        .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 16px; }
-        .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius); padding: 14px 16px; transition: var(--transition); }
+        /* ===== STATS - ONLY BALANCE ===== */
+        .stats-grid { display: grid; grid-template-columns: 1fr; gap: 12px; margin-bottom: 16px; }
+        .stat-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius); padding: 20px; text-align: center; transition: var(--transition); }
         .stat-card:hover { border-color: rgba(0, 191, 255, 0.3); transform: translateY(-2px); }
-        .stat-card .stat-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
-        .stat-card .stat-number { font-family: 'Orbitron', monospace; font-size: 1.5rem; font-weight: 700; color: var(--text); margin-top: 2px; }
+        .stat-card .stat-label { font-size: 0.7rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; font-weight: 600; }
+        .stat-card .stat-number { font-family: 'Orbitron', monospace; font-size: 2.5rem; font-weight: 700; color: var(--text); margin-top: 2px; }
         .stat-card .stat-number.green { color: var(--success); }
-        .stat-card .stat-number.gold { color: var(--gold); }
-        .stat-card .stat-number.blue { color: var(--primary); }
-        .stat-card .stat-number.red { color: var(--danger); }
-        .stat-card .stat-icon { float: right; font-size: 1.2rem; opacity: 0.3; }
-        .stat-card .stat-change { font-size: 0.6rem; display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; margin-top: 2px; }
+        .stat-card .stat-icon { display: block; font-size: 2rem; opacity: 0.5; margin-bottom: 4px; }
+        .stat-card .stat-change { font-size: 0.65rem; display: inline-flex; align-items: center; gap: 4px; padding: 2px 12px; border-radius: 20px; margin-top: 4px; }
         .stat-card .stat-change.up { color: var(--success); background: rgba(0, 230, 118, 0.1); }
-        .stat-card .stat-change.down { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
 
         /* ===== QUICK ACTIONS ===== */
         .quick-actions { display: flex; gap: 10px; margin-bottom: 16px; flex-wrap: wrap; }
@@ -194,50 +190,103 @@
         .btn-games:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 191, 255, 0.3); }
         .btn-tournaments { background: linear-gradient(135deg, var(--gold), #FFA000); color: #000; }
         .btn-tournaments:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
-        .btn-history { background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); color: var(--text); }
-        .btn-history:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
 
         /* ===== MAIN GRID ===== */
         .main-grid { display: grid; grid-template-columns: 2fr 1fr; gap: 16px; }
 
-        /* ===== TRANSACTIONS TABLE ===== */
-        .table-container { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius); overflow: hidden; }
-        .table-container .header { padding: 12px 16px; border-bottom: 1px solid rgba(255, 255, 255, 0.05); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
-        .table-container .header h3 { font-family: 'Orbitron', monospace; font-size: 0.85rem; }
-        .table-container .header .view-all { color: var(--muted); font-size: 0.7rem; text-decoration: none; transition: var(--transition); cursor: pointer; }
-        .table-container .header .view-all:hover { color: var(--primary); }
+        /* ===== ADVERTISEMENT CARD ===== */
+        .ad-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: var(--transition);
+            position: relative;
+        }
 
-        table { width: 100%; border-collapse: collapse; font-size: 0.8rem; }
-        table thead { background: rgba(255, 255, 255, 0.02); }
-        table th { padding: 8px 12px; text-align: left; font-weight: 600; color: var(--muted); font-size: 0.6rem; text-transform: uppercase; letter-spacing: 1px; }
-        table td { padding: 8px 12px; border-bottom: 1px solid rgba(255, 255, 255, 0.03); }
-        table tbody tr:hover { background: rgba(255, 255, 255, 0.02); }
+        .ad-card:hover {
+            border-color: var(--gold);
+            transform: translateY(-2px);
+            box-shadow: 0 10px 40px rgba(255, 215, 0, 0.05);
+        }
 
-        .tx-type { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.6rem; font-weight: 600; }
-        .tx-type.deposit { color: var(--success); background: rgba(0, 230, 118, 0.1); }
-        .tx-type.withdraw { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
-        .tx-type.game { color: var(--primary); background: rgba(0, 191, 255, 0.1); }
-        .tx-type.win { color: var(--gold); background: rgba(255, 200, 87, 0.1); }
+        .ad-card .ad-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 16px;
+            padding: 16px 20px;
+            align-items: center;
+        }
 
-        .tx-status { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 0.55rem; font-weight: 600; }
-        .tx-status.completed { color: var(--success); background: rgba(0, 230, 118, 0.1); }
-        .tx-status.pending { color: var(--gold); background: rgba(255, 200, 87, 0.1); }
-        .tx-status.failed { color: var(--danger); background: rgba(255, 77, 109, 0.1); }
+        .ad-card .ad-badge {
+            position: absolute;
+            top: 10px;
+            right: 14px;
+            font-size: 0.55rem;
+            color: rgba(255, 215, 0, 0.4);
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
 
-        .tx-amount { font-weight: 600; }
-        .tx-amount.positive { color: var(--success); }
-        .tx-amount.negative { color: var(--danger); }
+        .ad-card .ad-image {
+            background: linear-gradient(135deg, rgba(0, 191, 255, 0.08), rgba(108, 99, 255, 0.05));
+            border-radius: 12px;
+            height: 120px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            border: 1px dashed rgba(255, 215, 0, 0.15);
+            color: var(--muted);
+            font-size: 0.7rem;
+            transition: var(--transition);
+        }
+
+        .ad-card .ad-image i {
+            font-size: 2.5rem;
+            color: var(--gold);
+            opacity: 0.4;
+            margin-bottom: 6px;
+        }
+
+        .ad-card .ad-image:hover {
+            border-color: var(--gold);
+            background: rgba(255, 215, 0, 0.03);
+        }
+
+        .ad-card .ad-text h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1rem;
+            color: var(--gold);
+            margin-bottom: 4px;
+        }
+
+        .ad-card .ad-text p {
+            font-size: 0.8rem;
+            color: var(--muted);
+            margin-bottom: 10px;
+        }
+
+        .ad-card .btn-ad {
+            padding: 6px 18px;
+            border: none;
+            border-radius: 30px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: var(--transition);
+            background: linear-gradient(135deg, var(--gold), #FFA000);
+            color: #000;
+        }
+
+        .ad-card .btn-ad:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+        }
 
         /* ===== SIDEBAR ===== */
         .sidebar { display: flex; flex-direction: column; gap: 12px; }
-        .sidebar-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius); padding: 14px 16px; }
-        .sidebar-card h4 { font-family: 'Orbitron', monospace; font-size: 0.75rem; margin-bottom: 10px; }
-        .sidebar-card .item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.8rem; }
-        .sidebar-card .item:last-child { border-bottom: none; }
-        .sidebar-card .item .label { color: var(--muted); }
-        .sidebar-card .item .value { color: var(--text); font-weight: 600; }
-        .sidebar-card .item .value.green { color: var(--success); }
-        .sidebar-card .item .value.red { color: var(--danger); }
 
         /* ===== GAME CARD ===== */
         .game-card-reserved { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(0, 191, 255, 0.1); border-radius: var(--radius); padding: 16px; text-align: center; border-style: dashed; transition: var(--transition); }
@@ -245,6 +294,14 @@
         .game-card-reserved .icon { font-size: 2.5rem; margin-bottom: 6px; opacity: 0.5; }
         .game-card-reserved .name { font-weight: 600; font-size: 1rem; color: var(--muted); }
         .game-card-reserved .sub { font-size: 0.75rem; color: rgba(167, 181, 197, 0.3); margin-top: 2px; }
+
+        /* ===== SIDEBAR CARD ===== */
+        .sidebar-card { background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.05); border-radius: var(--radius); padding: 14px 16px; }
+        .sidebar-card h4 { font-family: 'Orbitron', monospace; font-size: 0.75rem; margin-bottom: 10px; }
+        .sidebar-card .item { display: flex; justify-content: space-between; padding: 5px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.03); font-size: 0.8rem; }
+        .sidebar-card .item:last-child { border-bottom: none; }
+        .sidebar-card .item .label { color: var(--muted); }
+        .sidebar-card .item .value { color: var(--text); font-weight: 600; }
 
         /* ===== TOAST ===== */
         .toast-cyber { position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%); background: rgba(6, 17, 31, 0.95); backdrop-filter: blur(12px); border: 1px solid rgba(0, 191, 255, 0.3); border-radius: 50px; padding: 10px 20px; color: var(--primary); font-size: 0.8rem; z-index: 2000; display: none; align-items: center; gap: 8px; max-width: 90%; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); }
@@ -273,11 +330,11 @@
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 1024px) {
-            .stats-grid { grid-template-columns: repeat(2, 1fr); }
             .main-grid { grid-template-columns: 1fr; }
             .profile-card { grid-template-columns: 1fr; text-align: center; }
             .profile-card .info .details { justify-content: center; }
             .profile-card .status-badge { align-self: center; }
+            .ad-card .ad-content { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -285,18 +342,16 @@
             .nav-right { justify-content: space-between; }
             .welcome-section { flex-direction: column; align-items: flex-start; }
             .quick-actions .btn { flex: 1; min-width: 80px; font-size: 0.7rem; padding: 8px 12px; }
-            .stats-grid { grid-template-columns: 1fr 1fr; }
             .main-grid { grid-template-columns: 1fr; }
             .profile-card .info .details { flex-direction: column; gap: 4px; align-items: center; }
-            table { font-size: 0.7rem; }
-            table th, table td { padding: 6px 8px; }
-            .modal { padding: 20px; }
             .profile-card .avatar { margin: 0 auto; }
+            .ad-card .ad-content { grid-template-columns: 1fr; text-align: center; }
+            .ad-card .ad-image { height: 80px; }
+            .ad-card .ad-badge { top: 6px; right: 10px; font-size: 0.45rem; }
         }
 
         @media (max-width: 480px) {
             .container { padding: 10px 10px 30px; }
-            .stats-grid { grid-template-columns: 1fr; }
             .quick-actions { flex-direction: column; }
             .quick-actions .btn { width: 100%; }
             .nav-right .balance-display { font-size: 0.8rem; padding: 4px 10px; }
@@ -304,20 +359,21 @@
             .logo { font-size: 1rem; }
             .profile-card { padding: 12px 14px; }
             .profile-card .info .name { font-size: 0.9rem; }
-            .stat-card .stat-number { font-size: 1.2rem; }
-            .table-container .header h3 { font-size: 0.75rem; }
+            .stat-card .stat-number { font-size: 2rem; }
             .modal { padding: 16px; }
             .modal h2 { font-size: 1rem; }
             .toast-cyber { font-size: 0.7rem; padding: 8px 16px; bottom: 10px; }
+            .ad-card .ad-content { padding: 12px 14px; gap: 10px; }
+            .ad-card .ad-image { height: 60px; }
+            .ad-card .ad-image i { font-size: 1.8rem; }
+            .ad-card .ad-text h3 { font-size: 0.8rem; }
+            .ad-card .ad-text p { font-size: 0.7rem; }
         }
 
         @media (max-width: 360px) {
             .nav-right { flex-wrap: wrap; justify-content: center; }
             .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
-            .stat-card .stat-number { font-size: 1rem; }
-            .stat-card .stat-label { font-size: 0.55rem; }
-            .stat-card .stat-icon { font-size: 1rem; }
-            .profile-card .info .details { font-size: 0.65rem; }
+            .stat-card .stat-number { font-size: 1.6rem; }
             .quick-actions .btn { font-size: 0.65rem; padding: 6px 10px; min-width: 60px; }
         }
 
@@ -336,7 +392,7 @@
     <!-- ===== NAVBAR ===== -->
     <nav class="navbar">
         <div class="nav-row">
-            <div class="logo">
+            <div class="logo" onclick="window.location.href='dashboard.html'">
                 <i class="fas fa-gamepad"></i> SHORA
             </div>
             <div class="nav-right">
@@ -347,9 +403,9 @@
                     <i class="fas fa-coins"></i>
                     <span id="balanceDisplay">0</span> RWF
                 </span>
-                <a href="login.html" class="logout-btn" id="logoutBtn">
+                <button class="logout-btn" id="logoutBtn">
                     <i class="fas fa-sign-out-alt"></i> <span class="logout-text">Logout</span>
-                </a>
+                </button>
             </div>
         </div>
     </nav>
@@ -417,31 +473,13 @@
             <div class="status-badge" id="statusBadge">✅ Active</div>
         </div>
 
-        <!-- Stats -->
+        <!-- Stats - Only Balance -->
         <div class="stats-grid">
             <div class="stat-card">
                 <span class="stat-icon"><i class="fas fa-wallet"></i></span>
-                <div class="stat-label">Balance</div>
+                <div class="stat-label">Available Balance</div>
                 <div class="stat-number green" id="statBalance">0 RWF</div>
-                <span class="stat-change up"><i class="fas fa-arrow-up"></i> Available</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon"><i class="fas fa-trophy"></i></span>
-                <div class="stat-label">Total Winnings</div>
-                <div class="stat-number gold" id="statWinnings">0 RWF</div>
-                <span class="stat-change up"><i class="fas fa-arrow-up"></i> Lifetime</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon"><i class="fas fa-gamepad"></i></span>
-                <div class="stat-label">Games Played</div>
-                <div class="stat-number blue" id="statGames">0</div>
-                <span class="stat-change up"><i class="fas fa-arrow-up"></i> Total</span>
-            </div>
-            <div class="stat-card">
-                <span class="stat-icon"><i class="fas fa-chart-line"></i></span>
-                <div class="stat-label">Win/Loss</div>
-                <div class="stat-number" id="statWinLoss">0/0</div>
-                <span class="stat-change up"><i class="fas fa-arrow-up"></i> Ratio</span>
+                <span class="stat-change up"><i class="fas fa-check-circle"></i> Ready to play</span>
             </div>
         </div>
 
@@ -459,65 +497,31 @@
             <button class="btn btn-tournaments" onclick="window.location.href='/tournaments.html'">
                 <i class="fas fa-trophy"></i> Tournaments
             </button>
-            <button class="btn btn-history" onclick="toggleHistory()">
-                <i class="fas fa-history"></i> History
-            </button>
         </div>
 
         <!-- Main Grid -->
         <div class="main-grid">
 
-            <!-- Transactions Table -->
-            <div class="table-container" id="transactionsContainer">
-                <div class="header">
-                    <h3>📊 Recent Transactions</h3>
-                    <a href="#" class="view-all" onclick="toggleHistory()">View All</a>
-                </div>
-                <div style="overflow-x: auto;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th>Type</th>
-                                <th>Amount</th>
-                                <th>Method</th>
-                                <th>Date</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody id="transactionsBody">
-                            <tr>
-                                <td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">
-                                    <i class="fas fa-spinner fa-spin"></i> Loading transactions...
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
+            <!-- Advertisement Card -->
+            <div class="ad-card" id="adCard">
+                <div class="ad-badge">📢 SPONSORED</div>
+                <div class="ad-content">
+                    <div class="ad-image" id="adImage">
+                        <i class="fas fa-image"></i>
+                        <span>Advertisement</span>
+                    </div>
+                    <div class="ad-text">
+                        <h3 id="adTitle">🎮 Play & Win Big!</h3>
+                        <p id="adDescription">Join our tournaments and win up to 1,000,000 RWF</p>
+                        <button class="btn btn-ad" onclick="window.location.href='/tournaments.html'">
+                            <i class="fas fa-arrow-right"></i> Learn More
+                        </button>
+                    </div>
                 </div>
             </div>
 
             <!-- Sidebar -->
             <div class="sidebar">
-
-                <!-- Quick Stats -->
-                <div class="sidebar-card">
-                    <h4>📈 Quick Stats</h4>
-                    <div class="item">
-                        <span class="label">Today's Deposits</span>
-                        <span class="value green" id="todayDeposits">0 RWF</span>
-                    </div>
-                    <div class="item">
-                        <span class="label">Today's Withdrawals</span>
-                        <span class="value red" id="todayWithdrawals">0 RWF</span>
-                    </div>
-                    <div class="item">
-                        <span class="label">Today's Winnings</span>
-                        <span class="value green" id="todayWinnings">0 RWF</span>
-                    </div>
-                    <div class="item">
-                        <span class="label">Total Profit</span>
-                        <span class="value green" id="totalProfit">0 RWF</span>
-                    </div>
-                </div>
 
                 <!-- Reserved Space for First Game -->
                 <div class="game-card-reserved" id="gameCardReserved">
@@ -626,14 +630,7 @@
             phone: 'loading...',
             joined: 'loading...',
             balance: 0,
-            totalWinnings: 0,
-            gamesPlayed: 0,
-            wins: 0,
-            losses: 0,
-            status: 'active',
-            transactions: [],
-            pendingDeposits: [],
-            pendingWithdrawals: []
+            status: 'active'
         };
 
         let modalType = 'deposit';
@@ -675,8 +672,6 @@
                 await loadUserData(user.uid);
                 updateUI();
                 startBalanceAnimation();
-                
-                // Check maintenance mode after user is loaded
                 checkMaintenanceMode();
             } else {
                 console.log('❌ No user logged in');
@@ -702,33 +697,7 @@
                     userData.phone = data.phone || 'No phone';
                     userData.joined = data.createdAt ? new Date(data.createdAt).toLocaleDateString() : 'Recently';
                     userData.balance = data.balance || 0;
-                    userData.totalWinnings = data.totalWinnings || 0;
-                    userData.gamesPlayed = data.gamesPlayed || 0;
-                    userData.wins = data.wins || 0;
-                    userData.losses = data.losses || 0;
                     userData.status = data.status || 'active';
-                    
-                    // Load transactions if available
-                    const txRef = ref(db, `transactions/${uid}`);
-                    const txSnapshot = await get(txRef);
-                    if (txSnapshot.exists()) {
-                        const txData = txSnapshot.val();
-                        userData.transactions = Object.values(txData).sort((a, b) => 
-                            new Date(b.date) - new Date(a.date)
-                        );
-                    } else {
-                        // Create demo transactions if none exist
-                        createDemoTransactions(uid);
-                    }
-                    
-                    // Load local transactions as backup
-                    const localTx = localStorage.getItem(`shora_tx_${uid}`);
-                    if (localTx) {
-                        const parsed = JSON.parse(localTx);
-                        if (parsed.length > (userData.transactions || []).length) {
-                            userData.transactions = parsed;
-                        }
-                    }
                     
                 } else {
                     console.log('⚠️ No user data found, creating default');
@@ -751,10 +720,6 @@
                 email: currentUser.email || 'No email',
                 phone: 'Not provided',
                 balance: 5000,
-                totalWinnings: 0,
-                gamesPlayed: 0,
-                wins: 0,
-                losses: 0,
                 status: 'active',
                 createdAt: new Date().toISOString()
             };
@@ -762,7 +727,6 @@
             try {
                 await update(ref(db, `users/${uid}`), defaultData);
                 Object.assign(userData, defaultData);
-                createDemoTransactions(uid);
                 updateUI();
             } catch (error) {
                 console.error('Error creating default data:', error);
@@ -770,54 +734,8 @@
         }
 
         // ========================================
-        // CREATE DEMO TRANSACTIONS
-        // ========================================
-
-        function createDemoTransactions(uid) {
-            const now = new Date();
-            const demoTx = [
-                { type: 'deposit', amount: 10000, method: 'MTN', status: 'completed', date: new Date(now - 3600000 * 2).toISOString() },
-                { type: 'game', amount: -100, method: 'NinjaRun', status: 'completed', date: new Date(now - 3600000 * 1.5).toISOString() },
-                { type: 'win', amount: 200, method: 'NinjaRun', status: 'completed', date: new Date(now - 3600000 * 1).toISOString() },
-                { type: 'withdraw', amount: -5000, method: 'Airtel', status: 'pending', date: new Date(now - 3600000 * 0.5).toISOString() },
-            ];
-            
-            userData.transactions = demoTx;
-            userData.balance = 5000 + 10000 + 200 - 100 - 5000;
-            userData.totalWinnings = 200;
-            userData.gamesPlayed = 1;
-            userData.wins = 1;
-            userData.losses = 0;
-            
-            // Save to Firebase
-            const txRef = ref(db, `transactions/${uid}`);
-            const txData = {};
-            demoTx.forEach((tx, index) => {
-                txData[`tx_${index}_${Date.now()}`] = tx;
-            });
-            update(txRef, txData);
-            
-            // Update user balance in Firebase
-            update(ref(db, `users/${uid}`), {
-                balance: userData.balance,
-                totalWinnings: userData.totalWinnings,
-                gamesPlayed: userData.gamesPlayed,
-                wins: userData.wins,
-                losses: userData.losses
-            });
-            
-            saveToLocalStorage(uid);
-        }
-
-        // ========================================
         // LOCAL STORAGE BACKUP
         // ========================================
-
-        function saveToLocalStorage(uid) {
-            const key = `shora_user_data_${uid}`;
-            localStorage.setItem(key, JSON.stringify(userData));
-            localStorage.setItem(`shora_tx_${uid}`, JSON.stringify(userData.transactions));
-        }
 
         function loadFromLocalStorage() {
             try {
@@ -828,7 +746,6 @@
                     if (data) {
                         const parsed = JSON.parse(data);
                         Object.assign(userData, parsed);
-                        userData.transactions = JSON.parse(localStorage.getItem(`shora_tx_${uid}`) || '[]');
                     }
                 }
             } catch (e) {
@@ -868,125 +785,8 @@
                 statusBadge.className = 'status-badge pending';
             }
 
-            // Stats
+            // Balance
             document.getElementById('statBalance').textContent = userData.balance.toLocaleString() + ' RWF';
-            document.getElementById('statWinnings').textContent = userData.totalWinnings.toLocaleString() + ' RWF';
-            document.getElementById('statGames').textContent = userData.gamesPlayed;
-            document.getElementById('statWinLoss').textContent = `${userData.wins}/${userData.losses}`;
-
-            // Quick Stats
-            const today = new Date().toDateString();
-            const todayTx = (userData.transactions || []).filter(t => new Date(t.date).toDateString() === today);
-            const todayDeposits = todayTx.filter(t => t.type === 'deposit' && t.status === 'completed').reduce((sum, t) => sum + t.amount, 0);
-            const todayWithdrawals = todayTx.filter(t => t.type === 'withdraw' && t.status === 'completed').reduce((sum, t) => sum + Math.abs(t.amount), 0);
-            const todayWinnings = todayTx.filter(t => t.type === 'win' && t.status === 'completed').reduce((sum, t) => sum + t.amount, 0);
-            const totalProfit = userData.balance - 5000;
-
-            document.getElementById('todayDeposits').textContent = todayDeposits.toLocaleString() + ' RWF';
-            document.getElementById('todayWithdrawals').textContent = todayWithdrawals.toLocaleString() + ' RWF';
-            document.getElementById('todayWinnings').textContent = todayWinnings.toLocaleString() + ' RWF';
-            
-            const profitEl = document.getElementById('totalProfit');
-            profitEl.textContent = (totalProfit > 0 ? '+' : '') + totalProfit.toLocaleString() + ' RWF';
-            profitEl.style.color = totalProfit >= 0 ? 'var(--success)' : 'var(--danger)';
-
-            // Transactions
-            renderTransactions();
-
-            // Save to localStorage
-            if (currentUser) {
-                saveToLocalStorage(currentUser.uid);
-            }
-        }
-
-        // ========================================
-        // TRANSACTIONS
-        // ========================================
-
-        function renderTransactions() {
-            const tbody = document.getElementById('transactionsBody');
-            const txs = (userData.transactions || []).slice(0, 10);
-
-            if (txs.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">
-                            <i class="fas fa-inbox"></i> No transactions yet
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = txs.map(tx => {
-                const isPositive = tx.amount > 0 || tx.type === 'deposit' || tx.type === 'win';
-                const typeClass = tx.type === 'deposit' ? 'deposit' : tx.type === 'withdraw' ? 'withdraw' : tx.type === 'win' ? 'win' : 'game';
-                const statusClass = tx.status === 'completed' ? 'completed' : tx.status === 'pending' ? 'pending' : 'failed';
-                const icon = tx.type === 'deposit' ? '📥' : tx.type === 'withdraw' ? '📤' : tx.type === 'win' ? '🏆' : '🎮';
-                const amountStr = (isPositive ? '+' : '') + Math.abs(tx.amount).toLocaleString() + ' RWF';
-                const dateStr = new Date(tx.date).toLocaleString();
-
-                return `
-                    <tr>
-                        <td>
-                            <span class="tx-type ${typeClass}">${icon} ${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
-                        </td>
-                        <td class="tx-amount ${isPositive ? 'positive' : 'negative'}">${amountStr}</td>
-                        <td>${tx.method || '—'}</td>
-                        <td style="font-size:0.65rem;color:var(--muted);">${dateStr}</td>
-                        <td><span class="tx-status ${statusClass}">${tx.status}</span></td>
-                    </tr>
-                `;
-            }).join('');
-        }
-
-        function toggleHistory() {
-            const container = document.getElementById('transactionsContainer');
-            const currentLimit = (userData.transactions || []).length > 10 ? 10 : (userData.transactions || []).length;
-            if (currentLimit === 10) {
-                renderAllTransactions();
-                document.querySelector('#transactionsContainer .header .view-all').textContent = 'Show Less';
-            } else {
-                renderTransactions();
-                document.querySelector('#transactionsContainer .header .view-all').textContent = 'View All';
-            }
-        }
-
-        function renderAllTransactions() {
-            const tbody = document.getElementById('transactionsBody');
-            const txs = userData.transactions || [];
-
-            if (txs.length === 0) {
-                tbody.innerHTML = `
-                    <tr>
-                        <td colspan="5" style="text-align:center;color:var(--muted);padding:20px;">
-                            <i class="fas fa-inbox"></i> No transactions yet
-                        </td>
-                    </tr>
-                `;
-                return;
-            }
-
-            tbody.innerHTML = txs.map(tx => {
-                const isPositive = tx.amount > 0 || tx.type === 'deposit' || tx.type === 'win';
-                const typeClass = tx.type === 'deposit' ? 'deposit' : tx.type === 'withdraw' ? 'withdraw' : tx.type === 'win' ? 'win' : 'game';
-                const statusClass = tx.status === 'completed' ? 'completed' : tx.status === 'pending' ? 'pending' : 'failed';
-                const icon = tx.type === 'deposit' ? '📥' : tx.type === 'withdraw' ? '📤' : tx.type === 'win' ? '🏆' : '🎮';
-                const amountStr = (isPositive ? '+' : '') + Math.abs(tx.amount).toLocaleString() + ' RWF';
-                const dateStr = new Date(tx.date).toLocaleString();
-
-                return `
-                    <tr>
-                        <td>
-                            <span class="tx-type ${typeClass}">${icon} ${tx.type.charAt(0).toUpperCase() + tx.type.slice(1)}</span>
-                        </td>
-                        <td class="tx-amount ${isPositive ? 'positive' : 'negative'}">${amountStr}</td>
-                        <td>${tx.method || '—'}</td>
-                        <td style="font-size:0.65rem;color:var(--muted);">${dateStr}</td>
-                        <td><span class="tx-status ${statusClass}">${tx.status}</span></td>
-                    </tr>
-                `;
-            }).join('');
         }
 
         // ========================================
@@ -1056,27 +856,13 @@
             const uid = currentUser.uid;
 
             if (modalType === 'deposit') {
-                const tx = {
-                    type: 'deposit',
-                    amount: amount,
-                    method: method,
-                    status: 'pending',
-                    date: new Date().toISOString(),
-                    phone: phone
-                };
-                userData.transactions.unshift(tx);
                 userData.balance += amount;
-
-                await saveTransactionToFirebase(uid, tx);
                 await update(ref(db, `users/${uid}`), { balance: userData.balance });
-
-                showToast(`💰 Deposit of ${amount.toLocaleString()} RWF initiated! Awaiting confirmation.`, 'success');
+                showToast(`💰 Deposit of ${amount.toLocaleString()} RWF initiated!`, 'success');
 
                 setTimeout(async () => {
-                    tx.status = 'completed';
-                    await updateTransactionStatus(uid, tx);
-                    updateUI();
                     showToast(`✅ Deposit of ${amount.toLocaleString()} RWF confirmed!`, 'success');
+                    updateUI();
                 }, 2000);
 
             } else {
@@ -1084,69 +870,19 @@
                     showToast('❌ Insufficient balance!', 'error');
                     return;
                 }
-
-                const tx = {
-                    type: 'withdraw',
-                    amount: -amount,
-                    method: method,
-                    status: 'pending',
-                    date: new Date().toISOString(),
-                    phone: phone
-                };
-                userData.transactions.unshift(tx);
                 userData.balance -= amount;
-
-                await saveTransactionToFirebase(uid, tx);
                 await update(ref(db, `users/${uid}`), { balance: userData.balance });
-
-                showToast(`💸 Withdrawal of ${amount.toLocaleString()} RWF initiated! Awaiting processing.`, 'success');
+                showToast(`💸 Withdrawal of ${amount.toLocaleString()} RWF initiated!`, 'success');
 
                 setTimeout(async () => {
-                    tx.status = 'completed';
-                    await updateTransactionStatus(uid, tx);
-                    updateUI();
                     showToast(`✅ Withdrawal of ${amount.toLocaleString()} RWF processed!`, 'success');
+                    updateUI();
                 }, 3000);
             }
 
             updateUI();
             closeModal();
         };
-
-        async function saveTransactionToFirebase(uid, tx) {
-            try {
-                const txRef = ref(db, `transactions/${uid}`);
-                const snapshot = await get(txRef);
-                let txData = {};
-                if (snapshot.exists()) {
-                    txData = snapshot.val();
-                }
-                const key = `tx_${Date.now()}_${Math.random().toString(36).substring(2, 6)}`;
-                txData[key] = tx;
-                await update(txRef, txData);
-            } catch (error) {
-                console.error('Error saving transaction:', error);
-            }
-        }
-
-        async function updateTransactionStatus(uid, tx) {
-            try {
-                const txRef = ref(db, `transactions/${uid}`);
-                const snapshot = await get(txRef);
-                if (snapshot.exists()) {
-                    const txData = snapshot.val();
-                    for (const key in txData) {
-                        if (txData[key].date === tx.date && txData[key].amount === tx.amount) {
-                            txData[key].status = tx.status;
-                            await update(txRef, txData);
-                            break;
-                        }
-                    }
-                }
-            } catch (error) {
-                console.error('Error updating transaction:', error);
-            }
-        }
 
         // ========================================
         // TOAST
@@ -1222,8 +958,8 @@
         console.log('%c👤 User data loaded from Firebase', 'color: #FFC857;');
         console.log('%c🛡️ Maintenance mode check active', 'color: #FF4D6D;');
         console.log('%c📱 Fully responsive for all devices', 'color: #A7B5C5;');
-        console.log('%c🧭 User navigation with real-world icons', 'color: #00BFFF;');
-        console.log('%c🎮 Game Lobby link fixed: /game-lobby.html', 'color: #00E676;');
+        console.log('%c💰 Balance only - Clean dashboard', 'color: #FFD700;');
+        console.log('%c📢 Advertisement card added', 'color: #00BFFF;');
     </script>
 
 </body>
