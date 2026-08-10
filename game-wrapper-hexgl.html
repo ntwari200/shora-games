@@ -1,9 +1,15 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- ===== FAVICON ===== -->
+    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <meta name="theme-color" content="#06111F">
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Capstone Endless Runner - Shora Games</title>
+    <title>HexGL - Shora Games</title>
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -37,7 +43,7 @@
         }
 
         /* ============================================================
-           LOADING OVERLAY - SAME STYLE AS NINJA RUN
+           LOADING OVERLAY - SHORA STYLE
            ============================================================ */
 
         #loadingOverlay {
@@ -137,6 +143,14 @@
             color: #82d4ff;
             text-transform: uppercase;
             opacity: 0.8;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .loading-subtitle i {
+            color: #FFD700;
+            font-size: clamp(0.8rem, 2vw, 1.2rem);
         }
 
         .loading-powered {
@@ -284,13 +298,17 @@
 <body>
 
     <!-- ============================================================
-    LOADING OVERLAY - SAME STYLE AS NINJA RUN
+    LOADING OVERLAY - SHORA STYLE
     ============================================================ -->
 
     <div id="loadingOverlay">
         <div class="loading-content">
             <div class="loading-title">SHORA GAMES</div>
-            <div class="loading-subtitle" id="gameSubtitle">Capstone Endless Runner</div>
+            <div class="loading-subtitle" id="gameSubtitle">
+                <i class="fas fa-racing-flag"></i>
+                HEXGL
+                <i class="fas fa-racing-flag"></i>
+            </div>
             
             <div class="loading-bar-container">
                 <div class="loading-bar" id="progressBar"></div>
@@ -314,7 +332,7 @@
 
     <div id="gameWrapper">
         <div id="gameFrame">
-            <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"></iframe>
+            <iframe id="gameIframe" src="" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups" allowfullscreen></iframe>
         </div>
     </div>
 
@@ -328,16 +346,16 @@
         // ============================================================
 
         // Game name
-        const GAME_NAME = 'Capstone Endless Runner';
+        const GAME_NAME = 'HexGL';
 
-        // Game path - update this to where your game index.html is located
-       const GAME_URL = 'games/capstone-endless-runner/dist/index.html';
+        // Game path - update this to where your HexGL index.html is located
+        const GAME_URL = 'games/hexgl/index.html';
 
         // Get parameters from URL
         const params = new URLSearchParams(window.location.search);
         const DEMO_MODE = params.get('demo') === 'true';
 
-        console.log('🎮 Game:', GAME_NAME);
+        console.log('🏎️ Game:', GAME_NAME);
         console.log('🎯 Mode:', DEMO_MODE ? 'DEMO' : 'NORMAL');
         console.log('📁 Game Path:', GAME_URL);
 
@@ -385,7 +403,7 @@
                             setTimeout(function() {
                                 loadingOverlay.classList.add('hidden');
                                 document.getElementById('gameFrame').classList.add('active');
-                                console.log('✅ Game loaded successfully!');
+                                console.log('✅ HexGL loaded successfully!');
                             }, 500);
                             return;
                         }
@@ -395,7 +413,7 @@
                 }
             }, 300);
 
-            // Fallback: if game doesn't load in 8 seconds, show anyway
+            // Fallback: if game doesn't load in 10 seconds, show anyway
             setTimeout(function() {
                 if (!loadingOverlay.classList.contains('hidden')) {
                     clearInterval(progressInterval);
@@ -408,8 +426,29 @@
                         console.log('⏰ Game load timeout - showing anyway');
                     }, 500);
                 }
-            }, 8000);
+            }, 10000);
         }
+
+        // ============================================================
+        // KEYBOARD SHORTCUTS
+        // ============================================================
+
+        document.addEventListener('keydown', function(e) {
+            // ESC = Go back to lobby
+            if (e.key === 'Escape') {
+                window.location.href = '/game-lobby.html';
+            }
+        });
+
+        // ============================================================
+        // PREVENT SCROLLING
+        // ============================================================
+
+        document.addEventListener('touchmove', function(e) {
+            if (e.target === document.body || e.target === document.getElementById('gameWrapper')) {
+                e.preventDefault();
+            }
+        }, { passive: false });
 
         // ============================================================
         // INIT
@@ -418,12 +457,13 @@
         loadGame();
 
         console.log('');
-        console.log('🎮 ===========================================');
-        console.log('🎮', GAME_NAME, '- GAME WRAPPER');
-        console.log('🎮 ===========================================');
+        console.log('🏎️ ===========================================');
+        console.log('🏎️', GAME_NAME, '- GAME WRAPPER');
+        console.log('🏎️ ===========================================');
         console.log('🎯 Mode:', DEMO_MODE ? 'DEMO' : 'NORMAL');
         console.log('📁 Game Path:', GAME_URL);
         console.log('✅ Loader: Professional Shora style');
+        console.log('🌪️ Powered by Tornado');
         console.log('===========================================');
     </script>
 
