@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Game Lobby - Shora Games</title>
     <!-- ===== FAVICON ===== -->
     <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
     <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
+    <meta name="theme-color" content="#06111F">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
+    <title>Game Lobby - Shora Games</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
+        /* ========================================
+           ALL STYLES - SAME AS TOURNAMENTS.HTML
+           ======================================== */
         :root {
             --bg: #06111F;
             --bg2: #0B1F36;
@@ -37,47 +41,12 @@
             overflow-x: hidden;
         }
 
-        .bg-layer {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
+        .bg-layer { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .bg-layer::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0D1B2A 100%); }
+        .bg-layer::after { content: ''; position: absolute; top: 50%; left: 50%; width: 100%; height: 100%; background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%); transform: translate(-50%, -50%); animation: glowPulse 8s ease-in-out infinite; }
+        @keyframes glowPulse { 0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); } 50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); } }
 
-        .bg-layer::before {
-            content: '';
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(135deg, var(--bg) 0%, var(--bg2) 50%, #0D1B2A 100%);
-        }
-
-        .bg-layer::after {
-            content: '';
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle at center, rgba(0, 191, 255, 0.05) 0%, transparent 70%);
-            transform: translate(-50%, -50%);
-            animation: glowPulse 8s ease-in-out infinite;
-        }
-
-        @keyframes glowPulse {
-            0%, 100% { opacity: 0.3; transform: translate(-50%, -50%) scale(1); }
-            50% { opacity: 0.6; transform: translate(-50%, -50%) scale(1.05); }
-        }
-
-        .grid-overlay {
-            position: fixed;
-            inset: 0;
-            background-image:
-                linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px);
-            background-size: 40px 40px;
-            pointer-events: none;
-            z-index: 1;
-        }
+        .grid-overlay { position: fixed; inset: 0; background-image: linear-gradient(rgba(0, 191, 255, 0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 191, 255, 0.02) 1px, transparent 1px); background-size: 40px 40px; pointer-events: none; z-index: 1; }
 
         /* ===== NAVBAR ===== */
         .navbar {
@@ -101,124 +70,96 @@
             flex-wrap: wrap;
         }
 
-        .logo {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.2rem;
-            font-weight: 900;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
+        .logo { font-family: 'Orbitron', monospace; font-size: 1.2rem; font-weight: 900; background: linear-gradient(90deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: flex; align-items: center; gap: 8px; cursor: pointer; }
+        .logo i { font-size: 1.4rem; -webkit-text-fill-color: var(--primary); }
+
+        .nav-right { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+        .nav-right .balance-display { display: flex; align-items: center; gap: 6px; font-family: 'Orbitron', monospace; font-weight: 700; color: var(--success); font-size: 0.95rem; background: rgba(0, 230, 118, 0.05); padding: 4px 12px; border-radius: 8px; border: 1px solid rgba(0, 230, 118, 0.1); }
+        .nav-right .balance-display i { font-size: 0.9rem; color: var(--gold); }
+        .nav-right .username-display { color: var(--text); font-weight: 500; font-size: 0.8rem; display: flex; align-items: center; gap: 6px; }
+        .nav-right .username-display i { color: var(--primary); font-size: 0.9rem; }
+        .nav-right .logout-btn { color: var(--muted); text-decoration: none; font-size: 0.75rem; padding: 6px 14px; border-radius: 8px; transition: var(--transition); border: 1px solid rgba(255,255,255,0.05); background: rgba(255,255,255,0.02); cursor: pointer; }
+        .nav-right .logout-btn:hover { background: rgba(255, 77, 109, 0.1); border-color: var(--danger); color: var(--danger); }
+
+        /* ===== USER NAVIGATION ===== */
+        .user-nav {
+            background: rgba(6, 17, 31, 0.85);
+            backdrop-filter: blur(16px);
+            border-bottom: 1px solid rgba(0, 191, 255, 0.08);
+            padding: 8px 0;
+            position: sticky;
+            top: 60px;
+            z-index: 99;
+        }
+
+        .user-nav-row {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 16px;
+            display: flex;
+            gap: 4px;
+            overflow-x: auto;
+            -webkit-overflow-scrolling: touch;
+            scrollbar-width: none;
+        }
+
+        .user-nav-row::-webkit-scrollbar { display: none; }
+
+        .user-nav-link {
             display: flex;
             align-items: center;
             gap: 8px;
-            cursor: pointer;
-        }
-
-        .logo i {
-            font-size: 1.4rem;
-            -webkit-text-fill-color: var(--primary);
-        }
-
-        .nav-right {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-        }
-
-        .nav-right .balance-display {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'Orbitron', monospace;
-            font-weight: 700;
-            color: var(--success);
-            font-size: 0.95rem;
-            background: rgba(0, 230, 118, 0.05);
-            padding: 4px 12px;
-            border-radius: 8px;
-            border: 1px solid rgba(0, 230, 118, 0.1);
-        }
-
-        .nav-right .balance-display i {
-            font-size: 0.9rem;
-            color: var(--gold);
-        }
-
-        .nav-right .username-display {
-            color: var(--text);
-            font-weight: 500;
-            font-size: 0.8rem;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .nav-right .username-display i {
-            color: var(--primary);
-            font-size: 0.9rem;
-        }
-
-        .nav-right .logout-btn {
+            padding: 8px 16px;
+            border-radius: 30px;
             color: var(--muted);
             text-decoration: none;
             font-size: 0.75rem;
-            padding: 6px 14px;
-            border-radius: 8px;
+            font-weight: 500;
             transition: var(--transition);
-            border: 1px solid rgba(255,255,255,0.05);
-            background: rgba(255,255,255,0.02);
-            cursor: pointer;
+            white-space: nowrap;
+            border: 1px solid transparent;
+            flex-shrink: 0;
         }
 
-        .nav-right .logout-btn:hover {
-            background: rgba(255, 77, 109, 0.1);
-            border-color: var(--danger);
-            color: var(--danger);
+        .user-nav-link i { font-size: 0.9rem; width: 18px; text-align: center; }
+        .user-nav-link:hover { color: var(--text); background: rgba(255, 255, 255, 0.05); border-color: rgba(0, 191, 255, 0.1); }
+        .user-nav-link.active { color: var(--primary); background: rgba(0, 191, 255, 0.08); border-color: rgba(0, 191, 255, 0.2); box-shadow: 0 0 20px rgba(0, 191, 255, 0.05); }
+        .user-nav-link .badge { background: var(--danger); color: #fff; font-size: 0.5rem; padding: 1px 6px; border-radius: 20px; margin-left: 2px; font-weight: 700; }
+
+        @media (max-width: 480px) {
+            .user-nav { top: 56px; padding: 6px 0; }
+            .user-nav-link { padding: 6px 12px; font-size: 0.65rem; gap: 4px; }
+            .user-nav-link i { font-size: 0.75rem; width: 14px; }
+            .user-nav-link span { font-size: 0.6rem; }
         }
 
         /* ===== CONTAINER ===== */
-        .container {
-            max-width: 1280px;
-            margin: 0 auto;
-            padding: 16px 16px 40px;
-            position: relative;
-            z-index: 2;
-        }
+        .container { max-width: 1280px; margin: 0 auto; padding: 16px 16px 40px; position: relative; z-index: 2; }
 
-        /* ===== HEADER ===== */
+        /* ===== PAGE HEADER ===== */
         .page-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 24px;
+            padding: 8px 0 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            margin-bottom: 20px;
             flex-wrap: wrap;
-            gap: 12px;
+            gap: 10px;
+        }
+        .page-header h1 { font-family: 'Orbitron', monospace; font-size: 1.3rem; }
+        .page-header h1 span { color: var(--primary); }
+        .page-header .subtitle { color: var(--muted); font-size: 0.8rem; }
+
+        /* ===== GAME GRID ===== */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
         }
 
-        .page-header h1 {
-            font-family: 'Orbitron', monospace;
-            font-size: 1.4rem;
-        }
-
-        .page-header h1 span {
-            color: var(--primary);
-        }
-
-        .page-header .sub {
-            color: var(--muted);
-            font-size: 0.8rem;
-        }
-
-        /* ===== GAMES GRID - SINGLE GAME FOCUS ===== */
-        .games-grid {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 400px;
-        }
-
+        /* ===== GAME CARD ===== */
         .game-card {
             background: rgba(255, 255, 255, 0.03);
             border: 1px solid rgba(255, 255, 255, 0.05);
@@ -226,153 +167,399 @@
             overflow: hidden;
             transition: var(--transition);
             cursor: pointer;
-            text-decoration: none;
-            color: var(--text);
-            display: block;
-            max-width: 420px;
-            width: 100%;
-            margin: 0 auto;
-        }
-
-        .game-card:hover {
-            transform: translateY(-6px);
-            border-color: var(--primary);
-            box-shadow: 0 10px 40px rgba(0, 191, 255, 0.1);
-        }
-
-        .game-card .game-image {
-            height: 200px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 4.5rem;
-            background: linear-gradient(160deg, rgba(255, 107, 107, 0.15), rgba(255, 200, 87, 0.05));
             position: relative;
         }
+        .game-card:hover {
+            border-color: rgba(0, 191, 255, 0.2);
+            transform: translateY(-4px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
 
-        .game-card .game-image .play-overlay {
-            position: absolute;
-            inset: 0;
-            background: rgba(6, 17, 31, 0.7);
+        .game-card .card-cover {
+            position: relative;
+            width: 100%;
+            height: 180px;
+            background: linear-gradient(135deg, var(--bg2), #0D1B2A);
+            overflow: hidden;
             display: flex;
             align-items: center;
             justify-content: center;
-            opacity: 0;
-            transition: var(--transition);
         }
-
-        .game-card:hover .game-image .play-overlay {
-            opacity: 1;
+        .game-card .card-cover img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
-
-        .game-card .game-image .play-overlay i {
-            font-size: 3.5rem;
+        .game-card .card-cover .placeholder-icon {
+            font-size: 3rem;
+            opacity: 0.3;
             color: var(--primary);
-            text-shadow: 0 0 30px rgba(0, 191, 255, 0.5);
         }
 
-        .game-card .game-info {
-            padding: 20px 24px;
-            text-align: center;
-        }
-
-        .game-card .game-info .game-name {
-            font-family: 'Orbitron', monospace;
+        .game-card .card-cover .card-status-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            padding: 6px 16px;
+            border-radius: 30px;
+            font-size: 0.6rem;
             font-weight: 700;
-            font-size: 1.4rem;
-            color: var(--primary);
-            margin-bottom: 4px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(8px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
+        .game-card .card-cover .card-status-badge.active { color: var(--success); border-color: rgba(0, 230, 118, 0.3); }
+        .game-card .card-cover .card-status-badge.inactive { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
+        .game-card .card-cover .card-status-badge.maintenance { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
 
-        .game-card .game-info .game-category {
-            font-size: 0.7rem;
-            color: var(--gold);
+        /* ===== ROUND COUNTDOWN OVERLAY ===== */
+        .game-card .card-countdown {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+        }
+        .game-card .card-countdown .countdown-label {
+            font-size: 0.5rem;
             text-transform: uppercase;
             letter-spacing: 2px;
-        }
-
-        .game-card .game-info .game-description {
-            font-size: 0.85rem;
-            color: var(--muted);
-            margin: 12px 0 16px;
-            line-height: 1.6;
-        }
-
-        .game-card .game-info .game-meta {
-            display: flex;
-            justify-content: center;
-            gap: 24px;
-            font-size: 0.75rem;
             color: var(--muted);
         }
+        .game-card .card-countdown .countdown-timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .game-card .card-countdown .countdown-timer.urgent { color: var(--danger); animation: timerPulse 1s ease-in-out infinite; }
+        .game-card .card-countdown .countdown-timer.live-text { color: var(--success); font-size: 0.8rem; }
 
-        .game-card .game-info .game-meta span {
+        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
+
+        /* ===== CARD BODY ===== */
+        .game-card .card-body { padding: 16px 18px; }
+        .game-card .card-body .card-title { font-family: 'Orbitron', monospace; font-size: 1rem; margin-bottom: 4px; }
+        .game-card .card-body .card-category { font-size: 0.75rem; color: var(--muted); margin-bottom: 10px; }
+
+        .game-card .card-body .card-meta {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 6px;
+            margin: 8px 0;
+        }
+        .game-card .card-body .card-meta .meta-item {
             display: flex;
             align-items: center;
             gap: 6px;
-        }
-
-        .game-card .game-info .game-meta i {
-            color: var(--primary);
-        }
-
-        .game-card .game-info .game-fee {
-            margin-top: 16px;
-            padding: 8px 20px;
-            background: rgba(255, 215, 0, 0.08);
-            border-radius: 30px;
-            font-size: 0.8rem;
-            color: var(--gold);
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .game-card .game-info .game-fee i {
             font-size: 0.7rem;
+            color: var(--muted);
+        }
+        .game-card .card-body .card-meta .meta-item i { color: var(--primary); width: 14px; font-size: 0.65rem; }
+        .game-card .card-body .card-meta .meta-item strong { color: var(--text); font-weight: 600; }
+        .game-card .card-body .card-meta .meta-item .gold { color: var(--gold); }
+
+        /* ===== PRIZE DISPLAY ===== */
+        .prize-display {
+            background: rgba(255,255,255,0.03);
+            border-radius: 10px;
+            padding: 10px 12px;
+            margin: 8px 0;
+            border: 1px solid rgba(255,255,255,0.05);
         }
 
-        .play-btn {
-            margin-top: 20px;
-            padding: 12px 40px;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            border: none;
-            border-radius: 40px;
-            color: #000;
-            font-family: 'Space Grotesk', sans-serif;
+        .prize-display .prize-pool {
+            text-align: center;
+            padding: 4px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .prize-display .prize-pool .pool-amount {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
             font-weight: 700;
-            font-size: 1rem;
+            color: var(--gold);
+            display: block;
+        }
+
+        .prize-display .prize-pool .pool-label {
+            font-size: 0.55rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .prize-display .top-prizes {
+            display: flex;
+            justify-content: space-around;
+            padding: 6px 0;
+        }
+
+        .prize-display .prize-rank {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.65rem;
+            gap: 1px;
+        }
+
+        .prize-display .prize-rank .rank-icon { font-size: 1rem; }
+        .prize-display .prize-rank .rank-amount { font-weight: 700; color: var(--text); font-size: 0.7rem; }
+        .prize-display .prize-rank.gold .rank-amount { color: #FFD700; }
+        .prize-display .prize-rank.silver .rank-amount { color: #C0C0C0; }
+        .prize-display .prize-rank.bronze .rank-amount { color: #CD7F32; }
+
+        /* ===== ROUND INFO ===== */
+        .round-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 8px;
+            margin: 8px 0;
+            padding: 8px;
+            background: rgba(0, 191, 255, 0.03);
+            border-radius: 8px;
+            border: 1px solid rgba(0, 191, 255, 0.05);
+        }
+
+        .round-info .round-item {
+            text-align: center;
+        }
+
+        .round-info .round-item .round-label {
+            font-size: 0.5rem;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .round-info .round-item .round-value {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .round-info .round-item .round-value.gold { color: var(--gold); }
+        .round-info .round-item .round-value.success { color: var(--success); }
+        .round-info .round-item .round-value.danger { color: var(--danger); }
+
+        /* ===== CARD ACTIONS ===== */
+        .game-card .card-body .card-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
+
+        .game-card .card-body .card-actions .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
             cursor: pointer;
             transition: var(--transition);
-            display: inline-flex;
+            display: flex;
             align-items: center;
-            gap: 10px;
+            gap: 6px;
+            flex: 1;
+            justify-content: center;
+            min-width: 80px;
         }
 
-        .play-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 8px 30px rgba(0, 191, 255, 0.3);
+        .btn-join {
+            background: linear-gradient(135deg, var(--success), #00C853);
+            color: #000;
         }
+        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
+        .btn-join:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn-play {
+            background: linear-gradient(135deg, var(--gold), #FFA000);
+            color: #000;
+            font-weight: 700;
+        }
+        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
+        .btn-play:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+
+        .btn-blocked {
+            background: rgba(255, 77, 109, 0.1);
+            color: var(--danger);
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            cursor: not-allowed;
+        }
+
+        .btn-waiting {
+            background: rgba(255, 200, 87, 0.1);
+            color: var(--gold);
+            border: 1px solid rgba(255, 200, 87, 0.2);
+            cursor: not-allowed;
+        }
+
+        .btn-demo {
+            background: linear-gradient(135deg, #FF1744, #D50000);
+            color: #fff;
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.2);
+            flex: 1 !important;
+        }
+        .btn-demo:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 23, 68, 0.4); }
+
+        .btn-info {
+            background: rgba(255,255,255,0.05);
+            color: var(--text);
+            border: 1px solid rgba(255,255,255,0.1);
+            flex: 0.4 !important;
+            min-width: auto !important;
+            padding: 8px 12px !important;
+        }
+        .btn-info:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
+
+        /* ===== PLAYER PROGRESS ===== */
+        .game-card .card-body .card-players {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .game-card .card-body .card-players .progress-bar {
+            flex: 1;
+            height: 4px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 2px;
+            overflow: hidden;
+        }
+        .game-card .card-body .card-players .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 2px;
+            transition: width 0.5s ease;
+        }
+        .game-card .card-body .card-players .count {
+            font-size: 0.7rem;
+            color: var(--muted);
+            white-space: nowrap;
+        }
+        .game-card .card-body .card-players .count strong { color: var(--text); }
+
+        /* ===== BREAK ANNOUNCEMENT ===== */
+        .break-announcement {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.92);
+            backdrop-filter: blur(16px);
+            z-index: 9999;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+        }
+
+        .break-announcement.show { display: flex; }
+
+        .break-content {
+            text-align: center;
+            max-width: 500px;
+            width: 90%;
+            animation: slideUp 0.5s ease;
+        }
+
+        .break-content .break-icon { font-size: 4rem; margin-bottom: 20px; animation: pulse 1s ease-in-out infinite; }
+        .break-content .break-title { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
+        .break-content .break-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 20px; }
+        .break-content .break-timer { font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
+        .break-content .break-progress { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
+        .break-content .break-progress-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--primary)); border-radius: 10px; width: 100%; transition: width 0.3s linear; }
+        .break-content .break-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
+        .break-content .break-detail-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; }
+        .break-content .break-detail-item .label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+        .break-content .break-detail-item .value { font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
+        .break-content .break-detail-item .value.gold { color: var(--gold); }
+        .break-content .break-detail-item .value.success { color: var(--success); }
+
+        .break-payout .break-title { color: var(--success); }
+        .break-payout .break-icon { color: var(--success); }
+        .break-refund .break-title { color: var(--gold); }
+        .break-refund .break-icon { color: var(--gold); }
+        .break-skip .break-title { color: var(--muted); }
+        .break-skip .break-icon { color: var(--muted); }
+
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px) scale(0.95); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+
+        /* ===== TOAST ===== */
+        .toast-cyber {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(0, 191, 255, 0.3);
+            border-radius: 50px;
+            padding: 10px 20px;
+            color: var(--primary);
+            font-size: 0.8rem;
+            z-index: 5000;
+            display: none;
+            align-items: center;
+            gap: 8px;
+            max-width: 90%;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+        .toast-cyber.error { border-color: var(--danger); color: var(--danger); }
+        .toast-cyber.success { border-color: var(--success); color: var(--success); }
+        .toast-cyber.warning { border-color: var(--gold); color: var(--gold); }
 
         /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
             .nav-row { flex-direction: column; align-items: stretch; gap: 8px; }
             .nav-right { justify-content: space-between; }
-            .page-header { flex-direction: column; align-items: flex-start; }
-            .game-card .game-image { height: 160px; font-size: 3.5rem; }
-            .game-card .game-info { padding: 16px; }
-            .game-card .game-info .game-name { font-size: 1.2rem; }
-            .game-card .game-info .game-meta { flex-wrap: wrap; gap: 12px; }
+            .game-grid { grid-template-columns: 1fr 1fr; }
+            .page-header h1 { font-size: 1rem; }
+            .game-card .card-cover { height: 140px; }
+            .break-content { padding: 20px; }
+            .break-content .break-timer { font-size: 3rem; }
         }
 
         @media (max-width: 480px) {
             .container { padding: 10px 10px 30px; }
-            .game-card .game-image { height: 140px; font-size: 3rem; }
-            .game-card .game-info .game-name { font-size: 1rem; }
-            .game-card .game-info .game-description { font-size: 0.75rem; }
-            .game-card .game-info .game-meta { font-size: 0.65rem; gap: 8px; }
-            .play-btn { padding: 10px 30px; font-size: 0.85rem; }
-            .game-card .game-info .game-fee { font-size: 0.7rem; padding: 6px 16px; }
+            .game-grid { grid-template-columns: 1fr; }
+            .game-card .card-cover { height: 120px; }
+            .game-card .card-body { padding: 12px 14px; }
+            .game-card .card-body .card-title { font-size: 0.9rem; }
+            .game-card .card-body .card-actions .btn { font-size: 0.65rem; padding: 6px 12px; }
+            .game-card .card-countdown .countdown-timer { font-size: 0.7rem; }
+            .nav-right { flex-wrap: wrap; justify-content: center; }
+            .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
+            .round-info { grid-template-columns: 1fr 1fr; }
+            .break-content .break-timer { font-size: 2.5rem; }
+            .break-content .break-details { grid-template-columns: 1fr 1fr; }
+        }
+
+        @media (max-width: 360px) {
+            .game-grid { grid-template-columns: 1fr; }
+            .game-card .card-body .card-meta { grid-template-columns: 1fr; }
+            .round-info { grid-template-columns: 1fr; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -383,6 +570,7 @@
 </head>
 <body>
 
+    <!-- ===== BACKGROUND ===== -->
     <div class="bg-layer"></div>
     <div class="grid-overlay"></div>
 
@@ -407,6 +595,45 @@
         </div>
     </nav>
 
+    <!-- ===== USER NAVIGATION ===== -->
+    <nav class="user-nav">
+        <div class="user-nav-row">
+            <a href="dashboard.html" class="user-nav-link">
+                <i class="fas fa-home"></i>
+                <span>Dashboard</span>
+            </a>
+            <a href="game-lobby.html" class="user-nav-link active">
+                <i class="fas fa-gamepad"></i>
+                <span>Games</span>
+                <span class="badge" id="gameBadge">0</span>
+            </a>
+            <a href="tournaments.html" class="user-nav-link">
+                <i class="fas fa-trophy"></i>
+                <span>Tournaments</span>
+            </a>
+            <a href="rankings.html" class="user-nav-link">
+                <i class="fas fa-ranking-star"></i>
+                <span>Rankings</span>
+            </a>
+            <a href="profile.html" class="user-nav-link">
+                <i class="fas fa-user"></i>
+                <span>Profile</span>
+            </a>
+            <a href="deposit.html" class="user-nav-link">
+                <i class="fas fa-wallet"></i>
+                <span>Wallet</span>
+            </a>
+            <a href="withdraw.html" class="user-nav-link">
+                <i class="fas fa-arrow-up"></i>
+                <span>Withdraw</span>
+            </a>
+            <a href="support.html" class="user-nav-link">
+                <i class="fas fa-headset"></i>
+                <span>Support</span>
+            </a>
+        </div>
+    </nav>
+
     <!-- ===== MAIN CONTENT ===== -->
     <div class="container">
 
@@ -414,47 +641,62 @@
         <div class="page-header">
             <div>
                 <h1>🎮 <span>Game Lobby</span></h1>
-                <div class="sub">Choose a game to play and start winning!</div>
+                <div class="subtitle">Join live rounds and compete for prizes!</div>
             </div>
-            <div style="font-size:0.8rem;color:var(--muted);">
-                <i class="fas fa-users"></i> <span id="onlinePlayers">0</span> players online
+            <div id="gameCounter" style="font-size:0.8rem;color:var(--muted);">
+                <i class="fas fa-users"></i> <span id="totalPlayers">0</span> players online
             </div>
         </div>
 
-        <!-- ===== SINGLE GAME FOCUS ===== -->
-        <div class="games-grid">
+        <!-- ===== GAME GRID ===== -->
+        <div id="gameGrid" class="game-grid">
+            <!-- Games will be rendered here -->
+            <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
+                <div class="loading-spinner" style="display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top:3px solid var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+                <p style="margin-top:12px;">Loading games...</p>
+            </div>
+        </div>
 
-            <!-- ✅ HEXGL - Game Card (Replaced Capstone) -->
-            <div class="game-card" id="gameCard">
-                <div class="game-image">
-                    🏎️
-                    <div class="play-overlay">
-                        <i class="fas fa-play-circle"></i>
-                    </div>
+    </div>
+
+    <!-- ===== BREAK ANNOUNCEMENT OVERLAY ===== -->
+    <div class="break-announcement" id="breakAnnouncement">
+        <div class="break-content">
+            <div class="break-icon" id="breakIcon">⏳</div>
+            <div class="break-title" id="breakTitle">Round Break</div>
+            <div class="break-subtitle" id="breakSubtitle">Processing results...</div>
+            
+            <div class="break-timer" id="breakTimer">10</div>
+            
+            <div class="break-progress">
+                <div class="break-progress-bar" id="breakProgressBar" style="width:100%;"></div>
+            </div>
+            
+            <div class="break-details">
+                <div class="break-detail-item">
+                    <div class="label">Players</div>
+                    <div class="value" id="breakPlayers">0</div>
                 </div>
-                <div class="game-info">
-                    <div class="game-name">HexGL</div>
-                    <div class="game-category">⭐ Featured Game | Racing</div>
-                    <div class="game-description">
-                        Experience futuristic high-speed racing in HexGL! 
-                        Drift through neon tracks, dodge traffic, and set the fastest lap time 
-                        in this adrenaline-pumping 3D racing game.
-                    </div>
-                    <div class="game-meta">
-                        <span><i class="fas fa-users"></i> <span id="playerCount">856</span> players</span>
-                        <span><i class="fas fa-trophy"></i> <span id="prizePool">500</span> RWF</span>
-                        <span><i class="fas fa-clock"></i> <span id="gameDuration">5</span> min</span>
-                    </div>
-                    <div class="game-fee">
-                        <i class="fas fa-coins"></i> Entry Fee: <span id="entryFee">200</span> RWF
-                    </div>
-                    <button class="play-btn" onclick="playGame()">
-                        <i class="fas fa-play"></i> Play Now
-                    </button>
+                <div class="break-detail-item">
+                    <div class="label">Prize Pool</div>
+                    <div class="value gold" id="breakPrizePool">0 RWF</div>
+                </div>
+                <div class="break-detail-item">
+                    <div class="label">Next Round</div>
+                    <div class="value success" id="breakNextRound">#2</div>
                 </div>
             </div>
-
+            
+            <div style="margin-top:20px;font-size:0.7rem;color:var(--muted);" id="breakMessage">
+                <i class="fas fa-spinner fa-spin"></i> Processing...
+            </div>
         </div>
+    </div>
+
+    <!-- ===== TOAST ===== -->
+    <div id="toast" class="toast-cyber">
+        <i class="fas fa-info-circle"></i>
+        <span id="toastMessage">Message</span>
     </div>
 
     <!-- ===== FIREBASE IMPORTS ===== -->
@@ -468,13 +710,14 @@
         }
     </script>
 
+    <!-- ===== JAVASCRIPT ===== -->
     <script type="module">
         // ========================================
         // IMPORTS
         // ========================================
 
         import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, child } from "firebase/database";
+        import { getDatabase, ref, onValue, get, update, set, remove, push } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
         // ========================================
@@ -498,6 +741,11 @@
 
         let currentUser = null;
         let userData = { balance: 0, username: 'Player' };
+        let allGames = [];
+        let countdownIntervals = {};
+        let breakIntervals = {};
+        let selectedGameId = null;
+        let isBreakActive = false;
 
         // ========================================
         // AUTH STATE
@@ -507,8 +755,8 @@
             if (user) {
                 currentUser = user;
                 await loadUserData(user.uid);
+                loadGames();
                 updateUI();
-                loadGameStats();
             } else {
                 window.location.href = 'login.html';
             }
@@ -528,13 +776,894 @@
                         balance: data.balance || 0,
                         username: data.username || 'Player',
                         email: data.email || '',
-                        phone: data.phone || ''
+                        phone: data.phone || '',
+                        hasStartedGame: data.hasStartedGame || false,
+                        currentGameId: data.currentGameId || null
                     };
                 }
                 document.getElementById('navUsername').textContent = userData.username;
                 document.getElementById('balanceDisplay').textContent = userData.balance.toLocaleString();
             } catch (error) {
                 console.error('Error loading user data:', error);
+            }
+        }
+
+        // ========================================
+        // LOAD GAMES
+        // ========================================
+
+        function loadGames() {
+            const gamesRef = ref(db, 'games');
+            
+            onValue(gamesRef, (snapshot) => {
+                const data = snapshot.val();
+                if (data) {
+                    processGames(data);
+                } else {
+                    processGames({});
+                }
+            });
+        }
+
+        // ========================================
+        // PROCESS GAMES
+        // ========================================
+
+        function processGames(data) {
+            const games = [];
+            let totalPlayers = 0;
+
+            for (const [id, game] of Object.entries(data || {})) {
+                if (!game || typeof game !== 'object') continue;
+                
+                // Skip inactive games
+                if (game.status === 'inactive') continue;
+                
+                // Get current round info
+                const currentRound = getCurrentRound(game);
+                
+                games.push({
+                    id: id,
+                    name: game.name || 'Unnamed Game',
+                    category: game.category || 'Unknown',
+                    image: game.image || '',
+                    description: game.description || '',
+                    status: game.status || 'active',
+                    isActive: game.isActive || false,
+                    url: game.url || '',
+                    
+                    // Round settings from admin
+                    roundSettings: {
+                        duration: game.roundSettings?.duration || 15,
+                        joinWindow: game.roundSettings?.joinWindow || 5,
+                        minPlayers: game.roundSettings?.minPlayers || 2,
+                        maxPlayers: game.roundSettings?.maxPlayers || 50,
+                        entryFee: game.roundSettings?.entryFee || 100,
+                        breakDuration: game.roundSettings?.breakDuration || 10,
+                        refundBreak: game.roundSettings?.refundBreak || 5,
+                        enabled: game.roundSettings?.enabled || false
+                    },
+                    
+                    // Prize distribution from admin
+                    prizeDistribution: {
+                        tiers: game.prizeDistribution?.tiers || { '1st': 60, '2nd': 25, '3rd': 15 },
+                        platformFee: game.prizeDistribution?.platformFee || 10
+                    },
+                    
+                    // Current round info
+                    currentRound: currentRound,
+                    
+                    // Stats
+                    stats: game.stats || {
+                        totalRounds: 0,
+                        totalPlayers: 0,
+                        totalRevenue: 0,
+                        totalPayout: 0,
+                        platformEarnings: 0,
+                        currentPlayers: 0
+                    },
+                    
+                    createdAt: game.createdAt || new Date().toISOString(),
+                    updatedAt: game.updatedAt || new Date().toISOString()
+                });
+                
+                totalPlayers += game.stats?.currentPlayers || 0;
+            }
+
+            // Sort: Active games first, then by name
+            games.sort((a, b) => {
+                if (a.status === 'active' && b.status !== 'active') return -1;
+                if (a.status !== 'active' && b.status === 'active') return 1;
+                return a.name.localeCompare(b.name);
+            });
+
+            allGames = games;
+            document.getElementById('totalPlayers').textContent = totalPlayers;
+            document.getElementById('gameBadge').textContent = games.filter(g => g.status === 'active').length;
+            
+            renderGames(games);
+            
+            // Start countdowns for active games
+            games.forEach(game => {
+                if (game.status === 'active' && game.currentRound) {
+                    startGameCountdown(game);
+                }
+            });
+        }
+
+        // ========================================
+        // GET CURRENT ROUND
+        // ========================================
+
+        function getCurrentRound(game) {
+            const now = new Date();
+            const duration = game.roundSettings?.duration || 15;
+            const joinWindow = game.roundSettings?.joinWindow || 5;
+            
+            // Calculate current round based on time
+            const startOfDay = new Date(now);
+            startOfDay.setHours(0, 0, 0, 0);
+            
+            const minutesSinceMidnight = (now.getHours() * 60) + now.getMinutes();
+            const currentRoundIndex = Math.floor(minutesSinceMidnight / duration);
+            
+            const roundStart = new Date(startOfDay);
+            roundStart.setMinutes(roundStart.getMinutes() + (currentRoundIndex * duration));
+            
+            const roundEnd = new Date(roundStart);
+            roundEnd.setMinutes(roundEnd.getMinutes() + duration);
+            
+            const joinStart = new Date(roundStart);
+            joinStart.setMinutes(joinStart.getMinutes() - joinWindow);
+            
+            let status = 'scheduled';
+            let statusLabel = '⏳ Upcoming';
+            let statusClass = 'soon';
+            
+            if (now >= joinStart && now < roundStart) {
+                status = 'open';
+                statusLabel = '🟢 Open - Join Now!';
+                statusClass = 'live';
+            } else if (now >= roundStart && now < roundEnd) {
+                status = 'active';
+                statusLabel = '🔴 Active';
+                statusClass = 'live';
+            } else if (now >= roundEnd) {
+                status = 'ended';
+                statusLabel = '✅ Ended';
+                statusClass = 'ended';
+            }
+            
+            return {
+                roundNumber: currentRoundIndex + 1,
+                startTime: roundStart.toISOString(),
+                endTime: roundEnd.toISOString(),
+                joinStart: joinStart.toISOString(),
+                status: status,
+                statusLabel: statusLabel,
+                statusClass: statusClass,
+                isOpen: status === 'open',
+                isActive: status === 'active',
+                isEnded: status === 'ended'
+            };
+        }
+
+        // ========================================
+        // RENDER GAMES
+        // ========================================
+
+        function renderGames(games) {
+            const grid = document.getElementById('gameGrid');
+            
+            if (games.length === 0) {
+                grid.innerHTML = `
+                    <div style="grid-column:1/-1;text-align:center;padding:60px 20px;color:var(--muted);">
+                        <i class="fas fa-gamepad" style="font-size:3rem;opacity:0.3;display:block;margin-bottom:16px;"></i>
+                        <h3 style="color:var(--text);font-family:'Orbitron',monospace;font-size:1.1rem;">No Active Games</h3>
+                        <p style="margin-top:6px;font-size:0.9rem;">Check back soon for new games!</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = games.map(game => {
+                const round = game.currentRound;
+                const isOpen = round?.isOpen || false;
+                const isActive = round?.isActive || false;
+                const isEnded = round?.isEnded || false;
+                const isLive = isOpen || isActive;
+                
+                const entryFee = game.roundSettings.entryFee || 100;
+                const maxPlayers = game.roundSettings.maxPlayers || 50;
+                const currentPlayers = game.stats?.currentPlayers || 0;
+                const progress = (currentPlayers / maxPlayers) * 100;
+                const prizePool = currentPlayers * entryFee;
+                
+                // Calculate prize distribution
+                const tiers = game.prizeDistribution.tiers || { '1st': 60, '2nd': 25, '3rd': 15 };
+                const platformFee = game.prizeDistribution.platformFee || 10;
+                const platformAmount = prizePool * (platformFee / 100);
+                const totalPrizePool = prizePool - platformAmount;
+                
+                // Build prize display
+                let prizeHtml = '';
+                const rankEmojis = { '1st': '🥇', '2nd': '🥈', '3rd': '🥉' };
+                const rankClasses = { '1st': 'gold', '2nd': 'silver', '3rd': 'bronze' };
+                
+                let topPrizesHtml = '';
+                const tierKeys = Object.keys(tiers);
+                for (let i = 0; i < Math.min(tierKeys.length, 3); i++) {
+                    const key = tierKeys[i];
+                    const percent = tiers[key];
+                    const amount = Math.round(totalPrizePool * (percent / 100));
+                    const emoji = rankEmojis[key] || '🏅';
+                    const cls = rankClasses[key] || '';
+                    topPrizesHtml += `
+                        <div class="prize-rank ${cls}">
+                            <span class="rank-icon">${emoji}</span>
+                            <span class="rank-amount">${amount.toLocaleString()} RWF</span>
+                        </div>
+                    `;
+                }
+                
+                if (topPrizesHtml) {
+                    prizeHtml = `
+                        <div class="prize-display">
+                            <div class="prize-pool">
+                                <span class="pool-amount">${totalPrizePool.toLocaleString()} RWF</span>
+                                <span class="pool-label">🏆 Prize Pool</span>
+                            </div>
+                            <div class="top-prizes">${topPrizesHtml}</div>
+                        </div>
+                    `;
+                }
+
+                // Build round info
+                let roundInfoHtml = `
+                    <div class="round-info">
+                        <div class="round-item">
+                            <div class="round-label">Round #</div>
+                            <div class="round-value">${round?.roundNumber || 1}</div>
+                        </div>
+                        <div class="round-item">
+                            <div class="round-label">Duration</div>
+                            <div class="round-value">${game.roundSettings.duration} min</div>
+                        </div>
+                        <div class="round-item">
+                            <div class="round-label">Entry Fee</div>
+                            <div class="round-value gold">${entryFee.toLocaleString()} RWF</div>
+                        </div>
+                    </div>
+                `;
+
+                // Build countdown display
+                let countdownHtml = '';
+                if (isLive) {
+                    const endTime = isActive ? round.endTime : round.startTime;
+                    const timeRemaining = getTimeRemaining(endTime);
+                    const display = formatCountdown(timeRemaining, false);
+                    
+                    countdownHtml = `
+                        <div class="card-countdown">
+                            <span class="countdown-label">
+                                <i class="fas fa-${isActive ? 'hourglass-end' : 'hourglass-start'}"></i>
+                                ${isActive ? 'Ends in' : 'Starts in'}
+                            </span>
+                            <span class="countdown-timer ${isActive && timeRemaining.total < 300 ? 'urgent' : ''}" 
+                                  data-game-id="${game.id}" data-target="${endTime}">
+                                ${display}
+                            </span>
+                        </div>
+                    `;
+                }
+
+                // Build action buttons
+                let buttonsHtml = '';
+                
+                // Demo button - always available
+                buttonsHtml += `
+                    <button class="btn btn-demo" onclick="openDemo('${game.id}')">
+                        <i class="fas fa-gamepad"></i> Demo <span style="font-size:0.5rem;background:rgba(255,255,255,0.2);padding:0 6px;border-radius:4px;">FREE</span>
+                    </button>
+                `;
+
+                // Main action button based on status
+                if (game.status === 'active') {
+                    if (isOpen) {
+                        // Round is open - can join
+                        const userHasJoined = currentUser && game.currentRound?.players && 
+                            game.currentRound.players[currentUser.uid];
+                        const isFull = currentPlayers >= maxPlayers;
+                        
+                        if (userHasJoined) {
+                            buttonsHtml += `
+                                <button class="btn btn-play" onclick="playGame('${game.id}')">
+                                    <i class="fas fa-play"></i> Play Now
+                                </button>
+                            `;
+                        } else if (isFull) {
+                            buttonsHtml += `
+                                <button class="btn btn-blocked" disabled>
+                                    <i class="fas fa-users"></i> Full (${currentPlayers}/${maxPlayers})
+                                </button>
+                            `;
+                        } else {
+                            buttonsHtml += `
+                                <button class="btn btn-join" onclick="joinRound('${game.id}')">
+                                    <i class="fas fa-ticket-alt"></i> Join (${entryFee} RWF)
+                                </button>
+                            `;
+                        }
+                    } else if (isActive) {
+                        // Round is active - check if user joined
+                        const userHasJoined = currentUser && game.currentRound?.players && 
+                            game.currentRound.players[currentUser.uid];
+                        if (userHasJoined && !game.currentRound.players[currentUser.uid]?.hasPlayed) {
+                            buttonsHtml += `
+                                <button class="btn btn-play" onclick="playGame('${game.id}')">
+                                    <i class="fas fa-play"></i> Play Now
+                                </button>
+                            `;
+                        } else if (userHasJoined) {
+                            buttonsHtml += `
+                                <button class="btn btn-blocked" disabled>
+                                    <i class="fas fa-check"></i> Already Played
+                                </button>
+                            `;
+                        } else {
+                            buttonsHtml += `
+                                <button class="btn btn-waiting" disabled>
+                                    <i class="fas fa-clock"></i> Round in Progress
+                                </button>
+                            `;
+                        }
+                    } else if (isEnded) {
+                        buttonsHtml += `
+                            <button class="btn btn-waiting" disabled>
+                                <i class="fas fa-hourglass-end"></i> Next Round Soon
+                            </button>
+                        `;
+                    }
+                } else {
+                    buttonsHtml += `
+                        <button class="btn btn-blocked" disabled>
+                            <i class="fas fa-pause-circle"></i> ${game.status === 'maintenance' ? 'Maintenance' : 'Inactive'}
+                        </button>
+                    `;
+                }
+
+                // Info button
+                buttonsHtml += `
+                    <button class="btn btn-info" onclick="showGameInfo('${game.id}')" title="Game Info">
+                        <i class="fas fa-info-circle"></i>
+                    </button>
+                `;
+
+                // Image with fallback
+                let imageHtml = '';
+                if (game.image) {
+                    imageHtml = `
+                        <img src="${game.image}" alt="${game.name}" loading="lazy" 
+                             onerror="this.style.display='none';this.parentNode.querySelector('.placeholder-icon').style.display='flex';">
+                        <span class="placeholder-icon" style="display:none;position:absolute;inset:0;align-items:center;justify-content:center;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+                            <i class="fas fa-gamepad"></i>
+                        </span>
+                    `;
+                } else {
+                    imageHtml = `
+                        <span style="display:flex;align-items:center;justify-content:center;width:100%;height:100%;font-size:3rem;opacity:0.3;color:var(--primary);background:linear-gradient(135deg,var(--bg2),#0D1B2A);">
+                            <i class="fas fa-gamepad"></i>
+                        </span>
+                    `;
+                }
+
+                const statusClass = game.status === 'active' ? 'active' : 
+                                   game.status === 'maintenance' ? 'maintenance' : 'inactive';
+                const statusLabel = game.status === 'active' ? '🟢 Active' :
+                                   game.status === 'maintenance' ? '🟡 Maintenance' : '🔴 Inactive';
+
+                return `
+                    <div class="game-card" data-id="${game.id}">
+                        <div class="card-cover">
+                            ${imageHtml}
+                            <span class="card-status-badge ${statusClass}">${statusLabel}</span>
+                            ${countdownHtml}
+                        </div>
+                        <div class="card-body">
+                            <div class="card-title">${game.name}</div>
+                            <div class="card-category"><i class="fas fa-tag" style="color:var(--primary);font-size:0.65rem;"></i> ${game.category}</div>
+                            
+                            <div class="card-meta">
+                                <div class="meta-item">
+                                    <i class="fas fa-coins"></i>
+                                    Entry: <strong>${entryFee.toLocaleString()} RWF</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-trophy"></i>
+                                    Prize: <strong class="gold">${totalPrizePool > 0 ? totalPrizePool.toLocaleString() : '0'} RWF</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-clock"></i>
+                                    Round: <strong>${game.roundSettings.duration} min</strong>
+                                </div>
+                                <div class="meta-item">
+                                    <i class="fas fa-user-friends"></i>
+                                    Players: <strong>${currentPlayers}/${maxPlayers}</strong>
+                                </div>
+                            </div>
+
+                            ${prizeHtml}
+                            ${roundInfoHtml}
+
+                            <div class="card-players">
+                                <span style="font-size:0.6rem;color:var(--muted);">Capacity</span>
+                                <div class="progress-bar">
+                                    <div class="fill" style="width:${Math.min(progress, 100)}%;"></div>
+                                </div>
+                                <span class="count"><strong>${currentPlayers}</strong> / ${maxPlayers}</span>
+                            </div>
+
+                            ${game.description ? `<div style="font-size:0.7rem;color:var(--muted);margin-top:6px;">${game.description}</div>` : ''}
+
+                            <div class="card-actions">
+                                ${buttonsHtml}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // Start countdown timers for active games
+            games.forEach(game => {
+                if (game.status === 'active' && game.currentRound) {
+                    const isLive = game.currentRound.isOpen || game.currentRound.isActive;
+                    if (isLive) {
+                        const targetTime = game.currentRound.isActive ? 
+                            game.currentRound.endTime : game.currentRound.startTime;
+                        startCountdownTimer(game.id, targetTime);
+                    }
+                }
+            });
+        }
+
+        // ========================================
+        // COUNTDOWN HELPERS
+        // ========================================
+
+        function getTimeRemaining(targetTime) {
+            const now = Date.now();
+            const target = new Date(targetTime).getTime();
+            const diff = target - now;
+            
+            if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return { days, hours, minutes, seconds, total: diff };
+        }
+
+        function formatCountdown(time, showDays = true) {
+            if (time.total <= 0) return '00:00';
+            
+            if (showDays && time.days > 0) {
+                return `${time.days}d ${String(time.hours).padStart(2, '0')}h ${String(time.minutes).padStart(2, '0')}m`;
+            }
+            
+            if (time.hours > 0) {
+                return `${String(time.hours).padStart(2, '0')}:${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
+            }
+            
+            return `${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
+        }
+
+        // ========================================
+        // START COUNTDOWN TIMER
+        // ========================================
+
+        function startCountdownTimer(gameId, targetTime) {
+            if (countdownIntervals[gameId]) {
+                clearInterval(countdownIntervals[gameId]);
+            }
+
+            countdownIntervals[gameId] = setInterval(() => {
+                const timeRemaining = getTimeRemaining(targetTime);
+                const timerElement = document.querySelector(`[data-game-id="${gameId}"]`);
+                
+                if (!timerElement) {
+                    clearInterval(countdownIntervals[gameId]);
+                    return;
+                }
+
+                if (timeRemaining.total <= 0) {
+                    clearInterval(countdownIntervals[gameId]);
+                    timerElement.textContent = '00:00';
+                    timerElement.className = 'countdown-timer live-text';
+                    // Reload games to update round status
+                    loadGames();
+                    return;
+                }
+
+                const display = formatCountdown(timeRemaining, false);
+                timerElement.textContent = display;
+
+                if (timeRemaining.total < 300000) {
+                    timerElement.className = 'countdown-timer urgent';
+                } else {
+                    timerElement.className = 'countdown-timer';
+                }
+            }, 1000);
+        }
+
+        // ========================================
+        // JOIN ROUND
+        // ========================================
+
+        window.joinRound = async function(gameId) {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+
+            const game = allGames.find(g => g.id === gameId);
+            if (!game) {
+                showToast('Game not found', 'error');
+                return;
+            }
+
+            if (game.status !== 'active') {
+                showToast('Game is not active', 'error');
+                return;
+            }
+
+            if (!game.currentRound?.isOpen) {
+                showToast('Round is not open for joining', 'error');
+                return;
+            }
+
+            const entryFee = game.roundSettings.entryFee || 100;
+
+            if (userData.balance < entryFee) {
+                showToast(`Insufficient balance! Need ${entryFee} RWF`, 'error');
+                return;
+            }
+
+            const maxPlayers = game.roundSettings.maxPlayers || 50;
+            const currentPlayers = game.stats?.currentPlayers || 0;
+
+            if (currentPlayers >= maxPlayers) {
+                showToast('Round is full!', 'error');
+                return;
+            }
+
+            try {
+                // Deduct entry fee
+                const newBalance = userData.balance - entryFee;
+                await update(ref(db, `users/${currentUser.uid}`), { balance: newBalance });
+                userData.balance = newBalance;
+                document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
+
+                // Add player to round
+                const roundId = `round_${game.currentRound.roundNumber}`;
+                const playerData = {
+                    username: userData.username,
+                    joinedAt: new Date().toISOString(),
+                    hasPlayed: false,
+                    score: 0
+                };
+
+                await set(ref(db, `rounds/${gameId}/${roundId}/players/${currentUser.uid}`), playerData);
+
+                // Update game stats
+                await update(ref(db, `games/${gameId}/stats`), {
+                    currentPlayers: currentPlayers + 1,
+                    totalPlayers: (game.stats?.totalPlayers || 0) + 1,
+                    totalRevenue: (game.stats?.totalRevenue || 0) + entryFee,
+                    updatedAt: new Date().toISOString()
+                });
+
+                // Update user's current game
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    currentGameId: gameId
+                });
+
+                showToast(`✅ Joined round! Entry fee: ${entryFee} RWF`, 'success');
+
+                // Reload games to update UI
+                loadGames();
+
+                // Auto-open game after joining
+                setTimeout(() => {
+                    playGame(gameId);
+                }, 1500);
+
+            } catch (error) {
+                console.error('Error joining round:', error);
+                showToast('Error joining round. Please try again.', 'error');
+            }
+        };
+
+        // ========================================
+        // PLAY GAME
+        // ========================================
+
+        window.playGame = async function(gameId) {
+            if (!currentUser) {
+                showToast('Please login first', 'error');
+                return;
+            }
+
+            const game = allGames.find(g => g.id === gameId);
+            if (!game) {
+                showToast('Game not found', 'error');
+                return;
+            }
+
+            if (game.status !== 'active') {
+                showToast('Game is not active', 'error');
+                return;
+            }
+
+            // Check if user has already played this round
+            const roundId = `round_${game.currentRound.roundNumber}`;
+            try {
+                const playerRef = ref(db, `rounds/${gameId}/${roundId}/players/${currentUser.uid}`);
+                const snapshot = await get(playerRef);
+                
+                if (snapshot.exists() && snapshot.val().hasPlayed === true) {
+                    showToast('❌ You already played in this round!', 'error');
+                    return;
+                }
+
+                if (!snapshot.exists()) {
+                    showToast('Please join the round first!', 'error');
+                    return;
+                }
+            } catch (error) {
+                console.error('Error checking player status:', error);
+                showToast('Error checking player status', 'error');
+                return;
+            }
+
+            // Set fresh start flag
+            sessionStorage.setItem('ninjaRunFreshStart', 'true');
+            sessionStorage.removeItem('ninjaRunGameStarted');
+            sessionStorage.removeItem('ninjaRunAutoSubmitted');
+            sessionStorage.removeItem('ninjaRunDisconnected');
+            sessionStorage.removeItem('ninjaRunScore');
+            sessionStorage.removeItem('ninjaRunPlayed');
+            sessionStorage.removeItem('ninjaRunFinalScore');
+            sessionStorage.removeItem('ninjaRunComplete');
+            sessionStorage.removeItem('ninjaRunCheated');
+            sessionStorage.removeItem('ninjaRunTimerExpired');
+
+            // Set hasStartedGame flag
+            try {
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    hasStartedGame: true,
+                    currentGameId: gameId
+                });
+                userData.hasStartedGame = true;
+                userData.currentGameId = gameId;
+            } catch (error) {
+                console.error('Error setting hasStartedGame:', error);
+            }
+
+            // Open the game
+            const userId = currentUser.uid;
+            const gameUrl = `/game-wrapper.html?game=${encodeURIComponent(gameId)}&user=${userId}&round=${game.currentRound.roundNumber}`;
+            
+            const gameWindow = window.open(gameUrl, '_blank');
+            
+            if (!gameWindow) {
+                showToast('⚠️ Please allow pop-ups for this site', 'error');
+                return;
+            }
+
+            showToast(`🎮 Opening ${game.name}... Good luck!`, 'success');
+        };
+
+        // ========================================
+        // OPEN DEMO
+        // ========================================
+
+        window.openDemo = function(gameId) {
+            const game = allGames.find(g => g.id === gameId);
+            if (!game) {
+                showToast('Game not found', 'error');
+                return;
+            }
+
+            const demoUrl = `/game-wrapper.html?demo=true&game=${encodeURIComponent(gameId)}`;
+            const demoWindow = window.open(demoUrl, '_blank');
+            
+            if (!demoWindow) {
+                showToast('⚠️ Please allow pop-ups for this site', 'error');
+                return;
+            }
+
+            showToast('🎮 Demo mode - Practice as much as you want!', 'success');
+        };
+
+        // ========================================
+        // SHOW GAME INFO
+        // ========================================
+
+        window.showGameInfo = function(gameId) {
+            const game = allGames.find(g => g.id === gameId);
+            if (!game) {
+                showToast('Game not found', 'error');
+                return;
+            }
+
+            const entryFee = game.roundSettings.entryFee || 100;
+            const maxPlayers = game.roundSettings.maxPlayers || 50;
+            const currentPlayers = game.stats?.currentPlayers || 0;
+            const prizePool = currentPlayers * entryFee;
+            const platformFee = game.prizeDistribution.platformFee || 10;
+            const platformAmount = prizePool * (platformFee / 100);
+            const totalPrizePool = prizePool - platformAmount;
+
+            const tiers = game.prizeDistribution.tiers || { '1st': 60, '2nd': 25, '3rd': 15 };
+            let prizeDetails = '';
+            const rankNames = { '1st': '🥇 1st', '2nd': '🥈 2nd', '3rd': '🥉 3rd' };
+            for (const [rank, percent] of Object.entries(tiers)) {
+                const amount = Math.round(totalPrizePool * (percent / 100));
+                prizeDetails += `\n${rankNames[rank] || rank}: ${amount.toLocaleString()} RWF (${percent}%)`;
+            }
+
+            const message = `
+        🎮 ${game.name}
+        ━━━━━━━━━━━━━━━━━━━━━━
+        📂 Category: ${game.category}
+        📅 Status: ${game.status.toUpperCase()}
+        💰 Entry Fee: ${entryFee.toLocaleString()} RWF
+        👥 Players: ${currentPlayers}/${maxPlayers}
+        ⏱️ Round Duration: ${game.roundSettings.duration} minutes
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        🎁 PRIZE DISTRIBUTION:
+        ${prizeDetails || 'No prize distribution set'}
+        
+        ━━━━━━━━━━━━━━━━━━━━━━
+        💰 PAYOUT INFORMATION:
+        • Platform fee: ${platformFee}%
+        • Winners are paid AUTOMATICALLY
+        • Payouts are sent directly to your wallet
+        • Payments are processed within 24 hours
+        • Winners are determined by highest score
+        • In case of a tie, the player who finished first wins
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        ⏰ ROUND SCHEDULE:
+        • Rounds run 24/7 continuously
+        • Each round lasts ${game.roundSettings.duration} minutes
+        • Join window: ${game.roundSettings.joinWindow} minutes before round starts
+        • ${game.roundSettings.minPlayers} players minimum required
+        • ${maxPlayers} players maximum allowed
+
+        ━━━━━━━━━━━━━━━━━━━━━━
+        🔄 BREAK SYSTEM:
+        • 2+ players: ${game.roundSettings.breakDuration}s payout break
+        • 1 player: ${game.roundSettings.refundBreak}s refund break
+        • 0 players: No break
+            `;
+
+            alert(message);
+        };
+
+        // ========================================
+        // BREAK ANNOUNCEMENT
+        // ========================================
+
+        window.showBreak = function(gameId, playerCount, prizePool, nextRoundNumber) {
+            if (isBreakActive) return;
+            isBreakActive = true;
+
+            const overlay = document.getElementById('breakAnnouncement');
+            const timerEl = document.getElementById('breakTimer');
+            const progressBar = document.getElementById('breakProgressBar');
+            const iconEl = document.getElementById('breakIcon');
+            const titleEl = document.getElementById('breakTitle');
+            const subtitleEl = document.getElementById('breakSubtitle');
+            const playersEl = document.getElementById('breakPlayers');
+            const prizeEl = document.getElementById('breakPrizePool');
+            const nextRoundEl = document.getElementById('breakNextRound');
+            const messageEl = document.getElementById('breakMessage');
+
+            const game = allGames.find(g => g.id === gameId);
+            const breakDurationSetting = game?.roundSettings?.breakDuration || 10;
+            const refundBreakSetting = game?.roundSettings?.refundBreak || 5;
+
+            let breakDuration = 0;
+            let breakType = '';
+            let breakMessage = '';
+            let breakIcon = '';
+            let breakTitle = '';
+            let breakSubtitle = '';
+
+            if (playerCount >= 2) {
+                breakDuration = breakDurationSetting;
+                breakType = 'payout';
+                breakIcon = '🎉';
+                breakTitle = '🏆 Round Complete!';
+                breakSubtitle = 'Calculating winners and distributing prizes...';
+                breakMessage = `💰 ${prizePool.toLocaleString()} RWF prize pool being distributed to ${playerCount} players`;
+                overlay.className = 'break-announcement show break-payout';
+            } else if (playerCount === 1) {
+                breakDuration = refundBreakSetting;
+                breakType = 'refund';
+                breakIcon = '🔄';
+                breakTitle = '⏳ Not Enough Players';
+                breakSubtitle = 'Only 1 player joined this round';
+                breakMessage = `💸 ${prizePool.toLocaleString()} RWF being refunded to the player`;
+                overlay.className = 'break-announcement show break-refund';
+            } else {
+                breakDuration = 0;
+                breakType = 'skip';
+                breakIcon = '⏭️';
+                breakTitle = '⏭️ Round Skipped';
+                breakSubtitle = 'No players joined this round';
+                breakMessage = 'Moving to next round...';
+                overlay.className = 'break-announcement show break-skip';
+            }
+
+            iconEl.textContent = breakIcon;
+            titleEl.textContent = breakTitle;
+            subtitleEl.textContent = breakSubtitle;
+            playersEl.textContent = playerCount;
+            prizeEl.textContent = prizePool.toLocaleString() + ' RWF';
+            nextRoundEl.textContent = `#${nextRoundNumber}`;
+            messageEl.innerHTML = breakMessage;
+
+            if (breakDuration === 0) {
+                setTimeout(() => {
+                    hideBreak();
+                }, 500);
+                return;
+            }
+
+            overlay.classList.add('show');
+
+            let remaining = breakDuration;
+            timerEl.textContent = remaining;
+            progressBar.style.width = '100%';
+
+            if (breakIntervals[gameId]) {
+                clearInterval(breakIntervals[gameId]);
+            }
+
+            breakIntervals[gameId] = setInterval(() => {
+                remaining--;
+                timerEl.textContent = remaining;
+                const progressPercent = (remaining / breakDuration) * 100;
+                progressBar.style.width = progressPercent + '%';
+                messageEl.innerHTML = `${breakMessage} (${remaining}s remaining)`;
+
+                if (remaining <= 0) {
+                    clearInterval(breakIntervals[gameId]);
+                    breakIntervals[gameId] = null;
+                    hideBreak();
+                    loadGames();
+                }
+            }, 1000);
+
+            console.log(`⏰ Break: ${breakType} | ${breakDuration}s | Players: ${playerCount} | Prize: ${prizePool} RWF`);
+        };
+
+        function hideBreak() {
+            const overlay = document.getElementById('breakAnnouncement');
+            overlay.classList.remove('show');
+            isBreakActive = false;
+            if (breakIntervals) {
+                Object.keys(breakIntervals).forEach(key => {
+                    if (breakIntervals[key]) {
+                        clearInterval(breakIntervals[key]);
+                        breakIntervals[key] = null;
+                    }
+                });
             }
         }
 
@@ -548,72 +1677,22 @@
         }
 
         // ========================================
-        // LOAD GAME STATS (from Neon API)
-        // ========================================
-
-        async function loadGameStats() {
-            try {
-                const response = await fetch('https://shora-games-api.onrender.com/api/tournaments');
-                if (response.ok) {
-                    const tournaments = await response.json();
-                    const liveTournaments = tournaments.filter(t => t.status === 'live');
-                    
-                    if (liveTournaments.length > 0) {
-                        const latest = liveTournaments[0];
-                        document.getElementById('playerCount').textContent = (latest.current_players || 856).toLocaleString();
-                        document.getElementById('prizePool').textContent = (latest.prize_pool || 500).toLocaleString();
-                        document.getElementById('entryFee').textContent = (latest.entry_fee || 200).toLocaleString();
-                        document.getElementById('gameDuration').textContent = latest.duration || 5;
-                    }
-                }
-            } catch (error) {
-                console.log('ℹ️ Using default game stats');
-            }
-        }
-
-        // ========================================
-        // PLAY GAME - LAUNCH HEXGL
-      
-window.playGame = function() {
-    if (!currentUser) {
-        showToast('Please login first', 'error');
-        return;
-    }
-    
-    // ✅ Navigate to HexGL game wrapper (same folder)
-    window.location.href = 'game-wrapper-hexgl.html';
-};
-        // ========================================
         // TOAST
         // ========================================
 
         function showToast(message, type = 'info') {
-            const toast = document.createElement('div');
-            toast.style.cssText = `
-                position: fixed;
-                bottom: 20px;
-                left: 50%;
-                transform: translateX(-50%);
-                background: rgba(6,17,31,0.95);
-                backdrop-filter: blur(12px);
-                border: 1px solid ${type === 'error' ? '#FF4D6D' : 'rgba(0,191,255,0.3)'};
-                border-radius: 50px;
-                padding: 10px 24px;
-                color: ${type === 'error' ? '#FF4D6D' : '#00BFFF'};
-                font-size: 0.85rem;
-                z-index: 9999;
-                max-width: 90%;
-                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
-                animation: slideUp 0.3s ease;
-                font-family: 'Inter', sans-serif;
-            `;
-            toast.textContent = message;
-            document.body.appendChild(toast);
-            setTimeout(() => {
-                toast.style.opacity = '0';
-                toast.style.transition = 'opacity 0.5s ease';
-                setTimeout(() => toast.remove(), 500);
-            }, 3000);
+            const toast = document.getElementById('toast');
+            const msg = document.getElementById('toastMessage');
+            msg.textContent = message;
+            toast.className = 'toast-cyber';
+            if (type === 'error') toast.classList.add('error');
+            if (type === 'success') toast.classList.add('success');
+            if (type === 'warning') toast.classList.add('warning');
+            toast.style.display = 'flex';
+            clearTimeout(window.toastTimeout);
+            window.toastTimeout = setTimeout(() => {
+                toast.style.display = 'none';
+            }, 4000);
         }
 
         // ========================================
@@ -632,12 +1711,10 @@ window.playGame = function() {
         // CONSOLE
         // ========================================
 
-        console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 18px; font-weight: bold;');
-        console.log('%c🏎️ HexGL - Ready to race!', 'color: #FFD700; font-size: 14px;');
-        console.log('%c📁 Game path: games/game-wrapper-hexgl.html', 'color: #A7B5C5;');
-        console.log('%c👤 User:', userData.username, '| Balance:', userData.balance, 'RWF', 'color: #FFD700;');
-
-        window.showToast = showToast;
+        console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 20px; font-weight: bold;');
+        console.log('%c🔄 24/7 Continuous Rounds System', 'color: #00E676; font-size: 14px;');
+        console.log('%c⏰ Break System: 10s payout | 5s refund | 0s skip', 'color: #FFD700; font-size: 14px;');
+        console.log('%c🎯 All settings come from Admin Game Management', 'color: #FF6B6B; font-size: 14px;');
     </script>
 
 </body>
