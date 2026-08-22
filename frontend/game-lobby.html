@@ -1,10 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <!-- ===== FAVICON ===== -->
-    <link rel="icon" type="image/png" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
-    <link rel="apple-touch-icon" href="https://raw.githubusercontent.com/ntwari200/shora-games/main/frontend/assets/icons/shora-icon.png">
-    <meta name="theme-color" content="#06111F">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>Game Lobby - Shora Games</title>
@@ -14,7 +10,7 @@
     
     <style>
         /* ========================================
-           ALL STYLES - SAME AS TOURNAMENTS.HTML
+           ALL STYLES FROM TOURNAMENTS.HTML
            ======================================== */
         :root {
             --bg: #06111F;
@@ -214,37 +210,6 @@
         .game-card .card-cover .card-status-badge.inactive { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
         .game-card .card-cover .card-status-badge.maintenance { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
 
-        /* ===== ROUND COUNTDOWN OVERLAY ===== */
-        .game-card .card-countdown {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            padding: 8px 16px;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(8px);
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-        }
-        .game-card .card-countdown .countdown-label {
-            font-size: 0.5rem;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            color: var(--muted);
-        }
-        .game-card .card-countdown .countdown-timer {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: var(--primary);
-        }
-        .game-card .card-countdown .countdown-timer.urgent { color: var(--danger); animation: timerPulse 1s ease-in-out infinite; }
-        .game-card .card-countdown .countdown-timer.live-text { color: var(--success); font-size: 0.8rem; }
-
-        @keyframes timerPulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
         /* ===== CARD BODY ===== */
         .game-card .card-body { padding: 16px 18px; }
         .game-card .card-body .card-title { font-family: 'Orbitron', monospace; font-size: 1rem; margin-bottom: 4px; }
@@ -317,40 +282,6 @@
         .prize-display .prize-rank.silver .rank-amount { color: #C0C0C0; }
         .prize-display .prize-rank.bronze .rank-amount { color: #CD7F32; }
 
-        /* ===== ROUND INFO ===== */
-        .round-info {
-            display: grid;
-            grid-template-columns: 1fr 1fr 1fr;
-            gap: 8px;
-            margin: 8px 0;
-            padding: 8px;
-            background: rgba(0, 191, 255, 0.03);
-            border-radius: 8px;
-            border: 1px solid rgba(0, 191, 255, 0.05);
-        }
-
-        .round-info .round-item {
-            text-align: center;
-        }
-
-        .round-info .round-item .round-label {
-            font-size: 0.5rem;
-            color: var(--muted);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .round-info .round-item .round-value {
-            font-family: 'Orbitron', monospace;
-            font-size: 0.8rem;
-            font-weight: 600;
-            color: var(--text);
-        }
-
-        .round-info .round-item .round-value.gold { color: var(--gold); }
-        .round-info .round-item .round-value.success { color: var(--success); }
-        .round-info .round-item .round-value.danger { color: var(--danger); }
-
         /* ===== CARD ACTIONS ===== */
         .game-card .card-body .card-actions {
             display: flex;
@@ -376,45 +307,85 @@
             min-width: 80px;
         }
 
-        .btn-join {
+        /* ===== DEMO BUTTON - ALWAYS VISIBLE ===== */
+        .btn-card-demo {
+            background: linear-gradient(135deg, #FF1744, #D50000);
+            color: #fff;
+            border: 1px solid rgba(255, 23, 68, 0.3);
+            box-shadow: 0 0 20px rgba(255, 23, 68, 0.2);
+            animation: demoPulse 2s ease-in-out infinite;
+            flex: 1 !important;
+        }
+        .btn-card-demo:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 30px rgba(255, 23, 68, 0.4);
+            background: linear-gradient(135deg, #FF5252, #D50000);
+        }
+        .btn-card-demo i { 
+            color: #fff; 
+            animation: demoSpin 3s linear infinite;
+        }
+        
+        @keyframes demoPulse {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 23, 68, 0.2); }
+            50% { box-shadow: 0 0 40px rgba(255, 23, 68, 0.5); }
+        }
+        
+        @keyframes demoSpin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .btn-card-demo .demo-badge {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0 6px;
+            border-radius: 4px;
+            font-size: 0.5rem;
+            font-weight: 700;
+            margin-left: 2px;
+        }
+
+        /* ===== JOIN NOW BUTTON - GREEN (Like Tournaments) ===== */
+        .btn-card-join {
             background: linear-gradient(135deg, var(--success), #00C853);
             color: #000;
+            font-weight: 700;
         }
-        .btn-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
-        .btn-join:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-card-join:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(0, 230, 118, 0.3); }
+        .btn-card-join:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
 
-        .btn-play {
+        /* ===== PLAY NOW BUTTON - GOLD (Like Tournaments) ===== */
+        .btn-card-play {
             background: linear-gradient(135deg, var(--gold), #FFA000);
             color: #000;
             font-weight: 700;
         }
-        .btn-play:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); }
-        .btn-play:disabled { opacity: 0.5; cursor: not-allowed; transform: none !important; box-shadow: none !important; }
+        .btn-card-play:hover { 
+            transform: translateY(-2px); 
+            box-shadow: 0 8px 25px rgba(255, 200, 87, 0.3); 
+        }
+        .btn-card-play:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+            box-shadow: none !important;
+        }
 
-        .btn-blocked {
+        /* ===== BLOCKED / LOCKED BUTTON ===== */
+        .btn-card-blocked {
             background: rgba(255, 77, 109, 0.1);
             color: var(--danger);
             border: 1px solid rgba(255, 77, 109, 0.2);
             cursor: not-allowed;
         }
 
-        .btn-waiting {
-            background: rgba(255, 200, 87, 0.1);
-            color: var(--gold);
-            border: 1px solid rgba(255, 200, 87, 0.2);
-            cursor: not-allowed;
-        }
-
-        .btn-demo {
-            background: linear-gradient(135deg, #FF1744, #D50000);
-            color: #fff;
-            border: 1px solid rgba(255, 23, 68, 0.3);
-            box-shadow: 0 0 20px rgba(255, 23, 68, 0.2);
-            flex: 1 !important;
-        }
-        .btn-demo:hover { transform: translateY(-2px); box-shadow: 0 8px 30px rgba(255, 23, 68, 0.4); }
-
-        .btn-info {
+        /* ===== INFO BUTTON ===== */
+        .btn-card-view {
             background: rgba(255,255,255,0.05);
             color: var(--text);
             border: 1px solid rgba(255,255,255,0.1);
@@ -422,7 +393,7 @@
             min-width: auto !important;
             padding: 8px 12px !important;
         }
-        .btn-info:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
+        .btn-card-view:hover { border-color: var(--primary); background: rgba(0, 191, 255, 0.05); }
 
         /* ===== PLAYER PROGRESS ===== */
         .game-card .card-body .card-players {
@@ -450,61 +421,6 @@
             white-space: nowrap;
         }
         .game-card .card-body .card-players .count strong { color: var(--text); }
-
-        /* ===== BREAK ANNOUNCEMENT ===== */
-        .break-announcement {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.92);
-            backdrop-filter: blur(16px);
-            z-index: 9999;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-        }
-
-        .break-announcement.show { display: flex; }
-
-        .break-content {
-            text-align: center;
-            max-width: 500px;
-            width: 90%;
-            animation: slideUp 0.5s ease;
-        }
-
-        .break-content .break-icon { font-size: 4rem; margin-bottom: 20px; animation: pulse 1s ease-in-out infinite; }
-        .break-content .break-title { font-family: 'Orbitron', monospace; font-size: 2rem; font-weight: 700; margin-bottom: 8px; }
-        .break-content .break-subtitle { color: var(--muted); font-size: 1rem; margin-bottom: 20px; }
-        .break-content .break-timer { font-family: 'Orbitron', monospace; font-size: 4rem; font-weight: 900; color: var(--gold); margin-bottom: 20px; text-shadow: 0 0 40px rgba(255, 215, 0, 0.3); }
-        .break-content .break-progress { width: 100%; height: 6px; background: rgba(255,255,255,0.1); border-radius: 10px; overflow: hidden; margin-bottom: 20px; }
-        .break-content .break-progress-bar { height: 100%; background: linear-gradient(90deg, var(--gold), var(--primary)); border-radius: 10px; width: 100%; transition: width 0.3s linear; }
-        .break-content .break-details { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; margin-top: 16px; }
-        .break-content .break-detail-item { background: rgba(255,255,255,0.05); border-radius: 10px; padding: 12px; }
-        .break-content .break-detail-item .label { font-size: 0.6rem; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
-        .break-content .break-detail-item .value { font-family: 'Orbitron', monospace; font-size: 1.1rem; font-weight: 700; margin-top: 4px; }
-        .break-content .break-detail-item .value.gold { color: var(--gold); }
-        .break-content .break-detail-item .value.success { color: var(--success); }
-
-        .break-payout .break-title { color: var(--success); }
-        .break-payout .break-icon { color: var(--success); }
-        .break-refund .break-title { color: var(--gold); }
-        .break-refund .break-icon { color: var(--gold); }
-        .break-skip .break-title { color: var(--muted); }
-        .break-skip .break-icon { color: var(--muted); }
-
-        @keyframes slideUp {
-            from { opacity: 0; transform: translateY(30px) scale(0.95); }
-            to { opacity: 1; transform: translateY(0) scale(1); }
-        }
-
-        @keyframes pulse {
-            0%, 100% { transform: scale(1); opacity: 1; }
-            50% { transform: scale(1.1); opacity: 0.8; }
-        }
 
         /* ===== TOAST ===== */
         .toast-cyber {
@@ -537,8 +453,6 @@
             .game-grid { grid-template-columns: 1fr 1fr; }
             .page-header h1 { font-size: 1rem; }
             .game-card .card-cover { height: 140px; }
-            .break-content { padding: 20px; }
-            .break-content .break-timer { font-size: 3rem; }
         }
 
         @media (max-width: 480px) {
@@ -548,18 +462,13 @@
             .game-card .card-body { padding: 12px 14px; }
             .game-card .card-body .card-title { font-size: 0.9rem; }
             .game-card .card-body .card-actions .btn { font-size: 0.65rem; padding: 6px 12px; }
-            .game-card .card-countdown .countdown-timer { font-size: 0.7rem; }
             .nav-right { flex-wrap: wrap; justify-content: center; }
             .nav-right .username-display { width: 100%; text-align: center; justify-content: center; }
-            .round-info { grid-template-columns: 1fr 1fr; }
-            .break-content .break-timer { font-size: 2.5rem; }
-            .break-content .break-details { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 360px) {
             .game-grid { grid-template-columns: 1fr; }
             .game-card .card-body .card-meta { grid-template-columns: 1fr; }
-            .round-info { grid-template-columns: 1fr; }
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -650,47 +559,12 @@
 
         <!-- ===== GAME GRID ===== -->
         <div id="gameGrid" class="game-grid">
-            <!-- Games will be rendered here -->
             <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);">
                 <div class="loading-spinner" style="display:inline-block;width:30px;height:30px;border:3px solid rgba(255,255,255,0.1);border-top:3px solid var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;"></div>
                 <p style="margin-top:12px;">Loading games...</p>
             </div>
         </div>
 
-    </div>
-
-    <!-- ===== BREAK ANNOUNCEMENT OVERLAY ===== -->
-    <div class="break-announcement" id="breakAnnouncement">
-        <div class="break-content">
-            <div class="break-icon" id="breakIcon">⏳</div>
-            <div class="break-title" id="breakTitle">Round Break</div>
-            <div class="break-subtitle" id="breakSubtitle">Processing results...</div>
-            
-            <div class="break-timer" id="breakTimer">10</div>
-            
-            <div class="break-progress">
-                <div class="break-progress-bar" id="breakProgressBar" style="width:100%;"></div>
-            </div>
-            
-            <div class="break-details">
-                <div class="break-detail-item">
-                    <div class="label">Players</div>
-                    <div class="value" id="breakPlayers">0</div>
-                </div>
-                <div class="break-detail-item">
-                    <div class="label">Prize Pool</div>
-                    <div class="value gold" id="breakPrizePool">0 RWF</div>
-                </div>
-                <div class="break-detail-item">
-                    <div class="label">Next Round</div>
-                    <div class="value success" id="breakNextRound">#2</div>
-                </div>
-            </div>
-            
-            <div style="margin-top:20px;font-size:0.7rem;color:var(--muted);" id="breakMessage">
-                <i class="fas fa-spinner fa-spin"></i> Processing...
-            </div>
-        </div>
     </div>
 
     <!-- ===== TOAST ===== -->
@@ -717,7 +591,7 @@
         // ========================================
 
         import { initializeApp } from "firebase/app";
-        import { getDatabase, ref, onValue, get, update, set, remove, push } from "firebase/database";
+        import { getDatabase, ref, onValue, get, update, set, push } from "firebase/database";
         import { getAuth, onAuthStateChanged } from "firebase/auth";
 
         // ========================================
@@ -742,10 +616,7 @@
         let currentUser = null;
         let userData = { balance: 0, username: 'Player' };
         let allGames = [];
-        let countdownIntervals = {};
-        let breakIntervals = {};
-        let selectedGameId = null;
-        let isBreakActive = false;
+        let userJoinedRounds = {}; // Track which rounds user has joined
 
         // ========================================
         // AUTH STATE
@@ -776,9 +647,7 @@
                         balance: data.balance || 0,
                         username: data.username || 'Player',
                         email: data.email || '',
-                        phone: data.phone || '',
-                        hasStartedGame: data.hasStartedGame || false,
-                        currentGameId: data.currentGameId || null
+                        phone: data.phone || ''
                     };
                 }
                 document.getElementById('navUsername').textContent = userData.username;
@@ -822,6 +691,10 @@
                 // Get current round info
                 const currentRound = getCurrentRound(game);
                 
+                // Check if user has joined this round
+                const userHasJoined = currentUser && currentRound?.roundId && 
+                    userJoinedRounds[currentRound.roundId] === true;
+                
                 games.push({
                     id: id,
                     name: game.name || 'Unnamed Game',
@@ -830,9 +703,9 @@
                     description: game.description || '',
                     status: game.status || 'active',
                     isActive: game.isActive || false,
+                    locked: game.locked || false,  // IMPORTANT: Lock status from admin
                     url: game.url || '',
                     
-                    // Round settings from admin
                     roundSettings: {
                         duration: game.roundSettings?.duration || 15,
                         joinWindow: game.roundSettings?.joinWindow || 5,
@@ -844,16 +717,16 @@
                         enabled: game.roundSettings?.enabled || false
                     },
                     
-                    // Prize distribution from admin
                     prizeDistribution: {
                         tiers: game.prizeDistribution?.tiers || { '1st': 60, '2nd': 25, '3rd': 15 },
-                        platformFee: game.prizeDistribution?.platformFee || 10
+                        platformFee: game.prizeDistribution?.platformFee || 10,
+                        distributionModel: game.prizeDistribution?.distributionModel || 'dynamic',
+                        participationBonus: game.prizeDistribution?.participationBonus || false
                     },
                     
-                    // Current round info
                     currentRound: currentRound,
+                    userHasJoined: userHasJoined,
                     
-                    // Stats
                     stats: game.stats || {
                         totalRounds: 0,
                         totalPlayers: 0,
@@ -870,7 +743,7 @@
                 totalPlayers += game.stats?.currentPlayers || 0;
             }
 
-            // Sort: Active games first, then by name
+            // Sort: Active games first
             games.sort((a, b) => {
                 if (a.status === 'active' && b.status !== 'active') return -1;
                 if (a.status !== 'active' && b.status === 'active') return 1;
@@ -882,13 +755,6 @@
             document.getElementById('gameBadge').textContent = games.filter(g => g.status === 'active').length;
             
             renderGames(games);
-            
-            // Start countdowns for active games
-            games.forEach(game => {
-                if (game.status === 'active' && game.currentRound) {
-                    startGameCountdown(game);
-                }
-            });
         }
 
         // ========================================
@@ -900,7 +766,6 @@
             const duration = game.roundSettings?.duration || 15;
             const joinWindow = game.roundSettings?.joinWindow || 5;
             
-            // Calculate current round based on time
             const startOfDay = new Date(now);
             startOfDay.setHours(0, 0, 0, 0);
             
@@ -915,6 +780,8 @@
             
             const joinStart = new Date(roundStart);
             joinStart.setMinutes(joinStart.getMinutes() - joinWindow);
+            
+            const roundId = `round_${currentRoundIndex + 1}`;
             
             let status = 'scheduled';
             let statusLabel = '⏳ Upcoming';
@@ -935,6 +802,7 @@
             }
             
             return {
+                roundId: roundId,
                 roundNumber: currentRoundIndex + 1,
                 startTime: roundStart.toISOString(),
                 endTime: roundEnd.toISOString(),
@@ -971,13 +839,16 @@
                 const isOpen = round?.isOpen || false;
                 const isActive = round?.isActive || false;
                 const isEnded = round?.isEnded || false;
-                const isLive = isOpen || isActive;
                 
                 const entryFee = game.roundSettings.entryFee || 100;
                 const maxPlayers = game.roundSettings.maxPlayers || 50;
                 const currentPlayers = game.stats?.currentPlayers || 0;
                 const progress = (currentPlayers / maxPlayers) * 100;
                 const prizePool = currentPlayers * entryFee;
+                
+                const isLocked = game.locked || false;  // Lock status from admin
+                const userHasJoined = game.userHasJoined || false;
+                const isFull = currentPlayers >= maxPlayers;
                 
                 // Calculate prize distribution
                 const tiers = game.prizeDistribution.tiers || { '1st': 60, '2nd': 25, '3rd': 15 };
@@ -1018,128 +889,78 @@
                     `;
                 }
 
-                // Build round info
-                let roundInfoHtml = `
-                    <div class="round-info">
-                        <div class="round-item">
-                            <div class="round-label">Round #</div>
-                            <div class="round-value">${round?.roundNumber || 1}</div>
-                        </div>
-                        <div class="round-item">
-                            <div class="round-label">Duration</div>
-                            <div class="round-value">${game.roundSettings.duration} min</div>
-                        </div>
-                        <div class="round-item">
-                            <div class="round-label">Entry Fee</div>
-                            <div class="round-value gold">${entryFee.toLocaleString()} RWF</div>
-                        </div>
-                    </div>
-                `;
-
-                // Build countdown display
-                let countdownHtml = '';
-                if (isLive) {
-                    const endTime = isActive ? round.endTime : round.startTime;
-                    const timeRemaining = getTimeRemaining(endTime);
-                    const display = formatCountdown(timeRemaining, false);
-                    
-                    countdownHtml = `
-                        <div class="card-countdown">
-                            <span class="countdown-label">
-                                <i class="fas fa-${isActive ? 'hourglass-end' : 'hourglass-start'}"></i>
-                                ${isActive ? 'Ends in' : 'Starts in'}
-                            </span>
-                            <span class="countdown-timer ${isActive && timeRemaining.total < 300 ? 'urgent' : ''}" 
-                                  data-game-id="${game.id}" data-target="${endTime}">
-                                ${display}
-                            </span>
-                        </div>
-                    `;
-                }
-
-                // Build action buttons
+                // ===== BUILD CARD ACTIONS =====
                 let buttonsHtml = '';
                 
-                // Demo button - always available
+                // 1. DEMO BUTTON - ALWAYS VISIBLE
                 buttonsHtml += `
-                    <button class="btn btn-demo" onclick="openDemo('${game.id}')">
-                        <i class="fas fa-gamepad"></i> Demo <span style="font-size:0.5rem;background:rgba(255,255,255,0.2);padding:0 6px;border-radius:4px;">FREE</span>
+                    <button class="btn btn-card-demo" onclick="openDemo('${game.id}')" title="Practice mode - Always available">
+                        <i class="fas fa-gamepad"></i> Demo <span class="demo-badge">FREE</span>
                     </button>
                 `;
 
-                // Main action button based on status
-                if (game.status === 'active') {
-                    if (isOpen) {
-                        // Round is open - can join
-                        const userHasJoined = currentUser && game.currentRound?.players && 
-                            game.currentRound.players[currentUser.uid];
-                        const isFull = currentPlayers >= maxPlayers;
-                        
-                        if (userHasJoined) {
-                            buttonsHtml += `
-                                <button class="btn btn-play" onclick="playGame('${game.id}')">
-                                    <i class="fas fa-play"></i> Play Now
-                                </button>
-                            `;
-                        } else if (isFull) {
-                            buttonsHtml += `
-                                <button class="btn btn-blocked" disabled>
-                                    <i class="fas fa-users"></i> Full (${currentPlayers}/${maxPlayers})
-                                </button>
-                            `;
-                        } else {
-                            buttonsHtml += `
-                                <button class="btn btn-join" onclick="joinRound('${game.id}')">
-                                    <i class="fas fa-ticket-alt"></i> Join (${entryFee} RWF)
-                                </button>
-                            `;
-                        }
+                // 2. MAIN ACTION BUTTON
+                // Check if game is LOCKED (from admin panel)
+                if (isLocked) {
+                    // Game is locked - ONLY show Demo button, no join/play
+                    // (Demo button is already added above)
+                    buttonsHtml += `
+                        <button class="btn btn-card-blocked" disabled>
+                            <i class="fas fa-lock"></i> Locked
+                        </button>
+                    `;
+                } else if (game.status === 'active') {
+                    // Game is UNLOCKED
+                    if (userHasJoined) {
+                        // User already joined this round → Show Play Now
+                        buttonsHtml += `
+                            <button class="btn btn-card-play" onclick="playGame('${game.id}')">
+                                <i class="fas fa-play"></i> Play Now
+                            </button>
+                        `;
+                    } else if (isOpen && !isFull) {
+                        // Round is open and not full → Show Join Now (Green)
+                        buttonsHtml += `
+                            <button class="btn btn-card-join" onclick="joinRound('${game.id}')">
+                                <i class="fas fa-ticket-alt"></i> Join Now (${entryFee} RWF)
+                            </button>
+                        `;
+                    } else if (isFull) {
+                        buttonsHtml += `
+                            <button class="btn btn-card-blocked" disabled>
+                                <i class="fas fa-users"></i> Full (${currentPlayers}/${maxPlayers})
+                            </button>
+                        `;
                     } else if (isActive) {
-                        // Round is active - check if user joined
-                        const userHasJoined = currentUser && game.currentRound?.players && 
-                            game.currentRound.players[currentUser.uid];
-                        if (userHasJoined && !game.currentRound.players[currentUser.uid]?.hasPlayed) {
-                            buttonsHtml += `
-                                <button class="btn btn-play" onclick="playGame('${game.id}')">
-                                    <i class="fas fa-play"></i> Play Now
-                                </button>
-                            `;
-                        } else if (userHasJoined) {
-                            buttonsHtml += `
-                                <button class="btn btn-blocked" disabled>
-                                    <i class="fas fa-check"></i> Already Played
-                                </button>
-                            `;
-                        } else {
-                            buttonsHtml += `
-                                <button class="btn btn-waiting" disabled>
-                                    <i class="fas fa-clock"></i> Round in Progress
-                                </button>
-                            `;
-                        }
+                        // Round is active but user hasn't joined
+                        buttonsHtml += `
+                            <button class="btn btn-card-blocked" disabled>
+                                <i class="fas fa-clock"></i> Round in Progress
+                            </button>
+                        `;
                     } else if (isEnded) {
                         buttonsHtml += `
-                            <button class="btn btn-waiting" disabled>
+                            <button class="btn btn-card-blocked" disabled>
                                 <i class="fas fa-hourglass-end"></i> Next Round Soon
                             </button>
                         `;
                     }
                 } else {
                     buttonsHtml += `
-                        <button class="btn btn-blocked" disabled>
+                        <button class="btn btn-card-blocked" disabled>
                             <i class="fas fa-pause-circle"></i> ${game.status === 'maintenance' ? 'Maintenance' : 'Inactive'}
                         </button>
                     `;
                 }
 
-                // Info button
+                // 3. INFO BUTTON
                 buttonsHtml += `
-                    <button class="btn btn-info" onclick="showGameInfo('${game.id}')" title="Game Info">
+                    <button class="btn btn-card-view" onclick="showGameInfo('${game.id}')" title="Game Info">
                         <i class="fas fa-info-circle"></i>
                     </button>
                 `;
 
-                // Image with fallback
+                // ===== IMAGE HTML =====
                 let imageHtml = '';
                 if (game.image) {
                     imageHtml = `
@@ -1157,17 +978,39 @@
                     `;
                 }
 
+                // Status badge
                 const statusClass = game.status === 'active' ? 'active' : 
                                    game.status === 'maintenance' ? 'maintenance' : 'inactive';
                 const statusLabel = game.status === 'active' ? '🟢 Active' :
                                    game.status === 'maintenance' ? '🟡 Maintenance' : '🔴 Inactive';
+
+                // Lock badge
+                let lockBadgeHtml = '';
+                if (isLocked) {
+                    lockBadgeHtml = `<span style="position:absolute;top:12px;left:12px;padding:4px 12px;border-radius:30px;font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);color:var(--danger);">🔒 Locked</span>`;
+                } else {
+                    lockBadgeHtml = `<span style="position:absolute;top:12px;left:12px;padding:4px 12px;border-radius:30px;font-size:0.55rem;font-weight:700;text-transform:uppercase;letter-spacing:1px;background:rgba(0,0,0,0.7);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,0.1);color:var(--success);">🔓 Open</span>`;
+                }
+
+                // Round status label
+                let roundStatusHtml = '';
+                if (round) {
+                    roundStatusHtml = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;padding:4px 10px;background:rgba(0,191,255,0.05);border-radius:6px;margin-top:6px;border:1px solid rgba(0,191,255,0.05);">
+                            <span style="font-size:0.6rem;color:var(--muted);">Round #${round.roundNumber}</span>
+                            <span style="font-size:0.6rem;font-weight:600;color:${round.isOpen ? 'var(--success)' : round.isActive ? 'var(--gold)' : 'var(--muted)'}">
+                                ${round.statusLabel}
+                            </span>
+                        </div>
+                    `;
+                }
 
                 return `
                     <div class="game-card" data-id="${game.id}">
                         <div class="card-cover">
                             ${imageHtml}
                             <span class="card-status-badge ${statusClass}">${statusLabel}</span>
-                            ${countdownHtml}
+                            ${lockBadgeHtml}
                         </div>
                         <div class="card-body">
                             <div class="card-title">${game.name}</div>
@@ -1193,7 +1036,7 @@
                             </div>
 
                             ${prizeHtml}
-                            ${roundInfoHtml}
+                            ${roundStatusHtml}
 
                             <div class="card-players">
                                 <span style="font-size:0.6rem;color:var(--muted);">Capacity</span>
@@ -1212,93 +1055,10 @@
                     </div>
                 `;
             }).join('');
-
-            // Start countdown timers for active games
-            games.forEach(game => {
-                if (game.status === 'active' && game.currentRound) {
-                    const isLive = game.currentRound.isOpen || game.currentRound.isActive;
-                    if (isLive) {
-                        const targetTime = game.currentRound.isActive ? 
-                            game.currentRound.endTime : game.currentRound.startTime;
-                        startCountdownTimer(game.id, targetTime);
-                    }
-                }
-            });
         }
 
         // ========================================
-        // COUNTDOWN HELPERS
-        // ========================================
-
-        function getTimeRemaining(targetTime) {
-            const now = Date.now();
-            const target = new Date(targetTime).getTime();
-            const diff = target - now;
-            
-            if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
-            
-            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
-            
-            return { days, hours, minutes, seconds, total: diff };
-        }
-
-        function formatCountdown(time, showDays = true) {
-            if (time.total <= 0) return '00:00';
-            
-            if (showDays && time.days > 0) {
-                return `${time.days}d ${String(time.hours).padStart(2, '0')}h ${String(time.minutes).padStart(2, '0')}m`;
-            }
-            
-            if (time.hours > 0) {
-                return `${String(time.hours).padStart(2, '0')}:${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
-            }
-            
-            return `${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
-        }
-
-        // ========================================
-        // START COUNTDOWN TIMER
-        // ========================================
-
-        function startCountdownTimer(gameId, targetTime) {
-            if (countdownIntervals[gameId]) {
-                clearInterval(countdownIntervals[gameId]);
-            }
-
-            countdownIntervals[gameId] = setInterval(() => {
-                const timeRemaining = getTimeRemaining(targetTime);
-                const timerElement = document.querySelector(`[data-game-id="${gameId}"]`);
-                
-                if (!timerElement) {
-                    clearInterval(countdownIntervals[gameId]);
-                    return;
-                }
-
-                if (timeRemaining.total <= 0) {
-                    clearInterval(countdownIntervals[gameId]);
-                    timerElement.textContent = '00:00';
-                    timerElement.className = 'countdown-timer live-text';
-                    // Reload games to update round status
-                    loadGames();
-                    return;
-                }
-
-                const display = formatCountdown(timeRemaining, false);
-                timerElement.textContent = display;
-
-                if (timeRemaining.total < 300000) {
-                    timerElement.className = 'countdown-timer urgent';
-                } else {
-                    timerElement.className = 'countdown-timer';
-                }
-            }, 1000);
-        }
-
-        // ========================================
-        // JOIN ROUND
+        // JOIN ROUND - COMPLETE
         // ========================================
 
         window.joinRound = async function(gameId) {
@@ -1310,6 +1070,12 @@
             const game = allGames.find(g => g.id === gameId);
             if (!game) {
                 showToast('Game not found', 'error');
+                return;
+            }
+
+            // Check if game is locked
+            if (game.locked) {
+                showToast('🔒 This game is locked. You cannot join.', 'error');
                 return;
             }
 
@@ -1338,6 +1104,13 @@
                 return;
             }
 
+            // Check if user already joined this round
+            const roundId = game.currentRound.roundId;
+            if (userJoinedRounds[roundId]) {
+                showToast('You already joined this round!', 'error');
+                return;
+            }
+
             try {
                 // Deduct entry fee
                 const newBalance = userData.balance - entryFee;
@@ -1346,7 +1119,6 @@
                 document.getElementById('balanceDisplay').textContent = newBalance.toLocaleString();
 
                 // Add player to round
-                const roundId = `round_${game.currentRound.roundNumber}`;
                 const playerData = {
                     username: userData.username,
                     joinedAt: new Date().toISOString(),
@@ -1364,10 +1136,8 @@
                     updatedAt: new Date().toISOString()
                 });
 
-                // Update user's current game
-                await update(ref(db, `users/${currentUser.uid}`), {
-                    currentGameId: gameId
-                });
+                // Mark user as joined this round
+                userJoinedRounds[roundId] = true;
 
                 showToast(`✅ Joined round! Entry fee: ${entryFee} RWF`, 'success');
 
@@ -1406,19 +1176,30 @@
                 return;
             }
 
-            // Check if user has already played this round
-            const roundId = `round_${game.currentRound.roundNumber}`;
+            // Check if game is locked
+            if (game.locked) {
+                showToast('🔒 This game is locked. You cannot play.', 'error');
+                return;
+            }
+
+            const roundId = game.currentRound?.roundId;
+            if (!roundId) {
+                showToast('No active round found', 'error');
+                return;
+            }
+
+            // Check if user has joined this round
             try {
                 const playerRef = ref(db, `rounds/${gameId}/${roundId}/players/${currentUser.uid}`);
                 const snapshot = await get(playerRef);
                 
-                if (snapshot.exists() && snapshot.val().hasPlayed === true) {
-                    showToast('❌ You already played in this round!', 'error');
+                if (!snapshot.exists()) {
+                    showToast('Please join the round first!', 'error');
                     return;
                 }
 
-                if (!snapshot.exists()) {
-                    showToast('Please join the round first!', 'error');
+                if (snapshot.val().hasPlayed === true) {
+                    showToast('❌ You already played in this round!', 'error');
                     return;
                 }
             } catch (error) {
@@ -1445,8 +1226,6 @@
                     hasStartedGame: true,
                     currentGameId: gameId
                 });
-                userData.hasStartedGame = true;
-                userData.currentGameId = gameId;
             } catch (error) {
                 console.error('Error setting hasStartedGame:', error);
             }
@@ -1519,6 +1298,7 @@
         ━━━━━━━━━━━━━━━━━━━━━━
         📂 Category: ${game.category}
         📅 Status: ${game.status.toUpperCase()}
+        ${game.locked ? '🔒 LOCKED - Cannot join' : '🔓 UNLOCKED - Open for joining'}
         💰 Entry Fee: ${entryFee.toLocaleString()} RWF
         👥 Players: ${currentPlayers}/${maxPlayers}
         ⏱️ Round Duration: ${game.roundSettings.duration} minutes
@@ -1532,140 +1312,11 @@
         • Platform fee: ${platformFee}%
         • Winners are paid AUTOMATICALLY
         • Payouts are sent directly to your wallet
-        • Payments are processed within 24 hours
         • Winners are determined by highest score
-        • In case of a tie, the player who finished first wins
-
-        ━━━━━━━━━━━━━━━━━━━━━━
-        ⏰ ROUND SCHEDULE:
-        • Rounds run 24/7 continuously
-        • Each round lasts ${game.roundSettings.duration} minutes
-        • Join window: ${game.roundSettings.joinWindow} minutes before round starts
-        • ${game.roundSettings.minPlayers} players minimum required
-        • ${maxPlayers} players maximum allowed
-
-        ━━━━━━━━━━━━━━━━━━━━━━
-        🔄 BREAK SYSTEM:
-        • 2+ players: ${game.roundSettings.breakDuration}s payout break
-        • 1 player: ${game.roundSettings.refundBreak}s refund break
-        • 0 players: No break
             `;
 
             alert(message);
         };
-
-        // ========================================
-        // BREAK ANNOUNCEMENT
-        // ========================================
-
-        window.showBreak = function(gameId, playerCount, prizePool, nextRoundNumber) {
-            if (isBreakActive) return;
-            isBreakActive = true;
-
-            const overlay = document.getElementById('breakAnnouncement');
-            const timerEl = document.getElementById('breakTimer');
-            const progressBar = document.getElementById('breakProgressBar');
-            const iconEl = document.getElementById('breakIcon');
-            const titleEl = document.getElementById('breakTitle');
-            const subtitleEl = document.getElementById('breakSubtitle');
-            const playersEl = document.getElementById('breakPlayers');
-            const prizeEl = document.getElementById('breakPrizePool');
-            const nextRoundEl = document.getElementById('breakNextRound');
-            const messageEl = document.getElementById('breakMessage');
-
-            const game = allGames.find(g => g.id === gameId);
-            const breakDurationSetting = game?.roundSettings?.breakDuration || 10;
-            const refundBreakSetting = game?.roundSettings?.refundBreak || 5;
-
-            let breakDuration = 0;
-            let breakType = '';
-            let breakMessage = '';
-            let breakIcon = '';
-            let breakTitle = '';
-            let breakSubtitle = '';
-
-            if (playerCount >= 2) {
-                breakDuration = breakDurationSetting;
-                breakType = 'payout';
-                breakIcon = '🎉';
-                breakTitle = '🏆 Round Complete!';
-                breakSubtitle = 'Calculating winners and distributing prizes...';
-                breakMessage = `💰 ${prizePool.toLocaleString()} RWF prize pool being distributed to ${playerCount} players`;
-                overlay.className = 'break-announcement show break-payout';
-            } else if (playerCount === 1) {
-                breakDuration = refundBreakSetting;
-                breakType = 'refund';
-                breakIcon = '🔄';
-                breakTitle = '⏳ Not Enough Players';
-                breakSubtitle = 'Only 1 player joined this round';
-                breakMessage = `💸 ${prizePool.toLocaleString()} RWF being refunded to the player`;
-                overlay.className = 'break-announcement show break-refund';
-            } else {
-                breakDuration = 0;
-                breakType = 'skip';
-                breakIcon = '⏭️';
-                breakTitle = '⏭️ Round Skipped';
-                breakSubtitle = 'No players joined this round';
-                breakMessage = 'Moving to next round...';
-                overlay.className = 'break-announcement show break-skip';
-            }
-
-            iconEl.textContent = breakIcon;
-            titleEl.textContent = breakTitle;
-            subtitleEl.textContent = breakSubtitle;
-            playersEl.textContent = playerCount;
-            prizeEl.textContent = prizePool.toLocaleString() + ' RWF';
-            nextRoundEl.textContent = `#${nextRoundNumber}`;
-            messageEl.innerHTML = breakMessage;
-
-            if (breakDuration === 0) {
-                setTimeout(() => {
-                    hideBreak();
-                }, 500);
-                return;
-            }
-
-            overlay.classList.add('show');
-
-            let remaining = breakDuration;
-            timerEl.textContent = remaining;
-            progressBar.style.width = '100%';
-
-            if (breakIntervals[gameId]) {
-                clearInterval(breakIntervals[gameId]);
-            }
-
-            breakIntervals[gameId] = setInterval(() => {
-                remaining--;
-                timerEl.textContent = remaining;
-                const progressPercent = (remaining / breakDuration) * 100;
-                progressBar.style.width = progressPercent + '%';
-                messageEl.innerHTML = `${breakMessage} (${remaining}s remaining)`;
-
-                if (remaining <= 0) {
-                    clearInterval(breakIntervals[gameId]);
-                    breakIntervals[gameId] = null;
-                    hideBreak();
-                    loadGames();
-                }
-            }, 1000);
-
-            console.log(`⏰ Break: ${breakType} | ${breakDuration}s | Players: ${playerCount} | Prize: ${prizePool} RWF`);
-        };
-
-        function hideBreak() {
-            const overlay = document.getElementById('breakAnnouncement');
-            overlay.classList.remove('show');
-            isBreakActive = false;
-            if (breakIntervals) {
-                Object.keys(breakIntervals).forEach(key => {
-                    if (breakIntervals[key]) {
-                        clearInterval(breakIntervals[key]);
-                        breakIntervals[key] = null;
-                    }
-                });
-            }
-        }
 
         // ========================================
         // UPDATE UI
@@ -1712,9 +1363,15 @@
         // ========================================
 
         console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 20px; font-weight: bold;');
-        console.log('%c🔄 24/7 Continuous Rounds System', 'color: #00E676; font-size: 14px;');
-        console.log('%c⏰ Break System: 10s payout | 5s refund | 0s skip', 'color: #FFD700; font-size: 14px;');
-        console.log('%c🎯 All settings come from Admin Game Management', 'color: #FF6B6B; font-size: 14px;');
+        console.log('%c🔒 LOCK SYSTEM: If game is locked, only Demo button shows', 'color: #FF4D6D; font-size: 14px;');
+        console.log('%c🟢 JOIN NOW: Green button when unlocked and round is open', 'color: #00E676; font-size: 14px;');
+        console.log('%c🟡 PLAY NOW: Gold button after joining a round', 'color: #FFD700; font-size: 14px;');
+        console.log('%c🎯 One join per round!', 'color: #FFC857; font-size: 14px;');
+        
+        window.joinRound = joinRound;
+        window.playGame = playGame;
+        window.openDemo = openDemo;
+        window.showGameInfo = showGameInfo;
     </script>
 
 </body>
