@@ -936,7 +936,52 @@
             
             return `${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
         }
+        // ========================================
+        // DEBUG: Check Round Status
+        // ========================================
 
+        window.checkRoundStatus = function(gameId) {
+            const game = allGames.find(g => g.id === gameId);
+            if (!game) {
+                console.log('❌ Game not found');
+                return;
+            }
+            
+            console.log(`\n🔍 CHECKING ROUND STATUS FOR: ${game.name}`);
+            console.log(`   Game ID: ${game.id}`);
+            console.log(`   Locked: ${game.locked}`);
+            console.log(`   Status: ${game.status}`);
+            
+            const round = getCurrentRound(game);
+            console.log(`   Round #${round.roundNumber}`);
+            console.log(`   Join Start: ${new Date(round.joinStart).toLocaleTimeString()}`);
+            console.log(`   Start Time: ${new Date(round.startTime).toLocaleTimeString()}`);
+            console.log(`   End Time: ${new Date(round.endTime).toLocaleTimeString()}`);
+            console.log(`   Current Time: ${new Date().toLocaleTimeString()}`);
+            console.log(`   Status: ${round.status}`);
+            console.log(`   isOpen: ${round.isOpen}`);
+            console.log(`   isActive: ${round.isActive}`);
+            console.log(`   isEnded: ${round.isEnded}`);
+            
+            // Check if user has joined
+            const userJoined = game.userHasJoined || false;
+            console.log(`   User Joined: ${userJoined}`);
+            
+            console.log(`\n📌 Expected Button:`);
+            if (game.locked) {
+                console.log('   → Demo + Locked');
+            } else if (game.status !== 'active') {
+                console.log('   → Demo + Inactive/Maintenance');
+            } else if (userJoined) {
+                console.log('   → Demo + Play Now (Gold)');
+            } else if (round.isOpen) {
+                console.log('   → Demo + Join Now (Green) ✅');
+            } else if (round.isActive) {
+                console.log('   → Demo + Round in Progress');
+            } else {
+                console.log(`   → Demo + Waiting (${round.status})`);
+            }
+        };
         // ========================================
         // START COUNTDOWN
         // ========================================
