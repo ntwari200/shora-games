@@ -1107,17 +1107,22 @@
                 let targetTime = '';
                 let countdownLabel = '';
                 
-                if (isOpen) {
-                    targetTime = round.startTime;
-                    countdownLabel = 'Starts in';
-                } else if (isActive) {
+                if (isActive || isOpen) {
+                    // Show countdown to round end
                     targetTime = round.endTime;
                     countdownLabel = 'Ends in';
+                } else if (!isEnded) {
+                    // Show countdown to round start
+                    targetTime = round.startTime;
+                    countdownLabel = 'Starts in';
                 }
                 
                 if (targetTime) {
                     const timeRemaining = getTimeRemaining(targetTime);
                     const display = formatCountdown(timeRemaining, false);
+                    
+                    // Determine if urgent (less than 30 seconds)
+                    const isUrgent = timeRemaining.total < 30000;
                     
                     countdownHtml = `
                         <div class="card-countdown">
@@ -1125,7 +1130,7 @@
                                 <i class="fas fa-${isActive ? 'hourglass-end' : 'hourglass-start'}"></i>
                                 ${countdownLabel}
                             </span>
-                            <span class="countdown-timer ${isActive && timeRemaining.total < 300 ? 'urgent' : ''}" 
+                            <span class="countdown-timer ${isUrgent ? 'urgent' : ''}" 
                                   data-game-id="${game.id}" data-target="${targetTime}">
                                 ${display}
                             </span>
