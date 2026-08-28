@@ -1409,8 +1409,8 @@
             }
         };
 
-        // ========================================
-        // PLAY GAME
+               // ========================================
+        // PLAY GAME - DYNAMIC WRAPPER SELECTION
         // ========================================
 
         window.playGame = async function(gameId) {
@@ -1462,17 +1462,23 @@
                 return;
             }
 
-            // Set fresh start flag
-            sessionStorage.setItem('ninjaRunFreshStart', 'true');
-            sessionStorage.removeItem('ninjaRunGameStarted');
-            sessionStorage.removeItem('ninjaRunAutoSubmitted');
-            sessionStorage.removeItem('ninjaRunDisconnected');
-            sessionStorage.removeItem('ninjaRunScore');
-            sessionStorage.removeItem('ninjaRunPlayed');
-            sessionStorage.removeItem('ninjaRunFinalScore');
-            sessionStorage.removeItem('ninjaRunComplete');
-            sessionStorage.removeItem('ninjaRunCheated');
-            sessionStorage.removeItem('ninjaRunTimerExpired');
+            // ===== DETERMINE WHICH WRAPPER TO USE =====
+            const wrapperUrl = getGameWrapperUrl(game);
+            console.log(`🎮 Launching ${game.name} with wrapper: ${wrapperUrl}`);
+
+            // Set fresh start flag based on game
+            const gameKey = game.name.toLowerCase().replace(/\s/g, '');
+            sessionStorage.setItem(`${gameKey}FreshStart`, 'true');
+            sessionStorage.removeItem(`${gameKey}GameStarted`);
+            sessionStorage.removeItem(`${gameKey}AutoSubmitted`);
+            sessionStorage.removeItem(`${gameKey}Disconnected`);
+            sessionStorage.removeItem(`${gameKey}DisconnectTime`);
+            sessionStorage.removeItem(`${gameKey}Score`);
+            sessionStorage.removeItem(`${gameKey}Played`);
+            sessionStorage.removeItem(`${gameKey}FinalScore`);
+            sessionStorage.removeItem(`${gameKey}Complete`);
+            sessionStorage.removeItem(`${gameKey}Cheated`);
+            sessionStorage.removeItem(`${gameKey}TimerExpired`);
 
             // Set hasStartedGame flag
             try {
@@ -1484,9 +1490,9 @@
                 console.error('Error setting hasStartedGame:', error);
             }
 
-            // Open the game
+            // Open the game with the correct wrapper
             const userId = currentUser.uid;
-            const gameUrl = `/game-wrapper.html?game=${encodeURIComponent(gameId)}&user=${userId}&round=${game.currentRound.roundNumber}`;
+            const gameUrl = `${wrapperUrl}?game=${encodeURIComponent(gameId)}&user=${userId}&round=${game.currentRound.roundNumber}`;
             
             const gameWindow = window.open(gameUrl, '_blank');
             
@@ -1497,9 +1503,10 @@
 
             showToast(`🎮 Opening ${game.name}... Good luck!`, 'success');
         };
+        
 
-        // ========================================
-        // OPEN DEMO
+        
+        // OPEN DEMO - DYNAMIC WRAPPER SELECTION
         // ========================================
 
         window.openDemo = function(gameId) {
@@ -1509,7 +1516,11 @@
                 return;
             }
 
-            const demoUrl = `/game-wrapper.html?demo=true&game=${encodeURIComponent(gameId)}`;
+            // ===== DETERMINE WHICH WRAPPER TO USE =====
+            const wrapperUrl = getGameWrapperUrl(game);
+            console.log(`🎮 Launching ${game.name} DEMO with wrapper: ${wrapperUrl}`);
+
+            const demoUrl = `${wrapperUrl}?demo=true&game=${encodeURIComponent(gameId)}`;
             const demoWindow = window.open(demoUrl, '_blank');
             
             if (!demoWindow) {
@@ -1517,9 +1528,43 @@
                 return;
             }
 
-            showToast('🎮 Demo mode - Practice as much as you want!', 'success');
+            showToast(`🎮 ${game.name} Demo mode - Practice as much as you want!`, 'success');
         };
+                // ========================================
+        // GET GAME WRAPPER URL - DYNAMIC
+        // ========================================
 
+        function getGameWrapperUrl(game) {
+            // Get game name (case insensitive)
+            const gameName = game.name?.toLowerCase() || '';
+            
+            // ===== MAP GAME NAMES TO WRAPPERS =====
+            const wrapperMap = {
+                // Ninja Run games
+                'ninja': '/game-wrapper.html',
+                'ninja run': '/game-wrapper.html',
+                
+                // Flappy Bird games
+                'flappy': '/flappybird-wrapper.html',
+                'flappy bird': '/flappybird-wrapper.html',
+                'flappybird': '/flappybird-wrapper.html',
+                
+                // Default - use game-wrapper.html for any other games
+                'default': '/game-wrapper.html'
+            };
+            
+            // Check if game name matches any key in the map
+            for (const [key, wrapper] of Object.entries(wrapperMap)) {
+                if (gameName.includes(key)) {
+                    console.log(`🔍 Found wrapper for "${gameName}" -> ${wrapper}`);
+                    return wrapper;
+                }
+            }
+            
+            // If no match, use the default wrapper
+            console.log(`🔍 No specific wrapper found for "${gameName}", using default`);
+            return wrapperMap.default;
+        }
         // ========================================
         // SHOW GAME INFO
         // ========================================
