@@ -1,0 +1,808 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Flappy Bird - Shora Games</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* ===== RESET & GLOBAL ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a1a;
+            color: #fff;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden;
+            height: 100vh;
+            width: 100vw;
+            display: flex;
+            flex-direction: column;
+            user-select: none;
+        }
+
+        /* ===== TOP BAR ===== */
+        .game-topbar {
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(16px);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(0, 191, 255, 0.1);
+            z-index: 100;
+            flex-shrink: 0;
+            min-height: 50px;
+        }
+
+        .game-topbar .game-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-topbar .game-title i {
+            color: #00BFFF;
+        }
+
+        .game-topbar .game-title span {
+            background: linear-gradient(90deg, #00BFFF, #6C63FF);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .game-topbar .game-stats {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            font-size: 0.75rem;
+        }
+
+        .game-topbar .game-stats .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            color: #A7B5C5;
+        }
+
+        .game-topbar .game-stats .stat-item i {
+            color: #FFD700;
+            font-size: 0.8rem;
+        }
+
+        .game-topbar .game-stats .stat-item .value {
+            color: #fff;
+            font-weight: 600;
+            font-family: 'Orbitron', monospace;
+        }
+
+        .game-topbar .game-stats .stat-item .value.gold {
+            color: #FFD700;
+        }
+        .game-topbar .game-stats .stat-item .value.success {
+            color: #00E676;
+        }
+
+        .game-topbar .close-btn {
+            background: rgba(255, 77, 109, 0.1);
+            border: 1px solid rgba(255, 77, 109, 0.2);
+            color: #FF4D6D;
+            padding: 6px 14px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.7rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .game-topbar .close-btn:hover {
+            background: rgba(255, 77, 109, 0.2);
+            transform: scale(1.05);
+        }
+
+        /* ===== GAME IFRAME CONTAINER ===== */
+        .game-container {
+            flex: 1;
+            position: relative;
+            background: #000;
+            overflow: hidden;
+        }
+
+        .game-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            background: #000;
+            display: block;
+        }
+
+        /* ===== LOADING OVERLAY ===== */
+        .loading-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(8px);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+            transition: opacity 0.6s ease;
+        }
+
+        .loading-overlay.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+
+        .loading-overlay .loader {
+            width: 60px;
+            height: 60px;
+            border: 3px solid rgba(0, 191, 255, 0.1);
+            border-top: 3px solid #00BFFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-overlay .loading-text {
+            margin-top: 20px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: #A7B5C5;
+            letter-spacing: 2px;
+        }
+
+        .loading-overlay .loading-text .dot {
+            animation: dotPulse 1.4s ease-in-out infinite;
+        }
+        .loading-overlay .loading-text .dot:nth-child(2) { animation-delay: 0.2s; }
+        .loading-overlay .loading-text .dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes dotPulse {
+            0%, 80%, 100% { opacity: 0; }
+            40% { opacity: 1; }
+        }
+
+        /* ===== BOTTOM CONTROLS ===== */
+        .game-controls {
+            background: rgba(6, 17, 31, 0.95);
+            backdrop-filter: blur(16px);
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            border-top: 1px solid rgba(0, 191, 255, 0.1);
+            flex-shrink: 0;
+            min-height: 46px;
+        }
+
+        .game-controls .control-btn {
+            padding: 6px 20px;
+            border: none;
+            border-radius: 8px;
+            font-family: 'Inter', sans-serif;
+            font-weight: 600;
+            font-size: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .game-controls .control-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .game-controls .control-btn.btn-restart {
+            background: rgba(255, 200, 87, 0.1);
+            color: #FFD700;
+            border: 1px solid rgba(255, 200, 87, 0.2);
+        }
+
+        .game-controls .control-btn.btn-restart:hover {
+            background: rgba(255, 200, 87, 0.2);
+        }
+
+        .game-controls .control-btn.btn-fullscreen {
+            background: rgba(0, 191, 255, 0.1);
+            color: #00BFFF;
+            border: 1px solid rgba(0, 191, 255, 0.2);
+        }
+
+        .game-controls .control-btn.btn-fullscreen:hover {
+            background: rgba(0, 191, 255, 0.2);
+        }
+
+        .game-controls .control-btn.btn-exit {
+            background: rgba(255, 77, 109, 0.1);
+            color: #FF4D6D;
+            border: 1px solid rgba(255, 77, 109, 0.2);
+        }
+
+        .game-controls .control-btn.btn-exit:hover {
+            background: rgba(255, 77, 109, 0.2);
+        }
+
+        .game-controls .game-status {
+            font-size: 0.65rem;
+            color: #A7B5C5;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .game-controls .game-status .status-dot {
+            width: 6px;
+            height: 6px;
+            border-radius: 50%;
+            background: #00E676;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.5; transform: scale(0.8); }
+        }
+
+        /* ===== MOBILE OPTIMIZATION ===== */
+        @media (max-width: 768px) {
+            .game-topbar .game-title {
+                font-size: 0.7rem;
+            }
+            .game-topbar .game-stats .stat-item {
+                font-size: 0.6rem;
+            }
+            .game-controls .control-btn {
+                padding: 4px 12px;
+                font-size: 0.6rem;
+            }
+            .game-topbar .close-btn {
+                padding: 4px 10px;
+                font-size: 0.6rem;
+            }
+            .game-controls .game-status {
+                font-size: 0.55rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .game-topbar {
+                padding: 4px 10px;
+                min-height: 40px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .game-topbar .game-stats {
+                gap: 8px;
+                flex-wrap: wrap;
+            }
+            .game-topbar .game-stats .stat-item {
+                font-size: 0.5rem;
+            }
+            .game-controls {
+                padding: 4px 8px;
+                min-height: 36px;
+                flex-wrap: wrap;
+                gap: 4px;
+            }
+            .game-controls .control-btn {
+                padding: 3px 8px;
+                font-size: 0.5rem;
+            }
+            .game-controls .game-status {
+                font-size: 0.5rem;
+            }
+            .loading-overlay .loader {
+                width: 40px;
+                height: 40px;
+            }
+            .loading-overlay .loading-text {
+                font-size: 0.7rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== TOP BAR ===== -->
+    <div class="game-topbar">
+        <div class="game-title">
+            <i class="fas fa-gamepad"></i>
+            <span>Flappy Bird</span>
+        </div>
+        <div class="game-stats">
+            <div class="stat-item">
+                <i class="fas fa-coins"></i>
+                Score: <span class="value gold" id="liveScore">0</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-users"></i>
+                Players: <span class="value success" id="livePlayers">0</span>
+            </div>
+            <div class="stat-item">
+                <i class="fas fa-clock"></i>
+                Time: <span class="value" id="liveTimer">00:00</span>
+            </div>
+        </div>
+        <button class="close-btn" onclick="exitGame()">
+            <i class="fas fa-times"></i> Exit
+        </button>
+    </div>
+
+    <!-- ===== GAME CONTAINER ===== -->
+    <div class="game-container" id="gameContainer">
+        <!-- Loading Overlay -->
+        <div class="loading-overlay" id="loadingOverlay">
+            <div class="loader"></div>
+            <div class="loading-text">
+                Loading Flappy Bird<span class="dot">.</span><span class="dot">.</span><span class="dot">.</span>
+            </div>
+        </div>
+
+        <!-- Flappy Bird Iframe -->
+        <iframe 
+            id="gameIframe"
+            src="games/flappybird/index.html"
+            allowfullscreen
+            sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups"
+            loading="eager"
+        ></iframe>
+    </div>
+
+    <!-- ===== BOTTOM CONTROLS ===== -->
+    <div class="game-controls">
+        <button class="control-btn btn-restart" onclick="restartGame()">
+            <i class="fas fa-redo"></i> Restart
+        </button>
+        <button class="control-btn btn-fullscreen" onclick="toggleFullscreen()">
+            <i class="fas fa-expand"></i> Fullscreen
+        </button>
+        <div class="game-status">
+            <span class="status-dot"></span>
+            <span id="gameStatusText">Playing</span>
+        </div>
+        <button class="control-btn btn-exit" onclick="exitGame()">
+            <i class="fas fa-sign-out-alt"></i> Exit
+        </button>
+    </div>
+
+    <!-- ===== JAVASCRIPT ===== -->
+    <script>
+        // ========================================
+        // STATE
+        // ========================================
+
+        let gameWindow = null;
+        let scoreInterval = null;
+        let timerInterval = null;
+        let gameStartTime = Date.now();
+        let isFullscreen = false;
+        let score = 0;
+        let gameLoaded = false;
+        let messageListener = null;
+
+        // ========================================
+        // GET URL PARAMETERS
+        // ========================================
+
+        function getUrlParams() {
+            const params = new URLSearchParams(window.location.search);
+            return {
+                event: params.get('event'),
+                user: params.get('user'),
+                round: params.get('round'),
+                demo: params.get('demo') === 'true',
+                game: params.get('game')
+            };
+        }
+
+        const params = getUrlParams();
+
+        // ========================================
+        // INITIALIZATION
+        // ========================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🐦 Flappy Bird Wrapper Initialized');
+            console.log('📋 Parameters:', params);
+
+            // Hide loading overlay when iframe loads
+            const iframe = document.getElementById('gameIframe');
+            
+            iframe.addEventListener('load', function() {
+                setTimeout(() => {
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    gameLoaded = true;
+                    console.log('✅ Flappy Bird game loaded successfully!');
+                    
+                    // Send initial data to game
+                    sendMessageToGame({
+                        type: 'init',
+                        userId: params.user,
+                        eventId: params.event,
+                        roundNumber: params.round,
+                        isDemo: params.demo
+                    });
+                }, 1500);
+            });
+
+            // Handle iframe errors
+            iframe.addEventListener('error', function() {
+                document.getElementById('loadingOverlay').innerHTML = `
+                    <div style="text-align:center;">
+                        <i class="fas fa-exclamation-triangle" style="font-size:3rem;color:#FF4D6D;margin-bottom:16px;"></i>
+                        <h3 style="color:#FF4D6D;font-family:'Orbitron',monospace;">Failed to Load Game</h3>
+                        <p style="color:#A7B5C5;margin-top:8px;font-size:0.9rem;">
+                            Please check your connection and try again.
+                        </p>
+                        <button onclick="location.reload()" style="margin-top:16px;padding:10px 24px;background:linear-gradient(135deg,#00BFFF,#6C63FF);border:none;border-radius:8px;color:#000;font-weight:700;cursor:pointer;">
+                            <i class="fas fa-redo"></i> Reload
+                        </button>
+                    </div>
+                `;
+            });
+
+            // Start timer
+            startTimer();
+
+            // Listen for messages from game
+            if (window.addEventListener) {
+                window.addEventListener('message', handleGameMessage, false);
+            }
+
+            console.log('🚀 Flappy Bird Wrapper ready!');
+        });
+
+        // ========================================
+        // SEND MESSAGE TO GAME
+        // ========================================
+
+        function sendMessageToGame(data) {
+            const iframe = document.getElementById('gameIframe');
+            if (iframe && iframe.contentWindow) {
+                try {
+                    iframe.contentWindow.postMessage(data, '*');
+                    console.log('📤 Sent to game:', data);
+                } catch (e) {
+                    console.log('⚠️ Could not send message to game:', e.message);
+                }
+            }
+        }
+
+        // ========================================
+        // HANDLE GAME MESSAGES
+        // ========================================
+
+        function handleGameMessage(event) {
+            // Accept messages from our domain and PlayCanvas CDN
+            const allowedOrigins = [
+                window.location.origin,
+                'https://playcanv.as',
+                'https://s3-eu-west-1.amazonaws.com',
+                'null'
+            ];
+            
+            // For demo, accept all messages
+            // if (!allowedOrigins.includes(event.origin)) return;
+
+            const data = event.data;
+            if (typeof data !== 'object' || !data) return;
+
+            console.log('📥 Received from game:', data);
+
+            switch (data.type) {
+                case 'score':
+                    score = data.score || 0;
+                    updateScoreDisplay(score);
+                    break;
+
+                case 'gameOver':
+                    console.log('💀 Game Over! Score:', data.score);
+                    showToast(`Game Over! Score: ${data.score}`, 'warning');
+                    break;
+
+                case 'gameStarted':
+                    console.log('🎮 Game started!');
+                    document.getElementById('gameStatusText').textContent = 'Playing';
+                    break;
+
+                case 'gameReady':
+                    console.log('✅ Game is ready!');
+                    document.getElementById('loadingOverlay').classList.add('hidden');
+                    gameLoaded = true;
+                    break;
+
+                case 'submitScore':
+                    console.log('📊 Score submitted:', data.score);
+                    // Forward to parent window
+                    if (window.parent && window.parent !== window) {
+                        try {
+                            window.parent.postMessage({
+                                type: 'submitScore',
+                                score: data.score,
+                                userId: params.user,
+                                eventId: params.event,
+                                roundNumber: params.round
+                            }, '*');
+                        } catch (e) {
+                            console.log('Could not forward score to parent:', e.message);
+                        }
+                    }
+                    break;
+
+                default:
+                    // Forward unknown messages to parent
+                    if (data.type && window.parent && window.parent !== window) {
+                        try {
+                            window.parent.postMessage(data, '*');
+                        } catch (e) {
+                            // Ignore
+                        }
+                    }
+            }
+        }
+
+        // ========================================
+        // SCORE DISPLAY
+        // ========================================
+
+        function updateScoreDisplay(newScore) {
+            const scoreEl = document.getElementById('liveScore');
+            if (scoreEl) {
+                scoreEl.textContent = newScore;
+            }
+        }
+
+        // ========================================
+        // TIMER
+        // ========================================
+
+        function startTimer() {
+            gameStartTime = Date.now();
+            if (timerInterval) clearInterval(timerInterval);
+            
+            timerInterval = setInterval(() => {
+                const elapsed = Math.floor((Date.now() - gameStartTime) / 1000);
+                const minutes = String(Math.floor(elapsed / 60)).padStart(2, '0');
+                const seconds = String(elapsed % 60).padStart(2, '0');
+                const timerEl = document.getElementById('liveTimer');
+                if (timerEl) {
+                    timerEl.textContent = `${minutes}:${seconds}`;
+                }
+            }, 1000);
+        }
+
+        // ========================================
+        // RESTART GAME
+        // ========================================
+
+        function restartGame() {
+            console.log('🔄 Restarting game...');
+            
+            // Send restart message to game
+            sendMessageToGame({ type: 'restart' });
+            
+            // Reset score display
+            score = 0;
+            updateScoreDisplay(0);
+            
+            // Reset timer
+            startTimer();
+            
+            // Show loading briefly
+            const overlay = document.getElementById('loadingOverlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                setTimeout(() => {
+                    overlay.classList.add('hidden');
+                }, 500);
+            }
+            
+            showToast('🔄 Restarting game...', 'info');
+        }
+
+        // ========================================
+        // FULLSCREEN
+        // ========================================
+
+        function toggleFullscreen() {
+            const container = document.getElementById('gameContainer');
+            const btn = document.querySelector('.btn-fullscreen');
+            
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                const requestFS = container.requestFullscreen || container.webkitRequestFullscreen;
+                if (requestFS) {
+                    requestFS.call(container).then(() => {
+                        isFullscreen = true;
+                        if (btn) {
+                            btn.innerHTML = '<i class="fas fa-compress"></i> Exit FS';
+                        }
+                    }).catch(err => {
+                        console.error('Fullscreen error:', err);
+                    });
+                }
+            } else {
+                const exitFS = document.exitFullscreen || document.webkitExitFullscreen;
+                if (exitFS) {
+                    exitFS.call(document).then(() => {
+                        isFullscreen = false;
+                        if (btn) {
+                            btn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+                        }
+                    });
+                }
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+                isFullscreen = false;
+                const btn = document.querySelector('.btn-fullscreen');
+                if (btn) {
+                    btn.innerHTML = '<i class="fas fa-expand"></i> Fullscreen';
+                }
+            }
+        });
+
+        // ========================================
+        // EXIT GAME
+        // ========================================
+
+        function exitGame() {
+            console.log('🚪 Exiting game...');
+            
+            // Send exit message to game
+            sendMessageToGame({ type: 'exit' });
+            
+            // Clear intervals
+            if (timerInterval) clearInterval(timerInterval);
+            if (scoreInterval) clearInterval(scoreInterval);
+            
+            // Remove message listener
+            if (window.removeEventListener) {
+                window.removeEventListener('message', handleGameMessage);
+            }
+            
+            // Close window or go back
+            if (window.opener) {
+                // If opened from another page, close this window
+                window.close();
+            } else {
+                // Otherwise navigate back to lobby
+                window.location.href = 'game-lobby.html';
+            }
+        }
+
+        // ========================================
+        // TOAST NOTIFICATION
+        // ========================================
+
+        function showToast(message, type = 'info') {
+            // Check if parent has toast function
+            if (window.parent && window.parent.showToast) {
+                try {
+                    window.parent.showToast(message, type);
+                    return;
+                } catch (e) {
+                    // Fall through to local toast
+                }
+            }
+
+            // Fallback toast
+            const toast = document.createElement('div');
+            toast.style.cssText = `
+                position: fixed;
+                bottom: 70px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: rgba(6, 17, 31, 0.95);
+                backdrop-filter: blur(12px);
+                border: 1px solid rgba(0, 191, 255, 0.3);
+                border-radius: 50px;
+                padding: 10px 24px;
+                color: #00BFFF;
+                font-size: 0.85rem;
+                z-index: 9999;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                max-width: 90%;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                font-family: 'Inter', sans-serif;
+                animation: slideUp 0.3s ease;
+            `;
+            
+            if (type === 'error') {
+                toast.style.borderColor = '#FF4D6D';
+                toast.style.color = '#FF4D6D';
+            } else if (type === 'success') {
+                toast.style.borderColor = '#00E676';
+                toast.style.color = '#00E676';
+            } else if (type === 'warning') {
+                toast.style.borderColor = '#FFD700';
+                toast.style.color = '#FFD700';
+            }
+            
+            toast.innerHTML = `<i class="fas fa-${type === 'error' ? 'exclamation-circle' : type === 'success' ? 'check-circle' : 'info-circle'}"></i> ${message}`;
+            
+            document.body.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.style.opacity = '0';
+                toast.style.transition = 'opacity 0.3s ease';
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+
+        // ========================================
+        // KEYBOARD SHORTCUTS
+        // ========================================
+
+        document.addEventListener('keydown', (e) => {
+            // Space or Enter to restart
+            if (e.key === ' ' || e.key === 'Enter') {
+                e.preventDefault();
+                restartGame();
+            }
+            // Escape to exit
+            if (e.key === 'Escape') {
+                if (isFullscreen) {
+                    toggleFullscreen();
+                } else {
+                    exitGame();
+                }
+            }
+            // F for fullscreen
+            if (e.key === 'f' || e.key === 'F') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        // ========================================
+        // CONSOLE
+        // ========================================
+
+        console.log('%c🐦 FLAPPY BIRD WRAPPER', 'color: #FFD700; font-size: 20px; font-weight: bold;');
+        console.log('%c🎮 Game: Flappy Bird', 'color: #00BFFF; font-size: 14px;');
+        console.log('%c🔄 Press SPACE to restart', 'color: #A7B5C5; font-size: 12px;');
+        console.log('%c⏹️ Press ESC to exit', 'color: #A7B5C5; font-size: 12px;');
+        console.log('%c🖥️ Press F for fullscreen', 'color: #A7B5C5; font-size: 12px;');
+
+        // ========================================
+        // EXPOSE FUNCTIONS TO PARENT
+        // ========================================
+
+        window.flappyBirdWrapper = {
+            sendMessage: sendMessageToGame,
+            restart: restartGame,
+            exit: exitGame,
+            getScore: () => score,
+            isLoaded: () => gameLoaded,
+            getParams: () => params
+        };
+
+        console.log('✅ Flappy Bird wrapper functions exposed to parent');
+    </script>
+
+</body>
+</html>
