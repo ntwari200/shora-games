@@ -10,7 +10,7 @@
     
     <style>
         /* ========================================
-           ALL STYLES FROM TOURNAMENTS.HTML
+           ALL STYLES
            ======================================== */
         :root {
             --bg: #06111F;
@@ -210,6 +210,47 @@
         .game-card .card-cover .card-status-badge.inactive { color: var(--danger); border-color: rgba(255, 77, 109, 0.3); }
         .game-card .card-cover .card-status-badge.maintenance { color: var(--gold); border-color: rgba(255, 200, 87, 0.3); }
 
+        /* ===== COUNTDOWN OVERLAY ===== */
+        .game-card .card-countdown {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 8px 16px;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(8px);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 8px;
+            z-index: 10;
+        }
+        .game-card .card-countdown .countdown-label {
+            font-size: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            color: var(--muted);
+        }
+        .game-card .card-countdown .countdown-timer {
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--primary);
+        }
+        .game-card .card-countdown .countdown-timer.urgent {
+            color: var(--danger);
+            animation: timerPulse 1s ease-in-out infinite;
+        }
+        .game-card .card-countdown .countdown-timer.live-text {
+            color: var(--success);
+            font-size: 0.8rem;
+        }
+
+        @keyframes timerPulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
         /* ===== CARD BODY ===== */
         .game-card .card-body { padding: 16px 18px; }
         .game-card .card-body .card-title { font-family: 'Orbitron', monospace; font-size: 1rem; margin-bottom: 4px; }
@@ -345,7 +386,7 @@
             margin-left: 2px;
         }
 
-        /* ===== JOIN NOW BUTTON - GREEN (Like Tournaments) ===== */
+        /* ===== JOIN NOW BUTTON - GREEN ===== */
         .btn-card-join {
             background: linear-gradient(135deg, var(--success), #00C853);
             color: #000;
@@ -359,7 +400,7 @@
             box-shadow: none !important;
         }
 
-        /* ===== PLAY NOW BUTTON - GOLD (Like Tournaments) ===== */
+        /* ===== PLAY NOW BUTTON - GOLD ===== */
         .btn-card-play {
             background: linear-gradient(135deg, var(--gold), #FFA000);
             color: #000;
@@ -616,7 +657,8 @@
         let currentUser = null;
         let userData = { balance: 0, username: 'Player' };
         let allGames = [];
-        let userJoinedRounds = {}; // Track which rounds user has joined
+        let userJoinedRounds = {};
+        let countdownIntervals = {};
 
         // ========================================
         // AUTH STATE
@@ -695,6 +737,12 @@
                 const userHasJoined = currentUser && currentRound?.roundId && 
                     userJoinedRounds[currentRound.roundId] === true;
                 
+                // Check if user has played this round
+                let userHasPlayed = false;
+                if (currentUser && currentRound?.roundId) {
+                    // We'll check this later when rendering
+                }
+                
                 games.push({
                     id: id,
                     name: game.name || 'Unnamed Game',
@@ -703,7 +751,7 @@
                     description: game.description || '',
                     status: game.status || 'active',
                     isActive: game.isActive || false,
-                    locked: game.locked || false,  // IMPORTANT: Lock status from admin
+                    locked: game.locked || false,
                     url: game.url || '',
                     
                     roundSettings: {
@@ -726,6 +774,7 @@
                     
                     currentRound: currentRound,
                     userHasJoined: userHasJoined,
+                    userHasPlayed: userHasPlayed,
                     
                     stats: game.stats || {
                         totalRounds: 0,
@@ -755,6 +804,13 @@
             document.getElementById('gameBadge').textContent = games.filter(g => g.status === 'active').length;
             
             renderGames(games);
+            
+            // Start countdowns for all games
+            games.forEach(game => {
+                if (game.currentRound) {
+                    startCountdown(game);
+                }
+            });
         }
 
         // ========================================
@@ -817,7 +873,100 @@
         }
 
         // ========================================
-        // RENDER GAMES
+        // COUNTDOWN HELPERS
+        // ========================================
+
+        function getTimeRemaining(targetTime) {
+            const now = Date.now();
+            const target = new Date(targetTime).getTime();
+            const diff = target - now;
+            
+            if (diff <= 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, total: 0 };
+            
+            const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+            
+            return { days, hours, minutes, seconds, total: diff };
+        }
+
+        function formatCountdown(time, showDays = true) {
+            if (time.total <= 0) return '00:00';
+            
+            if (showDays && time.days > 0) {
+                return `${time.days}d ${String(time.hours).padStart(2, '0')}h ${String(time.minutes).padStart(2, '0')}m`;
+            }
+            
+            if (time.hours > 0) {
+                return `${String(time.hours).padStart(2, '0')}:${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
+            }
+            
+            return `${String(time.minutes).padStart(2, '0')}:${String(time.seconds).padStart(2, '0')}`;
+        }
+
+        // ========================================
+        // START COUNTDOWN
+        // ========================================
+
+        function startCountdown(game) {
+            const gameId = game.id;
+            const round = game.currentRound;
+            
+            if (!round) return;
+            
+            let targetTime;
+            let isLive = false;
+            
+            if (round.isOpen) {
+                // Round is open - countdown to start
+                targetTime = round.startTime;
+                isLive = true;
+            } else if (round.isActive) {
+                // Round is active - countdown to end
+                targetTime = round.endTime;
+                isLive = true;
+            } else {
+                // Round is scheduled or ended - no countdown needed
+                return;
+            }
+            
+            // Clear existing interval
+            if (countdownIntervals[gameId]) {
+                clearInterval(countdownIntervals[gameId]);
+            }
+            
+            countdownIntervals[gameId] = setInterval(() => {
+                const timeRemaining = getTimeRemaining(targetTime);
+                const timerElement = document.querySelector(`[data-game-id="${gameId}"]`);
+                
+                if (!timerElement) {
+                    clearInterval(countdownIntervals[gameId]);
+                    return;
+                }
+
+                if (timeRemaining.total <= 0) {
+                    clearInterval(countdownIntervals[gameId]);
+                    timerElement.textContent = '00:00';
+                    timerElement.className = 'countdown-timer live-text';
+                    // Reload games to update round status
+                    loadGames();
+                    return;
+                }
+
+                const display = formatCountdown(timeRemaining, false);
+                timerElement.textContent = display;
+
+                if (timeRemaining.total < 300000) {
+                    timerElement.className = 'countdown-timer urgent';
+                } else {
+                    timerElement.className = 'countdown-timer';
+                }
+            }, 1000);
+        }
+
+        // ========================================
+        // RENDER GAMES - COMPLETE WITH COUNTDOWN
         // ========================================
 
         function renderGames(games) {
@@ -846,7 +995,7 @@
                 const progress = (currentPlayers / maxPlayers) * 100;
                 const prizePool = currentPlayers * entryFee;
                 
-                const isLocked = game.locked || false;  // Lock status from admin
+                const isLocked = game.locked || false;
                 const userHasJoined = game.userHasJoined || false;
                 const isFull = currentPlayers >= maxPlayers;
                 
@@ -889,6 +1038,37 @@
                     `;
                 }
 
+                // ===== COUNTDOWN HTML =====
+                let countdownHtml = '';
+                let targetTime = '';
+                let countdownLabel = '';
+                
+                if (isOpen) {
+                    targetTime = round.startTime;
+                    countdownLabel = 'Starts in';
+                } else if (isActive) {
+                    targetTime = round.endTime;
+                    countdownLabel = 'Ends in';
+                }
+                
+                if (targetTime) {
+                    const timeRemaining = getTimeRemaining(targetTime);
+                    const display = formatCountdown(timeRemaining, false);
+                    
+                    countdownHtml = `
+                        <div class="card-countdown">
+                            <span class="countdown-label">
+                                <i class="fas fa-${isActive ? 'hourglass-end' : 'hourglass-start'}"></i>
+                                ${countdownLabel}
+                            </span>
+                            <span class="countdown-timer ${isActive && timeRemaining.total < 300 ? 'urgent' : ''}" 
+                                  data-game-id="${game.id}" data-target="${targetTime}">
+                                ${display}
+                            </span>
+                        </div>
+                    `;
+                }
+
                 // ===== BUILD CARD ACTIONS =====
                 let buttonsHtml = '';
                 
@@ -900,19 +1080,16 @@
                 `;
 
                 // 2. MAIN ACTION BUTTON
-                // Check if game is LOCKED (from admin panel)
                 if (isLocked) {
                     // Game is locked - ONLY show Demo button, no join/play
-                    // (Demo button is already added above)
                     buttonsHtml += `
                         <button class="btn btn-card-blocked" disabled>
                             <i class="fas fa-lock"></i> Locked
                         </button>
                     `;
                 } else if (game.status === 'active') {
-                    // Game is UNLOCKED
                     if (userHasJoined) {
-                        // User already joined this round → Show Play Now
+                        // User already joined → Show Play Now
                         buttonsHtml += `
                             <button class="btn btn-card-play" onclick="playGame('${game.id}')">
                                 <i class="fas fa-play"></i> Play Now
@@ -942,6 +1119,13 @@
                         buttonsHtml += `
                             <button class="btn btn-card-blocked" disabled>
                                 <i class="fas fa-hourglass-end"></i> Next Round Soon
+                            </button>
+                        `;
+                    } else {
+                        // Round is scheduled but not open yet
+                        buttonsHtml += `
+                            <button class="btn btn-card-blocked" disabled>
+                                <i class="fas fa-clock"></i> Waiting for Round
                             </button>
                         `;
                     }
@@ -1011,6 +1195,7 @@
                             ${imageHtml}
                             <span class="card-status-badge ${statusClass}">${statusLabel}</span>
                             ${lockBadgeHtml}
+                            ${countdownHtml}
                         </div>
                         <div class="card-body">
                             <div class="card-title">${game.name}</div>
@@ -1055,6 +1240,13 @@
                     </div>
                 `;
             }).join('');
+
+            // Start countdown timers for active/open rounds
+            games.forEach(game => {
+                if (game.currentRound && (game.currentRound.isOpen || game.currentRound.isActive)) {
+                    startCountdown(game);
+                }
+            });
         }
 
         // ========================================
@@ -1362,11 +1554,11 @@
         // CONSOLE
         // ========================================
 
-        console.log('%c🎮 SHORA GAMES - GAME LOBBY', 'color: #00BFFF; font-size: 20px; font-weight: bold;');
-        console.log('%c🔒 LOCK SYSTEM: If game is locked, only Demo button shows', 'color: #FF4D6D; font-size: 14px;');
-        console.log('%c🟢 JOIN NOW: Green button when unlocked and round is open', 'color: #00E676; font-size: 14px;');
-        console.log('%c🟡 PLAY NOW: Gold button after joining a round', 'color: #FFD700; font-size: 14px;');
-        console.log('%c🎯 One join per round!', 'color: #FFC857; font-size: 14px;');
+        console.log('%c🎮 SHORA GAMES - GAME LOBBY (FIXED)', 'color: #00BFFF; font-size: 20px; font-weight: bold;');
+        console.log('%c⏰ Countdown timers: ENABLED for open/active rounds', 'color: #FFD700; font-size: 14px;');
+        console.log('%c🟢 Join Now: Shows when round is open and unlocked', 'color: #00E676; font-size: 14px;');
+        console.log('%c🟡 Play Now: Shows after joining a round', 'color: #FFD700; font-size: 14px;');
+        console.log('%c🔒 Locked: Only Demo button shows', 'color: #FF4D6D; font-size: 14px;');
         
         window.joinRound = joinRound;
         window.playGame = playGame;
