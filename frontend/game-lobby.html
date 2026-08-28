@@ -817,36 +817,30 @@
         // GET CURRENT ROUND - FIXED
         // ========================================
 
+               // ========================================
+        // GET CURRENT ROUND - JOIN ANYTIME
+        // ========================================
+
         function getCurrentRound(game) {
             const now = new Date();
             const duration = game.roundSettings?.duration || 15;
-            const joinWindow = game.roundSettings?.joinWindow || 5;
             
-            // Get the start of today
             const startOfDay = new Date(now);
             startOfDay.setHours(0, 0, 0, 0);
             
-            // Calculate current round index
             const minutesSinceMidnight = (now.getHours() * 60) + now.getMinutes();
             const currentRoundIndex = Math.floor(minutesSinceMidnight / duration);
             
-            // Calculate round start time
             const roundStart = new Date(startOfDay);
             roundStart.setMinutes(roundStart.getMinutes() + (currentRoundIndex * duration));
             
-            // Calculate round end time
             const roundEnd = new Date(roundStart);
             roundEnd.setMinutes(roundEnd.getMinutes() + duration);
             
-            // Calculate join window start (joinWindow minutes before round starts)
-            const joinStart = new Date(roundStart);
-            joinStart.setMinutes(joinStart.getMinutes() - joinWindow);
-            
             const roundId = `round_${currentRoundIndex + 1}`;
             
-            // LOG FOR DEBUGGING
+            // DEBUG LOGS
             console.log(`🕐 Round #${currentRoundIndex + 1} for ${game.name || 'game'}`);
-            console.log(`   Join Start: ${joinStart.toLocaleTimeString()}`);
             console.log(`   Round Start: ${roundStart.toLocaleTimeString()}`);
             console.log(`   Round End: ${roundEnd.toLocaleTimeString()}`);
             console.log(`   Current Time: ${now.toLocaleTimeString()}`);
@@ -858,36 +852,29 @@
             let isActive = false;
             let isEnded = false;
             
-            // Check if round is open for joining (joinWindow before start)
-            if (now >= joinStart && now < roundStart) {
+            // ✅ ROUND IS OPEN FOR JOINING AT ANY TIME DURING THE ROUND
+            if (now >= roundStart && now < roundEnd) {
                 status = 'open';
-                statusLabel = '🟢 Open - Join Now!';
+                statusLabel = '🟢 Join Now!';
                 statusClass = 'live';
                 isOpen = true;
-                console.log('   ✅ Round is OPEN for joining!');
-            } 
-            // Check if round is active (game is being played)
-            else if (now >= roundStart && now < roundEnd) {
-                status = 'active';
-                statusLabel = '🔴 Active';
-                statusClass = 'live';
                 isActive = true;
-                console.log('   🔴 Round is ACTIVE (in progress)');
+                console.log('   ✅ ROUND IS OPEN - Join anytime!');
             } 
-            // Check if round has ended
+            // ROUND HAS ENDED
             else if (now >= roundEnd) {
                 status = 'ended';
                 statusLabel = '✅ Ended';
                 statusClass = 'ended';
                 isEnded = true;
-                console.log('   ✅ Round has ENDED');
+                console.log('   ✅ ROUND HAS ENDED');
             } 
-            // Round is scheduled (not yet in join window)
+            // ROUND IS SCHEDULED (waiting for next round)
             else {
                 status = 'scheduled';
                 statusLabel = '⏳ Upcoming';
                 statusClass = 'soon';
-                console.log('   ⏳ Round is SCHEDULED (waiting for join window)');
+                console.log('   ⏳ ROUND IS SCHEDULED - Waiting for next round');
             }
             
             return {
@@ -895,7 +882,7 @@
                 roundNumber: currentRoundIndex + 1,
                 startTime: roundStart.toISOString(),
                 endTime: roundEnd.toISOString(),
-                joinStart: joinStart.toISOString(),
+                joinStart: roundStart.toISOString(), // Join anytime during round
                 status: status,
                 statusLabel: statusLabel,
                 statusClass: statusClass,
@@ -1146,7 +1133,7 @@
                     `;
                 }
 
-                            // ===== BUILD CARD ACTIONS =====
+                                          // ===== BUILD CARD ACTIONS =====
                 let buttonsHtml = '';
                 
                 // 1. DEMO BUTTON - ALWAYS VISIBLE
@@ -1156,11 +1143,11 @@
                     </button>
                 `;
 
-                // 2. MAIN ACTION BUTTON - FIXED LOGIC
-                console.log(`🔍 Game: ${game.name}, Locked: ${isLocked}, Status: ${game.status}, Round Open: ${isOpen}, User Joined: ${userHasJoined}, Is Full: ${isFull}`);
+                // 2. MAIN ACTION BUTTON - SIMPLIFIED (Join Anytime)
+                console.log(`🔍 Game: ${game.name}, Locked: ${isLocked}, Status: ${game.status}, User Joined: ${userHasJoined}, Is Full: ${isFull}`);
                 
                 if (isLocked) {
-                    // Game is locked - ONLY show Demo button, no join/play
+                    // Game is locked - ONLY Demo button
                     buttonsHtml += `
                         <button class="btn btn-card-blocked" disabled>
                             <i class="fas fa-lock"></i> Locked
@@ -1174,45 +1161,34 @@
                         </button>
                     `;
                 } else if (userHasJoined) {
-                    // User already joined → Show Play Now
+                    // User already joined → Play Now
                     buttonsHtml += `
                         <button class="btn btn-card-play" onclick="playGame('${game.id}')">
                             <i class="fas fa-play"></i> Play Now
                         </button>
                     `;
-                } else if (isOpen && !isFull) {
-                    // ✅ Round is OPEN and not full → Show Join Now (Green)
-                    buttonsHtml += `
-                        <button class="btn btn-card-join" onclick="joinRound('${game.id}')">
-                            <i class="fas fa-ticket-alt"></i> Join Now (${entryFee} RWF)
-                        </button>
-                    `;
                 } else if (isFull) {
+                    // Round is full
                     buttonsHtml += `
                         <button class="btn btn-card-blocked" disabled>
                             <i class="fas fa-users"></i> Full (${currentPlayers}/${maxPlayers})
                         </button>
                     `;
-                } else if (isActive) {
-                    // Round is active but user hasn't joined
-                    buttonsHtml += `
-                        <button class="btn btn-card-blocked" disabled>
-                            <i class="fas fa-clock"></i> Round in Progress
-                        </button>
-                    `;
                 } else if (isEnded) {
-                    buttonsHtml += `
-                        <button class="btn btn-card-blocked" disabled>
-                            <i class="fas fa-hourglass-end"></i> Next Round Soon
-                        </button>
-                    `;
-                } else {
-                    // Round is scheduled but not open yet
-                    const timeRemaining = getTimeRemaining(round.startTime);
+                    // Round ended - wait for next
+                    const nextRoundTime = new Date(round.endTime);
+                    const timeRemaining = getTimeRemaining(nextRoundTime);
                     const waitTime = formatCountdown(timeRemaining, false);
                     buttonsHtml += `
                         <button class="btn btn-card-blocked" disabled>
-                            <i class="fas fa-clock"></i> Opens in ${waitTime}
+                            <i class="fas fa-clock"></i> Next Round in ${waitTime}
+                        </button>
+                    `;
+                } else {
+                    // ✅ ALWAYS SHOW JOIN BUTTON - Anytime during round
+                    buttonsHtml += `
+                        <button class="btn btn-card-join" onclick="joinRound('${game.id}')">
+                            <i class="fas fa-ticket-alt"></i> Join Now (${entryFee} RWF)
                         </button>
                     `;
                 }
@@ -1328,8 +1304,8 @@
             });
         }
 
-        // ========================================
-        // JOIN ROUND - COMPLETE
+              // ========================================
+        // JOIN ROUND - JOIN ANYTIME
         // ========================================
 
         window.joinRound = async function(gameId) {
@@ -1355,8 +1331,10 @@
                 return;
             }
 
-            if (!game.currentRound?.isOpen) {
-                showToast('Round is not open for joining', 'error');
+            // ✅ REMOVED: No check for isOpen - allow joining anytime
+            // Just check if round has ended
+            if (game.currentRound?.isEnded) {
+                showToast('⏳ Round has ended. Wait for the next round!', 'warning');
                 return;
             }
 
